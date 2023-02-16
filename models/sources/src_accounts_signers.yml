@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: crypto_stellar_internal_2
+    tables:
+      - name: accounts_signers
+        description: '{{ doc("accounts_signers") }}'
+        columns:
+          - name: account_id
+            description: '{{ doc("account_id") }}'
+          
+          - name: signer
+            description: '{{ doc("signer") }}'
+ 
+          - name: weight
+            description: '{{ doc("weight") }}'
+
+          - name: sponsor
+            description: '{{ doc("signer_sponsor") }}'
+
+          - name: deleted
+            description: '{{ doc("account_signer_deleted") }}'
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'

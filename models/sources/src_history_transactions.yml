@@ -1,0 +1,100 @@
+version: 2
+
+sources:
+  - name: crypto_stellar_internal_2
+    tables:
+      - name: history_transactions
+        description: '{{ doc("history_transactions") }}'
+        columns:
+          - name: id
+            description: '{{ doc("transaction_id") }}'
+
+          - name: transaction_hash
+            description: '{{ doc("transaction_hash") }}'
+
+          - name: ledger_sequence
+            description: '{{ doc("ledger_sequence") }}'
+
+          - name: application_order
+            description: '{{ doc("application_order") }}'
+
+          - name: account
+            description: '{{ doc("account") }}'
+
+          - name: account_sequence
+            description: '{{ doc("account_sequence") }}'
+
+          - name: max_fee
+            description: '{{ doc("max_fee") }}'
+
+          - name: operation_count
+            description: '{{ doc("transaction_operation_count") }}'
+
+          - name: created_at
+            description: '{{ doc("created_at") }}'
+
+          - name: memo_type
+            description: '{{ doc("memo_type") }}'
+
+          - name: memo
+            description: '{{ doc("memo") }}'
+
+          - name: time_bounds
+            description: '{{ doc("time_bounds") }}'
+
+          - name: successful
+            description: '{{ doc("successful") }}'
+
+          - name: fee_charged
+            description: '{{ doc("fee_charged") }}'
+
+          - name: inner_transaction_hash
+            description: '{{ doc("inner_transaction_hash") }}'
+
+          - name: fee_account
+            description: '{{ doc("fee_account") }}'
+
+          - name: new_max_fee
+            description: '{{ doc("new_max_fee") }}'
+
+          - name: account_muxed
+            description: '{{ doc("account_muxed") }}'
+
+          - name: fee_account_muxed
+            description: '{{ doc("fee_account_muxed") }}'
+
+          - name: ledger_bounds
+            description: '{{ doc("ledger_bounds") }}'
+
+          - name: min_account_sequence
+            description: '{{ doc("min_account_sequence") }}'
+
+          - name: min_account_sequence_age
+            description: '{{ doc("min_account_sequence_age") }}'
+
+          - name: min_account_sequence_ledger_gap
+            description: '{{ doc("min_account_sequence_ledger_gap") }}'
+
+          - name: extra_signers
+            description: '{{ doc("extra_signers") }}'
+
+          - name: tx_envelope
+            description: '{{ doc("tx_envelope") }}'
+
+          - name: tx_result
+            description: '{{ doc("tx_result") }}'
+
+          - name: tx_meta
+            description: '{{ doc("tx_meta") }}'
+
+          - name: tx_fee_meta
+            description: '{{ doc("tx_fee_meta") }}'
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'

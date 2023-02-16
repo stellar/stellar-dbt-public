@@ -1,0 +1,79 @@
+version: 2
+
+sources:
+  - name: crypto_stellar_internal_2
+    tables:
+      - name: accounts
+        description: '{{ doc("accounts") }}'
+        columns:
+          - name: account_id
+            description: '{{ doc("account_id") }}'
+
+          - name: balance
+            description: '{{ doc("balance") }}'
+
+          - name: buying_liabilities
+            description: '{{ doc("accounts_buying_liabilities") }}'
+
+          - name: selling_liabilities
+            description: '{{ doc("accounts_selling_liabilities") }}'
+
+          - name: sequence_number
+            description: '{{ doc("sequence_number") }}'
+
+          - name: num_subentries
+            description: '{{ doc("num_subentries") }}'
+
+          - name: inflation_destination
+            description: '{{ doc("inflation_destination") }}'
+
+          - name: flags
+            description: '{{ doc("accounts_flags") }}'
+
+          - name: home_domain
+            description: '{{ doc("accounts_home_domain") }}'
+
+          - name: master_weight
+            description: '{{ doc("accounts_master_weight") }}'
+
+          - name: threshold_low
+            description: '{{ doc("accounts_threshold_low") }}'
+
+          - name: threshold_medium
+            description: '{{ doc("accounts_threshold_medium") }}'
+
+          - name: threshold_high
+            description: '{{ doc("accounts_threshold_high") }}'
+
+          - name: last_modified_ledger
+            description: '{{ doc("accounts_last_modified_ledger") }}'
+          
+          - name: ledger_entry_change
+            description: '{{ doc("accounts_ledger_entry_change") }}'
+
+          - name: deleted
+            description: '{{ doc("accounts_deleted") }}'
+
+          - name: sponsor
+            description: '{{ doc("accounts_sponsor") }}'
+
+          - name: num_sponsored
+            description: '{{ doc("num_sponsored") }}'
+
+          - name: num_sponsoring
+            description: '{{ doc("num_sponsoring") }}'
+
+          - name: sequence_ledger
+            description: '{{ doc("sequence_ledger") }}'
+
+          - name: sequence_time
+            description: '{{ doc("sequence_time") }}'
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'

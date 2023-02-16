@@ -1,0 +1,67 @@
+version: 2
+
+sources:
+  - name: crypto_stellar_internal_2
+    tables:
+      - name: claimable_balances
+        description: '{{ doc("claimable_balances") }}'
+        columns: 
+          - name: balance_id
+            description: '{{ doc("balance_id") }}'
+
+          - name: claimants
+            description: '{{ doc("claimants") }}'
+
+          - name: claimants.destination
+            description: '{{ doc("claimants_destination") }}'
+
+          - name: claimants.predicate
+            description: '{{ doc("claimants_predicate") }}'
+
+          - name: claimants.predicate.unconditional
+            description: '{{ doc("claimants_predicate_unconditional") }}'
+
+          - name: claimants.predicate.abs_before
+            description: '{{ doc("claimants_predicate_abs_before") }}'
+
+          - name: claimants.predicate.rel_before
+            description: '{{ doc("claimants_predicate_rel_before") }}'
+
+          - name: claimants.predicate.abs_before_epoch
+            description: '{{ doc("claimants_predicate_abs_before_epoch") }}'
+
+          - name: asset_type
+            description: '{{ doc("cl_asset_type") }}'
+
+          - name: asset_code
+            description: '{{ doc("cl_asset_code") }}'
+
+          - name: asset_issuer
+            description: '{{ doc("cl_asset_issuer") }}'
+
+          - name: asset_amount
+            description: '{{ doc("cl_asset_amount") }}'
+
+          - name: sponsor
+            description: '{{ doc("cl_sponsor") }}'
+
+          - name: flags
+            description: '{{ doc("cl_flags") }}'
+
+          - name: last_modified_ledger
+            description: '{{ doc("cl_last_modified_ledger") }}'
+
+          - name: ledger_entry_change
+            description: '{{ doc("cl_ledger_entry_change") }}'
+
+          - name: deleted
+            description: '{{ doc("cl_deleted") }}'
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'
