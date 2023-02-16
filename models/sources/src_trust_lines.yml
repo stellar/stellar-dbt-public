@@ -1,0 +1,61 @@
+version: 2
+
+sources:
+  - name: crypto_stellar_internal_2
+    tables:
+      - name: trust_lines
+        description: '{{ doc("trust_lines") }}'
+        columns:
+          - name: ledger_key
+            description: '{{ doc("ledger_key") }}'
+
+          - name: account_id
+            description: '{{ doc("trust_account_id") }}'
+
+          - name: asset_type
+            description: '{{ doc("trust_asset_type") }}'
+
+          - name: asset_issuer
+            description: '{{ doc("trust_asset_issuer") }}'
+
+          - name: asset_code
+            description: '{{ doc("trust_asset_code") }}'
+
+          - name: liquidity_pool_id
+            description: '{{ doc("trust_liquidity_pool_id") }}'
+
+          - name: balance
+            description: '{{ doc("trust_balance") }}'
+
+          - name: trust_line_limits
+            description: '{{ doc("trust_line_limits") }}'
+
+          - name: buying_liabilities
+            description: '{{ doc("trust_buying_liabilities") }}'
+
+          - name: selling_liabilities
+            description: '{{ doc("trust_selling_liabilities") }}'
+
+          - name: flags
+            description: '{{ doc("trust_flags") }}'
+
+          - name: last_modified_ledgers
+            description: '{{ doc("trust_last_modified_ledger") }}'
+
+          - name: ledger_entry_change
+            description: '{{ doc("trust_ledger_entry_change") }}'
+
+          - name: deleted
+            description: '{{ doc("trust_deleted") }}'
+
+          - name: sponsor
+            description: '{{ doc("trust_sponsor") }}'
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'

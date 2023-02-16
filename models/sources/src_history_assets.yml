@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: crypto_stellar_internal_2
+    tables:
+      - name: history_assets_staging
+        description: '{{ doc("history_assets_staging") }}'
+        columns:
+          - name: assets_id
+            description: '{{ doc("asset_type") }}'
+    
+          - name: asset_type
+            description: '{{ doc("asset_type") }}'
+    
+          - name: asset_code
+            description: '{{ doc("asset_code") }}'
+    
+          - name: asset_issuer
+            description: '{{ doc("asset_issuer") }}'
+    
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+    
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+    
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'

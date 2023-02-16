@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: test_crypto_stellar_2
+    tables:
+      - name: account_signers
+        docs:
+          show: false
+      - name: accounts
+        docs:
+          show: false
+      - name: claimable_balances
+        docs:
+          show: false
+      - name: history_assets_staging
+        docs:
+          show: false
+      - name: history_ledgers
+        docs:
+          show: false
+      - name: history_operations
+        docs:
+          show: false
+      - name: history_trades
+        docs:
+          show: false
+      - name: history_transactions
+        docs:
+          show: false
+      - name: liquidity_pools
+        docs:
+          show: false
+      - name: offers
+        docs:
+          show: false
+      - name: trust_lines
+        docs:
+          show: false

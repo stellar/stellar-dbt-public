@@ -1,0 +1,64 @@
+version: 2
+
+sources:
+  - name: crypto_stellar_internal_2
+    tables:
+      - name: liquidity_pools
+        description: '{{ doc("liquidity_pools") }}'
+        columns:
+          - name: liquidity_pool_id
+            description: '{{ doc("liquidity_pool_id") }}'
+
+          - name: type
+            description: '{{ doc("liq_type") }}'
+
+          - name: fee
+            description: '{{ doc("fee") }}'
+
+          - name: trustline_count
+            description: '{{ doc("trustline_count") }}'
+
+          - name: pool_share_count
+            description: '{{ doc("pool_share_count") }}'
+
+          - name: asset_a_type
+            description: '{{ doc("asset_a_type") }}'
+
+          - name: asset_a_code
+            description: '{{ doc("asset_a_code") }}'
+
+          - name: asset_a_issuer
+            description: '{{ doc("asset_a_issuer") }}'
+
+          - name: asset_a_amount
+            description: '{{ doc("asset_a_amount") }}'
+
+          - name: asset_b_type
+            description: '{{ doc("asset_a_type") }}'
+
+          - name: asset_b_code
+            description: '{{ doc("asset_a_code") }}'
+
+          - name: asset_b_issuer
+            description: '{{ doc("asset_a_issuer") }}'
+
+          - name: asset_b_amount
+            description: '{{ doc("asset_a_amount") }}'
+
+          - name: last_modified_ledger
+            description: '{{ doc("liq_last_modified_ledger") }}'
+
+          - name: ledger_entry_change
+            description: '{{ doc("liq_ledger_entry_change") }}'
+
+          - name: deleted
+            description: '{{ doc("liq_deleted") }}'
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'

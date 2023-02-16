@@ -1,0 +1,55 @@
+version: 2
+
+sources:
+  - name: crypto_stellar_internal_2
+    tables:
+      - name: offers
+        description: '{{ doc("liquidity_pools") }}'
+        columns:
+          - name: seller_id
+            description: '{{ doc("seller_id") }}'
+
+          - name: offer_id
+            description: '{{ doc("offer_id") }}'
+
+          - name: selling_asset_type
+            description: '{{ doc("offers_selling_asset_type") }}'
+
+          - name: selling_asset_code
+            description: '{{ doc("offers_selling_asset_code") }}'
+
+          - name: selling_asset_issuer
+            description: '{{ doc("offers_selling_asset_issuer") }}'
+
+          - name: buying_asset_type
+            description: '{{ doc("offers_buying_asset_type") }}'
+
+          - name: buying_asset_code
+            description: '{{ doc("offers_buying_asset_code") }}'
+
+          - name: buying_asset_issuer
+            description: '{{ doc("offers_buying_asset_issuer") }}'
+
+          - name: amount
+            description: '{{ doc("offers_amount") }}'
+
+          - name: price_n
+            description: '{{ doc("offers_price_n") }}'
+
+          - name: price_d
+            description: '{{ doc("offers_price_d") }}'
+
+          - name: price
+            description: '{{ doc("price") }}'
+
+          - name: flags
+            description: '{{ doc("offers_flags") }}'
+
+          - name: last_modified_ledger
+            description: '{{ doc("offers_last_modified_ledger") }}'
+
+          - name: ledger_entry_change
+            description: '{{ doc("offers_ledger_entry_change") }}'
+
+          - name: deleted
+            description: '{{ doc("offers_deleted") }}'

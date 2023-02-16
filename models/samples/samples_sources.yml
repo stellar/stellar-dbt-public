@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: dbt_sample
+    tables:
+      - name: sample_account_signers
+        docs:
+          show: false
+      - name: sample_accounts
+        docs:
+          show: false
+      - name: sample_claimable_balances
+        docs:
+          show: false
+      - name: sample_history_assets_staging
+        docs:
+          show: false
+      - name: sample_history_ledgers
+        docs:
+          show: false
+      - name: sample_history_operations
+        docs:
+          show: false
+      - name: sample_history_trades
+        docs:
+          show: false
+      - name: sample_history_transactions
+        docs:
+          show: false
+      - name: sample_liquidity_pools
+        docs:
+          show: false
+      - name: sample_offers
+        docs:
+          show: false
+      - name: sample_trust_lines
+        docs:
+          show: false
