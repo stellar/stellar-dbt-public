@@ -1,0 +1,18 @@
+elementary:
+  target: 'prod'
+  outputs:
+    default:
+      type: bigquery
+
+      # Service acount auth #
+      method: service-account
+      keyfile: {{/path/to/bigquery/keyfile.json}}
+      
+      project: 'test-hubble-319619'
+      dataset: elementary
+      maximum_bytes_billed: 5500000000
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: us-central1
+      threads: 1
+      priority: interactive

@@ -1,0 +1,16 @@
+### dbt build/run dirs
+target/
+dbt_packages/
+logs/
+
+### text editor swap files
+*.swp
+
+### virtual environment
+venv/
+
+### gcp credentials
+credentials.json
+
+### other
+**/.DS_Store
