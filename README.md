@@ -2,7 +2,18 @@
 Public DBT instance to aid in data transformation for analytics purposes
 
 ## Table of Contents
-
+- [Data Transformation](#data-transformation)
+    -[Workflow](#workflow)
+    -[dbt project structure](#dbt-project-structure)
+    -[testing](#testing)
+- [Getting Started](#getting-started)
+    - [Oauth connection](#oauth)
+- [dbt Setup](#dbt-setup)    
+- [Working with dbt](#working-with-dbt)
+    - [Running Models](#running-models)
+    - [Running Tests](#running-tests)
+- [Project Structure](#project-structure)
+    - [Development Folders](#development-folders)
 
 
 ## Data Transformation 
@@ -195,7 +206,6 @@ On top of that, dbt supports --excluding, --defer, --target and many other selec
 Executing tests works the same way as executing runs, with the command `dbt test` accepting many of the same parameters. This will run both schema tests and unique tests, unless commanded otherwise. For more information on the syntax, consult the [documentation](https://docs.getdbt.com/reference/node-selection/syntax).
 
 In dbt, tests come in two ways. Schema tests, which are pre-built macros and can be called in YML schema files, and unique tests, which are user-made and have their own .SQL files, stored in the `tests` folder. Both tests will be executed during a `dbt test`, unless further node selection is provided. A dbt test will fail when the underlying SQL selection returns a result row, being approved when no rows are returned. For further information on tests, please refer to the [documentation](https://docs.getdbt.com/reference/test-configs).
-
 
 ## Project Structure
 
