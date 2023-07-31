@@ -5,7 +5,7 @@ Public DBT instance to aid in data transformation for analytics purposes
 - [Data Transformation](#data-transformation)
     - [Workflow](#workflow)
     - [dbt project structure](#dbt-project-structure)
-    - [testing](#testing)
+    - [Tests](#tests)
 - [Getting Started](#getting-started)
     - [Oauth connection](#oauth)
 - [dbt Setup](#dbt-setup)    
@@ -89,7 +89,7 @@ The models are divided into:
 -Fact tables (fct_table): where the final models of the business strategy to be analyzed will be located;
 -Aggregate tables (agg_table): where are aggregations of fact tables by one dimension.
 
-### testing
+### Tests
 
 Tests are assertions you make about your models and other resources in your dbt project (e.g. sources, seeds and snapshots). When you run dbt test, dbt will tell you if each test in your project passes or fails. Like almost everything in dbt, tests are SQL queries. In particular, they are select statements that seek to grab "failing" records, ones that disprove your assertion. 
 
