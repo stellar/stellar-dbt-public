@@ -3,9 +3,9 @@ Public DBT instance to aid in data transformation for analytics purposes
 
 ## Table of Contents
 - [Data Transformation](#data-transformation)
-    -[Workflow](#workflow)
-    -[dbt project structure](#dbt-project-structure)
-    -[testing](#testing)
+    - [Workflow](#workflow)
+    - [dbt project structure](#dbt-project-structure)
+    - [testing](#testing)
 - [Getting Started](#getting-started)
     - [Oauth connection](#oauth)
 - [dbt Setup](#dbt-setup)    
