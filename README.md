@@ -27,10 +27,10 @@ The top level of a dbt workflow is the project. A project is a directory of a `.
 A model is a single file containing a final select statement, and a project can have multiple models, and models can even reference each other.
 
 In dbt, you can configure the materialization of your models. Materializations are strategies for persisting dbt models in a warehouse. There are four types of materializations built into dbt. They are:
-1. table (your model is rebuilt as a table on each run)
-2. view (your model is rebuilt as a view on each run)
-3. incremental (allow dbt to insert or update records into a table since the last time that dbt was run.)
-4. ephemeral (models are not directly built into the database. instead, dbt will interpolate the code from this model into dependent models as a common table expression.)
+1. Table (your model is rebuilt as a table on each run)
+2. View (your model is rebuilt as a view on each run)
+3. Incremental (allow dbt to insert or update records into a table since the last time that dbt was run.)
+4. Ephemeral (models are not directly built into the database. instead, dbt will interpolate the code from this model into dependent models as a common table expression.)
 
 ### dbt Project Structure
 
