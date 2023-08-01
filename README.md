@@ -218,5 +218,5 @@ The marts, on the other hand, are materialized as tables, in order to reduce que
 |Marts| Houses the final data models or data marts, which are the end results of the dbt project. |
 |Docs| Stores documentation related to your dbt project. |
 |Macros| Contains reusable SQL code snippets known as macros. |
-|Tests| Coitains defining tests to validate the accuracy and correctness of the data transformations. |
+|Tests| Contains defining tests to validate the accuracy and correctness of the data transformations. |
 
