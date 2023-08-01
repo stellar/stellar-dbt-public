@@ -4,7 +4,7 @@ Public DBT instance to aid in data transformation for analytics purposes
 ## Table of Contents
 - [Data Transformation](#data-transformation)
     - [Workflow](#workflow)
-    - [dbt project structure](#dbt-project-structure)
+    - [dbt Project Structure](#dbt-project-structure)
     - [Tests](#tests)
 - [Getting Started](#getting-started)
     - [Oauth connection](#oauth)
@@ -32,62 +32,62 @@ In dbt, you can configure the materialization of your models. Materializations a
 3. incremental (allow dbt to insert or update records into a table since the last time that dbt was run.)
 4. ephemeral (models are not directly built into the database. instead, dbt will interpolate the code from this model into dependent models as a common table expression.)
 
-### dbt project structure
+### dbt Project Structure
 
 1. Staging (data preparation)
 The purpose of the source layer is to receive the raw data from the source and define preparations for further analysis.
 
-What to do on staging:
+  What to do on staging:
 
--column selection
--consistently renaming columns.
--definition of data types (casting columns to String, Numeric...)
--flattening of structured objects
--initial filters
--tests (source.yml)
--basic cleanup, like replacing empty strings with NULL, for example
+  - Column selection
+  - Consistently renaming columns.
+  - Definition of data types (casting columns to String, Numeric...)
+  - Flattening of structured objects
+  - Initial filters
+  - Tests (source.yml)
+  - Basic cleanup, like replacing empty strings with NULL, for example
 
-What is not done in the source:
+  What is not done in the source:
 
--joins
--creating business rules
+  - Joins
+  - Creating business rules
 
 2. Intermediate (data preparation)
 In the intermediate layer, the preparation for directing the data to the marts takes place. Not every table in the staging layer will become an intermediate. In staging, it is possible to combine different tables to start assembling business rules.
 
-What is done in the intermediate:
+  What is done in the intermediate:
 
--join between different source queries
--more complex functions that would not enter the staging layer
--aggregations
--creation of business metrics/rules
+  - Join between different source queries
+  - More complex functions that would not enter the staging layer
+  - Aggregations
+  - Creation of business metrics/rules
 
-What not to do in intermediate:
+  What not to do in intermediate:
 
--opening of sources
--dimensional modeling (separation of facts, dimensions and marts)
+  - Opening of sources
+  - Dimensional modeling (separation of facts, dimensions and marts)
 
 3. Marts (final transformations)
 In the marts layer, data is organized for the dimensional model, as well as the configuration for incremental materialization of final tables. Each model will be accompanied by a `.yml` file with the same name. This file contains model and column descriptions and tests.
 
-What is done at the marts:
+  What is done at the marts:
 
--organization of data in a dimensional model (star schema)
--creation of sk keys
--mart-specific tweaks
--join between sources and/or stagings
--documentation and testing
+  - Organization of data in a dimensional model (star schema)
+  - Creation of sk keys
+  - Mart-specific tweaks
+  - Join between sources and/or stagings
+  - Documentation and testing
 
-What not to do at marts:
+  What not to do at marts:
 
--data cleaning
--opening of staging
+  - Data cleaning
+  - Opening of staging
 
 The models are divided into:
 
--Dimension tables (dim_table): where the dimensions of the models will be defined and gather all the sources of the respective dimension;
--Fact tables (fct_table): where the final models of the business strategy to be analyzed will be located;
--Aggregate tables (agg_table): where are aggregations of fact tables by one dimension.
+  - Dimension tables (dim_table): where the dimensions of the models will be defined and gather all the sources of the respective dimension;
+  - Fact tables (fct_table): where the final models of the business strategy to be analyzed will be located;
+  - Aggregate tables (agg_table): where are aggregations of fact tables by one dimension.
 
 ### Tests
 
@@ -124,7 +124,7 @@ After cloning, create a virtual environment for the installation. The recommende
   outputs:
     development:
       dataset: your_dbt_dataset ##the name of your dataset.
-      maximum_bytes_billed: 5500000000 #this field limits the maximum number of processed bytes. it helps control processing costs, we recommend 5500000000.
+      maximum_bytes_billed: 5500000000 ##this field limits the maximum number of processed bytes. it helps control processing costs, we recommend 5500000000.
       job_execution_timeout_seconds: 300 ##the number of seconds dbt should wait for queries to complete, after being submitted successfully. we sugest 300 seconds. 
       job_retries: 1 ##the number of times that dbt will retry failing queries. the default is 1.
       location: your-location ##your BQ dataset location
@@ -161,11 +161,6 @@ test-paths: ["tests"] ##directories to where your singular test files live.
 seed-paths: ["seeds"] ##specify a custom list of directories where seed files are located.
 macro-paths: ["macros"] ##specify a custom list of directories where macros are located.
 snapshot-paths: ["snapshots"] ##directories to where your snapshots live.
-
-target-path: "target" ##specify a custom directory where compiled files (e.g. compiled models and tests) will be written when you run the dbt run, dbt compile, or dbt test command.
-clean-targets: ##specify a custom list of directories to be removed by the dbt clean command.
-  - "target"
-  - "dbt_packages"
 
 models:
   {{my_dbt_project_name}}:
@@ -209,7 +204,7 @@ In dbt, tests come in two ways. Schema tests, which are pre-built macros and can
 
 ## Project Structure
 
-The Stellar-dbt project follows a staging/marts approach to modelling. The staging step focuses on transforming and preparing the tables for joining on the marts step. In order to diminish cost, all staging .sql files are materialized as ephemeral in the `dbt_project.yml`, allowing code modularity and decoupling while not raising storage costs. 
+The Stellar-dbt project follows a staging/marts approach to modelling. The staging step focuses on transforming and preparing the tables for joining on the marts step. In order to diminish cost, all staging `.sql` files are materialized as ephemeral in the `dbt_project.yml`, allowing code modularity and decoupling while not raising storage costs. 
 
 The marts, on the other hand, are materialized as tables, in order to reduce querying time on the BI and other exposures. It is in this step that tables are joined together to obtain analytical results or rejoin needed information to facilitate date exploration.
 
@@ -217,13 +212,11 @@ The marts, on the other hand, are materialized as tables, in order to reduce que
 
 | Name | Description |
 |------|-------------|
-|Source| Contains the config files for the product source tables, referencing their documentation and, when necessary, testing the raw data with schema tests |
-|Staging| Scripts that prepare and transform the raw tables for joining and analyses |
-|Intermediate| Scripts that preparer the data to the marts layer, it is possible to combine different tables to start assembling the business rules. 
-|Marts| Scripts that create the Enriched tables as well as analytical tables for partner and BI consumption |
-|Docs| Contains the documentation files for the project, used to generate the hosted documentation |
-|Macros| Contains any custom Jinja macros created for the project |
-|Tests| Contains any custom tests created for the project |
-
-
+|Source| Stores the raw data that will be used as inputs for the dbt transformations. |
+|Staging| Stages the pre-processed or cleaned data before performing the transformations. |
+|Intermediate| Contains the transformed and processed data.
+|Marts| Houses the final data models or data marts, which are the end results of the dbt project. |
+|Docs| Stores documentation related to your dbt project. |
+|Macros| Contains reusable SQL code snippets known as macros. |
+|Tests| Coitains defining tests to validate the accuracy and correctness of the data transformations. |
 
