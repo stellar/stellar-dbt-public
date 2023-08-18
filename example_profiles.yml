@@ -8,7 +8,7 @@ elementary:
       method: service-account
       keyfile: {{/path/to/bigquery/keyfile.json}}
       
-      project: 'test-hubble-319619'
+      project: 'crypto-stellar'
       dataset: elementary
       maximum_bytes_billed: 5500000000
       job_execution_timeout_seconds: 300
