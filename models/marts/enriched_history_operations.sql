@@ -1,5 +1,4 @@
 {{ config(
-    tags = ["partnership_assets"],
     materialized='incremental',
     unique_key=["op_id"],
     partition_by={
