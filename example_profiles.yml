@@ -7,9 +7,8 @@ elementary:
       # Service acount auth #
       method: service-account
       keyfile: {{/path/to/bigquery/keyfile.json}}
-      
       project: 'crypto-stellar'
-      dataset: elementary
+      dataset: {{dataset-name}}
       maximum_bytes_billed: 5500000000
       job_execution_timeout_seconds: 300
       job_retries: 1
