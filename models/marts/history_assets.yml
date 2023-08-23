@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: history_assets
+    description: '{{ doc("history_assets_staging") }}'
+    columns:
+      - name: asset_id
+        description: '{{ doc("assets_id") }}'
+        tests:
+          - not_null
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['credit_alphanum12', 'credit_alphanum4', 'native']
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+        tests:
+          - not_null
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+        tests:
+          - not_null
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'

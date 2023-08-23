@@ -1,0 +1,270 @@
+version: 2
+
+sources:
+  - name: crypto-stellar
+    database: 'crypto-stellar'
+    tables:
+      - name: history_effects
+        description: '{{ doc("history_effects") }}'
+        columns:
+          - name: address
+            description: '{{ doc("address") }}'
+
+          - name: address_muxed
+            description: '{{ doc("address_muxed") }}'
+
+          - name: operation_id
+            description: '{{ doc("operation_id") }}'
+
+          - name: type
+            description: '{{ doc("type") }}'
+
+          - name: type_string
+            description: '{{ doc("type_string") }}'
+
+          - name: details
+            description: '{{ doc("details_effects") }}'
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'
+
+          - name: details.liquidity_pool
+            description: '{{ doc("details_liquidity_pool") }}'
+          
+          - name: details.liquidity_pool.fee_bp
+            description: '{{ doc("details_liquidity_pool_fee_bp") }}'
+          
+          - name: details.liquidity_pool.id
+            description: '{{ doc("details_liquidity_pool_id") }}'
+          
+          - name: details.liquidity_pool.total_shares
+            description: '{{ doc("details_liquidity_pool_total_shares") }}'
+          
+          - name: details.liquidity_pool.total_trustlines
+            description: '{{ doc("details_liquidity_pool_total_trustlines") }}'
+          
+          - name: details.liquidity_pool.type
+            description: '{{ doc("details_liquidity_pool_type") }}'
+          
+          - name: details.liquidity_pool.reserves
+            description: '{{ doc("details_liquidity_pool_reserves") }}'
+          
+          - name: details.liquidity_pool.reserves.asset
+            description: '{{ doc("details_asset") }}'
+          
+          - name: details.liquidity_pool.reserves.amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.reserves_received
+            description: '{{ doc("details_reserves_received") }}'
+          
+          - name: details.reserves_received.asset
+            description: '{{ doc("details_asset") }}'
+          
+          - name: details.reserves_received.amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.reserves_deposited
+            description: '{{ doc("details_reserves_deposited") }}'
+          
+          - name: details.reserves_deposited.asset
+            description: '{{ doc("details_asset") }}'
+          
+          - name: details.reserves_deposited.amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.reserves_revoked
+            description: '{{ doc("details_reserves_revoked") }}'
+          
+          - name: details.reserves_revoked.asset
+            description: '{{ doc("details_asset") }}'
+          
+          - name: details.reserves_revoked.amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.reserves_revoked.claimable_balance_id
+            description: '{{ doc("details_reserves_revoked_claimable_balance_id") }}'
+          
+          - name: details.bought
+            description: '{{ doc("details_bought") }}'
+          
+          - name: details.bought.asset
+            description: '{{ doc("details_asset") }}'
+          
+          - name: details.bought.amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.sold
+            description: '{{ doc("details_sold") }}'
+          
+          - name: details.sold.asset
+            description: '{{ doc("details_asset") }}'
+          
+          - name: details.sold.amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.shares_revoked
+            description: '{{ doc("details_shares_revoked") }}'
+          
+          - name: details.shares_received
+            description: '{{ doc("details_shares_received") }}'
+          
+          - name: details.shares_redeemed
+            description: '{{ doc("details_shares_redeemed") }}'
+          
+          - name: details.liquidity_pool_id
+            description: '{{ doc("details_liquidity_pool_id") }}'
+          
+          - name: details.balance_id
+            description: '{{ doc("details_balance_id") }}'
+          
+          - name: details.new_seq 
+            description: '{{ doc("details_new_seq") }}'
+          
+          - name: details.name
+            description: '{{ doc("details_name") }}'
+          
+          - name: details.value
+            description: '{{ doc("details_value") }}'
+          
+          - name: details.trustor 
+            description: '{{ doc("details_trustor") }}'
+          
+          - name: details.limit
+            description: '{{ doc("details_limit") }}'
+          
+          - name: details.inflation_destination
+            description: '{{ doc("details_inflation_destination") }}'
+          
+          - name: details.authorized_flag
+            description: '{{ doc("details_authorized_flag") }}'
+          
+          - name: details.auth_immutable_flag
+            description: '{{ doc("details_auth_immutable_flag") }}'
+          
+          - name: details.authorized_to_maintain_liabilites
+            description: '{{ doc("details_authorized_to_maintain_liabilites") }}'
+          
+          - name: details.auth_revocable_flag
+            description: '{{ doc("details_auth_revocable_flag") }}'
+          
+          - name: details.auth_required_flag
+            description: '{{ doc("details_auth_required_flag") }}'
+          
+          - name: details.auth_clawback_enabled_flag
+            description: '{{ doc("details_auth_clawback_enabled_flag") }}'
+          
+          - name: details.claimable_balance_clawback_enabled_flag
+            description: '{{ doc("details_claimable_balance_clawback_enabled_flag") }}'
+          
+          - name: details.clawback_enabled_flag
+            description: '{{ doc("details_clawback_enabled_flag") }}'
+          
+          - name: details.high_threshold
+            description: '{{ doc("details_high_threshold") }}'
+          
+          - name: details.med_threshold
+            description: '{{ doc("details_med_threshold") }}'
+          
+          - name: details.low_threshold
+            description: '{{ doc("details_low_threshold") }}'
+          
+          - name: details.home_domain
+            description: '{{ doc("details_home_domain") }}'
+          
+          - name: details.asset_issuer
+            description: '{{ doc("details_asset_issuer") }}'
+          
+          - name: details.asset
+            description: '{{ doc("details_asset") }}'
+          
+          - name: details.asset_code
+            description: '{{ doc("details_asset_code") }}'
+          
+          - name: details.asset_type
+            description: '{{ doc("details_asset_type") }}'
+          
+          - name: details.signer
+            description: '{{ doc("details_signer") }}'
+          
+          - name: details.sponsor 
+            description: '{{ doc("details_sponsor") }}'
+          
+          - name: details.new_sponsor
+            description: '{{ doc("details_new_sponsor") }}'
+          
+          - name: details.former_sponsor
+            description: '{{ doc("details_former_sponsor") }}'
+          
+          - name: details.weight
+            description: '{{ doc("details_weight") }}'
+          
+          - name: details.public_key
+            description: '{{ doc("details_public_key") }}'
+          
+          - name: details.amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.starting_balance
+            description: '{{ doc("details_starting_balance") }}'
+          
+          - name: details.seller
+            description: '{{ doc("details_seller") }}'
+          
+          - name: details.seller_muxed
+            description: '{{ doc("details_seller_muxed") }}'
+          
+          - name: details.seller_muxed_id
+            description: '{{ doc("details_seller_muxed_id") }}'
+          
+          - name: details.offer_id
+            description: '{{ doc("details_offer_id") }}'
+          
+          - name: details.sold_amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.sold_asset_type
+            description: '{{ doc("details_asset_type") }}'
+          
+          - name: details.sold_asset_code
+            description: '{{ doc("details_asset_code") }}'
+          
+          - name: details.sold_asset_issuer
+            description: '{{ doc("details_asset_issuer") }}'
+          
+          - name: details.bought_asset_type
+            description: '{{ doc("details_asset_type") }}'
+          
+          - name: details.bought_asset_code
+            description: '{{ doc("details_asset_code") }}'
+          
+          - name: details.bought_asset_issuer
+            description: '{{ doc("details_asset_issuer") }}'
+          
+          - name: details.bought_amount
+            description: '{{ doc("details_amount") }}'
+          
+          - name: details.data_name
+            description: '{{ doc("details_data_name") }}'
+          
+          - name: details.predicate
+            description: '{{ doc("claimants_predicate") }}'
+          
+          - name: details.predicate.abs_before
+            description: '{{ doc("claimants_predicate_abs_before") }}'
+          
+          - name: details.predicate.rel_before
+            description: '{{ doc("claimants_predicate_rel_before") }}'
+          
+          - name: details.predicate.unconditional
+            description: '{{ doc("claimants_predicate_unconditional") }}'
+          
+          - name: details.predicate.abs_before_epoch
+            description: '{{ doc("claimants_predicate_abs_before_epoch") }}'
+          
