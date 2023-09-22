@@ -1,8 +1,10 @@
 # stellar-dbt-public
-Public DBT instance to aid in data transformation for analytics purposes
+Public DBT instance to aid in data transformation for analytics purposes.
+If you're interested in setting up your own dbt project, you can find detailed instructions in the [dbt documentation](https://docs.getdbt.com/docs/introduction).
+
 
 ## Table of Contents
-- [Data Transformation](#data-transformation)
+- [dbt Overview](#dbt-overview)
     - [Workflow](#workflow)
     - [dbt Project Structure](#dbt-project-structure)
     - [Tests](#tests)
@@ -16,13 +18,13 @@ Public DBT instance to aid in data transformation for analytics purposes
     - [Development Folders](#development-folders)
 
 
-## Data Transformation 
+## dbt Overview 
 
-dbt is composed of different moving parts working harmoniously. All of them are important to what dbt does — transforming data.  When you execute dbt run, you are running a model that will transform your data without that data ever leaving your warehouse.
+dbt is composed of different moving parts working harmoniously. All of them are important to what dbt does — transforming data.  When you execute `dbt run`, you are running a model that will transform your data without that data ever leaving your warehouse.
 
 ### Workflow
 
-The top level of a dbt workflow is the project. A project is a directory of a `.yml` file (the project configuration) and either `.sql` or `.py` files (the models). The project file tells dbt the project context, and the models let dbt know how to build a specific data set.
+The top level of a dbt workflow is the project. A project is a directory of a `.yml` file (the project configuration) and either `.sql` or `.py` files (the models). The project file tells dbt the project context, and the models let dbt know how to build a specific data set. In the end, the purpose of these models is to simplify analytics by generating data mart tables.
 
 A model is a single file containing a final select statement, and a project can have multiple models, and models can even reference each other.
 
@@ -64,7 +66,7 @@ In the intermediate layer, the preparation for directing the data to the marts t
 
   What not to do in intermediate:
 
-  - Opening of sources
+  - Ingestion of raw data
   - Dimensional modeling (separation of facts, dimensions and marts)
 
 3. Marts (final transformations)
@@ -91,7 +93,7 @@ The models are divided into:
 
 ### Tests
 
-Tests are assertions you make about your models and other resources in your dbt project (e.g. sources, seeds and snapshots). When you run dbt test, dbt will tell you if each test in your project passes or fails. Like almost everything in dbt, tests are SQL queries. In particular, they are select statements that seek to grab "failing" records, ones that disprove your assertion. 
+Tests are assertions you make about your models and other resources in your dbt project (e.g. sources, seeds and snapshots). When you run `dbt test`, dbt will tell you if each test in your project passes or fails. Like almost everything in dbt, tests are SQL queries. In particular, they are select statements that seek to grab "failing" records, ones that disprove your assertion. 
 
 There are two ways of defining tests in dbt:
 
