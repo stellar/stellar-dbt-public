@@ -1,7 +1,7 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto-stellar', 'history_trades')}}
+        from {{ source('crypto_stellar', 'history_trades')}}
     )
 
     , history_trades as (

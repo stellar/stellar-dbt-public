@@ -1,7 +1,7 @@
 version: 2
 
 sources:
-  - name: crypto-stellar
+  - name: crypto_stellar
     database: 'crypto-stellar'
     tables:
       - name: offers

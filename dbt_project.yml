@@ -34,6 +34,8 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   stellar_dbt_public:
     staging:
-      +materialized: views
+      +materialized: view
+    intermediate:
+      +materialized: view
     marts: 
       materialized: table

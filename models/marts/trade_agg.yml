@@ -1,0 +1,154 @@
+version: 2
+
+models:
+  - name: trade_agg
+    description: '{{ doc("trade_agg") }}'
+    columns:
+      - name: day_agg
+        description: '{{ doc("trade_day_agg") }}'
+        tests:
+          - not_null
+      
+      - name: selling_asset_type
+        description: '{{ doc("selling_asset_type") }}'
+
+      - name: selling_asset_code
+        description: '{{ doc("selling_asset_code") }}'
+
+      - name: selling_asset_issuer
+        description: '{{ doc("selling_asset_issuer") }}'
+
+      - name: selling_asset_id
+        description: '{{ doc("assets_id") }}'
+
+      - name: buying_asset_type
+        description: '{{ doc("buying_asset_type") }}'
+
+      - name: buying_asset_code
+        description: '{{ doc("buying_asset_code") }}'
+
+      - name: buying_asset_issuer
+        description: '{{ doc("buying_asset_issuer") }}'
+
+      - name: buying_asset_id
+        description: '{{ doc("assets_id") }}'
+
+      - name: trade_count_daily
+        description: '{{ doc("trade_count_daily") }}'
+
+      - name: selling_volume_daily
+        description: '{{ doc("selling_volume_daily") }}'
+
+      - name: buying_volume_daily
+        description: '{{ doc("buying_volume_daily") }}'
+
+      - name: avg_daily
+        description: '{{ doc("avg_daily") }}'
+
+      - name: high_price_daily
+        description: '{{ doc("high_price_daily") }}'
+
+      - name: low_price_daily
+        description: '{{ doc("low_price_daily") }}'
+
+      - name: open_n_daily
+        description: '{{ doc("open_n_daily") }}'
+
+      - name: open_d_daily
+        description: '{{ doc("open_d_daily") }}'
+
+      - name: close_n_daily
+        description: '{{ doc("close_n_daily") }}'
+
+      - name: close_d_daily
+        description: '{{ doc("close_d_daily") }}'
+
+      - name: trade_count_weekly
+        description: '{{ doc("trade_count_weekly") }}'
+
+      - name: selling_volume_weekly
+        description: '{{ doc("selling_volume_weekly") }}'
+
+      - name: buying_volume_weekly
+        description: '{{ doc("buying_volume_weekly") }}'
+
+      - name: avg_weekly
+        description: '{{ doc("avg_weekly") }}'
+
+      - name: high_price_weekly
+        description: '{{ doc("high_price_weekly") }}'
+
+      - name: low_price_weekly
+        description: '{{ doc("low_price_weekly") }}'
+
+      - name: open_n_weekly
+        description: '{{ doc("open_n_weekly") }}'
+
+      - name: open_d_weekly
+        description: '{{ doc("open_d_weekly") }}'
+
+      - name: close_n_weekly
+        description: '{{ doc("close_n_weekly") }}'
+
+      - name: close_d_weekly
+        description: '{{ doc("close_d_weekly") }}'
+
+      - name: trade_count_monthly
+        description: '{{ doc("trade_count_monthly") }}'
+
+      - name: selling_volume_monthly
+        description: '{{ doc("selling_volume_monthly") }}'
+
+      - name: buying_volume_monthly
+        description: '{{ doc("buying_volume_monthly") }}'
+
+      - name: avg_monthly
+        description: '{{ doc("avg_monthly") }}'
+
+      - name: high_price_monthly
+        description: '{{ doc("high_price_monthly") }}'
+
+      - name: low_price_monthly
+        description: '{{ doc("low_price_monthly") }}'
+
+      - name: open_n_monthly
+        description: '{{ doc("open_n_monthly") }}'
+
+      - name: open_d_monthly
+        description: '{{ doc("open_d_monthly") }}'
+
+      - name: close_n_monthly
+        description: '{{ doc("close_n_monthly") }}'
+
+      - name: close_d_monthly
+        description: '{{ doc("close_d_monthly") }}'
+
+      - name: trade_count_yearly
+        description: '{{ doc("trade_count_yearly") }}'
+
+      - name: selling_volume_yearly
+        description: '{{ doc("selling_volume_yearly") }}'
+
+      - name: buying_volume_yearly
+        description: '{{ doc("buying_volume_yearly") }}'
+
+      - name: avg_yearly
+        description: '{{ doc("avg_yearly") }}'
+
+      - name: high_price_yearly
+        description: '{{ doc("high_price_yearly") }}'
+
+      - name: low_price_yearly
+        description: '{{ doc("low_price_yearly") }}'
+
+      - name: open_n_yearly
+        description: '{{ doc("open_n_yearly") }}'
+
+      - name: open_d_yearly
+        description: '{{ doc("open_d_yearly") }}'
+
+      - name: close_n_yearly
+        description: '{{ doc("close_n_yearly") }}'
+
+      - name: close_d_yearly
+        description: '{{ doc("close_d_yearly") }}'

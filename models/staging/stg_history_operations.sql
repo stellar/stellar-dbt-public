@@ -1,7 +1,7 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto-stellar', 'history_operations')}}
+        from {{ source('crypto_stellar', 'history_operations')}}
     )
 
     , history_operations as (
@@ -112,6 +112,7 @@ with
             , details.reserve_b_min_amount
             , details.reserve_b_withdraw_amount
             , details.shares
+            , closed_at
             , batch_id
             , batch_run_date
             , batch_insert_ts
