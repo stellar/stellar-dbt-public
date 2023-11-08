@@ -1,7 +1,7 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto-stellar', 'accounts')}}
+        from {{ source('crypto_stellar', 'accounts')}}
     )
 
     , accounts as (

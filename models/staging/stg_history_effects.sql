@@ -1,7 +1,7 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto-stellar', 'history_effects')}}
+        from {{ source('crypto_stellar', 'history_effects')}}
     )
 
     , history_effects as (
@@ -66,6 +66,7 @@ with
             , details.predicate
             , details.data_name
             , details.bought_asset_issuer
+            , closed_at
             , batch_id
             , batch_run_date
             , batch_insert_ts
