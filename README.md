@@ -16,6 +16,7 @@ If you're interested in setting up your own dbt project, you can find detailed i
     - [Running Tests](#running-tests)
 - [Project Structure](#project-structure)
     - [Development Folders](#development-folders)
+- [New Releases](#New-code-release)
 
 
 ## dbt Overview 
@@ -216,9 +217,22 @@ The marts, on the other hand, are materialized as tables, in order to reduce que
 |------|-------------|
 |Source| Stores the raw data that will be used as inputs for the dbt transformations. |
 |Staging| Stages the pre-processed or cleaned data before performing the transformations. |
-|Intermediate| Contains the transformed and processed data.
+|Intermediate| Contains the transformed and processed data. |
 |Marts| Houses the final data models or data marts, which are the end results of the dbt project. |
 |Docs| Stores documentation related to your dbt project. |
 |Macros| Contains reusable SQL code snippets known as macros. |
 |Tests| Contains defining tests to validate the accuracy and correctness of the data transformations. |
 
+### New Releases
+
+In order to enable other repositories to work with and build on top of this dbt repo, it was configured as a package. Due to this, commiting to the repository requires a few extra steps to ensure git tagging is consistent, so that changes will not break any code downstream. When commiting changes, there are 3 main version changes that can be applied to the repository, as follows:
+
+| Change | Description |
+|------|-------------|
+|Major| Version when making incompatible changes |
+|Minor| Version change when adding functionalities in a backward compatible manner |
+|Patch| Version change when making backward compatible bug fixes |
+
+In order to apply git tagging properly, the last commit message from a repo must contain a hashtag(#) followed by the change type present in that commit. This will allow github to detect the type of change being pushed and increment the version accordingly. For example:
+
+```'Fix trade-agg bug #patch'```

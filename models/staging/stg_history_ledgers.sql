@@ -23,7 +23,6 @@ with
             , successful_transaction_count
             , failed_transaction_count
             , tx_set_operation_count
-            , closed_at
             , batch_id
             , batch_run_date
             , batch_insert_ts
