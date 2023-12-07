@@ -1,4 +1,5 @@
 {{ config(
+    tags = ["partnership_assets", "asset_stats"],
     materialized='incremental',
     unique_key=["op_id"],
     partition_by={
@@ -31,9 +32,12 @@ with
             , batch_run_date
             , batch_insert_ts
         from {{ ref('stg_history_ledgers') }}
-        {% if is_incremental() %}
-            where batch_run_date > (select max(batch_run_date) from {{ this }})
-        {% endif %}
+         where
+            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
+            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+            {% if is_incremental() %}
+                and cast(batch_run_date as date) >= date('{{ dbt_airflow_macros.ds() }}') -- batch run is the min bound of a batch
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
     )
 
     , history_transactions as (
@@ -64,9 +68,13 @@ with
             , batch_run_date
             , batch_insert_ts
         from {{ ref('stg_history_transactions') }}
-        {% if is_incremental() %}
-            where batch_run_date > (select max(batch_run_date) from {{ this }})
-        {% endif %}
+        where
+            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
+            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+            {% if is_incremental() %}
+                and cast(batch_run_date as date) >= date('{{ dbt_airflow_macros.ds() }}') -- batch run is the min bound of a batch
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+            {% endif %}
     )
 
     , history_operations as (
@@ -180,9 +188,12 @@ with
             , batch_run_date
             , batch_insert_ts
         from {{ ref('stg_history_operations') }}
-        {% if is_incremental() %}
-            where batch_run_date > (select max(batch_run_date) from {{ this }})
-        {% endif %}
+        where
+            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
+            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+            {% if is_incremental() %}
+                and cast(batch_run_date as date) >= date('{{ dbt_airflow_macros.ds() }}') -- batch run is the min bound of a batch
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
 
     )
 
@@ -342,12 +353,6 @@ with
             on hist_ops.transaction_id = hist_trans.transaction_id
         join history_ledgers as hist_ledg
             on hist_trans.ledger_sequence = hist_ledg.sequence
-    -- WHERE hist_ops.batch_id = '{batch_id}'
-    -- AND hist_ops.batch_run_date = '{batch_run_date}'
-    -- AND hist_ledg.batch_run_date >= '{prev_batch_run_date}'
-    -- AND hist_ledg.batch_run_date < '{next_batch_run_date}'
-    -- AND hist_trans.batch_run_date >= '{prev_batch_run_date}'
-    -- AND hist_trans.batch_run_date < '{next_batch_run_date}'
     )
 
 select *
