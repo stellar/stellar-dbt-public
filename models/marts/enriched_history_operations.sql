@@ -37,7 +37,7 @@ with
             and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% if is_incremental() %}
                 and cast(batch_run_date as date) >= date('{{ dbt_airflow_macros.ds() }}') -- batch run is the min bound of a batch
-                and date(closed_at) >= date('{{ dbt_airflow_macros.ds() }}')
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
     )
 
     , history_transactions as (
@@ -73,7 +73,7 @@ with
             and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% if is_incremental() %}
                 and cast(batch_run_date as date) >= date('{{ dbt_airflow_macros.ds() }}') -- batch run is the min bound of a batch
-                and date(closed_at) >= date('{{ dbt_airflow_macros.ds() }}')
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% endif %}
     )
 
@@ -193,7 +193,7 @@ with
             and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% if is_incremental() %}
                 and cast(batch_run_date as date) >= date('{{ dbt_airflow_macros.ds() }}') -- batch run is the min bound of a batch
-                and date(closed_at) >= date('{{ dbt_airflow_macros.ds() }}')
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
 
     )
 
