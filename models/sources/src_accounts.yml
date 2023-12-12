@@ -6,75 +6,182 @@ sources:
     tables:
       - name: accounts
         description: '{{ doc("accounts") }}'
+        tests:
+          - elementary.freshness_anomalies:
+              timestamp_column: batch_insert_ts
+              backfill_days: 7
+              time_bucket:
+                period: hour
+                count: 12
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - account_id
+                - ledger_entry_change
+                - last_modified_ledger
+              config:
+                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                          and batch_run_date < datetime_trunc(current_datetime(), day)
         columns:
           - name: account_id
             description: '{{ doc("account_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: balance
             description: '{{ doc("balance") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: buying_liabilities
             description: '{{ doc("buying_liabilities") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: selling_liabilities
             description: '{{ doc("selling_liabilities") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: sequence_number
             description: '{{ doc("sequence_number") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: num_subentries
             description: '{{ doc("num_subentries") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: inflation_destination
             description: '{{ doc("inflation_destination") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: flags
             description: '{{ doc("flags") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: home_domain
             description: '{{ doc("home_domain") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: master_weight
             description: '{{ doc("master_weight") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: threshold_low
             description: '{{ doc("threshold_low") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: threshold_medium
             description: '{{ doc("threshold_medium") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: threshold_high
             description: '{{ doc("threshold_high") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
           
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: deleted
             description: '{{ doc("deleted") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: sponsor
             description: '{{ doc("sponsor") }}'
 
           - name: num_sponsored
             description: '{{ doc("num_sponsored") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: num_sponsoring
             description: '{{ doc("num_sponsoring") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: sequence_ledger
             description: '{{ doc("sequence_ledger") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: sequence_time
             description: '{{ doc("sequence_time") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 

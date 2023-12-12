@@ -12,7 +12,13 @@ Date from which all metrics are aggregated. In the Trade Aggregations table, the
 
 {% enddocs %}
 
-{% docs selling_asset_type %}
+{% docs asset_a %}
+
+Hashed id for the selling_asset.
+
+{% enddocs %}
+
+{% docs asset_a_type %}
 
 The identifier for type of asset code used for the sold asset within the trade
 Notes:
@@ -21,7 +27,7 @@ XLM is the native asset to the network. XLM has no asset code or issuer represen
 
 {% enddocs %}
 
-{% docs selling_asset_code %}
+{% docs asset_a_code %}
 
 The 4 or 12 character code of the sold asset within a trade
 Notes:
@@ -30,13 +36,19 @@ Asset codes have no guarantees of uniqueness. The combination of asset code, iss
 
 {% enddocs %}
 
-{% docs selling_asset_issuer %}
+{% docs asset_a_issuer %}
 
 The account address of the original asset issuer for the sold asset within a trade
 
 {% enddocs %}
 
-{% docs buying_asset_type %}
+{% docs asset_b %}
+
+Hashed id for the buying_asset.
+
+{% enddocs %}
+
+{% docs asset_b_type %}
 
 The identifier for type of asset code used for the bought asset within the trade
 Notes:
@@ -45,7 +57,7 @@ XLM is the native asset to the network. XLM has no asset code or issuer represen
 
 {% enddocs %}
 
-{% docs buying_asset_code %}
+{% docs asset_b_code %}
 
 The 4 or 12 character code of the bought asset within a trade
 Notes:
@@ -54,7 +66,7 @@ Asset codes have no guarantees of uniqueness. The combination of asset code, iss
 
 {% enddocs %}
 
-{% docs buying_asset_issuer %}
+{% docs asset_b_issuer %}
 
 The account address of the original asset issuer for the bought asset within a trade
 
@@ -66,19 +78,19 @@ The count of trades executed against the network in a day.
 
 {% enddocs %}
 
-{% docs selling_volume_daily %}
+{% docs asset_a_volume_daily %}
 
 The total raw amount of the asset being sold in all trades within that day.
 
 {% enddocs %}
 
-{% docs buying_volume_daily %}
+{% docs asset_b_volume_daily %}
 
 The total raw amount of the asset being bought in all trades within that day.
 
 {% enddocs %}
 
-{% docs avg_daily %}
+{% docs avg_price_daily %}
 
 The total amount of the asset being bought in all trades divided by the total amount of the asset being sold in all trades, within that day.
 
@@ -126,19 +138,19 @@ The count of trades executed against the network during the past 7 days.
 
 {% enddocs %}
 
-{% docs selling_volume_weekly %}
+{% docs asset_a_volume_weekly %}
 
 The total amount of the asset being sold in all trades during the past 7 days.
 
 {% enddocs %}
 
-{% docs buying_volume_weekly %}
+{% docs asset_b_volume_weekly %}
 
 The total amount of the asset being bought in all trades during the past 7 days.
 
 {% enddocs %}
 
-{% docs avg_weekly %}
+{% docs avg_price_weekly %}
 
 The total amount of the asset being bought in all trades divided by the total amount of the asset being sold in all trades, during the past 7 days.
 
@@ -186,19 +198,19 @@ The count of trades executed against the network during the past 30 days.
 
 {% enddocs %}
 
-{% docs selling_volume_monthly %}
+{% docs asset_a_volume_monthly %}
 
 The total amount of the asset being sold in all trades during the past 30 days.
 
 {% enddocs %}
 
-{% docs buying_volume_monthly %}
+{% docs asset_b_volume_monthly %}
 
 The total amount of the asset being bought in all trades during the past 30 days.
 
 {% enddocs %}
 
-{% docs avg_monthly %}
+{% docs avg_price_monthly %}
 
 The total amount of the asset being bought in all trades divided by the total amount of the asset being sold in all trades, during the past 30 days.
 
@@ -246,19 +258,19 @@ The count of trades executed against the network during the past 365 days.
 
 {% enddocs %}
 
-{% docs selling_volume_yearly %}
+{% docs asset_a_volume_yearly %}
 
 The total amount of the asset being sold in all trades during the past 365 days.
 
 {% enddocs %}
 
-{% docs buying_volume_yearly %}
+{% docs asset_b_volume_yearly %}
 
 The total amount of the asset being bought in all trades during the past 365 days.
 
 {% enddocs %}
 
-{% docs avg_yearly%}
+{% docs avg_price_yearly%}
 
 The total amount of the asset being bought in all trades divided by the total amount of the asset being sold in all trades, during the past 365 days.
 

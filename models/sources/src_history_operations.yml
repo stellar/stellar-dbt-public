@@ -6,24 +6,55 @@ sources:
     tables:
       - name: history_operations
         description: '{{ doc("history_operations") }}'
+        tests:
+          - elementary.freshness_anomalies:
+              timestamp_column: closed_at
+              backfill_days: 7
+              time_bucket: # time bucket for which to monitor freshness
+                period: hour # comparing for every hour
+                count: 12 # the time difference tolerance (less than 12 hours)
         columns:
           - name: id
             description: '{{ doc("operation_id") }}'
+            tests:
+              - unique:
+                  config:
+                    where: closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day) 
+                      and closed_at < timestamp_trunc(current_timestamp(), day)
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: source_account
             description: '{{ doc("source_account") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: source_account_muxed
             description: '{{ doc("source_account_muxed") }}'
             
           - name: transaction_id
             description: '{{ doc("op_transaction_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: type
             description: '{{ doc("type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: type_string
             description: '{{ doc("type_string") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: details
             description: '{{ doc("details") }}'
@@ -330,9 +361,24 @@ sources:
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: closed_at
+            description: '{{ doc("closed_at") }}'

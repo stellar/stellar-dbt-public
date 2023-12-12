@@ -9,6 +9,11 @@ The identifier for type of asset code, can be an alphanumeric with 4 characters,
 XLM is the native asset to the network. XLM has no asset code or issuer representation and will instead be displayed with an asset type of 'native'
 {% enddocs %}
 
+{% docs asset_id %}
+The Farm Hash encoding of Asset Code + Asset Issuer + Asset Type. This field is optimized for cross table joins since integer joins are less expensive than the original asset id components.
+
+{% enddocs %}
+
 {% docs asset_code %}
 The 4 or 12 character code representation of the asset on the network.
 

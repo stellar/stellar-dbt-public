@@ -3,34 +3,70 @@ version: 2
 models:
   - name: history_assets
     description: '{{ doc("history_assets_staging") }}'
+    tests:
+      - elementary.freshness_anomalies:
+          timestamp_column: batch_run_date
+          backfill_days: 7
+          time_bucket:
+            period: day 
+            count: 2
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - batch_run_date
+            - asset_type
+            - asset_code
+            - asset_issuer
+          config:
+            where: day_agg >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                    and day_agg < datetime_trunc(current_datetime(), day)
     columns:
       - name: asset_id
         description: '{{ doc("assets_id") }}'
         tests:
-          - not_null
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
         tests:
-          - not_null
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
           - accepted_values:
               values: ['credit_alphanum12', 'credit_alphanum4', 'native']
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
         tests:
-          - not_null
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
-          - not_null
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
