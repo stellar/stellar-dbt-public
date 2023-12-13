@@ -1,6 +1,10 @@
 {{ config(
     materialized='incremental',
-    unique_key=["day_agg"]
+    unique_key=["day_agg"],
+    partition_by={
+        "field": "day_agg"
+        , "data_type": "date"
+        , "granularity": "month"}
     ) 
 }}
 
