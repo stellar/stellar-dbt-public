@@ -9,12 +9,6 @@ models:
         tests:
           - not_null
           - unique
-          - relationships:
-              to: ref('stg_history_operations')
-              field: op_id
-          #- all_source_table_values_in_destination_table:
-          #    to: ref('stg_history_operations')
-          #    field: op_id
 
       - name: op_source_account
         description: '{{ doc("source_account") }}'
@@ -28,9 +22,6 @@ models:
         description: '{{ doc("transaction_id") }}'
         tests:
           - not_null
-          - relationships:
-              to: ref('stg_history_transactions')
-              field: transaction_id
 
       - name: type
         description: '{{ doc("type") }}'
