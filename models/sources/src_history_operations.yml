@@ -8,19 +8,31 @@ sources:
         description: '{{ doc("history_operations") }}'
         tests:
           - elementary.freshness_anomalies:
-              timestamp_column: closed_at
+              timestamp_column: batch_run_date
               backfill_days: 7
               time_bucket: # time bucket for which to monitor freshness
                 period: hour # comparing for every hour
                 count: 12 # the time difference tolerance (less than 12 hours)
+              meta:
+                description:
+                  "Monitors the freshness of your table over time, as the expected time between data updates."
+          - elementary.volume_anomalies:
+              timestamp_column: batch_run_date
+              backfill_days: 90
+              time_bucket:
+                period: day
+                count: 1
+              meta:
+                description:
+                  "Monitors the row count of your table over time."
         columns:
           - name: id
             description: '{{ doc("operation_id") }}'
             tests:
               - unique:
                   config:
-                    where: closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day) 
-                      and closed_at < timestamp_trunc(current_timestamp(), day)
+                    where: batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                            and batch_run_date < datetime_trunc(current_datetime(), day)
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day 

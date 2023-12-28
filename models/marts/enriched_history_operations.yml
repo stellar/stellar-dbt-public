@@ -10,6 +10,20 @@ models:
           time_bucket:
             period: hour
             count: 12
+          meta:
+            description:
+              "Monitors the freshness of your table over time, as the expected time between data updates."
+      - elementary.dimension_anomalies:
+          timestamp_column: closed_at
+          backfill_days: 90
+          dimensions:
+            - "type"
+          time_bucket:
+            period: day
+            count: 1
+          meta:
+            description:
+              "Monitors the frequency of values in the type column over time."
     columns:
       - name: op_id
         description: '{{ doc("operation_id") }}'
@@ -20,21 +34,14 @@ models:
                         and closed_at < timestamp_trunc(current_timestamp(), day)
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
-          - relationships:
-              to: ref('stg_history_operations')
-              field: op_id
-          #- all_source_table_values_in_destination_table:
-          #    to: ref('stg_history_operations')
-          #    field: op_id
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: op_source_account
         description: '{{ doc("source_account") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
-
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: op_source_account_muxed
         description: '{{ doc("source_account_muxed") }}'
@@ -44,24 +51,28 @@ models:
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
-          - relationships:
-              to: ref('stg_history_transactions')
-              field: transaction_id
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: type
         description: '{{ doc("type") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
+          - dbt_utils.expression_is_true:
+              expression: '<= 26'
+              config:
+                where: closed_at > current_timestamp - interval 90 day
+              meta:
+                description:
+                  "Test to check if the type of operation added is not greater than 26."
 
       - name: type_string
         description: '{{ doc("type_string") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: account
         description: '{{ doc("details_account") }}'
@@ -368,49 +379,49 @@ models:
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: account_sequence
         description: '{{ doc("account_sequence") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: max_fee
         description: '{{ doc("max_fee") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: txn_operation_count
         description: '{{ doc("transaction_operation_count") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: txn_created_at
         description: '{{ doc("created_at") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: memo_type
         description: '{{ doc("memo_type") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: memo
         description: '{{ doc("memo") }}'
@@ -423,14 +434,14 @@ models:
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: fee_charged
         description: '{{ doc("fee_charged") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: fee_account
         description: '{{ doc("fee_account") }}'
@@ -476,118 +487,121 @@ models:
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: previous_ledger_hash
         description: '{{ doc("previous_ledger_hash") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: transaction_count
         description: '{{ doc("transaction_count") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: ledger_operation_count
         description: '{{ doc("operation_count") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: ledger_id
         description: '{{ doc("ledger_id") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: total_coins
         description: '{{ doc("total_coins") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: fee_pool
         description: '{{ doc("fee_pool") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: base_fee
         description: '{{ doc("base_fee") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: base_reserve
         description: '{{ doc("base_reserve") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: max_tx_set_size
         description: '{{ doc("max_tx_set_size") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: protocol_version
         description: '{{ doc("protocol_version") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
           - dbt_utils.expression_is_true:
               expression: '<= 19'
+              meta:
+                description:
+                  "Test to check if the protocol version is not greater than 19."
 
-      - name: succesful_transaction_count
+      - name: successful_transaction_count
         description: '{{ doc("successful_transaction_count") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: failed_transaction_count
         description: '{{ doc("failed_transaction_count") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: closed_at > current_timestamp - interval 2 day

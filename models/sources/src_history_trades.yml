@@ -13,34 +13,49 @@ sources:
               time_bucket:
                 period: hour
                 count: 12
+              meta:
+                description:
+                  "Monitors the freshness of your table over time, as the expected time between data updates."
+          - elementary.volume_anomalies:
+              timestamp_column: ledger_closed_at
+              backfill_days: 90
+              time_bucket:
+                period: day
+                count: 1
+              meta:
+                description:
+                  "Monitors the row count of your table over time."
           - dbt_utils.unique_combination_of_columns:
               combination_of_columns:
                 - history_operation_id
                 - "`order`"
               config:
-                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
-                          and batch_run_date < datetime_trunc(current_datetime(), day)
+                where:  ledger_closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day) 
+                          and ledger_closed_at < timestamp_trunc(current_timestamp(), day)
+              meta:
+                description:
+                  "Tests the uniqueness combination of: history_operation_id and order."
         columns:
           - name: history_operation_id
             description: '{{ doc("history_operation_id") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: "`order`"
             description: '{{ doc("order") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: ledger_closed_at
             description: '{{ doc("ledger_closed_at") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_account_address
             description: '{{ doc("selling_account_address") }}'
@@ -59,7 +74,7 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_amount
             description: '{{ doc("trade_selling_amount") }}'
@@ -81,7 +96,7 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: buying_amount
             description: '{{ doc("trade_buying_amount") }}'
@@ -91,14 +106,14 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: price_d
             description: '{{ doc("trade_price_d") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_offer_id
             description: '{{ doc("selling_offer_id") }}'
@@ -126,18 +141,18 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: ledger_closed_at > current_timestamp - interval 2 day
