@@ -1,5 +1,7 @@
 {{ config(
     tags = ["partnership_assets", "asset_stats"],
+    database='{{ var("public_source_db") }}',
+    schema='{{ var("public_source_schema") }}',
     materialized='incremental',
     unique_key=["op_id"],
     partition_by={

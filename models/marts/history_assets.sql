@@ -1,5 +1,7 @@
 {{ config(
-    materialized='incremental'
+    database='{{ var("public_source_db") }}'
+    , schema='{{ var("public_source_schema") }}'
+    , materialized='incremental'
     , unique_key=["asset_id"]
     , cluster_by= ["asset_id"]
     )
