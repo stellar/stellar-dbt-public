@@ -4,12 +4,10 @@ models:
   - name: history_assets
     description: '{{ doc("history_assets_staging") }}'
     tests:
-      - elementary.freshness_anomalies:
-          timestamp_column: batch_run_date
-          backfill_days: 7
-          time_bucket:
-            period: day 
-            count: 2
+      - dbt_utils.recency:
+          datepart: day
+          field: batch_run_date
+          interval: 2
           meta:
             description:
               "Monitors the freshness of your table over time, as the expected time between data updates."
@@ -39,14 +37,16 @@ models:
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: asset_type != 'native'
+                        and batch_run_date > current_datetime - interval 2 day
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
           - not_null:
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: asset_type != 'native'
+                        and batch_run_date > current_datetime - interval 2 day
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'

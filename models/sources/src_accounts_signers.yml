@@ -6,16 +6,15 @@ sources:
     tables:
       - name: account_signers
         description: '{{ doc("accounts_signers") }}'
+        freshness:
+          warn_after:
+            count: 12
+            period: hour
+          error_after:
+            count: 24
+            period: hour
+        loaded_at_field: batch_run_date 
         tests:
-          - elementary.freshness_anomalies:
-              timestamp_column: batch_run_date
-              backfill_days: 7
-              time_bucket:
-                period: hour
-                count: 12
-              meta:
-                description:
-                  "Monitors the freshness of your table over time, as the expected time between data updates."
           - elementary.volume_anomalies:
               timestamp_column: batch_run_date
               backfill_days: 90
