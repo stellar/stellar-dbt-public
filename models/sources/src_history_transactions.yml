@@ -6,15 +6,16 @@ sources:
     tables:
       - name: history_transactions
         description: '{{ doc("history_transactions") }}'
-        freshness:
-          warn_after:
-            count: 12
-            period: hour
-          error_after:
-            count: 24
-            period: hour
-        loaded_at_field: batch_run_date
         tests:
+          - dbt_utils.recency:
+              datepart: hour
+              field: batch_run_date
+              interval: 12
+              config:
+                severity: warn
+              meta:
+                description:
+                  "Monitors the freshness of your table over time, as the expected time between data updates."
           - elementary.volume_anomalies:
               timestamp_column: batch_run_date
               backfill_days: 90
