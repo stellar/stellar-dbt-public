@@ -6,60 +6,180 @@ sources:
     tables:
       - name: liquidity_pools
         description: '{{ doc("liquidity_pools") }}'
+        tests:
+          - dbt_utils.recency:
+              datepart: hour
+              field: batch_run_date
+              interval: 12
+              config:
+                severity: warn
+              meta:
+                description:
+                  "Monitors the freshness of your table over time, as the expected time between data updates."
+          - elementary.volume_anomalies:
+              timestamp_column: batch_run_date
+              backfill_days: 90
+              time_bucket:
+                period: day
+                count: 1
+              meta:
+                description:
+                  "Monitors the row count of your table over time."
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - liquidity_pool_id
+                - ledger_entry_change
+                - last_modified_ledger
+              config:
+                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                          and batch_run_date < datetime_trunc(current_datetime(), day)
+              meta:
+                description:
+                  "Tests the uniqueness combination of: liquidity_pool_id, ledger_entry_change and last_modified_ledger."
         columns:
           - name: liquidity_pool_id
             description: '{{ doc("liquidity_pool_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: type
             description: '{{ doc("pool_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: fee
             description: '{{ doc("fee") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: trustline_count
             description: '{{ doc("trustline_count") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: pool_share_count
             description: '{{ doc("pool_share_count") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
+          - name: asset_a_id
+            description: '{{ doc("asset_a_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+          
           - name: asset_a_type
             description: '{{ doc("asset_a_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: asset_a_code
             description: '{{ doc("asset_a_code") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: asset_a_issuer
             description: '{{ doc("asset_a_issuer") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: asset_a_amount
             description: '{{ doc("asset_a_amount") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
+          - name: asset_b_id
+            description: '{{ doc("asset_b_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: asset_b_type
             description: '{{ doc("asset_a_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: asset_b_code
             description: '{{ doc("asset_a_code") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: asset_b_issuer
             description: '{{ doc("asset_a_issuer") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: asset_b_amount
             description: '{{ doc("asset_a_amount") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: deleted
             description: '{{ doc("deleted") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day

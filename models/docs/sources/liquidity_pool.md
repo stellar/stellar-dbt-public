@@ -62,18 +62,9 @@ The total number of pool shares is calculated by a constant product formula and 
 Shares are not transferable; the only way to increase the number of pool shares held is to deposit into a liquidity pool. Conversely, decreasing pools shares can only be accomplished through a withdraw operation. Shares cannot be sent in payments or sold using offers.
 {% enddocs %}
 
-{% docs asset_a_type %}
-The identifier for type of asset code, can be a alphanumeric with 4 characters, 12 characters or the native asset to the network, XLM.
+{% docs asset_a_id %}
+The Farm Hash encoding of the Asset Code + Asset Issuer and Asset Type for one of the asset pairs in a liquidity pool. 
 
-- Required Field
-{% enddocs %}
-
-{% docs asset_a_code %}
-The 4 or 12 character code representation of the asset of one of the two asset pairs in a liquidity pool
-{% enddocs %}
-
-{% docs asset_a_issuer%}
-The account address of the original asset issuer that created one of the two asset pairs in the liquidity pool
 {% enddocs %}
 
 {% docs asset_a_amount %}
@@ -82,18 +73,9 @@ The raw number of tokens locked in the pool for one of the two asset pairs in th
 - Required Field
 {% enddocs %}
 
-{% docs asset_b_type %}
-The identifier for type of asset code, can be a alphanumeric with 4 characters, 12 characters or the native asset to the network, XLM.
+{% docs asset_b_id %}
+The Farm Hash encoding of the Asset Code + Asset Issuer and Asset Type for the corresponding asset in the liquidity pool.
 
-- Required Field
-{% enddocs %}
-
-{% docs asset_b_code %}
-The 4 or 12 character code representation of the asset of one of the two asset pairs in a liquidity pool
-{% enddocs %}
-
-{% docs asset_b_issuer %}
-The account address of the original asset issuer that created one of the two asset pairs in the liquidity pool
 {% enddocs %}
 
 {% docs asset_b_amount %}

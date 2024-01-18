@@ -3,104 +3,248 @@ version: 2
 models:
   - name: fee_stats_agg
     description: '{{ doc("fee_stats") }}'
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: day_agg
+          interval: 2
+          config:
+                severity: warn
+          meta:
+            description:
+              "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: day_agg
         description: '{{ doc("fee_day_agg") }}'
         tests:
-          - not_null
+          - unique:
+              config:
+                where: day_agg >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                        and day_agg < datetime_trunc(current_datetime(), day)
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p10
         description: '{{ doc("fee_charged_p10") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p20
         description: '{{ doc("fee_charged_p20") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p30
         description: '{{ doc("fee_charged_p30") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p40
         description: '{{ doc("fee_charged_p40") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p50
         description: '{{ doc("fee_charged_p50") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p60
         description: '{{ doc("fee_charged_p60") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p70
         description: '{{ doc("fee_charged_p70") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p80
         description: '{{ doc("fee_charged_p80") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p90
         description: '{{ doc("fee_charged_p90") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p95
         description: '{{ doc("fee_charged_p95") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_p99
         description: '{{ doc("fee_charged_p99") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_max
         description: '{{ doc("fee_charged_max") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_min
         description: '{{ doc("fee_charged_min") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: fee_charged_mode
         description: '{{ doc("fee_charged_mode") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p10
         description: '{{ doc("max_fee_p10") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p20
         description: '{{ doc("max_fee_p20") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p30
         description: '{{ doc("max_fee_p30") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p40
         description: '{{ doc("max_fee_p40") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p50
         description: '{{ doc("max_fee_p50") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p60
         description: '{{ doc("max_fee_p60") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p70
         description: '{{ doc("max_fee_p70") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p80
         description: '{{ doc("max_fee_p80") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p90
         description: '{{ doc("max_fee_p90") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p95
         description: '{{ doc("max_fee_p95") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_p99
         description: '{{ doc("max_fee_p99") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_max
         description: '{{ doc("max_fee_max") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_min
         description: '{{ doc("max_fee_min") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_fee_mode
         description: '{{ doc("max_fee_mode") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: min_ledger_sequence
         description: '{{ doc("min_ledger_sequence") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: max_ledger_sequence
         description: '{{ doc("max_ledger_sequence") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: total_ledgers
         description: '{{ doc("total_ledgers") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
 
       - name: surge_price_pct
         description: '{{ doc("surge_price_pct") }}'
+        tests:
+          - not_null:
+              config:
+                where: day_agg > current_datetime - interval 2 day
