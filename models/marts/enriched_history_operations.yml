@@ -566,10 +566,10 @@ models:
               config:
                 where: closed_at > current_timestamp - interval 2 day
           - dbt_utils.expression_is_true:
-              expression: '<= 19'
+              expression: '<= 20'
               meta:
                 description:
-                  "Test to check if the protocol version is not greater than 19."
+                  "Test to check for the correct protocol. Will update after P20 vote."
 
       - name: successful_transaction_count
         description: '{{ doc("successful_transaction_count") }}'
