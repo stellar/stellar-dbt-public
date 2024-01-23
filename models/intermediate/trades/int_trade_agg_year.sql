@@ -145,7 +145,13 @@ with
         where cast(ledger_closed_at as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 365 day)
         group by
             asset_a
+            , asset_a_code
+            , asset_a_issuer
+            , asset_a_type
             , asset_b
+            , asset_b_code
+            , asset_b_issuer
+            , asset_b_type
     )
 
     /* obtain window function metrics for the asset pair */
