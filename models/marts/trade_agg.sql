@@ -101,19 +101,19 @@ with
         from trade_yearly as join_table_yearly
         left join
             trade_weekly as join_table_weekly
-            on join_table_daily.day_agg = join_table_weekly.day_agg
-            and join_table_daily.asset_a = join_table_weekly.asset_a
-            and join_table_daily.asset_b = join_table_weekly.asset_b
+            on join_table_yearly.day_agg = join_table_weekly.day_agg
+            and join_table_yearly.asset_a = join_table_weekly.asset_a
+            and join_table_yearly.asset_b = join_table_weekly.asset_b
         left join
             trade_monthly as join_table_monthly
-            on join_table_daily.day_agg = join_table_monthly.day_agg
-            and join_table_daily.asset_a = join_table_monthly.asset_a
-            and join_table_daily.asset_b = join_table_monthly.asset_b
+            on join_table_yearly.day_agg = join_table_monthly.day_agg
+            and join_table_yearly.asset_a = join_table_monthly.asset_a
+            and join_table_yearly.asset_b = join_table_monthly.asset_b
         left join
             trade_daily as join_table_daily
-            on join_table_daily.day_agg = join_table_yearly.day_agg
-            and join_table_daily.asset_a = join_table_yearly.asset_a
-            and join_table_daily.asset_b = join_table_yearly.asset_b
+            on join_table_yearly.day_agg = join_table_daily.day_agg
+            and join_table_yearly.asset_a = join_table_daily.asset_a
+            and join_table_yearly.asset_b = join_table_daily.asset_b
     )
 
 select *
