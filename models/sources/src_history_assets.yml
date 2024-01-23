@@ -4,8 +4,8 @@ sources:
   - name: crypto_stellar
     database: 'crypto-stellar'
     tables:
-      - name: history_assets_staging
-        description: '{{ doc("history_assets_staging") }}'
+      - name: history_assets
+        description: '{{ doc("history_assets") }}'
         columns:
           - name: assets_id
             description: '{{ doc("asset_type") }}'

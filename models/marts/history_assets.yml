@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: history_assets
-    description: '{{ doc("history_assets_staging") }}'
+    description: '{{ doc("history_assets") }}'
     tests:
       - dbt_utils.recency:
           datepart: day
