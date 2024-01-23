@@ -16,7 +16,13 @@ with
             ledger_closed_at
             , cast(ledger_closed_at as date) as day_agg
             , selling_asset_id
+            , selling_asset_code
+            , selling_asset_issuer
+            , selling_asset_type
             , buying_asset_id
+            , buying_asset_code
+            , buying_asset_issuer
+            , buying_asset_type
             , concat(history_operation_id, `order`) as trade_key
             , price_n
             , price_d
@@ -36,7 +42,13 @@ with
             day_agg
             , ledger_closed_at
             , selling_asset_id as asset_a
+            , selling_asset_code as asset_a_code
+            , selling_asset_issuer as asset_a_issuer
+            , selling_asset_type as asset_a_type
             , buying_asset_id as asset_b
+            , buying_asset_code as asset_b_code
+            , buying_asset_issuer as asset_b_issuer
+            , buying_asset_type as asset_b_type
             , trade_key
             , price_n
             , price_d
@@ -48,7 +60,13 @@ with
             day_agg
             , ledger_closed_at
             , selling_asset_id as asset_b
+            , selling_asset_code as asset_b_code
+            , selling_asset_issuer as asset_b_issuer
+            , selling_asset_type as asset_b_type
             , buying_asset_id as asset_a
+            , buying_asset_code as asset_a_code
+            , buying_asset_issuer as asset_a_issuer
+            , buying_asset_type as asset_a_type
             , trade_key
             , price_n
             , price_d
@@ -63,7 +81,13 @@ with
             day_agg
             , ledger_closed_at
             , asset_a
+            , asset_a_code
+            , asset_a_issuer
+            , asset_a_type
             , asset_b
+            , asset_b_code
+            , asset_b_issuer
+            , asset_b_type
             , trade_key
             , price_n
             , price_d
@@ -83,7 +107,13 @@ with
             day_agg
             , ledger_closed_at
             , asset_a
+            , asset_a_code
+            , asset_a_issuer
+            , asset_a_type
             , asset_b
+            , asset_b_code
+            , asset_b_issuer
+            , asset_b_type
             , trade_key
             , price_n
             , price_d
@@ -98,7 +128,13 @@ with
         select
             date('{{ dbt_airflow_macros.ds() }}') as day_agg
             , asset_a
+            , asset_a_code
+            , asset_a_issuer
+            , asset_a_type
             , asset_b
+            , asset_b_code
+            , asset_b_issuer
+            , asset_b_type
             , count(trade_key) as trade_count_yearly
             , sum(asset_a_amount) as asset_a_volume_yearly
             , sum(asset_b_amount) as asset_b_volume_yearly
@@ -117,7 +153,13 @@ with
         select
             day_agg
             , asset_a
+            , asset_a_code
+            , asset_a_issuer
+            , asset_a_type
             , asset_b
+            , asset_b_code
+            , asset_b_issuer
+            , asset_b_type
             , ledger_closed_at
             , first_value(price_n) over (
                 partition by
@@ -163,7 +205,13 @@ with
         select
             trade_day_agg_group.day_agg
             , trade_day_agg_group.asset_a
+            , trade_day_agg_group.asset_a_code
+            , trade_day_agg_group.asset_a_issuer
+            , trade_day_agg_group.asset_a_type
             , trade_day_agg_group.asset_b
+            , trade_day_agg_group.asset_b_code
+            , trade_day_agg_group.asset_b_issuer
+            , trade_day_agg_group.asset_b_type
             , trade_day_agg_group.trade_count_yearly
             , trade_day_agg_group.asset_a_volume_yearly
             , trade_day_agg_group.asset_b_volume_yearly
