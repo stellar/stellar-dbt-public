@@ -7,7 +7,7 @@ with
             , row_number() over (
                 partition by asset_id order by batch_run_date asc
             ) as dedup_oldest_asset
-        from {{ source('crypto_stellar', 'history_assets')}}
+        from {{ source('crypto_stellar', 'history_assets_staging')}}
     )
 
     /* Deduplicates the new batch assets, guaranteeing they are unique within the batch */
