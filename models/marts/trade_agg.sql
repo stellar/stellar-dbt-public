@@ -1,6 +1,7 @@
 {{ config(
-    materialized='incremental',
-    partition_by={
+    tags = ["trade_agg"],
+    materialized = 'incremental',
+    partition_by = {
         "field": "day_agg"
         , "data_type": "date"
         , "granularity": "month"}

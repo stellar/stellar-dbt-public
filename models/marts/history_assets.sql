@@ -1,5 +1,6 @@
 {{ config(
-    materialized='incremental'
+    tags = ["history_assets", "trade_agg"]
+    , materialized='incremental'
     , unique_key=["asset_id"]
     , cluster_by= ["asset_id"]
     )
