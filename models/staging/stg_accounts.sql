@@ -1,8 +1,3 @@
-{{ config(
-    tags = ["current_state"]
-    )
-}}
-
 with
     raw_table as (
         select *

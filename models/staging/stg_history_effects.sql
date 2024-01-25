@@ -1,8 +1,3 @@
-{{ config(
-    tags = ["history_effects"]
-    )
-}}
-
 with
     raw_table as (
         select *

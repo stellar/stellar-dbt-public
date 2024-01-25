@@ -1,8 +1,3 @@
-{{ config(
-    tags = ["trade_agg"]
-    )
-}}
-
 with
     raw_table as (
         select *

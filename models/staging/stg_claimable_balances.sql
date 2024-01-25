@@ -1,8 +1,3 @@
-{{ config(
-    tags = ["claimable_balances"]
-    )
-}}
-
 with
     raw_table as (
         select *
