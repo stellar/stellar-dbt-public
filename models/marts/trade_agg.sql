@@ -43,6 +43,11 @@ with
         {% endif %}
     )
 
+    , history_assets as (
+        select *
+        from {{ ref('history_assets') }}
+    )
+
     , join_trades as (
         select
             join_table_yearly.day_agg
