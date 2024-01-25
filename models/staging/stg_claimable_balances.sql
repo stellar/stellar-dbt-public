@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["claimable_balances"]
+    tags = ["enriched_history_operations"]
     )
 }}
 

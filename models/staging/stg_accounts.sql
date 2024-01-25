@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["current_state", "mgi", "enriched_history_operations"]
+    tags = ["enriched_history_operations"]
     )
 }}
 

@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["trade_agg", "liquidity_pool_trade_volume"]
+    tags = ["enriched_history_operations"]
     )
 }}
 

@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["history_assets"]
+    tags = ["enriched_history_operations"]
     )
 }}
 

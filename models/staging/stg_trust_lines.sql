@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["current_state", "mgi", "partnership_assets"]
+    tags = ["enriched_history_operations"]
     )
 }}
 
