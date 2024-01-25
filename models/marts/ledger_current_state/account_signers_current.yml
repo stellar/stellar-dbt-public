@@ -1,0 +1,121 @@
+version: 2
+
+models:
+  - name: account_signers_current
+    description: '{{ doc("account_signers_current") }}'
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: cast(closed_at as datetime)
+          interval: 12
+          config:
+            severity: warn
+          meta:
+            description:
+              "Monitors the freshness of your table over time, as the expected time between data updates."
+      - elementary.volume_anomalies:
+          timestamp_column: closed_at
+          backfill_days: 90
+          time_bucket:
+            period: day
+            count: 1
+          meta:
+            description:
+              "Monitors the row count of your table over time."
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - account_id
+            - signer
+            - ledger_entry_change
+            - last_modified_ledger
+          config:
+            where: closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day) 
+                    and closed_at < timestamp_trunc(current_timestamp(), day)
+          meta:
+            description:
+              "Tests the uniqueness combination of: account_id, signer, ledger_entry_change and last_modified_ledger."
+    columns:
+      - name: account_id
+        description: '{{ doc("account_id") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: signer
+        description: '{{ doc("signer") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: weight
+        description: '{{ doc("weight") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: sponsor
+        description: '{{ doc("sponsor") }}'
+
+      - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+          - accepted_values:
+              values: [0, 1, 2]
+              quote: false
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: deleted
+        description: '{{ doc("deleted") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+          - accepted_values:
+              values: ["true", "false"]
+              quote: false
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: upstream_insert_ts
+        description: '{{ doc("upstream_insert_ts") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day  
+
+      - name: unique_id
+        description: '{{ doc("unique_id") }}'
+        tests:
+          - not_null
+          - unique
