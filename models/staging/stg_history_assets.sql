@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["history_assets", "trade_agg"]
+    tags = ["history_assets"]
     )
 }}
 

@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["current_state"]
+    tags = ["current_state", "liquidity_pool_trade_volume", "liquidity_providers"]
     )
 }}
 

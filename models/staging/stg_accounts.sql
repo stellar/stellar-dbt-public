@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["current_state"]
+    tags = ["current_state", "mgi"]
     )
 }}
 

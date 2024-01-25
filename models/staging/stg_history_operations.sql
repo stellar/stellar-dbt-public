@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["enriched_history_operations"]
+    tags = ["enriched_history_operations", "partnership_assets", "liquidity_providers"]
     )
 }}
 

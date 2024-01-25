@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["trade_agg"]
+    tags = ["trade_agg", "liquidity_pool_trade_volume"]
     )
 }}
 
