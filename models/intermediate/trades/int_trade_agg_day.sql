@@ -1,5 +1,6 @@
 {{ config(
-    cluster_by =["asset_a", "asset_b"]
+    tags = ["trade_agg"]
+    , cluster_by =["asset_a", "asset_b"]
     )
 }}
 

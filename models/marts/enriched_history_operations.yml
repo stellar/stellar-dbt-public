@@ -13,17 +13,6 @@ models:
           meta:
             description:
               "Monitors the freshness of your table over time, as the expected time between data updates."
-      - elementary.dimension_anomalies:
-          timestamp_column: closed_at
-          backfill_days: 90
-          dimensions:
-            - "type"
-          time_bucket:
-            period: day
-            count: 1
-          meta:
-            description:
-              "Monitors the frequency of values in the type column over time."
     columns:
       - name: op_id
         description: '{{ doc("operation_id") }}'

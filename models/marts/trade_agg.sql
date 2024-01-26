@@ -1,6 +1,7 @@
 {{ config(
-    materialized='incremental',
-    partition_by={
+    tags = ["trade_agg"],
+    materialized = 'incremental',
+    partition_by = {
         "field": "day_agg"
         , "data_type": "date"
         , "granularity": "month"}
@@ -40,11 +41,6 @@ with
         {% if is_incremental() %}
             where day_agg = date('{{ dbt_airflow_macros.ds() }}')
         {% endif %}
-    )
-
-    , history_assets as (
-        select *
-        from {{ ref('history_assets') }}
     )
 
     , join_trades as (

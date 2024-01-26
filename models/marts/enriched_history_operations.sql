@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["partnership_assets", "asset_stats"],
+    tags = ["enriched_history_operations"],
     materialized='incremental',
     unique_key=["op_id"],
     partition_by={
