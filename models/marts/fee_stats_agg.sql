@@ -1,5 +1,5 @@
 {{ config(
-    tags=["fee_stats_agg"],
+    tags=["fee_stats"],
     materialized='incremental',
     unique_key=["day_agg"],
     partition_by={
