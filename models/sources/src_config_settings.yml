@@ -1,0 +1,204 @@
+version: 2
+
+sources:
+  - name: crypto_stellar
+    database: 'crypto-stellar'
+    tables:
+      - name: config_settings
+        description: '{{ doc("config_settings") }}'
+        tests:
+          - dbt_utils.recency:
+              datepart: hour
+              field: batch_run_date
+              interval: 12
+              config:
+                severity: warn
+              meta:
+                description:
+                  "Monitors the freshness of your table over time, as the expected time between data updates."a
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - config_setting_id
+                - last_modified_ledger
+                - ledger_entry_change
+              config:
+                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                          and batch_run_date < datetime_trunc(current_datetime(), day)
+              meta:
+                description:
+                  "Tests the uniqueness combination of: config_setting_id, last_modified_ledger, and ledger_entry_change."
+        columns:
+          - name: config_setting_id
+            description: '{{ doc("config_setting_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: contract_max_size_bytes
+            description: '{{ doc("contract_max_size_bytes") }}'
+
+          - name: ledger_max_instructions
+            description: '{{ doc("ledger_max_instructions") }}'
+
+          - name: tx_max_instructions
+            description: '{{ doc("tx_max_instructions") }}'
+
+          - name: fee_rate_per_instructions_increment
+            description: '{{ doc("fee_rate_per_instructions_increment") }}'
+
+          - name: tx_memory_limit
+            description: '{{ doc("tx_memory_limit") }}'
+
+          - name: ledger_max_read_ledger_entries
+            description: '{{ doc("ledger_max_read_ledger_entries") }}'
+
+          - name: ledger_max_read_bytes
+            description: '{{ doc("ledger_max_read_bytes") }}'
+
+          - name: ledger_max_write_ledger_entries
+            description: '{{ doc("ledger_max_write_ledger_entries") }}'
+
+          - name: ledger_max_write_bytes
+            description: '{{ doc("ledger_max_write_bytes") }}'
+
+          - name: tx_max_read_ledger_entries
+            description: '{{ doc("tx_max_read_ledger_entries") }}'
+
+          - name: tx_max_read_bytes
+            description: '{{ doc("tx_max_read_bytes") }}'
+
+          - name: tx_max_write_ledger_entries
+            description: '{{ doc("tx_max_write_ledger_entries") }}'
+
+          - name: tx_max_write_bytes
+            description: '{{ doc("tx_max_write_bytes") }}'
+
+          - name: fee_read_ledger_entry
+            description: '{{ doc("fee_read_ledger_entry") }}'
+
+          - name: fee_write_ledger_entry
+            description: '{{ doc("fee_write_ledger_entry") }}'
+
+          - name: fee_read_1kb
+            description: '{{ doc("fee_read_1kb") }}'
+
+          - name: bucket_list_target_size_bytes
+            description: '{{ doc("bucket_list_target_size_bytes") }}'
+
+          - name: write_fee_1kb_bucket_list_low
+            description: '{{ doc("write_fee_1kb_bucket_list_low") }}'
+
+          - name: write_fee_1kb_bucket_list_high
+            description: '{{ doc("write_fee_1kb_bucket_list_high") }}'
+
+          - name: bucket_list_write_fee_growth_factor
+            description: '{{ doc("bucket_list_write_fee_growth_factor") }}'
+
+          - name: fee_historical_1kb
+            description: '{{ doc("fee_historical_1kb") }}'
+
+          - name: tx_max_contract_events_size_bytes
+            description: '{{ doc("tx_max_contract_events_size_bytes") }}'
+
+          - name: fee_contract_events_1kb
+            description: '{{ doc("fee_contract_events_1kb") }}'
+
+          - name: ledger_max_txs_size_bytes
+            description: '{{ doc("ledger_max_txs_size_bytes") }}'
+
+          - name: tx_max_size_bytes
+            description: '{{ doc("tx_max_size_bytes") }}'
+
+          - name: fee_tx_size_1kb
+            description: '{{ doc("fee_tx_size_1kb") }}'
+
+          - name: contract_cost_params_cpu_insns
+            description: '{{ doc("contract_cost_params_cpu_insns") }}'
+
+          - name: contract_cost_params_mem_bytes
+            description: '{{ doc("contract_cost_params_mem_bytes") }}'
+
+          - name: contract_data_key_size_bytes
+            description: '{{ doc("contract_data_key_size_bytes") }}'
+
+          - name: contract_data_entry_size_bytes
+            description: '{{ doc("contract_data_entry_size_bytes") }}'
+
+          - name: max_entry_ttl
+            description: '{{ doc("max_entry_ttl") }}'
+
+          - name: min_temp_entry_ttl
+            description: '{{ doc("min_temp_entry_ttl") }}'
+
+          - name: min_persistent_entry_ttl
+            description: '{{ doc("min_persistent_entry_ttl") }}'
+
+          - name: auto_bump_ledgers
+            description: '{{ doc("auto_bump_ledgers") }}'
+
+          - name: persistent_rent_rate_denominator
+            description: '{{ doc("persistent_rent_rate_denominator") }}'
+
+          - name: temp_rent_rate_denominator
+            description: '{{ doc("temp_rent_rate_denominator") }}'
+
+          - name: max_entries_to_ttl
+            description: '{{ doc("max_entries_to_ttl") }}'
+
+          - name: bucket_list_size_window_sample_size
+            description: '{{ doc("bucket_list_size_window_sample_size") }}'
+
+          - name: eviction_scan_size
+            description: '{{ doc("eviction_scan_size") }}'
+
+          - name: starting_eviction_scan_level
+            description: '{{ doc("starting_eviction_scan_level") }}'
+
+          - name: ledger_max_tx_count
+            description: '{{ doc("ledger_max_tx_count") }}'
+
+          - name: bucket_list_size_window
+            description: '{{ doc("bucket_list_size_window") }}'
+
+          - name: last_modified_ledger
+            description: '{{ doc("last_modified_ledger") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: ledger_entry_change
+            description: '{{ doc("ledger_entry_change") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: deleted
+            description: '{{ doc("deleted") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 

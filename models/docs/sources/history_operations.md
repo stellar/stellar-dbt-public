@@ -306,7 +306,7 @@ The name of the data entry which is no longer sponsored
 {% enddocs %}
 
 {% docs details_from %}
-The account address from which the payment originates (the sender account)
+The account address from which the payment/contract originates (the sender account)
 
 ### Only exists for the following operations:
 
@@ -316,6 +316,7 @@ The account address from which the payment originates (the sender account)
 | 2        | Path Payment Strict Receive|
 | 13       | Path Payment Strict Send   |
 | 19       | Clawback                   |
+| 24       | Invoke Host Function       |
 {% enddocs %}
 
 {% docs details_from_muxed %}
@@ -1248,4 +1249,100 @@ The number of shares withdrawn from the pool. It is not possible to withdraw onl
 | Type     | Operation                  |
 |----------|----------------------------|
 | 23       | Liquidity Pool Withdraw    |
+{% enddocs %}
+
+{% docs details_function %}
+Soroban field - invoke_host_function function type
+
+| Type                                               |
+|----------------------------------------------------|
+| HostFunctionTypeHostFunctionTypeInvokeContract     |
+| HostFunctionTypeHostFunctionTypeCreateContract     |
+| HostFunctionTypeHostFunctionTypeUploadContractWasm |
+
+### Only exists for the following operations:
+
+| Type     | Operation                  |
+|----------|----------------------------|
+| 24       | Invoke Host Function       |
+{% enddocs %}
+
+{% docs from_address %}
+Soroban field - address used to create the Soroban contract
+
+### Only exists for the following operations:
+
+| Type     | Operation                  |
+|----------|----------------------------|
+| 24       | Invoke Host Function       |
+{% enddocs %}
+
+{% docs from_asset %}
+Soroban field - asset used to create the Soroban contract
+
+*Note:* Only applies to Stellar Asset Contracts
+
+### Only exists for the following operations:
+
+| Type     | Operation                  |
+|----------|----------------------------|
+| 24       | Invoke Host Function       |
+{% enddocs %}
+
+{% docs details_extend_to %}
+Soroban field - ledger extended to
+
+### Only exists for the following operations:
+
+| Type     | Operation                  |
+|----------|----------------------------|
+| 25       | Extend Footprint Ttl       |
+{% enddocs %}
+
+{% docs details_asset_balance_changes %}
+Soroban field - asset balance changes from invoke host function
+
+### Only exists for the following operations:
+
+| Type     | Operation                  |
+|----------|----------------------------|
+| 24       | Invoke Host Function       |
+{% enddocs %}
+
+{% docs details_parameters %}
+Soroban field - parameters from contract function call
+
+### Only exists for the following operations:
+
+| Type     | Operation                  |
+|----------|----------------------------|
+| 24       | Invoke Host Function       |
+{% enddocs %}
+
+{% docs details_type %}
+Soroban field - type of soroban operation
+
+| Type                      |
+|---------------------------|
+| invoke_contract           |
+| create_contract           |
+| upload_wasm               |
+| extend_footprint_ttl      |
+| restore_footprint         |
+
+### Only exists for the following operations:
+
+| Type     | Operation                  |
+|----------|----------------------------|
+| 24       | Invoke Host Function       |
+{% enddocs %}
+
+{% docs details_soroban_operation_type %}
+Soroban field - soroban invoke function (invoke contract, create contract, upload wasm)
+
+### Only exists for the following operations:
+
+| Type     | Operation                  |
+|----------|----------------------------|
+| 24       | Invoke Host Function       |
 {% enddocs %}

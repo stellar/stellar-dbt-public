@@ -205,3 +205,15 @@ sources:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
+
+          - name: refundable_fee
+            description: '{{ doc("refundable_fee") }}'
+
+          - name: soroban_resources_instructions
+            description: '{{ doc("soroban_resources_instructions") }}'
+
+          - name: soroban_resources_read_bytes
+            description: '{{ doc("soroban_resources_read_bytes") }}'
+
+          - name: soroban_resources_write_bytes
+            description: '{{ doc("soroban_resources_read_bytes") }}'

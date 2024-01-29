@@ -117,10 +117,19 @@ with
             , details.reserve_b_min_amount
             , details.reserve_b_withdraw_amount
             , details.shares
+            , asset_balance_changes
+            , parameters
+            , `function`
+            , address
+            , type as soroban_operation_type
+            , extend_to
+            , contract_id
+            , contract_code_hash
             , closed_at
             , batch_id
             , batch_run_date
             , batch_insert_ts
+
         from raw_table
     )
 

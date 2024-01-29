@@ -77,3 +77,20 @@ The address of the account. The address is the account's public key encoded in b
 {% docs address_muxed %}
 Muxed accounts are embedded into the protocol for convenience and standardization. They distinguish individual accounts that all exist under a single, traditional Stellar account. They combine the familiar GABC… address with a 64-bit integer ID. More info can be found on [Stellar Docs](https://developers.stellar.org/docs/encyclopedia/pooled-accounts-muxed-accounts-memos#muxed-accounts)
 {% enddocs %}
+
+{% docs ledger_closed_at %}
+The timestamp in UTC when the ledger with this trade was closed.
+{% enddocs %}
+
+{% docs contract_id %}
+Soroban contract id
+{% enddocs %}
+
+{% docs contract_code_hash %}
+Soroban contract code hash
+{% enddocs %}
+
+{% docs ledger_key_hash %}
+Hash of the ledgerKey which is a subset of the ledgerEntry. The subset of ledgerEntry fields depends on ledgerEntryType.
+{% enddocs %}
+

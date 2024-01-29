@@ -68,6 +68,10 @@ with
             , batch_id
             , batch_run_date
             , batch_insert_ts
+            , refundable_fee
+            , soroban_resources_instructions
+            , soroban_resources_read_bytes
+            , soroban_resources_write_bytes
         from {{ ref('stg_history_transactions') }}
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
@@ -188,6 +192,14 @@ with
             , batch_id
             , batch_run_date
             , batch_insert_ts
+            , asset_balance_changes
+            , parameters
+            , `function`
+            , address
+            , soroban_operation_type
+            , extend_to
+            , contract_id
+            , contract_code_hash
         from {{ ref('stg_history_operations') }}
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
@@ -308,6 +320,14 @@ with
             , hist_ops.shares
             , hist_ops.reserve_a_withdraw_amount
             , hist_ops.reserve_b_withdraw_amount
+            , hist_ops.asset_balance_changes
+            , hist_ops.parameters
+            , hist_ops.function
+            , hist_ops.address
+            , hist_ops.soroban_operation_type
+            , hist_ops.extend_to
+            , hist_ops.contract_id
+            , hist_ops.contract_code_hash
             -- transaction fields
             , hist_trans.transaction_hash
             , hist_trans.ledger_sequence
@@ -331,6 +351,10 @@ with
             , hist_trans.min_account_sequence_age
             , hist_trans.min_account_sequence_ledger_gap
             , hist_trans.extra_signers
+            , hist_trans.refundable_fee
+            , hist_trans.soroban_resources_instructions
+            , hist_trans.soroban_resources_read_bytes
+            , hist_trans.soroban_resources_write_bytes
             -- ledger fields
             , hist_ledg.ledger_hash
             , hist_ledg.previous_ledger_hash

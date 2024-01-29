@@ -268,3 +268,14 @@ sources:
           - name: details.predicate.abs_before_epoch
             description: '{{ doc("claimants_predicate_abs_before_epoch") }}'
           
+          - name: details.contract
+            description: '{{ doc("contract_id") }}'
+
+          - name: details.contract_event_type
+            description: '{{ doc("contract_event_type") }}'
+
+          - name: details.extend_to
+            description: '{{ doc("details_extend_to") }}'
+
+          - name: details.entries
+            description: '{{ doc("details_entries") }}'

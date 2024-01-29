@@ -109,7 +109,7 @@ The stroop is the fractional representation of a lumen (XLM). 1 stroop is 0.0000
 {% enddocs %}
 
 {% docs inner_transaction_hash %}
-AAAA
+A transaction hash of a transaction wrapped with its signatures for fee-bump transactions
 {% enddocs %}
 
 {% docs fee_account %}
@@ -156,17 +156,33 @@ An array of up to two additional signers that must have corresponding signatures
 {% enddocs %}
 
 {% docs tx_envelope %}
-AAAA
+A base-64 encoded XDR blob of the tx envelope (transaction and its signatures)
 {% enddocs %}
 
 {% docs tx_result %}
-AAAA
+A base-64 encoded XDR blob of the tx result
 {% enddocs %}
 
 {% docs tx_meta %}
-AAAA
+A base-64 encoded XDR blob of the tx meta
 {% enddocs %}
 
 {% docs tx_fee_meta %}
-AAAA
+A base-64 encoded XDR blob of the tx fee meta
+{% enddocs %}
+
+{% docs refundable_fee %}
+Part of the transaction fee that is refundable for soroban transactions
+{% enddocs %}
+
+{% docs soroban_resources_instructions %}
+Number of CPU instructions the transaction uses
+{% enddocs %}
+
+{% docs soroban_resources_read_bytes %}
+Number of bytes read by the transaction
+{% enddocs %}
+
+{% docs soroban_resources_write_bytes %}
+Number of bytes written by the transaction
 {% enddocs %}

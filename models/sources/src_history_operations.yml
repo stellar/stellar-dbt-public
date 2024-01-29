@@ -392,5 +392,26 @@ sources:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day 
 
-          - name: closed_at
-            description: '{{ doc("closed_at") }}'
+          - name: details.asset_balance_changes
+            description: '{{ doc("details_asset_balance_changes") }}'
+
+          - name: details.parameters
+            description: '{{ doc("details_parameters") }}'
+
+          - name: details.function
+            description: '{{ doc("details_function") }}'
+
+          - name: details.address
+            description: '{{ doc("from_address") }}'
+
+          - name: details.type
+            description: '{{ doc("details_type") }}'
+
+          - name: details.extend_to
+            description: '{{ doc("details_extend_to") }}'
+
+          - name: details.contract_id
+            description: '{{ doc("contract_id") }}'
+
+          - name: details.contract_code_hash
+            description: '{{ doc("contract_code_hash") }}'

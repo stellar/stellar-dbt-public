@@ -1,0 +1,86 @@
+version: 2
+
+sources:
+  - name: crypto_stellar
+    database: 'crypto-stellar'
+    tables:
+      - name: ttl
+        description: '{{ doc("ttl") }}'
+        tests:
+          - dbt_utils.recency:
+              datepart: hour
+              field: batch_run_date
+              interval: 12
+              config:
+                severity: warn
+              meta:
+                description:
+                  "Monitors the freshness of your table over time, as the expected time between data updates."a
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - key_hash
+                - live_until_ledger_seq
+                - last_modified_ledger
+                - ledger_entry_change
+              config:
+                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                          and batch_run_date < datetime_trunc(current_datetime(), day)
+              meta:
+                description:
+                  "Tests the uniqueness combination of: key_hash, live_until_ledger_seq, last_modified_ledger, and ledger_entry_change."
+        columns:
+          - name: key_hash
+            description: '{{ doc("key_hash") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: live_until_ledger_seq
+            description: '{{ doc("live_until_ledger_seq") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: last_modified_ledger
+            description: '{{ doc("last_modified_ledger") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: ledger_entry_change
+            description: '{{ doc("ledger_entry_change") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: deleted
+            description: '{{ doc("deleted") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day 
