@@ -1,5 +1,4 @@
-{{ config(severity="warn"
-    , store_failures = true) }}
+{{ config(severity="warn") }}
 
 with
     ledger_sequence as (
