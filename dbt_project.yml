@@ -37,7 +37,7 @@ models:
     intermediate:
       +materialized: view
     marts: 
-      materialized: table
+      +materialized: table
 
   elementary:
     +schema: elementary
