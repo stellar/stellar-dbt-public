@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["soroban", "soroban_metrics"]
+    tags = ["soroban"]
     , materialized='incremental'
     , unique_key=["key_hash"]
     , cluster_by= ["key_hash"]

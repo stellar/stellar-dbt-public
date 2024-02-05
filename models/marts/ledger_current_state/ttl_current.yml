@@ -3,34 +3,76 @@ version: 2
 models:
   - name: ttl_current
     description: '{{ doc("ttl_current") }}'
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: cast(closed_at as datetime)
+          interval: 12
+          config:
+            severity: warn
+          meta:
+            description:
+              "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: key_hash
         description: '{{ doc("key_hash") }}'
         tests:
-          - not_null
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: live_until_ledger_seq
         description: '{{ doc("live_until_ledger_seq") }}'
         tests:
-          - not_null
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: deleted
         description: '{{ doc("deleted") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: upstream_insert_ts
         description: '{{ doc("upstream_insert_ts") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
