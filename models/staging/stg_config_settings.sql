@@ -55,8 +55,6 @@ with
             , ledger_max_tx_count
             , bucket_list_size_window
             , last_modified_ledger
-            , contract_cost_params_cpu_insns
-            , contract_cost_params_mem_bytes
             , ledger_entry_change
             , ledger_sequence
             , closed_at

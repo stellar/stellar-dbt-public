@@ -117,14 +117,14 @@ with
             , details.reserve_b_min_amount
             , details.reserve_b_withdraw_amount
             , details.shares
-            , asset_balance_changes
-            , parameters
-            , `function`
-            , address
-            , type as soroban_operation_type
-            , extend_to
-            , contract_id
-            , contract_code_hash
+            , details.asset_balance_changes
+            , details.parameters
+            , details.function
+            , details.address
+            , details.type as soroban_operation_type
+            , details.extend_to
+            , details.contract_id
+            , details.contract_code_hash
             , closed_at
             , batch_id
             , batch_run_date
