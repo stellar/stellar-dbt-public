@@ -596,22 +596,22 @@ models:
                 where: closed_at > current_timestamp - interval 2 day
 
       - name: asset_balance_changes
-        description: '{{ doc("asset_balance_changes") }}'
+        description: '{{ doc("details_asset_balance_changes") }}'
 
       - name: parameters
-        description: '{{ doc("parameters") }}'
+        description: '{{ doc("details_parameters") }}'
 
       - name: function
-        description: '{{ doc("function") }}'
+        description: '{{ doc("details_function") }}'
 
       - name: address
         description: '{{ doc("address") }}'
 
       - name: soroban_operation_type
-        description: '{{ doc("soroban_operation_type") }}'
+        description: '{{ doc("details_soroban_operation_type") }}'
 
       - name: extend_to
-        description: '{{ doc("extend_to") }}'
+        description: '{{ doc("details_extend_to") }}'
 
       - name: contract_id
         description: '{{ doc("contract_id") }}'
