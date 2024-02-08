@@ -1,5 +1,5 @@
 {{ config(
-    tags = ["soroban"]
+    tags = ["current_state"]
     , materialized='incremental'
     , unique_key=["key_hash"]
     , cluster_by= ["key_hash"]
