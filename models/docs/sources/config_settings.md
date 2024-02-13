@@ -2,6 +2,9 @@
 
 {% docs config_settings %}
 The config settings table contains the configuration information for Soroban contract resources.
+These settings are set at the network level and requires a validator vote to update.
+[XDR defining the config settings](https://github.com/stellar/stellar-xdr/blob/curr/Stellar-contract-config-setting.x)
+[Fees and metering docs](https://soroban.stellar.org/docs/soroban-internals/fees-and-metering#cost-parameters)
 {% enddocs %}
 
 {% docs config_setting_id %}

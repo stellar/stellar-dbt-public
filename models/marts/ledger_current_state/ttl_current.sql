@@ -25,7 +25,7 @@ with
             , row_number()
                 over (
                     partition by ttl.key_hash
-                    order by ttl.last_modified_ledger desc
+                    order by ttl.last_modified_ledger desc, ledger_entry_change
                 ) as rn
         from {{ ref('stg_ttl') }} as ttl
         {% if is_incremental() %}
