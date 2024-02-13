@@ -94,3 +94,6 @@ Soroban contract code hash
 Hash of the ledgerKey which is a subset of the ledgerEntry. The subset of ledgerEntry fields depends on ledgerEntryType.
 {% enddocs %}
 
+{% docs closed_at %}
+Timestamp in UTC when this ledger closed and committed to the network. Ledgers are expected to close ~every 5 seconds
+{% enddocs %}
