@@ -9,7 +9,7 @@ sources:
         tests:
           - dbt_utils.recency:
               datepart: hour
-              field: batch_run_date
+              field: closed_at
               interval: 12
               config:
                 severity: warn
@@ -22,25 +22,25 @@ sources:
             tests:
               - unique:
                   config:
-                    where: batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
-                            and batch_run_date < datetime_trunc(current_datetime(), day)
+                    where: closed_at >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
+                            and closed_at < datetime_trunc(current_datetime(), day)
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: transaction_hash
             description: '{{ doc("transaction_hash") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
-            
+                    where: closed_at > current_datetime - interval 2 day
+
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: application_order
             description: '{{ doc("application_order") }}'
@@ -50,42 +50,42 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: account_sequence
             description: '{{ doc("account_sequence") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: max_fee
             description: '{{ doc("max_fee") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: operation_count
             description: '{{ doc("transaction_operation_count") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: created_at
             description: '{{ doc("created_at") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: memo_type
             description: '{{ doc("memo_type") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: memo
             description: '{{ doc("memo") }}'
@@ -95,21 +95,21 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: successful
             description: '{{ doc("successful") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: fee_charged
             description: '{{ doc("fee_charged") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: inner_transaction_hash
             description: '{{ doc("inner_transaction_hash") }}'
@@ -146,56 +146,56 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: tx_result
             description: '{{ doc("tx_result") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: tx_meta
             description: '{{ doc("tx_meta") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: tx_fee_meta
             description: '{{ doc("tx_fee_meta") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_datetime - interval 2 day
 
           - name: refundable_fee
             description: '{{ doc("refundable_fee") }}'
