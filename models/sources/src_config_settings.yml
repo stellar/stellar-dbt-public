@@ -22,8 +22,8 @@ sources:
                 - last_modified_ledger
                 - ledger_entry_change
               config:
-                where:  closed_at >= datetime_trunc(datetime_sub(current_timestamp(), interval 2 day), day)
-                          and closed_at < datetime_trunc(current_timestamp(), day)
+                where:  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+                          and closed_at < timestamp_trunc(current_timestamp(), day)
               meta:
                 description:
                   "Tests the uniqueness combination of: config_setting_id, last_modified_ledger, and ledger_entry_change."

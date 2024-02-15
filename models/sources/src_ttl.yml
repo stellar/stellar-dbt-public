@@ -23,8 +23,8 @@ sources:
                 - last_modified_ledger
                 - ledger_entry_change
               config:
-                where:  cast(closed_at as datetime) >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
-                          and cast(closed_at as datetime) < datetime_trunc(current_datetime(), day)
+                where:  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+                          and closed_at < timestamp_trunc(current_timestamp(), day)
               meta:
                 description:
                   "Tests the uniqueness combination of: key_hash, live_until_ledger_seq, last_modified_ledger, and ledger_entry_change."
