@@ -18,7 +18,7 @@ sources:
                   "Monitors the freshness of your table over time, as the expected time between data updates."
         columns:
           - name: assets_id
-            description: '{{ doc("asset_type") }}'
+            description: '{{ doc("assets_id") }}'
             tests:
               - not_null:
                   config:
