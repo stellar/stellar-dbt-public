@@ -6,25 +6,23 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto_stellar', 'account_signers')}}
+        from {{ source('crypto_stellar', 'ttl')}}
     )
 
-    , account_signers as (
+    , ttl as (
         select
-            account_id
-            , signer
-            , weight
-            , sponsor
+            key_hash
+            , live_until_ledger_seq
             , last_modified_ledger
             , ledger_entry_change
             , deleted
+            , ledger_sequence
+            , closed_at
             , batch_id
             , batch_run_date
             , batch_insert_ts
-            , closed_at
-            , ledger_sequence
         from raw_table
     )
 
 select *
-from account_signers
+from ttl

@@ -6,24 +6,58 @@ sources:
     tables:
       - name: history_assets_staging
         description: '{{ doc("history_assets_staging") }}'
+        tests:
+          - dbt_utils.recency:
+              datepart: hour
+              field: batch_run_date
+              interval: 12
+              config:
+                severity: warn
+              meta:
+                description:
+                  "Monitors the freshness of your table over time, as the expected time between data updates."
         columns:
           - name: assets_id
             description: '{{ doc("asset_type") }}'
-    
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
           - name: asset_type
             description: '{{ doc("asset_type") }}'
-    
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
           - name: asset_code
             description: '{{ doc("asset_code") }}'
-    
+
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
-    
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
           - name: batch_id
             description: '{{ doc("batch_id") }}'
-    
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
-    
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day

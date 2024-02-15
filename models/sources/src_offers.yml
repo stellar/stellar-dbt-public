@@ -22,7 +22,7 @@ sources:
                 - ledger_entry_change
                 - last_modified_ledger
               config:
-                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
                           and batch_run_date < datetime_trunc(current_datetime(), day)
               meta:
                 description:
@@ -33,14 +33,14 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: offer_id
             description: '{{ doc("offer_id") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: selling_asset_type
             description: '{{ doc("asset_type") }}'
@@ -65,56 +65,56 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: pricen
             description: '{{ doc("price_n") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: priced
             description: '{{ doc("price_d") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: price
             description: '{{ doc("price") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: flags
             description: '{{ doc("flags") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: deleted
             description: '{{ doc("deleted") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: sponsor
             description: '{{ doc("sponsor") }}'
@@ -124,14 +124,14 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day 
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
@@ -146,7 +146,7 @@ sources:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
-          
+
           - name: buying_asset_id
             description: '{{ doc("assets_id") }}'
             tests:

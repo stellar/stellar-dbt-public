@@ -22,14 +22,6 @@ The sequential number assigned the portion of a trade that is executed within a 
 - Required Field
 {% enddocs %}
 
-{% docs ledger_closed_at %}
-The timestamp in UTC when the ledger with this trade was closed.
-
-- Natural Key
-- Cluster Field
-- Required Field
-{% enddocs %}
-
 {% docs selling_account_address %}
 The account address of the selling party
 {% enddocs %}

@@ -135,3 +135,11 @@ Account multiplexed
 {% docs details_seller_muxed_id %}
 Account multiplexed id
 {% enddocs %}
+
+{% docs contract_event_type %}
+Soroban contract invoke host function event type: transfer, mint, clawback, or burn
+{% enddocs %}
+
+{% docs details_entries %}
+Soroban ledger change entries related to contract extension
+{% enddocs %}

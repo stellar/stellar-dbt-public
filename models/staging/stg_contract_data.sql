@@ -6,29 +6,30 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto_stellar', 'claimable_balances')}}
+        from {{ source('crypto_stellar', 'contract_data') }}
     )
 
-    , claimable_balance as (
+    , contract_data as (
         select
-            balance_id
-            , claimants
-            , asset_type
+            contract_id
+            , contract_key_type
+            , contract_durability
             , asset_code
             , asset_issuer
-            , asset_amount
-            , sponsor
-            , flags
+            , asset_type
+            , balance_holder
+            , balance
             , last_modified_ledger
             , ledger_entry_change
+            , ledger_sequence
+            , ledger_key_hash
+            , closed_at
             , deleted
             , batch_id
             , batch_run_date
             , batch_insert_ts
-            , closed_at
-            , ledger_sequence
         from raw_table
     )
 
 select *
-from claimable_balance
+from raw_table

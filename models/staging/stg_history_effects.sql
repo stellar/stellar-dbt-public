@@ -71,6 +71,10 @@ with
             , details.predicate
             , details.data_name
             , details.bought_asset_issuer
+            , details.contract_event_type
+            , details.contract
+            , details.ledgers_to_expire
+            , details.entries
             , closed_at
             , batch_id
             , batch_run_date

@@ -22,7 +22,7 @@ sources:
                 - ledger_entry_change
                 - last_modified_ledger
               config:
-                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
+                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
                           and batch_run_date < datetime_trunc(current_datetime(), day)
               meta:
                 description:
@@ -69,7 +69,7 @@ sources:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
-          
+
           - name: asset_a_type
             description: '{{ doc("asset_a_type") }}'
             tests:

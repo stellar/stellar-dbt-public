@@ -41,15 +41,6 @@ The total number of successful operations applied to this ledger
 Defaults to 0
 {% enddocs %}
 
-{% docs closed_at %}
-Timestamp in UTC when this ledger closed and committed to the network. Ledgers are expected to close ~every 5 seconds
-
-- Natural Key
-- Cluster Field
-- Required Field
-{% enddocs %}
-
-
 {% docs ledger_id %}
 Unique identifier for the ledger
 

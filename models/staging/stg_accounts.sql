@@ -35,6 +35,8 @@ with
             , batch_id
             , batch_run_date
             , batch_insert_ts
+            , closed_at
+            , ledger_sequence
         from raw_table
     )
 

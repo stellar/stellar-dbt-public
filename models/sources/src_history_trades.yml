@@ -21,7 +21,7 @@ sources:
                 - history_operation_id
                 - "`order`"
               config:
-                where:  ledger_closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day) 
+                where:  ledger_closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
                           and ledger_closed_at < timestamp_trunc(current_timestamp(), day)
               meta:
                 description:
@@ -81,7 +81,7 @@ sources:
 
           - name: buying_asset_type
             description: '{{ doc("trade_buying_asset_type") }}'
-          
+
           - name: buying_asset_id
             description: '{{ doc("assets_id") }}'
             tests:

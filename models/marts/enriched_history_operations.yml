@@ -594,3 +594,39 @@ models:
           - not_null:
               config:
                 where: closed_at > current_timestamp - interval 2 day
+
+      - name: asset_balance_changes
+        description: '{{ doc("details_asset_balance_changes") }}'
+
+      - name: parameters
+        description: '{{ doc("details_parameters") }}'
+
+      - name: function
+        description: '{{ doc("details_function") }}'
+
+      - name: address
+        description: '{{ doc("address") }}'
+
+      - name: soroban_operation_type
+        description: '{{ doc("details_soroban_operation_type") }}'
+
+      - name: extend_to
+        description: '{{ doc("details_extend_to") }}'
+
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+
+      - name: contract_code_hash
+        description: '{{ doc("contract_code_hash") }}'
+
+      - name: refundable_fee
+        description: '{{ doc("refundable_fee") }}'
+
+      - name: soroban_resources_instructions
+        description: '{{ doc("soroban_resources_instructions") }}'
+
+      - name: soroban_resources_read_bytes
+        description: '{{ doc("soroban_resources_read_bytes") }}'
+
+      - name: soroban_resources_write_bytes
+        description: '{{ doc("soroban_resources_write_bytes") }}'
