@@ -38,7 +38,7 @@ with
             , tx_result
             , tx_meta
             , tx_fee_meta
-            , refundable_fee
+            , resource_fee
             , soroban_resources_instructions
             , soroban_resources_read_bytes
             , soroban_resources_write_bytes

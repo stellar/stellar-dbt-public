@@ -68,7 +68,7 @@ with
             , batch_id
             , batch_run_date
             , batch_insert_ts
-            , refundable_fee
+            , resource_fee
             , soroban_resources_instructions
             , soroban_resources_read_bytes
             , soroban_resources_write_bytes
@@ -351,7 +351,7 @@ with
             , hist_trans.min_account_sequence_age
             , hist_trans.min_account_sequence_ledger_gap
             , hist_trans.extra_signers
-            , hist_trans.refundable_fee
+            , hist_trans.resource_fee
             , hist_trans.soroban_resources_instructions
             , hist_trans.soroban_resources_read_bytes
             , hist_trans.soroban_resources_write_bytes

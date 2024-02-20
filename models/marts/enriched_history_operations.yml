@@ -619,8 +619,8 @@ models:
       - name: contract_code_hash
         description: '{{ doc("contract_code_hash") }}'
 
-      - name: refundable_fee
-        description: '{{ doc("refundable_fee") }}'
+      - name: resource_fee
+        description: '{{ doc("resource_fee") }}'
 
       - name: soroban_resources_instructions
         description: '{{ doc("soroban_resources_instructions") }}'
