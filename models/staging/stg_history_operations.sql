@@ -119,6 +119,7 @@ with
             , details.shares
             , details.asset_balance_changes
             , details.parameters
+            , details.parameters_decoded
             , details.function
             , details.address
             , details.type as soroban_operation_type
