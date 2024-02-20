@@ -171,7 +171,7 @@ A base-64 encoded XDR blob of the tx meta
 A base-64 encoded XDR blob of the tx fee meta
 {% enddocs %}
 
-{% docs refundable_fee %}
+{% docs resource_fee %}
 Part of the transaction fee that is refundable for soroban transactions
 {% enddocs %}
 
