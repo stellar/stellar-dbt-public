@@ -129,7 +129,7 @@ models:
                 where: closed_at > current_timestamp - interval 2 day
 
       - name: flags
-        description: '{{ doc("flags") }}'
+        description: '{{ doc("flags_offers") }}'
         tests:
           - not_null:
               config:
