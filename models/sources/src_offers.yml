@@ -89,7 +89,7 @@ sources:
                     where: batch_run_date > current_datetime - interval 2 day
 
           - name: flags
-            description: '{{ doc("flags") }}'
+            description: '{{ doc("flags_offers") }}'
             tests:
               - not_null:
                   config:
