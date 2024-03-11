@@ -1,6 +1,6 @@
 {{ 
     config(
-        tags = ["current_state"],
+        tags = ["current_state", "liquidity_pools_value_history", "liquidity_pools_value"],
         materialized = "incremental",
         unique_key = "liquidity_pool_id",
         cluster_by = ["asset_a_code", "asset_a_issuer", "asset_b_code", "asset_b_issuer"]
