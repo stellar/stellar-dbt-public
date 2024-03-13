@@ -80,7 +80,7 @@ project_dir = ./
 # If your project works only with .env files you need to:
 ### Change ~/.dbt/ for ./ on profiles_dir variable here
 ### Remove steps on the pipeline that create and copy the profiles.yml to ~/.dbt/ folder.
-profiles_dir = ~/.dbt/
+profiles_dir = ./
 # Name of the profiles.
 # CHANGE THIS TO THE PROFILE NAME ON YOUR PROFILES.YML FILE
 profile = stellar_dbt

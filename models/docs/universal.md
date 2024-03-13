@@ -14,6 +14,14 @@ The Farm Hash encoding of Asset Code + Asset Issuer + Asset Type. This field is 
 
 {% enddocs %}
 
+{% docs unique_id %}
+Current snapshot tables (tables that end in `*_current`) require a singular, unique identifier so that only records that change are updated. This column is a concatenation of the natural keys to create a unique key. 
+{% enddocs %}
+
+{% docs upstream_insert_ts %}
+The timestamp in UTC when a batch of records was inserted into an upstream table. This field can help identify gaps in data as well as improve rerun capabilities. The timestamp should not be used during ad hoc analysis and is useful for data engineering purposes.
+{% enddocs %}
+
 {% docs asset_code %}
 The 4 or 12 character code representation of the asset on the network.
 
