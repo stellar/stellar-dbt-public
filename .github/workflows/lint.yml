@@ -36,7 +36,8 @@ jobs:
       
     - name: Authenticate to GCP
       uses: 'google-github-actions/auth@v2'
-      with:   
+      with:
+        project_id: crypto-stellar   
         credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}" 
 
     - name: Checkout source branch and diff quality
