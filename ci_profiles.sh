@@ -22,5 +22,5 @@ echo "      method: oauth" >> ~/.dbt/profiles.yml
 
 dbt deps
 
-echo "starting dbt docs generate"
-dbt docs generate --profiles-dir ~/.dbt
+#echo "starting dbt docs generate"
+#dbt docs generate --profiles-dir ~/.dbt
