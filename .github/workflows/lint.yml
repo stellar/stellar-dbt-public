@@ -4,14 +4,14 @@ on:
     push:
         branches:
             - diff-quality
-env:
-  DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
-  DBT_PROFILES_DIR: ${{ github.workspace }}
-  DBT_TARGET: development
-  DBT_MAX_BYTES_BILLED: 1000000000000
-  DBT_JOB_TIMEOUT: 300
-  DBT_THREADS: 1
-  DBT_JOB_RETRIES: 1
+# env:
+#   DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
+#   DBT_PROFILES_DIR: ${{ github.workspace }}
+#   DBT_TARGET: development
+#   DBT_MAX_BYTES_BILLED: 1000000000000
+#   DBT_JOB_TIMEOUT: 300
+#   DBT_THREADS: 1
+#   DBT_JOB_RETRIES: 1
 
 jobs:
   build:
@@ -38,6 +38,10 @@ jobs:
       with:
         project_id: crypto-stellar   
         credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}" 
+
+    - name: Set up dbt profile
+      run: |
+        . ci_profiles.sh
 
     - name: Checkout source branch and diff quality
       run:  |
