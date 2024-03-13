@@ -28,7 +28,7 @@ stellar_dbt:
       method: service-account
 
 stellar_dbt_public:
-  target: "{{ env_var('DBT_TARGET') }}"
+  target: prod
   outputs:
     prod:
       dataset: "crypto_stellar"

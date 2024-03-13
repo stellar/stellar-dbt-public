@@ -6,9 +6,9 @@ echo "writing file profiles.yml"
 mkdir ~/.dbt
 
 echo "stellar_dbt_public:" >> ~/.dbt/profiles.yml
-echo "  target: development" >> ~/.dbt/profiles.yml
+echo "  target: prod" >> ~/.dbt/profiles.yml
 echo "  outputs:" >> ~/.dbt/profiles.yml
-echo "    development:" >> ~/.dbt/profiles.yml
+echo "    prod:" >> ~/.dbt/profiles.yml
 echo "      dataset: crypto_stellar" >> ~/.dbt/profiles.yml
 echo "      maximum_bytes_billed: 1000000000000" >> ~/.dbt/profiles.yml
 echo "      job_execution_timeout_seconds: 300" >> ~/.dbt/profiles.yml
