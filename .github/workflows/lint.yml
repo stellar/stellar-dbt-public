@@ -8,7 +8,6 @@ env:
   DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
   DBT_PROFILES_DIR: ${{ github.workspace }}
   DBT_TARGET: development
-  DBT_DATASET: crypto_stellar
   DBT_MAX_BYTES_BILLED: 1000000000000
   DBT_JOB_TIMEOUT: 300
   DBT_THREADS: 1
