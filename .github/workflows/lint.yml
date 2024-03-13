@@ -37,9 +37,9 @@ jobs:
     - name: Authenticate to GCP
       uses: 'google-github-actions/auth@v2'
       with:   
-        credentials_json: "${{ secrets.CREDS_TEST_HUBBLE }}" 
+        credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}" 
 
     - name: Checkout source branch and diff quality
       run:  |
-        git checkout ${{ github.head_ref }}
+        git checkout ${{ github.ref_name }}
         diff-quality --violations=sqlfluff --fail-under=80
