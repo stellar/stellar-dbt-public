@@ -9,7 +9,7 @@ with
     base_trades as (
         select
             date('{{ dbt_airflow_macros.ds() }}') as day_agg
-             ledger_closed_at
+            , ledger_closed_at
             , selling_asset_id
             , selling_asset_code
             , selling_asset_issuer
