@@ -39,10 +39,6 @@ jobs:
         project_id: crypto-stellar   
         credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}" 
 
-    # - name: Set up dbt profile
-    #   run: |
-    #     . ci_profiles.sh
-
     - name: Checkout source branch and diff quality
       run:  |
         git checkout ${{ github.ref_name }}
