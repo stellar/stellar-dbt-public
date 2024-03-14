@@ -37,43 +37,8 @@ jobs:
       with:
         project_id: crypto-stellar   
         credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}" 
-    
-    - name: Get changed files
-      id: get_file_changes
-      uses: trilom/file-changes-action@v1.2.4
-      with:
-        output: " "
-
-    - name: Get new and changed .sql files in /models to lint
-      id: get_files_to_lint
-      shell: bash -l {0}
-      run: |
-        # Set the command in the $() brackets as an output to use in later steps
-        echo "::set-output name=lintees::$(
-        # Issue where grep regular expressions don't work as expected on the
-        # Github Actions shell, check dbt/models/ folder
-        echo \
-        $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
-        tr -s ' ' '\n' |
-        grep -E '^models.*[.]sql$' |
-        tr -s '\n' ' ') \
-        $(echo ${{ steps.get_file_changes.outputs.files_added }} |
-        tr -s ' ' '\n' |
-        grep -E '^models.*[.]sql$' |
-        tr -s '\n' ' ')
-        )"
-
-    - name: Lint dbt models
-      id: sqlfluff_json
-      if: steps.get_files_to_lint.outputs.lintees != ''
-      shell: bash -l {0}
-      run: |
-        python -m pip install --upgrade pip
-        dbt deps
-        sqlfluff lint --format github-annotation --annotation-level failure --nofail ${{ steps.get_files_to_lint.outputs.lintees }} > annotations.json
-        sed -i '/^\[/!d' annotations.json # see https://github.com/sqlfluff/sqlfluff/issues/2244
 
     - name: Checkout source branch and diff quality
       run:  |
         git checkout ${{ github.ref_name }}
-        diff-quality --violations=sqlfluff --compare-branch=origin/master
+        diff-quality --violations=sqlfluff --compare-branch=origin/master --fail-under=95
