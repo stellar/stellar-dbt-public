@@ -6,7 +6,7 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto_stellar', 'history_transactions')}}
+        from {{ source('crypto_stellar', 'history_transactions') }}
     )
 
     , history_transactions as (
@@ -45,7 +45,7 @@ with
             , closed_at
             , batch_id
             , batch_run_date
-            , batch_insert_ts            
+            , batch_insert_ts
         from raw_table
     )
 

@@ -41,5 +41,4 @@ jobs:
     - name: Checkout source branch and diff quality
       run:  |
         git checkout ${{ github.ref_name }}
-        dbt docs generate
-        # diff-quality --violations=sqlfluff 
+        diff-quality --violations=sqlfluff --compare-branch=origin/master

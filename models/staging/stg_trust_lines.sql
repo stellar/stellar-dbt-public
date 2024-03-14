@@ -6,7 +6,7 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto_stellar', 'trust_lines')}}
+        from {{ source('crypto_stellar', 'trust_lines') }}
     )
 
     , trust_lines as (

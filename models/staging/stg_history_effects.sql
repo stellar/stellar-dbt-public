@@ -6,7 +6,7 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto_stellar', 'history_effects')}}
+        from {{ source('crypto_stellar', 'history_effects') }}
     )
 
     , history_effects as (

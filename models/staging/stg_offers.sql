@@ -6,7 +6,7 @@
 with
     raw_table as (
         select *
-        from {{ source('crypto_stellar', 'offers')}}
+        from {{ source('crypto_stellar', 'offers') }}
     )
 
     , offers as (

@@ -32,10 +32,10 @@ with
             , o.batch_run_date
             , o.batch_insert_ts
             , row_number()
-                over (
-                    partition by o.offer_id
-                    order by o.last_modified_ledger desc, o.ledger_entry_change desc
-                ) as row_nr
+            over (
+                partition by o.offer_id
+                order by o.last_modified_ledger desc, o.ledger_entry_change desc
+            ) as row_nr
         from {{ ref('stg_offers') }} as o
         join {{ ref('stg_history_ledgers') }} as l
             on o.last_modified_ledger = l.sequence
