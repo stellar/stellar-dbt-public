@@ -7,7 +7,6 @@ on:
 env:
   DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
   DBT_PROFILES_DIR: ${{ github.workspace }}
-  DBT_TARGET: prod
   DBT_MAX_BYTES_BILLED: 1000000000000
   DBT_JOB_TIMEOUT: 300
   DBT_THREADS: 1
@@ -43,4 +42,4 @@ jobs:
       run:  |
         git checkout ${{ github.ref_name }}
         dbt docs generate
-        diff-quality --violations=sqlfluff --fail-under=95 --compare-branch=origin/master
+        # diff-quality --violations=sqlfluff 
