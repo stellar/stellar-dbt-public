@@ -12,19 +12,5 @@ stellar_dbt_public:
       location: us
       method: oauth
       type: bigquery
-    test:
-      <<: *default
-    jenkins:
-      dataset: "{{ env_var('PUBLIC_SOURCE_SCHEMA') }}"
-      maximum_bytes_billed: "{{ env_var('DBT_MAX_BYTES_BILLED') | as_number }}"
-      job_execution_timeout_seconds: "{{ env_var('DBT_JOB_TIMEOUT') | int }}"
-      threads: "{{ env_var('DBT_THREADS') | int }}"
-      job_retries: "{{ env_var('DBT_JOB_RETRIES') | int }}"
-      priority: interactive
-      location: us
-      type: bigquery
-      project: test-hubble-319619
-      keyfile: /stellar-dbt/service_account.json
-      method: service-account
 
 
