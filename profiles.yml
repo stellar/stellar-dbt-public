@@ -1,0 +1,16 @@
+stellar_dbt_public:
+  target: prod
+  outputs:
+    prod:
+      dataset: crypto_stellar
+      maximum_bytes_billed: "{{ env_var('DBT_MAX_BYTES_BILLED') | as_number }}"
+      job_execution_timeout_seconds: "{{ env_var('DBT_JOB_TIMEOUT') | int }}"
+      threads: "{{ env_var('DBT_THREADS') | int }}"
+      job_retries: "{{ env_var('DBT_JOB_RETRIES') | int }}"
+      priority: interactive
+      project: crypto-stellar
+      location: us
+      method: oauth
+      type: bigquery
+
+

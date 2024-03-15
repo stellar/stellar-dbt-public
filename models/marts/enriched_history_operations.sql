@@ -32,7 +32,7 @@ with
             , batch_run_date
             , batch_insert_ts
         from {{ ref('stg_history_ledgers') }}
-         where
+        where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
             and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% if is_incremental() %}
@@ -195,7 +195,7 @@ with
             , asset_balance_changes
             , parameters
             , parameters_decoded
-            , `function`
+            , function
             , address
             , soroban_operation_type
             , extend_to
@@ -206,7 +206,7 @@ with
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
             and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day) 
+                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
                 and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% endif %}
 

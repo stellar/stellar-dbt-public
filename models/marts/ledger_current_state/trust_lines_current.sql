@@ -35,10 +35,10 @@ with
             , tl.batch_run_date
             , tl.batch_insert_ts
             , row_number()
-                over (
-                    partition by tl.account_id, tl.asset_code, tl.asset_issuer, tl.liquidity_pool_id
-                    order by tl.last_modified_ledger desc, tl.ledger_entry_change desc
-                ) as row_nr
+            over (
+                partition by tl.account_id, tl.asset_code, tl.asset_issuer, tl.liquidity_pool_id
+                order by tl.last_modified_ledger desc, tl.ledger_entry_change desc
+            ) as row_nr
         from {{ ref('stg_trust_lines') }} as tl
         join {{ ref('stg_history_ledgers') }} as l
             on tl.last_modified_ledger = l.sequence

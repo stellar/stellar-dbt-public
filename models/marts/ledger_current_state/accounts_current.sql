@@ -39,13 +39,13 @@ with
             , a.batch_run_date
             , a.batch_insert_ts
             , row_number()
-                over (
-                    partition by a.account_id
-                    order by
-                        a.last_modified_ledger desc
-                        , a.ledger_entry_change desc
-                )
-                as row_nr
+            over (
+                partition by a.account_id
+                order by
+                    a.last_modified_ledger desc
+                    , a.ledger_entry_change desc
+            )
+            as row_nr
         from {{ ref('stg_accounts') }} as a
         join {{ ref('stg_history_ledgers') }} as l
             on a.last_modified_ledger = l.sequence

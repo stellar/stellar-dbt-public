@@ -23,10 +23,10 @@ with
             , ttl.batch_run_date
             , ttl.batch_insert_ts
             , row_number()
-                over (
-                    partition by ttl.key_hash
-                    order by ttl.last_modified_ledger desc, ledger_entry_change
-                ) as rn
+            over (
+                partition by ttl.key_hash
+                order by ttl.last_modified_ledger desc, ledger_entry_change
+            ) as rn
         from {{ ref('stg_ttl') }} as ttl
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally

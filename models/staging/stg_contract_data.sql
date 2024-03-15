@@ -32,4 +32,4 @@ with
     )
 
 select *
-from raw_table
+from contract_data
