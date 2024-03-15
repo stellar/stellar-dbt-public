@@ -43,6 +43,10 @@ with
             , soroban_resources_read_bytes
             , soroban_resources_write_bytes
             , closed_at
+            , transaction_result_code
+            , inclusion_fee_bid
+            , inclusion_fee_charged
+            , resource_fee_refund
             , batch_id
             , batch_run_date
             , batch_insert_ts

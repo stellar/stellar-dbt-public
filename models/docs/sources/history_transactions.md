@@ -186,3 +186,19 @@ Number of bytes read by the transaction
 {% docs soroban_resources_write_bytes %}
 Number of bytes written by the transaction
 {% enddocs %}
+
+{% docs transaction_result_code %}
+The detailed result code that outlines why a transaction failed. This code is only useful for failed transactions. The full list of domain values can be found [here](https://pkg.go.dev/github.com/stellar/go/xdr#TransactionResultCode).
+{% enddocs %}
+
+{% docs inclusion_fee_bid %}
+The maximum bid the submitter is willing to pay for inclusion of the transaction. This fee is used to prioritize transactions that are included in the ledger.
+{% enddocs %}
+
+{% docs inclusion_fee_charged %}
+The fee charged for the transaction to be included in the ledger.
+{% enddocs %}
+
+{% docs resource_fee_refund %}
+The amount of the resource fee refunded to the transaction submitter. The refundable fees are calculated from rent, events and return value. Refundable fees are charged from teh source account before the transaction is executed and then refunded based on the actual usage. 
+{% enddocs %}

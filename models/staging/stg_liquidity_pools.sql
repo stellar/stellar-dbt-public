@@ -19,10 +19,12 @@ with
             , asset_a_type
             , asset_a_code
             , asset_a_issuer
+            , asset_a_id
             , asset_a_amount
             , asset_b_type
             , asset_b_code
             , asset_b_issuer
+            , asset_b_id
             , asset_b_amount
             , last_modified_ledger
             , ledger_entry_change
