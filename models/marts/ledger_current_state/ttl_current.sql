@@ -25,13 +25,13 @@ with
             , row_number()
             over (
                 partition by ttl.key_hash
-                order by ttl.last_modified_ledger desc, ledger_entry_change
+                order by ttl.closed_at
             ) as rn
         from {{ ref('stg_ttl') }} as ttl
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                ttl.batch_run_date >= date_sub(current_date(), interval 30 day)
+                ttl.closed_at >= timestamp_sub(current_timestamp(), interval 30 day)
                 -- fetch the last week of records loaded
                 and timestamp_add(ttl.batch_insert_ts, interval 7 day)
                 > (select max(t.upstream_insert_ts) from {{ this }} as t)

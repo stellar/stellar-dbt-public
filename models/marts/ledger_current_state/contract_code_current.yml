@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: contract_code_current
+    description: '{{ doc("contract_code_current") }}'
+    
+    columns:
+      - name: contract_code_hash
+        description: '{{ doc("key_hash") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
