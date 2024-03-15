@@ -213,7 +213,7 @@ sources:
             description: '{{ doc("transaction_result_code") }}'
 
           - name: inclusion_fee_bid
-            description: '{{ doc("inclusion_fee_bid) }}'          
+            description: '{{ doc("inclusion_fee_bid") }}'          
 
           - name: inclusion_fee_charged
             description: '{{ doc("inclusion_fee_charged") }}'
