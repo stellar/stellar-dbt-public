@@ -205,7 +205,6 @@ with
             , extend_to
             , contract_id
             , contract_code_hash
-            , ledgers_to_expire
             , operation_result_code
             , operation_trace_code
         from {{ ref('stg_history_operations') }}
@@ -337,7 +336,6 @@ with
             , hist_ops.extend_to
             , hist_ops.contract_id
             , hist_ops.contract_code_hash
-            , hist_ops.ledgers_to_expire
             , hist_ops.operation_result_code
             , hist_ops.operation_trace_code
             -- transaction fields

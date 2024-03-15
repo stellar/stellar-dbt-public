@@ -643,9 +643,6 @@ models:
       - name: resource_fee_refund
         description: '{{ doc("resource_fee_refund") }}'
 
-      - name: ledgers_to_expire
-        description: '{{ doc("ledgers_to_expire") }}'
-
       - name: operation_result_code
         description: '{{ doc("operation_result_code") }}'
 

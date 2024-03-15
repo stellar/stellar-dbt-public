@@ -30,7 +30,6 @@ with
             , enriched.extend_to
             , enriched.contract_id
             , enriched.contract_code_hash
-            , enriched.ledgers_to_expire
             , enriched.operation_result_code
             , enriched.operation_trace_code
             -- transaction fields

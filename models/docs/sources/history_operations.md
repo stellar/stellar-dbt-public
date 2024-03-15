@@ -49,6 +49,14 @@ The type of operation this operation executes
 - Required Field
 {% enddocs %}
 
+{% docs operation_result_code %}
+The result code returned when the Stellar Network applies an operation. This code is helpful for understanding failed transactions.
+{% enddocs %}
+
+{% docs operation_trace_code %}
+The trace code returned when an operation is applied to the Stellar Network. This code is helpful for understanding failure types.
+{% enddocs %}
+
 {% docs details %}
 Record that contains details based on the type of operation executed. Each operation will return its own relevant details, with the rest of the details as null
 {% enddocs %}
