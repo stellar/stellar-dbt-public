@@ -38,10 +38,10 @@ with
             , lp.batch_run_date
             , lp.batch_insert_ts
             , row_number()
-            over (
-                partition by lp.liquidity_pool_id
-                order by lp.last_modified_ledger desc, lp.ledger_entry_change desc
-            ) as row_nr
+                over (
+                    partition by lp.liquidity_pool_id
+                    order by lp.last_modified_ledger desc, lp.ledger_entry_change desc
+                ) as row_nr
         from {{ ref('stg_liquidity_pools') }} as lp
         join {{ ref('stg_history_ledgers') }} as l
             on lp.last_modified_ledger = l.sequence

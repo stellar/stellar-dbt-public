@@ -10,7 +10,7 @@
    the last modified ledger sequence number. */
 
 with
-    current_data as (
+    current_settings as (
         select
             cfg.config_setting_id
             , cfg.contract_max_size_bytes
@@ -64,10 +64,10 @@ with
             , cfg.batch_insert_ts
             , cfg.ledger_sequence
             , row_number()
-            over (
-                partition by cfg.config_setting_id
-                order by cfg.closed_at desc
-            ) as rn
+                over (
+                    partition by cfg.config_setting_id
+                    order by cfg.closed_at desc
+                ) as rn
         from {{ ref('stg_config_settings') }} as cfg
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
@@ -132,5 +132,5 @@ select
     , batch_run_date
     , batch_insert_ts as upstream_insert_ts
     , current_timestamp() as batch_insert_ts
-from current_expiration
+from current_settings
 where rn = 1

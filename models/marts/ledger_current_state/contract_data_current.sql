@@ -32,10 +32,10 @@ with
             , cd.ledger_key_hash
             , concat(cd.contract_id, '-', cd.ledger_key_hash) as unique_id
             , row_number()
-            over (
-                partition by cd.contract_id, cd.ledger_key_hash
-                order by cd.closed_at desc
-            ) as rn
+                over (
+                    partition by cd.contract_id, cd.ledger_key_hash
+                    order by cd.closed_at desc
+                ) as rn
         from {{ ref('stg_contract_data') }} as cd
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
@@ -67,5 +67,5 @@ select
     , batch_insert_ts as upstream_insert_ts
     , current_timestamp() as batch_insert_ts
     , unique_id
-from current_expiration
+from current_data
 where rn = 1

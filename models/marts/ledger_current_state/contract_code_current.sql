@@ -11,7 +11,7 @@
    the last modified ledger sequence number. */
 
 with
-    current_data as (
+    current_code as (
         select
             cc.contract_code_hash
             , cc.contract_code_ext_v
@@ -25,10 +25,10 @@ with
             , cc.ledger_sequence
             , cc.ledger_key_hash
             , row_number()
-            over (
-                partition by cd.contract_code_hash
-                order by cd.closed_at desc
-            ) as rn
+                over (
+                    partition by cd.contract_code_hash
+                    order by cd.closed_at desc
+                ) as rn
         from {{ ref('stg_contract_code') }} as cc
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
@@ -53,5 +53,5 @@ select
     , batch_run_date
     , batch_insert_ts as upstream_insert_ts
     , current_timestamp() as batch_insert_ts
-from current_expiration
+from current_code
 where rn = 1
