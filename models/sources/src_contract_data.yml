@@ -9,7 +9,7 @@ sources:
         tests:
           - dbt_utils.recency:
               datepart: hour
-              field: cast(closed_at as datetime)
+              field: closed_at
               interval: 12
               config:
                 severity: warn

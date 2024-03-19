@@ -9,7 +9,7 @@ sources:
         tests:
           - dbt_utils.recency:
               datepart: hour
-              field: batch_run_date
+              field: closed_at
               interval: 12
               config:
                 severity: warn

@@ -6,7 +6,7 @@ models:
     tests:
       - dbt_utils.recency:
           datepart: day
-          field: batch_run_date
+          field: cast(batch_run_date as timestamp)
           interval: 2
           config:
                 severity: warn

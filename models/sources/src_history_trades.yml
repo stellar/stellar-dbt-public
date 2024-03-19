@@ -9,7 +9,7 @@ sources:
         tests:
           - dbt_utils.recency:
               datepart: hour
-              field: cast(ledger_closed_at as datetime)
+              field: ledger_closed_at
               interval: 12
               config:
                 severity: warn
