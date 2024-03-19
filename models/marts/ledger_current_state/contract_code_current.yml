@@ -25,8 +25,8 @@ models:
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
 
-      - name: ledger_entry_changed
-        description: '{{ doc("ledger_entry_changed") }}'
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'

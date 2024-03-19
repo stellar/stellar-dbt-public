@@ -47,7 +47,7 @@ models:
         description: '{{ doc("balance_holder") }}'
 
       - name: balance
-        description: '{{ doc("") }}'
+        description: '{{ doc("balance") }}'
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
