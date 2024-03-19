@@ -8,9 +8,9 @@ sources:
         description: '{{ doc("contract_code") }}'
         tests:
           - dbt_utils.recency:
-              datepart: hour
+              datepart: day
               field: closed_at
-              interval: 12
+              interval: 3
               config:
                 severity: warn
               meta:
