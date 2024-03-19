@@ -6,7 +6,7 @@ models:
     tests:
       - dbt_utils.recency:
           datepart: day
-          field: day_agg
+          field: cast(day_agg as timestamp)
           interval: 2
           config:
                 severity: warn
