@@ -126,6 +126,8 @@ with
             , details.extend_to
             , details.contract_id
             , details.contract_code_hash
+            , operation_result_code
+            , operation_trace_code
             , closed_at
             , batch_id
             , batch_run_date

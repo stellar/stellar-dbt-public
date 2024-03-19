@@ -630,3 +630,21 @@ models:
 
       - name: soroban_resources_write_bytes
         description: '{{ doc("soroban_resources_write_bytes") }}'
+
+      - name: transaction_result_code
+        description: '{{ doc("transaction_result_code") }}'
+
+      - name: inclusion_fee_bid
+        description: '{{ doc("inclusion_fee_bid") }}'
+
+      - name: inclusion_fee_charged
+        description: '{{ doc("inclusion_fee_charged") }}'
+
+      - name: resource_fee_refund
+        description: '{{ doc("resource_fee_refund") }}'
+
+      - name: operation_result_code
+        description: '{{ doc("operation_result_code") }}'
+
+      - name: operation_trace_code
+        description: '{{ doc("operation_trace_code") }}'

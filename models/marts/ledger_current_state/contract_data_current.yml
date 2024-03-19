@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: contract_data_current
+    description: '{{ doc("contract_data_current") }}'
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: cast(closed_at as datetime)
+          interval: 12
+          config:
+            severity: warn
+          meta:
+            description:
+              "Monitors the freshness of your table over time, as the expected time between data updates."
+    columns:
+      - name: contract_id
+        description: '{{ doc("key_hash") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
+        
+      - name: contract_key_type
+        description: '{{ doc("contract_key_type") }}'
+
+      - name: contract_durability
+        description: '{{ doc("contract_durability") }}'
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+
+      - name: balance_holder
+        description: '{{ doc("balance_holder") }}'
+
+      - name: balance
+        description: '{{ doc("balance") }}'
+
+      - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+
+      - name: deleted
+        description: '{{ doc("deleted") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_run_date") }}'
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+
+      - name: upstream_insert_ts
+        description: '{{ doc("upstream_insert_ts") }}'
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+
+      - name: unique_id
+        description: '{{ doc("unique_id") }}'

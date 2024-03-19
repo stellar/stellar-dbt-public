@@ -1,0 +1,210 @@
+version: 2
+
+models:
+  - name: enriched_history_operations_soroban
+    description: Aggregate table for the history operations, taking only the soroban operations
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: cast(closed_at as datetime)
+          interval: 12
+          config:
+            severity: warn
+          meta:
+            description:
+              "Monitors the freshness of your table over time, as the expected time between data updates."
+    columns:
+      - name: op_id
+        description: '{{ doc("operation_id") }}'
+
+      - name: op_source_account
+        description: '{{ doc("source_account") }}'
+
+      - name: op_source_account_muxed
+        description: '{{ doc("source_account_muxed") }}'
+
+      - name: transaction_id
+        description: '{{ doc("transaction_id") }}'
+
+      - name: type
+        description: '{{ doc("type") }}'
+
+      - name: type_string
+        description: '{{ doc("type_string") }}'
+
+      - name: asset_balance_changes
+        description: '{{ doc("details_asset_balance_changes") }}'
+
+      - name: parameters
+        description: '{{ doc("details_parameters") }}'
+
+      - name: function
+        description: '{{ doc("details_function") }}'
+
+      - name: address
+        description: '{{ doc("address") }}'
+
+      - name: soroban_operation_type
+        description: '{{ doc("details_soroban_operation_type") }}'
+
+      - name: extend_to
+        description: '{{ doc("details_extend_to") }}'
+
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+
+      - name: contract_code_hash
+        description: '{{ doc("contract_code_hash") }}'
+
+      - name: transaction_hash
+        description: '{{ doc("transaction_hash") }}'
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+
+      - name: account_sequence
+        description: '{{ doc("account_sequence") }}'
+
+      - name: max_fee
+        description: '{{ doc("max_fee") }}'
+
+      - name: txn_operation_count
+        description: '{{ doc("transaction_operation_count") }}'
+
+      - name: txn_created_at
+        description: '{{ doc("created_at") }}'
+
+      - name: memo_type
+        description: '{{ doc("memo_type") }}'
+
+      - name: memo_type
+        description: '{{ doc("memo") }}'
+
+      - name: time_bounds
+        description: '{{ doc("time_bounds") }}'
+
+      - name: successful
+        description: '{{ doc("successful") }}'
+
+      - name: fee_charged
+        description: '{{ doc("fee_charged") }}'
+
+      - name: fee_account
+        description: '{{ doc("fee_account") }}'
+
+      - name: new_max_fee
+        description: '{{ doc("new_max_fee") }}'
+
+      - name: account_muxed
+        description: '{{ doc("account_muxed") }}'
+
+      - name: fee_account_muxed
+        description: '{{ doc("fee_account_muxed") }}'
+
+      - name: tx_envelope
+        description: '{{ doc("tx_envelope") }}'
+
+      - name: tx_result
+        description: '{{ doc("tx_result") }}'
+
+      - name: tx_meta
+        description: '{{ doc("tx_meta") }}'
+
+      - name: tx_fee_meta
+        description: '{{ doc("tx_fee_meta") }}'
+
+      - name: ledger_bounds
+        description: '{{ doc("ledger_bounds") }}'
+
+      - name: min_account_sequence
+        description: '{{ doc("min_account_sequence") }}'
+
+      - name: min_account_sequence_age
+        description: '{{ doc("min_account_sequence_age") }}'
+
+      - name: min_account_sequence_ledger_gap
+        description: '{{ doc("min_account_sequence_ledger_gap") }}'
+
+      - name: extra_signers
+        description: '{{ doc("extra_signers") }}'
+
+      - name: resource_fee
+        description: '{{ doc("resource_fee") }}'
+
+      - name: soroban_resources_instructions
+        description: '{{ doc("soroban_resources_instructions") }}'
+
+      - name: soroban_resources_read_bytes
+        description: '{{ doc("soroban_resources_read_bytes") }}'
+
+      - name: soroban_resources_write_bytes
+        description: '{{ doc("soroban_resources_write_bytes") }}'
+
+      - name: ledger_hash
+        description: '{{ doc("ledger_hash") }}'
+
+      - name: previous_ledger_hash
+        description: '{{ doc("previous_ledger_hash") }}'
+
+      - name: transaction_count
+        description: '{{ doc("transaction_count") }}'
+
+      - name: ledger_operation_count
+        description: '{{ doc("operation_count") }}'
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+
+      - name: ledger_id
+        description: '{{ doc("ledger_id") }}'
+
+      - name: total_coins
+        description: '{{ doc("total_coins") }}'
+
+      - name: fee_pool
+        description: '{{ doc("fee_pool") }}'
+
+      - name: base_fee
+        description: '{{ doc("base_fee") }}'
+
+      - name: base_reserve
+        description: '{{ doc("base_reserve") }}'
+
+      - name: max_tx_set_size
+        description: '{{ doc("max_tx_set_size") }}'
+
+      - name: protocol_version
+        description: '{{ doc("protocol_version") }}'
+
+      - name: succesful_transaction_count
+        description: '{{ doc("successful_transaction_count") }}'
+
+      - name: failed_transaction_count
+        description: '{{ doc("failed_transaction_count") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+
+      - name: transaction_result_code
+        description: '{{ doc("transaction_result_code") }}'
+
+      - name: inclusion_fee_bid
+        description: '{{ doc("inclusion_fee_bid") }}'
+
+      - name: inclusion_fee_charged
+        description: '{{ doc("inclusion_fee_charged") }}'
+
+      - name: resource_fee_refund
+        description: '{{ doc("resource_fee_refund") }}'
+
+      - name: operation_result_code
+        description: '{{ doc("operation_result_code") }}'
+
+      - name: operation_trace_code
+        description: '{{ doc("operation_trace_code") }}'

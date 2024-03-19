@@ -407,6 +407,12 @@ sources:
           - name: details.contract_code_hash
             description: '{{ doc("contract_code_hash") }}'
 
+          - name: details.operation_result_code
+            description: '{{ doc("operation_result_code") }}'
+
+          - name: details.operation_trace_code
+            description: '{{ doc("operation_trace_code") }}'
+
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:

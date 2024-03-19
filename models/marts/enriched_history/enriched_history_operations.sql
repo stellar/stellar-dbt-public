@@ -72,6 +72,10 @@ with
             , soroban_resources_instructions
             , soroban_resources_read_bytes
             , soroban_resources_write_bytes
+            , transaction_result_code
+            , inclusion_fee_bid
+            , inclusion_fee_charged
+            , resource_fee_refund
         from {{ ref('stg_history_transactions') }}
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
@@ -201,6 +205,8 @@ with
             , extend_to
             , contract_id
             , contract_code_hash
+            , operation_result_code
+            , operation_trace_code
         from {{ ref('stg_history_operations') }}
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
@@ -330,6 +336,8 @@ with
             , hist_ops.extend_to
             , hist_ops.contract_id
             , hist_ops.contract_code_hash
+            , hist_ops.operation_result_code
+            , hist_ops.operation_trace_code
             -- transaction fields
             , hist_trans.transaction_hash
             , hist_trans.ledger_sequence
@@ -357,6 +365,10 @@ with
             , hist_trans.soroban_resources_instructions
             , hist_trans.soroban_resources_read_bytes
             , hist_trans.soroban_resources_write_bytes
+            , hist_trans.transaction_result_code
+            , hist_trans.inclusion_fee_bid
+            , hist_trans.inclusion_fee_charged
+            , hist_trans.resource_fee_refund
             -- ledger fields
             , hist_ledg.ledger_hash
             , hist_ledg.previous_ledger_hash

@@ -195,3 +195,15 @@ Max transactions in a ledger
 {% docs bucket_list_size_window %}
 Bucket list size window
 {% enddocs %}
+
+{% docs min_temporary_ttl %}
+The minimum number of entries for which a temporary entry can live on the ledger.
+{% enddocs %}
+
+{% docs min_persistent_ttl %}
+The minimum number of entries for which a persisted entry can live on the ledger.
+{% enddocs %}
+
+{% docs max_entries_to_archive %}
+Maximum number of entries that emit archival meta in a single ledger
+{% enddocs %}
