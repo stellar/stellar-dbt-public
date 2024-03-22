@@ -42,6 +42,7 @@ jobs:
         - id: 'upload-folder'
           uses: 'google-github-actions/upload-cloud-storage@v2'
           with:
+            process_gcloudignore: false
             path: '${{ github.workspace }}/target'
             destination: 'www.stellar-dbt-docs.com'
             parent: false
