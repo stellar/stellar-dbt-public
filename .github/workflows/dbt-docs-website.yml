@@ -29,6 +29,7 @@ jobs:
         - id: 'auth'
           uses: 'google-github-actions/auth@v2'
           with:
+            project_id: 'hubble-261722'
             credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}"
 
         - name: Install dependencies
