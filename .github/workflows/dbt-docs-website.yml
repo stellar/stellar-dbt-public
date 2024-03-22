@@ -3,7 +3,7 @@ name: DBT Docs Generate and Upload to GCS
 on:
     push:
         branches:
-            - dbt-docs-website
+            - master
 
 env:
     DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
