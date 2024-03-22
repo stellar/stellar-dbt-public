@@ -1,0 +1,48 @@
+name: DBT Docs Generate and Upload to GCS
+
+on:
+    push:
+        branches:
+            - dbt-docs-website
+
+env:
+    DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
+    DBT_PROFILES_DIR: ${{ github.workspace }}
+    DBT_MAX_BYTES_BILLED: 1000000000000
+    DBT_JOB_TIMEOUT: 300
+    DBT_THREADS: 1
+    DBT_JOB_RETRIES: 1
+
+jobs:
+    dbt-docs:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: 3.8
+
+        - name: Checkout Repository
+          uses: actions/checkout@v2
+
+        - id: 'auth'
+          uses: 'google-github-actions/auth@v2'
+          with:
+            credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}"
+
+        - name: Install dependencies
+          run: pip install -r requirements.txt
+
+        - name: Generate dbt docs
+          run: |
+            dbt deps
+            dbt docs generate
+
+        - id: 'upload-folder'
+          uses: 'google-github-actions/upload-cloud-storage@v2'
+          with:
+            path: '${{ github.workspace }}/target'
+            destination: 'www.stellar-dbt-docs.com'
+            parent: false
+            glob: '*.json|*.html'
