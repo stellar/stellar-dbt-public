@@ -1,0 +1,21 @@
+repos:
+    - repo: https://github.com/sqlfluff/sqlfluff
+      rev: 2.1.2
+      hooks:
+          - id: sqlfluff-lint
+            args: ["lint", "--processes", "0", "--config=./.sqlfluff"]
+            additional_dependencies: ['sqlfluff-templater-dbt==2.1.2', 'dbt-bigquery==1.3.0', 'python-dotenv']
+            entry: ./pre-commit/for_pre_commit.sh
+          
+          - id: sqlfluff-fix
+            args: ["fix", "--force", "--processes", "0", "--config=./.sqlfluff"]
+            additional_dependencies: ['sqlfluff-templater-dbt==2.1.2', 'dbt-bigquery==1.3.0', 'python-dotenv']
+            entry: ./pre-commit/for_pre_commit.sh
+
+    - repo: local
+      hooks:
+          - id: cleanup
+            name: Cleanup .env.tmp
+            entry: ./pre-commit/cleanup.sh
+            language: system
+            stages: [commit]
