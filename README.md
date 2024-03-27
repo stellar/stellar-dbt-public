@@ -114,7 +114,7 @@ After cloning, create a virtual environment for the installation. The recommende
 
 3. Source the virtual environment through: ``` source ~/path/to/venv/bin/activate ``` on Linux and ```.\venv\Scripts\activate.ps1``` on Windows. (It must be activated each time you open the project). Ensure that you are in the folder where the virtual environment was created. If it is activated correctly, the terminal will display a flag (venv). To deactivate the virtual environment, simply run the command: ```deactivate```
 
-3. By invoking dbt from the CLI, it should parse `dbt_project.yml` and, in case it doesn't already exist, create a `~/.dbt/profiles.yml`. This file exists outside of the project to avoid sensitive credentials in the version control code and it's not recommended to change it's location. **There exists a profile.yml file inside the project folder, but it is not used when developing locally, only for the CI/CD pipeline, and it must not contain any exposed access keys**.
+3. By invoking dbt from the CLI, it should parse `dbt_project.yml` . To get all the information needed to work locally, change the `example.env` in `.env` and do `source .env`. if you do `dbt debug` and the connection is successful, it is enough to work locally. the `.env` file contains profile information that should be exported to your venv folder. 
 
 4. In order to connect to the bigquery project, there are a couple methods of authentication supported by BQ. The BigQuery account to be used must be your personal account. We recommend using Oauth to connect through gcloud CLI tools. Any extra information can be found on the official dbt-bigquery adapter [documentation](https://docs.getdbt.com/reference/warehouse-setups/bigquery-setup#).
 
@@ -144,13 +144,9 @@ For more information on `profiles.yml` setup, please refer to the dbt [documenta
 
 ## dbt Setup
 
-1. Run ``` pip install -r requirements.txt ``` to install all the necessary packages.
+1. To verify if all libraries have been correctly installed, use the command ```pip list```.
 
-2. To verify if all libraries have been correctly installed, use the command ```pip list```.
-
-3. Run ``` dbt deps ``` to install the utils packages from dbt.
-
-3. Following best practices, a dbt project informs dbt about the contect of your project and how to transform your data. To do so, open the ```dbt_project.yml``` project configuration file on your dbt project folder.
+2. Following best practices, a dbt project informs dbt about the contect of your project and how to transform your data. To do so, open the ```dbt_project.yml``` project configuration file on your dbt project folder.
 ``` YML
 name: 'your_dbt_project_name' ##the name of a dbt project.
 version: '1.0.0' ##version of your project.
