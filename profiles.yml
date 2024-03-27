@@ -1,14 +1,14 @@
 stellar_dbt_public:
-  target: {{ env_var('DBT_TARGET') }}
+  target: "{{ env_var('DBT_TARGET') }}"
   outputs:
     prod:
-      dataset: {{ env_var('DBT_DATASET') }}
+      dataset: "{{ env_var('DBT_DATASET') }}"
       maximum_bytes_billed: "{{ env_var('DBT_MAX_BYTES_BILLED') | as_number }}"
       job_execution_timeout_seconds: "{{ env_var('DBT_JOB_TIMEOUT') | int }}"
       threads: "{{ env_var('DBT_THREADS') | int }}"
       job_retries: "{{ env_var('DBT_JOB_RETRIES') | int }}"
       priority: interactive
-      project: {{ env_var('DBT_PROJECT') }}
+      project: "{{ env_var('DBT_PROJECT') }}"
       location: us
       method: oauth
       type: bigquery
