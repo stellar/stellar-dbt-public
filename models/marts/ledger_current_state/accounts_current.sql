@@ -59,10 +59,31 @@ with
                 > (select max(t.upstream_insert_ts) from {{ this }} as t)
         {% endif %}
     )
+    
+    , account_date as (
+        select
+            account_id
+            , min(batch_run_date) as account_creation_date
+            , min(sequence_number) as min_sequence_number
+        from {{ ref('stg_accounts') }}
+        group by account_id
+    )
+
+    , get_creation_account as (
+        select
+            current_accts.*
+            , account_date.account_creation_date
+            , account_date.min_sequence_number
+        from current_accts
+        left join account_date
+            on current_accts.account_id = account_date.account_id
+    )
 
 /* Return the same fields as the `accounts` table */
 select
     account_id
+    , account_creation_date
+    , min_sequence_number
     , balance
     , buying_liabilities
     , selling_liabilities
@@ -87,5 +108,5 @@ select
     , batch_run_date
     , batch_insert_ts as upstream_insert_ts
     , current_timestamp() as batch_insert_ts
-from current_accts
+from get_creation_account
 where row_nr = 1
