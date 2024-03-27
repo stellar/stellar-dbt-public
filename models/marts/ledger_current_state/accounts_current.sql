@@ -77,6 +77,7 @@ with
         from current_accts
         left join account_date
             on current_accts.account_id = account_date.account_id
+        where current_accts.row_nr = 1
     )
 
 /* Return the same fields as the `accounts` table */
@@ -109,4 +110,3 @@ select
     , batch_insert_ts as upstream_insert_ts
     , current_timestamp() as batch_insert_ts
 from get_creation_account
-where row_nr = 1
