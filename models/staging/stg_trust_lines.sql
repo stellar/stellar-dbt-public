@@ -16,6 +16,7 @@ with
             , asset_type
             , asset_issuer
             , asset_code
+            , asset_id
             , liquidity_pool_id
             , balance
             , trust_line_limit
