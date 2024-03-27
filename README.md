@@ -118,6 +118,13 @@ After cloning, create a virtual environment for the installation. The recommende
 
 4. In order to connect to the bigquery project, there are a couple methods of authentication supported by BQ. The BigQuery account to be used must be your personal account. We recommend using Oauth to connect through gcloud CLI tools. Any extra information can be found on the official dbt-bigquery adapter [documentation](https://docs.getdbt.com/reference/warehouse-setups/bigquery-setup#).
 
+## Configuring project requirements and pre-commit
+Having pre-commit configured in your local environment is crucial to lessen the linting mistakes passed in the commits as the pre-commit does the sqlfluff lint and fix for the changes to be added in the commit. In order to configure it, do:
+
+`chmod +x setup.sh` to make the setup.sh executable.
+
+`./setup.sh` to set up the requirements of the repository, and pre-commit configuration.
+
 ### Oauth
 5. Oauth - Follow the GCP CLI installation guide [here](https://cloud.google.com/sdk/docs/install). After the installation, run `gcloud init` and provide the requested account information in order to properly setup your Oauth GCP account. The account will be used to run the queries and access the database, so you should use your GCP personal account for that.
 
