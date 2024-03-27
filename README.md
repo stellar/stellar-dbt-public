@@ -114,9 +114,9 @@ After cloning, create a virtual environment for the installation. The recommende
 
 3. Source the virtual environment through: ``` source ~/path/to/venv/bin/activate ``` on Linux and ```.\venv\Scripts\activate.ps1``` on Windows. (It must be activated each time you open the project). Ensure that you are in the folder where the virtual environment was created. If it is activated correctly, the terminal will display a flag (venv). To deactivate the virtual environment, simply run the command: ```deactivate```
 
-3. By invoking dbt from the CLI, it should parse `dbt_project.yml` . To get all the information needed to work locally, change the `example.env` in `.env` and do `source .env`. if you do `dbt debug` and the connection is successful, it is enough to work locally. the `.env` file contains profile information that should be exported to your venv folder. 
+4. By invoking dbt from the CLI, it should parse `dbt_project.yml` . To get all the information needed to work locally, change the `example.env` in `.env` and do `source .env`. if you do `dbt debug` and the connection is successful, it is enough to work locally. the `.env` file contains profile information that should be exported to your venv folder. 
 
-4. In order to connect to the bigquery project, there are a couple methods of authentication supported by BQ. The BigQuery account to be used must be your personal account. We recommend using Oauth to connect through gcloud CLI tools. Any extra information can be found on the official dbt-bigquery adapter [documentation](https://docs.getdbt.com/reference/warehouse-setups/bigquery-setup#).
+5. In order to connect to the bigquery project, there are a couple methods of authentication supported by BQ. The BigQuery account to be used must be your personal account. We recommend using Oauth to connect through gcloud CLI tools. Any extra information can be found on the official dbt-bigquery adapter [documentation](https://docs.getdbt.com/reference/warehouse-setups/bigquery-setup#).
 
 ## Configuring project requirements and pre-commit
 Having pre-commit configured in your local environment is crucial to lessen the linting mistakes passed in the commits as the pre-commit does the sqlfluff lint and fix for the changes to be added in the commit. In order to configure it, do:
