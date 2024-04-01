@@ -104,24 +104,24 @@ There are two ways of defining tests in dbt:
 
 ## Getting Started 
 
-In order to develop on this repository, we must first get dbt and follow the installation procedure. First of all, clone the git repository locally. Afterwards, you can follow best practices by setting up a virtual environment for dbt installation or installing it directly (In that case, you can skip to the [dbt setup](#setting-up-dbt)).
+In order to develop on this repository, we must first get dbt and follow the installation procedure. First of all, clone the git repository locally. Afterwards, you can follow best practices to set up a virtual environment in this step-by-step for the dbt installation or installing it directly (In that case, you can skip to the [dbt setup](#setting-up-dbt)).
 
-After cloning, create a virtual environment for the installation. The recommended python version for dbt is 3.8 and any of its patches.
+The recommended python version for dbt is 3.8 and any of its patches.
 
-1. Follow the guide and install the [virtualenv package](https://virtualenv.pypa.io/en/latest/installation.html) through any of the available methods.
+## Configuring .env
+To assert the right configuration of profile.yml of the project, you need to fill some credentials to a file called .env. This file don't exist in the repository, you need to copy and paste the example.env file and rename it to .env. This file is responsible for filling the secrets of your project without commiting it to the repository. Just follow the example.env and you will have it done.
 
-2. In order to create a virtual environment, run the command: ``` virtualenv {{env_name}} -p {{python-version}} ```, in case you wish for an specific python environment version, or simply run ``` virtualenv {{env_name}} ``` to install the system's python version on the current repository. More information can be obtained [here](https://virtualenv.pypa.io/en/latest/user_guide.html).
+## Configuring project requirements and pre-commit
+Having pre-commit configured in your local environment is crucial to lessen the linting mistakes passed in the commits as the pre-commit does the sqlfluff lint and fix for the changes to be added in the commit. In order to configure it, do:
 
-3. Source the virtual environment through: ``` source ~/path/to/venv/bin/activate ``` on Linux and ```.\venv\Scripts\activate.ps1``` on Windows. (It must be activated each time you open the project). Ensure that you are in the folder where the virtual environment was created. If it is activated correctly, the terminal will display a flag (venv). To deactivate the virtual environment, simply run the command: ```deactivate```
+`chmod +x setup.sh` to make the setup.sh executable.
 
-3. By invoking dbt from the CLI, it should parse `dbt_project.yml` and, in case it doesn't already exist, create a `~/.dbt/profiles.yml`. This file exists outside of the project to avoid sensitive credentials in the version control code and it's not recommended to change it's location. **There exists a profile.yml file inside the project folder, but it is not used when developing locally, only for the CI/CD pipeline, and it must not contain any exposed access keys**.
-
-4. In order to connect to the bigquery project, there are a couple methods of authentication supported by BQ. The BigQuery account to be used must be your personal account. We recommend using Oauth to connect through gcloud CLI tools. Any extra information can be found on the official dbt-bigquery adapter [documentation](https://docs.getdbt.com/reference/warehouse-setups/bigquery-setup#).
+`source setup.sh` to set up the requirements of the repository, and pre-commit configuration.
 
 ### Oauth
-5. Oauth - Follow the GCP CLI installation guide [here](https://cloud.google.com/sdk/docs/install). After the installation, run `gcloud init` and provide the requested account information in order to properly setup your Oauth GCP account. The account will be used to run the queries and access the database, so you should use your GCP personal account for that.
+1. Oauth - Follow the GCP CLI installation guide [here](https://cloud.google.com/sdk/docs/install). After the installation, run `gcloud init` and provide the requested account information in order to properly setup your Oauth GCP account. The account will be used to run the queries and access the database, so you should use your GCP personal account for that.
 
-6. Open the `profiles.yml` file and add the following configurations:
+2. Open the `profiles.yml` file and add the following configurations:
 ``` YML
 {{my_dbt_project_name}}:
   outputs:
@@ -144,13 +144,9 @@ For more information on `profiles.yml` setup, please refer to the dbt [documenta
 
 ## dbt Setup
 
-1. Run ``` pip install -r requirements.txt ``` to install all the necessary packages.
+1. To verify if all libraries have been correctly installed, use the command ```pip list```.
 
-2. To verify if all libraries have been correctly installed, use the command ```pip list```.
-
-3. Run ``` dbt deps ``` to install the utils packages from dbt.
-
-3. Following best practices, a dbt project informs dbt about the contect of your project and how to transform your data. To do so, open the ```dbt_project.yml``` project configuration file on your dbt project folder.
+2. Following best practices, a dbt project informs dbt about the contect of your project and how to transform your data. To do so, open the ```dbt_project.yml``` project configuration file on your dbt project folder.
 ``` YML
 name: 'your_dbt_project_name' ##the name of a dbt project.
 version: '1.0.0' ##version of your project.
@@ -181,7 +177,7 @@ models:
         +tags: current_state ##tag used to resource selection syntax.
 ```
 
-4. You can also execute the command `dbt debug` to ensure that all configurations are working correctly, and it is possible to initiate data loading and transformation.
+3. You can also execute the command `dbt debug` to ensure that all configurations are working correctly, and it is possible to initiate data loading and transformation.
 
 ## Working with dbt
 
