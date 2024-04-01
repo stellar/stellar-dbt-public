@@ -119,9 +119,9 @@ Having pre-commit configured in your local environment is crucial to lessen the 
 `source setup.sh` to set up the requirements of the repository, and pre-commit configuration.
 
 ### Oauth
-5. Oauth - Follow the GCP CLI installation guide [here](https://cloud.google.com/sdk/docs/install). After the installation, run `gcloud init` and provide the requested account information in order to properly setup your Oauth GCP account. The account will be used to run the queries and access the database, so you should use your GCP personal account for that.
+1. Oauth - Follow the GCP CLI installation guide [here](https://cloud.google.com/sdk/docs/install). After the installation, run `gcloud init` and provide the requested account information in order to properly setup your Oauth GCP account. The account will be used to run the queries and access the database, so you should use your GCP personal account for that.
 
-6. Open the `profiles.yml` file and add the following configurations:
+2. Open the `profiles.yml` file and add the following configurations:
 ``` YML
 {{my_dbt_project_name}}:
   outputs:
@@ -177,7 +177,7 @@ models:
         +tags: current_state ##tag used to resource selection syntax.
 ```
 
-4. You can also execute the command `dbt debug` to ensure that all configurations are working correctly, and it is possible to initiate data loading and transformation.
+3. You can also execute the command `dbt debug` to ensure that all configurations are working correctly, and it is possible to initiate data loading and transformation.
 
 ## Working with dbt
 
