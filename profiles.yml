@@ -2,15 +2,13 @@ stellar_dbt_public:
   target: "{{ env_var('DBT_TARGET') }}"
   outputs:
     prod:
-      dataset: "{{ env_var('DBT_DATASET') }}"
-      maximum_bytes_billed: "{{ env_var('DBT_MAX_BYTES_BILLED') | as_number }}"
-      job_execution_timeout_seconds: "{{ env_var('DBT_JOB_TIMEOUT') | int }}"
-      threads: "{{ env_var('DBT_THREADS') | int }}"
-      job_retries: "{{ env_var('DBT_JOB_RETRIES') | int }}"
-      priority: interactive
-      project: "{{ env_var('DBT_PROJECT') }}"
-      location: us
+      dataset: "{{ env_var('DBT_DATASET') }}" # the name of your dataset
+      maximum_bytes_billed: "{{ env_var('DBT_MAX_BYTES_BILLED') | as_number }}" # limits the maximum number of processed bytes
+      job_execution_timeout_seconds: "{{ env_var('DBT_JOB_TIMEOUT') | int }}" # the number of seconds dbt should wait for queries to complete, after being submitted successfully
+      threads: "{{ env_var('DBT_THREADS') | int }}" # the maximum number of paths through the graph dbt may work on at once
+      job_retries: "{{ env_var('DBT_JOB_RETRIES') | int }}" # the number of times that dbt will retry failing queries
+      priority: interactive # the priority for the BigQuery jobs that dbt executes
+      project: "{{ env_var('DBT_PROJECT') }}" # the GCP project id
+      location: us # the BigQuery dataset location
       method: oauth
       type: bigquery
-
-
