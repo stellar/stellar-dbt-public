@@ -11,6 +11,8 @@ If you're interested in setting up your own dbt project, you can find detailed i
     - [Development Folders](#development-folders)
   - [Tests](#tests)
 - [Getting Started](#getting-started)
+  - [Download the Repo](#download-the-repo)
+  - [Configure dbt](#configure-dbt)
 - [Working with dbt](#working-with-dbt)
   - [Running Models](#running-models)
   - [Running Tests](#running-tests)
@@ -22,7 +24,7 @@ dbt is composed of different moving parts working harmoniously. All of them are 
 
 ## Workflow
 
-The top level of a dbt workflow is the project. A project generally consists of a project configuration `.yml` (in this case the [dbt_project.yml](https://github.com/stellar/stellar-dbt/blob/master/dbt_project.yml)) and a directory of the [models](https://github.com/stellar/stellar-dbt/tree/master/models). The `dbt_project.yml` tells dbt the project context, and the models let dbt know how to build a specific data set. These models simplify analytics by generating data mart tables.
+The top level of a dbt workflow is the project. A project generally consists of a project configuration `.yml` (in this case the [dbt_project.yml](https://github.com/stellar/stellar-dbt-public/blob/master/dbt_project.yml)) and a directory of the [models](https://github.com/stellar/stellar-dbt-public/tree/master/models). The `dbt_project.yml` tells dbt the project context, and the models let dbt know how to build a specific data set. These models simplify analytics by generating data mart tables.
 
 A model is a single `.sql` file containing a final select statement for the table or view. The table/view name is the same as the file name. A project can have multiple models where a model can be classified as a staging, intermediate, or mart table/view.
 
@@ -40,7 +42,7 @@ In dbt, you can configure the materialization of your models. Materializations a
 
 ## dbt Project Structure
 
-The stellar-dbt project follows a `staging`, `intermediate`, and `marts` approach to modeling.
+The stellar-dbt-public project follows a `staging`, `intermediate`, and `marts` approach to modeling.
 
 1. Staging
    The purpose of the staging layer is to receive the raw data from the source and prepare it for further transformations and analysis.
@@ -160,8 +162,7 @@ source setup.sh
 > _*Note:*_ More information about `dbt core` setup can be found [here](https://docs.getdbt.com/docs/core/about-core-setup)
 
 > _*Note:*_ You may need to modify `profiles.yml` and `dbt_project.yml` if any of the above commands fail
-> <br> [profiles.yml docs](https://docs.getdbt.com/docs/core/connect-data-platform/profiles.yml)
-> <br> [dbt_project.yml docs](https://docs.getdbt.com/reference/dbt_project.yml)
+> <br> [profiles.yml docs](https://docs.getdbt.com/docs/core/connect-data-platform/profiles.yml) > <br> [dbt_project.yml docs](https://docs.getdbt.com/reference/dbt_project.yml)
 
 <br>
 
@@ -201,7 +202,7 @@ dbt <run or build> --select +model_1+
 
 > _*Note:*_ dbt supports `--excluding`, `--defer`, `--target`, and many other selection types. Please refer to the [node selection syntax documentation](https://docs.getdbt.com/reference/node-selection/syntax).
 
-### Running Tests
+## Running Tests
 
 Execute tests with the commands `dbt test` or `dbt build` with the desired [node selection syntax](https://docs.getdbt.com/reference/node-selection/syntax). This will run schema, data, and unit tests unless they are explicitly excluded. More information about tests can be found [here](https://docs.getdbt.com/reference/commands/test).
 
