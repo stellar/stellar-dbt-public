@@ -223,3 +223,7 @@ In order to enable other repositories to work with and build on top of this dbt 
 In order to apply git tagging properly, the last commit message from a repo must contain a hashtag(#) followed by the change type present in that commit. This will allow github to detect the type of change being pushed and increment the version accordingly. For example:
 
 `'Fix trade-agg bug #patch'`
+
+# Futher Development
+
+TODO
