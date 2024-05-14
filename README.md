@@ -22,6 +22,10 @@ If you're interested in setting up your own dbt project, you can find detailed i
 
 dbt is composed of different moving parts working harmoniously. All of them are important to what dbt does — transforming data. When you execute `dbt run` or `dbt build`, you are running a model that will transform your data without that data ever leaving your warehouse.
 
+`dbt run` will execute the compiled sql models without running tests, snapshots, nor seeds (if there are any). More information about `dbt run` can be found [here](https://docs.getdbt.com/reference/commands/run)
+
+`dbt build` will do everything `dbt run` does plus run tests, snapshots, and seeds (if there are any). More information about `dbt build` can be found [here](https://docs.getdbt.com/reference/commands/build)
+
 ## Workflow
 
 The top level of a dbt workflow is the project. A project generally consists of a project configuration `.yml` (in this case the [dbt_project.yml](https://github.com/stellar/stellar-dbt-public/blob/master/dbt_project.yml)) and a directory of the [models](https://github.com/stellar/stellar-dbt-public/tree/master/models). The `dbt_project.yml` tells dbt the project context, and the models let dbt know how to build a specific data set. These models simplify analytics by generating data mart tables.
