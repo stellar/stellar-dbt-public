@@ -555,10 +555,10 @@ models:
               config:
                 where: closed_at > current_timestamp - interval 2 day
           - dbt_utils.expression_is_true:
-              expression: '<= 20'
+              expression: '<= 21'
               meta:
                 description:
-                  "Test to check for the correct protocol. Will update after P20 vote."
+                  "Test to check for the correct protocol. Will update after P21 vote."
 
       - name: successful_transaction_count
         description: '{{ doc("successful_transaction_count") }}'
