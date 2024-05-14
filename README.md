@@ -1,234 +1,229 @@
 # stellar-dbt-public
-Public DBT instance to aid in data transformation for analytics purposes.
+
+Public dbt instance to aid in data transformation for analytics purposes.
 If you're interested in setting up your own dbt project, you can find detailed instructions in the [dbt documentation](https://docs.getdbt.com/docs/introduction).
 
+# Table of Contents
 
-## Table of Contents
 - [dbt Overview](#dbt-overview)
-    - [Workflow](#workflow)
-    - [dbt Project Structure](#dbt-project-structure)
-    - [Tests](#tests)
-- [Getting Started](#getting-started)
-    - [Oauth connection](#oauth)
-- [dbt Setup](#dbt-setup)    
-- [Working with dbt](#working-with-dbt)
-    - [Running Models](#running-models)
-    - [Running Tests](#running-tests)
-- [Project Structure](#project-structure)
+  - [Workflow](#workflow)
+  - [dbt Project Structure](#dbt-project-structure)
     - [Development Folders](#development-folders)
+  - [Tests](#tests)
+- [Getting Started](#getting-started)
+  - [Download the Repo](#download-the-repo)
+  - [Configure dbt](#configure-dbt)
+- [Working with dbt](#working-with-dbt)
+  - [Running Models](#running-models)
+  - [Running Tests](#running-tests)
 - [New Releases](#New-code-release)
 
+# dbt Overview
 
-## dbt Overview 
+dbt is composed of different moving parts working harmoniously. All of them are important to what dbt does — transforming data. When you execute `dbt run` or `dbt build`, you are running a model that will transform your data without that data ever leaving your warehouse.
 
-dbt is composed of different moving parts working harmoniously. All of them are important to what dbt does — transforming data.  When you execute `dbt run`, you are running a model that will transform your data without that data ever leaving your warehouse.
+`dbt run` will execute the compiled sql models without running tests, snapshots, nor seeds (if there are any). More information about `dbt run` can be found [here](https://docs.getdbt.com/reference/commands/run)
 
-### Workflow
+`dbt build` will do everything `dbt run` does plus run tests, snapshots, and seeds (if there are any). More information about `dbt build` can be found [here](https://docs.getdbt.com/reference/commands/build)
 
-The top level of a dbt workflow is the project. A project is a directory of a `.yml` file (the project configuration) and either `.sql` or `.py` files (the models). The project file tells dbt the project context, and the models let dbt know how to build a specific data set. In the end, the purpose of these models is to simplify analytics by generating data mart tables.
+## Workflow
 
-A model is a single file containing a final select statement, and a project can have multiple models, and models can even reference each other.
+The top level of a dbt workflow is the project. A project generally consists of a project configuration `.yml` (in this case the [dbt_project.yml](https://github.com/stellar/stellar-dbt-public/blob/master/dbt_project.yml)) and a directory of the [models](https://github.com/stellar/stellar-dbt-public/tree/master/models). The `dbt_project.yml` tells dbt the project context, and the models let dbt know how to build a specific data set. These models simplify analytics by generating data mart tables.
 
-In dbt, you can configure the materialization of your models. Materializations are strategies for persisting dbt models in a warehouse. There are four types of materializations built into dbt. They are:
-1. Table (your model is rebuilt as a table on each run)
-2. View (your model is rebuilt as a view on each run)
-3. Incremental (allow dbt to insert or update records into a table since the last time that dbt was run.)
-4. Ephemeral (models are not directly built into the database. instead, dbt will interpolate the code from this model into dependent models as a common table expression.)
+A model is a single `.sql` file containing a final select statement for the table or view. The table/view name is the same as the file name. A project can have multiple models where a model can be classified as a staging, intermediate, or mart table/view.
 
-### dbt Project Structure
+In dbt, you can configure the materialization of your models. Materializations are strategies for persisting dbt models in a warehouse. There are five types of materializations built into dbt. They are:
 
-1. Staging (data preparation)
-The purpose of the source layer is to receive the raw data from the source and define preparations for further analysis.
+1. [View](https://docs.getdbt.com/docs/build/materializations#view): your model is rebuilt as a view on each run
+2. [Table](https://docs.getdbt.com/docs/build/materializations#table): your model is rebuilt as a table on each run
+3. [Incremental](https://docs.getdbt.com/docs/build/materializations#incremental): allows dbt to insert or update records into a table since the last time that dbt was run
+4. [Ephemeral](https://docs.getdbt.com/docs/build/materializations#ephemeral): these are not directly built into the database. instead, dbt will interpolate the code from this model into dependent models as a common table expression
+5. [Materialized View](https://docs.getdbt.com/docs/build/materializations#materialized-view): allows the creation and maintenance of materialized views in the target database
 
-  What to do on staging:
+> _*Note:*_ More information about materializations can be found [here](https://docs.getdbt.com/docs/build/materializations#overview)
 
-  - Column selection
-  - Consistently renaming columns.
-  - Definition of data types (casting columns to String, Numeric...)
-  - Flattening of structured objects
-  - Initial filters
-  - Tests (source.yml)
-  - Basic cleanup, like replacing empty strings with NULL, for example
+> _*Note:*_ More information about dbt projects can be found [here](https://docs.getdbt.com/docs/build/projects).
 
-  What is not done in the source:
+## dbt Project Structure
 
-  - Joins
-  - Creating business rules
+The stellar-dbt-public project follows a `staging`, `intermediate`, and `marts` approach to modeling.
 
-2. Intermediate (data preparation)
-In the intermediate layer, the preparation for directing the data to the marts takes place. Not every table in the staging layer will become an intermediate. In staging, it is possible to combine different tables to start assembling business rules.
+1. Staging
+   The purpose of the staging layer is to receive the raw data from the source and prepare it for further transformations and analysis.
 
-  What is done in the intermediate:
+What to do in staging:
 
-  - Join between different source queries
-  - More complex functions that would not enter the staging layer
-  - Aggregations
-  - Creation of business metrics/rules
+- Column selection
+- Renaming columns
+- Definition of data types (casting columns to String, Numeric...)
+- Flattening of structured objects
+- Initial filters
+- Basic cleanup, like replacing empty strings with NULL, for example
 
-  What not to do in intermediate:
+What not to do in staging:
 
-  - Ingestion of raw data
-  - Dimensional modeling (separation of facts, dimensions and marts)
+- Joins
+- Aggregations
 
-3. Marts (final transformations)
-In the marts layer, data is organized for the dimensional model, as well as the configuration for incremental materialization of final tables. Each model will be accompanied by a `.yml` file with the same name. This file contains model and column descriptions and tests.
+> _*Note:*_ More information about `staging` layer can be found [here](https://docs.getdbt.com/best-practices/how-we-structure/2-staging).
 
-  What is done at the marts:
+2. Intermediate
+   In the intermediate layer, the preparation for directing the data to the marts takes place. Not every model in the staging layer will become an intermediate model. This is where it is possible to combine different models to start assembling business rules.
 
-  - Organization of data in a dimensional model (star schema)
-  - Creation of sk keys
-  - Mart-specific tweaks
-  - Join between sources and/or stagings
-  - Documentation and testing
+What to do in intermediate:
 
-  What not to do at marts:
+- Joins between different staging or intermediate models
+- Aggregations or re-graining to fan out or collapse columns to the desired granularity
+- Complex logic such as the integration of business logic, rules, or metrics
 
-  - Data cleaning
-  - Opening of staging
+What not to do in intermediate:
 
-The models are divided into:
+- Ingestion of raw data
+- Dimensional modeling (creation of fact, dimension, or aggregate tables)
+- The actions listed in staging
 
-  - Dimension tables (dim_table): where the dimensions of the models will be defined and gather all the sources of the respective dimension;
-  - Fact tables (fct_table): where the final models of the business strategy to be analyzed will be located;
-  - Aggregate tables (agg_table): where are aggregations of fact tables by one dimension.
+> _*Note:*_ More information about `intermediate` layer can be found [here](https://docs.getdbt.com/best-practices/how-we-structure/3-intermediate).
 
-### Tests
+3. Marts
+   The marts layer is where users can access final dimensional modeling tables. Each model will be accompanied by a `.yml` file with the same name. The `.yml` file contains the descriptions and tests for the model and its columns.
 
-Tests are assertions you make about your models and other resources in your dbt project (e.g. sources, seeds and snapshots). When you run `dbt test`, dbt will tell you if each test in your project passes or fails. Like almost everything in dbt, tests are SQL queries. In particular, they are select statements that seek to grab "failing" records, ones that disprove your assertion. 
+What to do in marts:
 
-There are two ways of defining tests in dbt:
+- Organization of data into dimension, fact, or aggregate tables
+- Mart-specific tweaks
+- Final joins for staging and intermediate models
+- End user documentation
+- Final testing
 
-1. A singular test is testing in its simplest form: If you can write a SQL query that returns failing rows, you can save that query in a `.sql` file within your test directory.
-2. A generic test is a parameterized query that accepts arguments. The test query is defined in a special test block (like a macro). Once defined, you can reference the generic test by name throughout your `.yml` files—define it on models, columns, sources, snapshots, and seeds.
+What not to do in marts:
 
+- Data cleaning
+- The actions listed in staging or intermediate
 
-## Getting Started 
-
-In order to develop on this repository, we must first get dbt and follow the installation procedure. First of all, clone the git repository locally. Afterwards, you can follow best practices to set up a virtual environment in this step-by-step for the dbt installation or installing it directly (In that case, you can skip to the [dbt setup](#setting-up-dbt)).
-
-The recommended python version for dbt is 3.8 and any of its patches.
-
-## Configuring .env
-To assert the right configuration of profile.yml of the project, you need to fill some credentials to a file called .env. This file don't exist in the repository, you need to copy and paste the example.env file and rename it to .env. This file is responsible for filling the secrets of your project without commiting it to the repository. Just follow the example.env and you will have it done.
-
-## Configuring project requirements and pre-commit
-Having pre-commit configured in your local environment is crucial to lessen the linting mistakes passed in the commits as the pre-commit does the sqlfluff lint and fix for the changes to be added in the commit. In order to configure it, do:
-
-`chmod +x setup.sh` to make the setup.sh executable.
-
-`source setup.sh` to set up the requirements of the repository, and pre-commit configuration.
-
-### Oauth
-1. Oauth - Follow the GCP CLI installation guide [here](https://cloud.google.com/sdk/docs/install). After the installation, run `gcloud init` and provide the requested account information in order to properly setup your Oauth GCP account. The account will be used to run the queries and access the database, so you should use your GCP personal account for that.
-
-2. Open the `profiles.yml` file and add the following configurations:
-``` YML
-{{my_dbt_project_name}}:
-  outputs:
-    development:
-      dataset: your_dbt_dataset ##the name of your dataset.
-      maximum_bytes_billed: 5500000000 ##this field limits the maximum number of processed bytes. it helps control processing costs, we recommend 5500000000.
-      job_execution_timeout_seconds: 300 ##the number of seconds dbt should wait for queries to complete, after being submitted successfully. we sugest 300 seconds. 
-      job_retries: 1 ##the number of times that dbt will retry failing queries. the default is 1.
-      location: your-location ##your BQ dataset location
-      method: oauth
-      priority: interactive ##the priority for the BQ jobs that dbt executes.
-      project: your_bigquery_project_name ##your GCP project id
-      threads: 1 ##the number of threads represents the maximum number of paths through the graph dbt may work on at once. we recommed 1
-      type: bigquery
-  target: development
-```
-In order to avoid any additional costs, the same location of your BigQuery dataset should be used.
-
-For more information on `profiles.yml` setup, please refer to the dbt [documentation](https://docs.getdbt.com/reference/project-configs/profile).
-
-## dbt Setup
-
-1. To verify if all libraries have been correctly installed, use the command ```pip list```.
-
-2. Following best practices, a dbt project informs dbt about the contect of your project and how to transform your data. To do so, open the ```dbt_project.yml``` project configuration file on your dbt project folder.
-``` YML
-name: 'your_dbt_project_name' ##the name of a dbt project.
-version: '1.0.0' ##version of your project.
-config-version: 2 ##specify your dbt_project.yml as using the v2 structure.
-
-profile: 'your_profile' ##the profile dbt uses to connect to your data platform.
-
-model-paths: ["models"] ##specify a custom list of directories where models and sources are located.
-analysis-paths: ["analyses"] ##specify a custom list of directories where analyses are located.
-test-paths: ["tests"] ##directories to where your singular test files live.
-seed-paths: ["seeds"] ##specify a custom list of directories where seed files are located.
-macro-paths: ["macros"] ##specify a custom list of directories where macros are located.
-snapshot-paths: ["snapshots"] ##directories to where your snapshots live.
-
-models:
-  {{my_dbt_project_name}}:
-    staging:
-      +materialized: view ##how your stagings models will materialized.
-      +dataset: raw ##the subfolder that will be created within your dataset models where the stagings will be located.
-    intermediate:
-      +materialized: table ##how your intermediate models will materialized.
-      +dataset: conformed ##the subfolder that will be created within your dataset models where the intermediates will be located.
-    marts:
-      +materialized: table ##how your marts models will materialized.
-      +dataset: marts ##the subfolder that will be created within your dataset models where the marts will be located.
-      ledger_current_state:
-        +materialized: table  ##how your ledger current state model will materialized.
-        +tags: current_state ##tag used to resource selection syntax.
-```
-
-3. You can also execute the command `dbt debug` to ensure that all configurations are working correctly, and it is possible to initiate data loading and transformation.
-
-## Working with dbt
-
-### Running Models
-
-Executing a dbt model is the same as executing a SQL script. There are many ways to run dbt models: 
-
-1. Run the entire project through `dbt run`
-
-2. Run tagged models, paths or configs through `dbt run --select tag:tag_1 tag_2 tag_3`.
-
-3. Run specific models through `dbt run --select model_1 model_2 model_3`. **Note that this runs only the specified models, unless you follow said model(s) with execution method #4**
-
-4. Run downstream or upstream models by adding a '+' at the beginning(downstream), end(upstream) or both on the model name `dbt run --select +model_1+`
-
-On top of that, dbt supports --excluding, --defer, --target and many other selection types. To see more, please refer to the [documentation](https://docs.getdbt.com/reference/node-selection/syntax).
-
-### Running Tests
-
-Executing tests works the same way as executing runs, with the command `dbt test` accepting many of the same parameters. This will run both schema tests and unique tests, unless commanded otherwise. For more information on the syntax, consult the [documentation](https://docs.getdbt.com/reference/node-selection/syntax).
-
-In dbt, tests come in two ways. Schema tests, which are pre-built macros and can be called in YML schema files, and unique tests, which are user-made and have their own .SQL files, stored in the `tests` folder. Both tests will be executed during a `dbt test`, unless further node selection is provided. A dbt test will fail when the underlying SQL selection returns a result row, being approved when no rows are returned. For further information on tests, please refer to the [documentation](https://docs.getdbt.com/reference/test-configs).
-
-## Project Structure
-
-The Stellar-dbt project follows a staging/marts approach to modelling. The staging step focuses on transforming and preparing the tables for joining on the marts step. In order to diminish cost, all staging `.sql` files are materialized as ephemeral in the `dbt_project.yml`, allowing code modularity and decoupling while not raising storage costs. 
-
-The marts, on the other hand, are materialized as tables, in order to reduce querying time on the BI and other exposures. It is in this step that tables are joined together to obtain analytical results or rejoin needed information to facilitate date exploration.
+> _*Note:*_ More information about `marts` layer can be found [here](https://docs.getdbt.com/best-practices/how-we-structure/4-marts).
 
 ### Development Folders
 
-| Name | Description |
-|------|-------------|
-|Source| Stores the raw data that will be used as inputs for the dbt transformations. |
-|Staging| Stages the pre-processed or cleaned data before performing the transformations. |
-|Intermediate| Contains the transformed and processed data. |
-|Marts| Houses the final data models or data marts, which are the end results of the dbt project. |
-|Docs| Stores documentation related to your dbt project. |
-|Macros| Contains reusable SQL code snippets known as macros. |
-|Tests| Contains defining tests to validate the accuracy and correctness of the data transformations. |
+| Name         | Description                                                                                   |
+| ------------ | --------------------------------------------------------------------------------------------- |
+| Source       | Stores the raw data that will be used as inputs for the dbt transformations.                  |
+| Staging      | Stages the pre-processed or cleaned data before performing the transformations.               |
+| Intermediate | Contains the transformed and processed data.                                                  |
+| Marts        | Houses the final data models or data marts, which are the end results of the dbt project.     |
+| Docs         | Stores documentation related to your dbt project.                                             |
+| Macros       | Contains reusable SQL code snippets known as macros.                                          |
+| Tests        | Contains defining tests to validate the accuracy and correctness of the data transformations. |
 
-### New Releases
+## Tests
+
+Tests are assertions made about models and other resources in the dbt project. When you run `dbt test` or `dbt build`, dbt will tell you if each test in your project passes or fails.
+
+There are three different test types:
+
+1. Singular data tests: a SQL query that returns failing rows
+2. Generic data tests: is a parameterized query that accepts arguments. The test query is defined in a special test block (like a macro)
+3. Unit tests: validates SQL modeling logic on a small set of static inputs before materializing the full model
+
+> _*Note:*_ More information about `data tests` can be found [here](https://docs.getdbt.com/docs/build/data-tests)
+
+> _*Note:*_ More information about `unit tests` can be found [here](https://docs.getdbt.com/docs/build/unit-tests)
+
+<br>
+
+---
+
+# Getting Started
+
+## Download the Repo
+
+Clone the git repository locally
+
+```
+git clone https://github.com/stellar/stellar-dbt-public.git
+```
+
+## Configure dbt
+
+1. Create a new `.env` file by copying `example.env`
+
+```
+cp example.env .env
+```
+
+2. Set the various `DBT_*` variables (e.g. `DBT_DATASET`, `DBT_PROJECT`)
+3. Execute `setup.sh` to create a virtual environment and install required dbt dependencies
+
+```
+source setup.sh
+```
+
+4. Set up OAuth by running `gloud init` and following the account information prompts
+5. To verify if all libraries have been correctly installed, use the command `pip list`
+6. Execute the command `dbt debug` to ensure that all configurations are working correctly
+
+> _*Note:*_ You can find instructions to install the `GCP CLI` [here](https://cloud.google.com/sdk/docs/install)
+
+> _*Note:*_ More information about `dbt core` setup can be found [here](https://docs.getdbt.com/docs/core/about-core-setup)
+
+> _*Note:*_ You may need to modify `profiles.yml` and `dbt_project.yml` if any of the above commands fail
+> <br> [profiles.yml docs](https://docs.getdbt.com/docs/core/connect-data-platform/profiles.yml) > <br> [dbt_project.yml docs](https://docs.getdbt.com/reference/dbt_project.yml)
+
+<br>
+
+---
+
+# Working with dbt
+
+## Running Models
+
+Executing a dbt model is the same as executing a SQL script. There are many ways to run dbt models:
+
+1. Run the entire project with
+
+```
+dbt <run or build>
+```
+
+2. Run tagged models, paths, or configs with
+
+```
+dbt <run or build> --select tag:tag_1 tag_2 tag_3
+```
+
+3. Run specific models with
+
+```
+dbt <run or build> --select model_1 model_2 model_3
+```
+
+> _*Note:*_ this runs only the specified models and none of its dependencies
+
+4. Run the model with its downstream and/or upstream models by adding a `+` to the beginning (downstream) and/or the end (upstream) of the model name
+
+```
+dbt <run or build> --select +model_1+
+```
+
+> _*Note:*_ dbt supports `--excluding`, `--defer`, `--target`, and many other selection types. Please refer to the [node selection syntax documentation](https://docs.getdbt.com/reference/node-selection/syntax).
+
+## Running Tests
+
+Execute tests with the commands `dbt test` or `dbt build` with the desired [node selection syntax](https://docs.getdbt.com/reference/node-selection/syntax). This will run schema, data, and unit tests unless they are explicitly excluded. More information about tests can be found [here](https://docs.getdbt.com/reference/commands/test).
+
+# New Releases
 
 In order to enable other repositories to work with and build on top of this dbt repo, it was configured as a package. Due to this, commiting to the repository requires a few extra steps to ensure git tagging is consistent, so that changes will not break any code downstream. When commiting changes, there are 3 main version changes that can be applied to the repository, as follows:
 
-| Change | Description |
-|------|-------------|
-|Major| Version when making incompatible changes |
-|Minor| Version change when adding functionalities in a backward compatible manner |
-|Patch| Version change when making backward compatible bug fixes |
+| Change | Description                                                                |
+| ------ | -------------------------------------------------------------------------- |
+| Major  | Version when making incompatible changes                                   |
+| Minor  | Version change when adding functionalities in a backward compatible manner |
+| Patch  | Version change when making backward compatible bug fixes                   |
 
 In order to apply git tagging properly, the last commit message from a repo must contain a hashtag(#) followed by the change type present in that commit. This will allow github to detect the type of change being pushed and increment the version accordingly. For example:
 
-```'Fix trade-agg bug #patch'```
+`'Fix trade-agg bug #patch'`
+
+# Futher Development
+
+TODO

@@ -1,24 +1,20 @@
-# Name your project! Project names should contain only lowercase characters
-# and underscores. A good package name should reflect your organization's
-# name or the intended use of these models
-name: 'stellar_dbt_public'
-version: '1.0.0'
-config-version: 2
+name: 'stellar_dbt_public' # the name of a dbt project
+version: '1.0.0' # version of your project
+config-version: 2 
 
-# This setting configures which "profile" dbt uses for this project.
-profile: 'stellar_dbt_public'
+profile: 'stellar_dbt_public' # the profile dbt uses to connect to your data platform
 
 # These configurations specify where dbt should look for different types of files.
 # The `model-paths` config, for example, states that models in this project can be
 # found in the "models/" directory. You probably won't need to change these!
-model-paths: ["models"]
-analysis-paths: ["analyses"]
-test-paths: ["tests"]
-seed-paths: ["seeds"]
-macro-paths: ["macros"]
-snapshot-paths: ["snapshots"]
+model-paths: ["models"] # directories where models and sources are located
+analysis-paths: ["analyses"] # directories where analyses are located
+test-paths: ["tests"] # directories where singular or generic test files are located
+seed-paths: ["seeds"] # directories where seed files are located
+macro-paths: ["macros"] # directories where macros are located
+snapshot-paths: ["snapshots"] # directories where snapshots are located
 
-target-path: "target"  # directory which will store compiled SQL files
+target-path: "target"  # directory which will store the compiled SQL files
 clean-targets:         # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
@@ -26,18 +22,14 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
-
-# In this example config, we tell dbt to build all models in the example/ directory
-# as tables. These settings can be overridden in the individual model files
-# using the `{{ config(...) }}` macro.
 models:
   stellar_dbt_public:
     staging:
-      +materialized: view
+      +materialized: view # how the staging models will be materialized
     intermediate:
-      +materialized: view
+      +materialized: view # how the intermediate models will be materialized
     marts: 
-      +materialized: table
+      +materialized: table # how the mart models will be materialized
 
   elementary:
     +schema: elementary
