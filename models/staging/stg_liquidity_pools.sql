@@ -35,6 +35,11 @@ with
             , closed_at
             , ledger_sequence
         from raw_table
+        qualify
+            row_number() over (
+                partition by liquidity_pool_id, ledger_entry_change, last_modified_ledger
+                order by closed_at desc
+            ) = 1
     )
 
 select *
