@@ -3,6 +3,16 @@
 Public dbt instance to aid in data transformation for analytics purposes.
 If you're interested in setting up your own dbt project, you can find detailed instructions in the [dbt documentation](https://docs.getdbt.com/docs/introduction).
 
+## Before creating a branch
+
+Pay attention, it is very important to know if your modification to this repository is a release (breaking changes), a feature (functionalities) or a patch(to fix bugs). With that information, create your branch name like this:
+
+* ```release/<branch-name>```
+* ```feature/<branch-name>```
+* ```patch/<branch-name>```
+
+If branch is already made, just rename it *before passing the pull request*.
+
 # Table of Contents
 
 - [dbt Overview](#dbt-overview)
