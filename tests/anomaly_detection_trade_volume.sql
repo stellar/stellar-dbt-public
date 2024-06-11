@@ -1,4 +1,8 @@
-{{ config(severity="warn") }}
+{{ config(
+    tags=['singular_test']
+    , severity="warn"
+    ) 
+}}
 
 with
     base_trades as (
