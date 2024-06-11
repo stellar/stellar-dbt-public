@@ -1,6 +1,6 @@
 {{ config(
-    tags=["singular_test"]
-    , severity="warn"
+    severity="warn"
+    , tags=["singular_test"]
     ) 
 }}
 
