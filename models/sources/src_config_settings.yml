@@ -6,10 +6,6 @@ sources:
     tables:
       - name: config_settings
         description: '{{ doc("config_settings") }}'
-        freshness:
-          warn_after: {count: 30, period: minute}
-          error_after: {count: 60, period: minute}
-        loaded_at_field: closed_at
         tests:
           - dbt_utils.unique_combination_of_columns:
               combination_of_columns:
