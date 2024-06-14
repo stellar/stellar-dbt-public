@@ -1,4 +1,8 @@
-{{ config(severity="warn") }}
+{{ config(
+    severity="warn"
+    , tags=["singular_test"]
+    ) 
+}}
 
 with
     trade_counts as (
