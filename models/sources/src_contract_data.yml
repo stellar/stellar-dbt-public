@@ -6,6 +6,10 @@ sources:
     tables:
       - name: contract_data
         description: '{{ doc("contract_data") }}'
+        freshness:
+          warn_after: {count: 30, period: minute}
+          error_after: {count: 60, period: minute}
+        loaded_at_field: closed_at
         tests:
         columns:
           - name: contract_id

@@ -9,7 +9,7 @@ sources:
         freshness:
           warn_after: {count: 30, period: minute}
           error_after: {count: 60, period: minute}
-        loaded_at_field: batch_run_date
+        loaded_at_field: ledger_closed_at
         tests:
           - dbt_utils.unique_combination_of_columns:
               combination_of_columns:
