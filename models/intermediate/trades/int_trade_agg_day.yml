@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: int_trade_agg_day
-    description: This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying, per day.
+    description: Intermediate for the aggregation of daily trade data. This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying.
     columns:
       
       - name: day_agg
