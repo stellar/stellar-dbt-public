@@ -4,8 +4,8 @@ sources:
   - name: crypto_stellar
     database: 'crypto-stellar'
     tables:
-      - name: offers
-        description: '{{ doc("liquidity_pools") }}'
+      - name: claimable_balances
+        description: '{{ doc("claimable_balances") }}'
         tests:
           - dbt_utils.recency:
               datepart: hour
@@ -18,102 +18,81 @@ sources:
                   "Monitors the freshness of your table over time, as the expected time between data updates."
           - dbt_utils.unique_combination_of_columns:
               combination_of_columns:
-                - offer_id
+                - balance_id
                 - ledger_entry_change
-                - last_modified_ledger
               config:
                 where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
                           and batch_run_date < datetime_trunc(current_datetime(), day)
               meta:
                 description:
-                  "Tests the uniqueness combination of: offer_id, ledger_entry_change and last_modified_ledger."
+                  "Tests the uniqueness combination of: balance_id and ledger_entry_change."
+
         columns:
-          - name: seller_id
-            description: '{{ doc("seller_id") }}'
+          - name: balance_id
+            description: '{{ doc("balance_id") }}'
             tests:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
-          - name: offer_id
-            description: '{{ doc("offer_id") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+          - name: claimants
+            description: '{{ doc("claimants") }}'
 
-          - name: selling_asset_type
+          - name: claimants.destination
+            description: '{{ doc("claimants_destination") }}'
+
+          - name: claimants.predicate
+            description: '{{ doc("claimants_predicate") }}'
+
+          - name: claimants.predicate.unconditional
+            description: '{{ doc("claimants_predicate_unconditional") }}'
+
+          - name: claimants.predicate.abs_before
+            description: '{{ doc("claimants_predicate_abs_before") }}'
+
+          - name: claimants.predicate.rel_before
+            description: '{{ doc("claimants_predicate_rel_before") }}'
+
+          - name: claimants.predicate.abs_before_epoch
+            description: '{{ doc("claimants_predicate_abs_before_epoch") }}'
+
+          - name: asset_type
             description: '{{ doc("asset_type") }}'
             tests:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
-          - name: selling_asset_code
+          - name: asset_code
             description: '{{ doc("asset_code") }}'
             tests:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
-          - name: selling_asset_issuer
+          - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
             tests:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
-          - name: buying_asset_type
-            description: '{{ doc("asset_type") }}'
+          - name: asset_amount
+            description: '{{ doc("asset_amount") }}'
             tests:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
-          - name: buying_asset_code
-            description: '{{ doc("asset_code") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
-
-          - name: buying_asset_issuer
-            description: '{{ doc("asset_issuer") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
-
-          - name: amount
-            description: '{{ doc("amount") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
-
-          - name: pricen
-            description: '{{ doc("price_n") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
-
-          - name: priced
-            description: '{{ doc("price_d") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
-
-          - name: price
-            description: '{{ doc("price") }}'
+          - name: sponsor
+            description: '{{ doc("sponsor") }}'
             tests:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
           - name: flags
-            description: '{{ doc("flags_offers") }}'
+            description: '{{ doc("flags_accounts_balances") }}'
             tests:
               - not_null:
                   config:
@@ -140,9 +119,6 @@ sources:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
-          - name: sponsor
-            description: '{{ doc("sponsor") }}'
-
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
@@ -164,26 +140,9 @@ sources:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
-          - name: selling_asset_id
-            description: '{{ doc("assets_id") }}'
+          - name: asset_id
+            description: '{{ doc("asset_id") }}'
             tests:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
-
-          - name: buying_asset_id
-            description: '{{ doc("assets_id") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
-
-          - name: closed_at
-            description: '{{ doc("closed_at") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
-
-          - name: ledger_sequence
-            description: '{{ doc("ledger_sequence") }}'

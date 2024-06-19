@@ -50,15 +50,31 @@ sources:
 
           - name: selling_account_address
             description: '{{ doc("selling_account_address") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_code
             description: '{{ doc("trade_selling_asset_code") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_issuer
             description: '{{ doc("trade_selling_asset_issuer") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_type
             description: '{{ doc("trade_selling_asset_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_id
             description: '{{ doc("assets_id") }}'
@@ -69,18 +85,38 @@ sources:
 
           - name: selling_amount
             description: '{{ doc("trade_selling_amount") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: buying_account_address
             description: '{{ doc("buying_account_address") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_code
             description: '{{ doc("trade_buying_asset_code") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_issuer
             description: '{{ doc("trade_buying_asset_issuer") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_type
             description: '{{ doc("trade_buying_asset_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_id
             description: '{{ doc("assets_id") }}'
@@ -91,6 +127,10 @@ sources:
 
           - name: buying_amount
             description: '{{ doc("trade_buying_amount") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: price_n
             description: '{{ doc("trade_price_n") }}'
@@ -120,6 +160,10 @@ sources:
 
           - name: trade_type
             description: '{{ doc("trade_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: ledger_closed_at > current_timestamp - interval 2 day
 
           - name: rounding_slippage
             description: '{{ doc("rounding_slippage") }}'

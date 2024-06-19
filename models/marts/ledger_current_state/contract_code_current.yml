@@ -24,27 +24,63 @@ models:
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: deleted
         description: '{{ doc("deleted") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
+        tets:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: upstream_insert_ts
         description: '{{ doc("upstream_insert_ts") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day

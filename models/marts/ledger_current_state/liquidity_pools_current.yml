@@ -65,6 +65,10 @@ models:
 
       - name: asset_pair
         description: '{{ doc("asset_pair") }}'
+        tests:
+          - not_null:
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: asset_a_code
         description: '{{ doc("asset_a_code") }}'

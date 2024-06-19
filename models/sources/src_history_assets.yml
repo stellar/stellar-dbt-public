@@ -33,6 +33,10 @@ sources:
 
           - name: asset_code
             description: '{{ doc("asset_code") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
