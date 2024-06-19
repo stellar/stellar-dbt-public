@@ -6,16 +6,11 @@ sources:
     tables:
       - name: offers
         description: '{{ doc("liquidity_pools") }}'
+        freshness:
+          warn_after: {count: 30, period: minute}
+          error_after: {count: 60, period: minute}
+        loaded_at_field: closed_at
         tests:
-          - dbt_utils.recency:
-              datepart: hour
-              field: closed_at
-              interval: 12
-              config:
-                severity: warn
-              meta:
-                description:
-                  "Monitors the freshness of your table over time, as the expected time between data updates."
           - dbt_utils.unique_combination_of_columns:
               combination_of_columns:
                 - offer_id
