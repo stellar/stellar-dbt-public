@@ -1,9 +1,9 @@
 name: CI Diff-quality
 
 on:
-  push:
+  pull_request:
     branches:
-      - feature/automated-linting
+      - master
 env:
   DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
   DBT_TARGET: prod
@@ -18,9 +18,9 @@ env:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    #if: >-
-    #  github.event.pull_request.merged == false &&
-    #  github.event.pull_request.state == 'open'
+    if: >-
+      github.event.pull_request.merged == false &&
+      github.event.pull_request.state == 'open'
 
     steps:
       - uses: actions/checkout@v3
