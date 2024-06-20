@@ -9,18 +9,18 @@ models:
           field: cast(batch_run_date as timestamp)
           interval: 2
           config:
-                severity: warn
+            severity: warn
           meta:
-            description:
-              "Monitors the freshness of your table over time, as the expected time between data updates."
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: asset_id
         description: '{{ doc("assets_id") }}'
         tests:
           - unique:
               config:
-                where: batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
-                          and batch_run_date < datetime_trunc(current_datetime(), day)
+                where:
+                  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
+                  and batch_run_date < datetime_trunc(current_datetime(), day)
           - not_null:
               config:
                 where: batch_run_date > current_datetime - interval 2 day
@@ -32,7 +32,7 @@ models:
               config:
                 where: batch_run_date > current_datetime - interval 2 day
           - accepted_values:
-              values: ['credit_alphanum12', 'credit_alphanum4', 'native']
+              values: ["credit_alphanum12", "credit_alphanum4", "native"]
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
@@ -40,7 +40,7 @@ models:
           - not_null:
               config:
                 where: asset_type != 'native'
-                        and batch_run_date > current_datetime - interval 2 day
+                  and batch_run_date > current_datetime - interval 2 day
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
@@ -48,7 +48,7 @@ models:
           - not_null:
               config:
                 where: asset_type != 'native'
-                        and batch_run_date > current_datetime - interval 2 day
+                  and batch_run_date > current_datetime - interval 2 day
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'

@@ -2,13 +2,13 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: history_transactions
         description: '{{ doc("history_transactions") }}'
         freshness:
-          warn_after: {count: 30, period: minute}
-          error_after: {count: 60, period: minute}
+          warn_after: { count: 30, period: minute }
+          error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
         columns:
@@ -17,8 +17,9 @@ sources:
             tests:
               - unique:
                   config:
-                    where: batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
-                            and batch_run_date < datetime_trunc(current_datetime(), day)
+                    where:
+                      batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
+                      and batch_run_date < datetime_trunc(current_datetime(), day)
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
@@ -208,7 +209,7 @@ sources:
             description: '{{ doc("transaction_result_code") }}'
 
           - name: inclusion_fee_bid
-            description: '{{ doc("inclusion_fee_bid") }}'          
+            description: '{{ doc("inclusion_fee_bid") }}'
 
           - name: inclusion_fee_charged
             description: '{{ doc("inclusion_fee_charged") }}'

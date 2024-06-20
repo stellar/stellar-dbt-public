@@ -7,7 +7,7 @@
         , "data_type": "timestamp"
         , "granularity": "month"},
     cluster_by=["ledger_sequence", "transaction_id", "op_type"]
-    ) 
+    )
 }}
 
 with

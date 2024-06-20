@@ -7,11 +7,11 @@ If you're interested in setting up your own dbt project, you can find detailed i
 
 Pay attention, it is very important to know if your modification to this repository is a release (breaking changes), a feature (functionalities) or a patch(to fix bugs). With that information, create your branch name like this:
 
-* ```release/<branch-name>```
-* ```feature/<branch-name>```
-* ```patch/<branch-name>```
+- `release/<branch-name>`
+- `feature/<branch-name>`
+- `patch/<branch-name>`
 
-If branch is already made, just rename it *before passing the pull request*.
+If branch is already made, just rename it _before passing the pull request_.
 
 # Table of Contents
 

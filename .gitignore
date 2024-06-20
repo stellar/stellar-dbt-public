@@ -8,6 +8,8 @@ logs/
 
 ### virtual environment
 venv/
+.env
+.env.tmp
 
 ### gcp credentials
 credentials.json

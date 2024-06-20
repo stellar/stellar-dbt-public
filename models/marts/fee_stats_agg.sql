@@ -6,10 +6,10 @@
         "field": "day_agg"
         , "data_type": "date"
         , "granularity": "month"}
-    ) 
+    )
 }}
 
-{% 
+{%
     set percentiles = [
         10
         , 20

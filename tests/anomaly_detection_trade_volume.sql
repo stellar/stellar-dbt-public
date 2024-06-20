@@ -1,7 +1,7 @@
 {{ config(
     severity="warn"
     , tags=["singular_test"]
-    ) 
+    )
 }}
 
 with

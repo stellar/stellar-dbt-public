@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: config_settings
         description: '{{ doc("config_settings") }}'
@@ -13,11 +13,11 @@ sources:
                 - last_modified_ledger
                 - ledger_entry_change
               config:
-                where:  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
-                          and closed_at < timestamp_trunc(current_timestamp(), day)
+                where:
+                  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+                  and closed_at < timestamp_trunc(current_timestamp(), day)
               meta:
-                description:
-                  "Tests the uniqueness combination of: config_setting_id, last_modified_ledger, and ledger_entry_change."
+                description: "Tests the uniqueness combination of: config_setting_id, last_modified_ledger, and ledger_entry_change."
         columns:
           - name: config_setting_id
             description: '{{ doc("config_setting_id") }}'

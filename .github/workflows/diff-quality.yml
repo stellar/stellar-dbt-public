@@ -1,9 +1,9 @@
 name: CI Diff-quality
 
 on:
-    pull_request:
-        branches:
-            - master
+  push:
+    branches:
+      - feature/automated-linting
 env:
   DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
   DBT_TARGET: prod
@@ -16,32 +16,56 @@ env:
   DBT_JOB_RETRIES: 1
 
 jobs:
-  build:
+  pre-commit:
+    runs-on: ubuntu-latest
+    #if: >-
+    #  github.event.pull_request.merged == false &&
+    #  github.event.pull_request.state == 'open'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - id: file_changes
+        uses: trilom/file-changes-action@v1.2.3
+        with:
+          output: " "
+
+      - uses: pre-commit/action@v3.0.0
+        env:
+          extra_args: --color=always --files ${{ steps.file_changes.outputs.files}}
+          SKIP: sqlfluff-lint,sqlfluff-fix, cleanup
+
+  diff-quality:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # Fetch all history
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Fetch all history
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.8
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        dbt deps
-      
-    - name: Authenticate to GCP
-      uses: 'google-github-actions/auth@v2'
-      with:
-        project_id: crypto-stellar   
-        credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}" 
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          dbt deps
 
-    - name: Checkout source branch and diff quality
-      run:  |
-        git checkout ${{ github.head_ref }}
-        diff-quality --violations=sqlfluff --compare-branch=origin/master --fail-under=95
+      - name: Authenticate to GCP
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: crypto-stellar
+          credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}"
+
+      - name: Checkout source branch and diff quality
+        run: |
+          git checkout ${{ github.head_ref }}
+          diff-quality --violations=sqlfluff --compare-branch=origin/master --fail-under=95
