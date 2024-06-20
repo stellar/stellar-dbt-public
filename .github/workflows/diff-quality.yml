@@ -1,4 +1,4 @@
-name: CI Diff-quality
+name: CI Linting
 
 on:
   pull_request:
