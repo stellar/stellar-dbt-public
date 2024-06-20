@@ -6,16 +6,11 @@ sources:
     tables:
       - name: history_assets_staging
         description: '{{ doc("history_assets_staging") }}'
+        freshness:
+          warn_after: {count: 30, period: minute}
+          error_after: {count: 60, period: minute}
+        loaded_at_field: batch_run_date
         tests:
-          - dbt_utils.recency:
-              datepart: hour
-              field: cast(batch_run_date as timestamp)
-              interval: 12
-              config:
-                severity: warn
-              meta:
-                description:
-                  "Monitors the freshness of your table over time, as the expected time between data updates."
         columns:
           - name: asset_id
             description: '{{ doc("asset_id") }}'
