@@ -55,6 +55,9 @@ models:
           - not_null:
               config:
                 where: closed_at > current_timestamp - interval 2 day
+          - accepted_values:
+              values: [true, false]
+              quote: false
 
       - name: upstream_insert_ts
         description: '{{ doc("upstream_insert_ts") }}'
@@ -76,3 +79,6 @@ models:
           - not_null:
               config:
                 where: closed_at > current_timestamp - interval 2 day
+          - accepted_values:
+              values: [0, 1, 2]
+              quote: false                

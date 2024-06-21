@@ -46,20 +46,25 @@ sources:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
+              - accepted_values:
+                  values: [1, 2, 3]
+                  quote: false
 
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: asset_type != 3
+                              and batch_run_date > current_datetime - interval 2 day
 
           - name: asset_code
             description: '{{ doc("asset_code") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: asset_type != 3
+                              and batch_run_date > current_datetime - interval 2 day
 
           - name: liquidity_pool_id
             description: '{{ doc("liquidity_pool_id") }}'
@@ -116,6 +121,9 @@ sources:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
+              - accepted_values:
+                  values: [0, 1, 2]
+                  quote: false
 
           - name: deleted
             description: '{{ doc("deleted") }}'

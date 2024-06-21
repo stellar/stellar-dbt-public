@@ -75,14 +75,16 @@ models:
         tests:
           - not_null:
               config:
-                where: closed_at > current_timestamp - interval 2 day
+                where: asset_a_type != 'native'
+                        and closed_at > current_timestamp - interval 2 day
 
       - name: asset_a_issuer
         description: '{{ doc("asset_a_issuer") }}'
         tests:
           - not_null:
               config:
-                where: closed_at > current_timestamp - interval 2 day
+                where: asset_a_type != 'native'
+                        and closed_at > current_timestamp - interval 2 day
 
       - name: asset_a_type
         description: '{{ doc("asset_a_type") }}'
@@ -105,14 +107,16 @@ models:
         tests:
           - not_null:
               config:
-                where: closed_at > current_timestamp - interval 2 day
+                where: asset_b_type != 'native'
+                        and closed_at > current_timestamp - interval 2 day
 
       - name: asset_b_issuer
         description: '{{ doc("asset_b_issuer") }}'
         tests:
           - not_null:
               config:
-                where: closed_at > current_timestamp - interval 2 day
+                where: asset_b_type != 'native'
+                        and closed_at > current_timestamp - interval 2 day
 
       - name: asset_b_type
         description: '{{ doc("asset_b_type") }}'

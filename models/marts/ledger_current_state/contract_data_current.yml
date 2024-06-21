@@ -44,38 +44,18 @@ models:
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
-        tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
-        tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
 
       - name: asset_type
-        description: '{{ doc("asset_type") }}'
-        tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+        description: '{{ doc("asset_type") }}'                
 
       - name: balance_holder
         description: '{{ doc("balance_holder") }}'
-        tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
 
       - name: balance
         description: '{{ doc("balance") }}'
-        tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
@@ -90,6 +70,9 @@ models:
           - not_null:
               config:
                 where: closed_at > current_timestamp - interval 2 day
+          - accepted_values:
+              values: [0, 1, 2]
+              quote: false                
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'

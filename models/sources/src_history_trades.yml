@@ -55,14 +55,16 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+                    where: selling_asset_type != 'native'
+                              and ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_issuer
             description: '{{ doc("trade_selling_asset_issuer") }}'
             tests:
               - not_null:
                   config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+                    where: selling_asset_type != 'native'
+                              and ledger_closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_type
             description: '{{ doc("trade_selling_asset_type") }}'
@@ -97,14 +99,16 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+                    where: buying_asset_type != 'native'
+                              and ledger_closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_issuer
             description: '{{ doc("trade_buying_asset_issuer") }}'
             tests:
               - not_null:
                   config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+                    where: buying_asset_type != 'native'
+                              and ledger_closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_type
             description: '{{ doc("trade_buying_asset_type") }}'
