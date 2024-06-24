@@ -2,13 +2,13 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: history_effects
         description: '{{ doc("history_effects") }}'
         freshness:
-          warn_after: {count: 30, period: minute}
-          error_after: {count: 60, period: minute}
+          warn_after: { count: 30, period: minute }
+          error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
         columns:

@@ -11,8 +11,7 @@ models:
           config:
             severity: warn
           meta:
-            description:
-              "Monitors the freshness of your table over time, as the expected time between data updates."
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - account_id
@@ -20,11 +19,11 @@ models:
             - ledger_entry_change
             - last_modified_ledger
           config:
-            where: closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day) 
-                    and closed_at < timestamp_trunc(current_timestamp(), day)
+            where:
+              closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+              and closed_at < timestamp_trunc(current_timestamp(), day)
           meta:
-            description:
-              "Tests the uniqueness combination of: account_id, signer, ledger_entry_change and last_modified_ledger."
+            description: "Tests the uniqueness combination of: account_id, signer, ledger_entry_change and last_modified_ledger."
     columns:
       - name: account_id
         description: '{{ doc("account_id") }}'
@@ -103,7 +102,7 @@ models:
         tests:
           - not_null:
               config:
-                where: closed_at > current_timestamp - interval 2 day  
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: unique_id
         description: '{{ doc("unique_id") }}'

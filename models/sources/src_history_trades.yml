@@ -2,13 +2,13 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: history_trades
         description: '{{ doc("history_trades") }}'
         freshness:
-          warn_after: {count: 30, period: minute}
-          error_after: {count: 60, period: minute}
+          warn_after: { count: 30, period: minute }
+          error_after: { count: 60, period: minute }
         loaded_at_field: ledger_closed_at
         tests:
           - dbt_utils.unique_combination_of_columns:
@@ -16,11 +16,11 @@ sources:
                 - history_operation_id
                 - "`order`"
               config:
-                where:  ledger_closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
-                          and ledger_closed_at < timestamp_trunc(current_timestamp(), day)
+                where:
+                  ledger_closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+                  and ledger_closed_at < timestamp_trunc(current_timestamp(), day)
               meta:
-                description:
-                  "Tests the uniqueness combination of: history_operation_id and order."
+                description: "Tests the uniqueness combination of: history_operation_id and order."
         columns:
           - name: history_operation_id
             description: '{{ doc("history_operation_id") }}'

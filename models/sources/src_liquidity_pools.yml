@@ -2,13 +2,13 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: liquidity_pools
         description: '{{ doc("liquidity_pools") }}'
         freshness:
-          warn_after: {count: 30, period: minute}
-          error_after: {count: 60, period: minute}
+          warn_after: { count: 30, period: minute }
+          error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
           - dbt_utils.unique_combination_of_columns:
@@ -17,11 +17,11 @@ sources:
                 - ledger_entry_change
                 - last_modified_ledger
               config:
-                where:  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
-                          and batch_run_date < datetime_trunc(current_datetime(), day)
+                where:
+                  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
+                  and batch_run_date < datetime_trunc(current_datetime(), day)
               meta:
-                description:
-                  "Tests the uniqueness combination of: liquidity_pool_id, ledger_entry_change and last_modified_ledger."
+                description: "Tests the uniqueness combination of: liquidity_pool_id, ledger_entry_change and last_modified_ledger."
         columns:
           - name: liquidity_pool_id
             description: '{{ doc("liquidity_pool_id") }}'

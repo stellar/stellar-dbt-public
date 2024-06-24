@@ -11,13 +11,13 @@ The sequence number that corresponds to the individual ledgers. As ledgers are w
 - Natural Key
 - Cluster Field
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs ledger_hash%}
 The hex-encoded SHA-256 hash that represents the ledger's XDR-encoded form
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs previous_ledger_hash %}
 The hex-encoded SHA-256 hash of the ledger that immediately precedes this ledger
@@ -29,6 +29,7 @@ The number of successful transactions submitted and completed by the network in 
 - Required Field
 
 #### Notes:
+
 Defaults to 0
 {% enddocs %}
 
@@ -38,6 +39,7 @@ The total number of successful operations applied to this ledger
 - Required Field
 
 #### Notes:
+
 Defaults to 0
 {% enddocs %}
 
@@ -45,19 +47,19 @@ Defaults to 0
 Unique identifier for the ledger
 
 - Primary Key
-{% enddocs %}
+  {% enddocs %}
 
 {% docs total_coins %}
 Total number of lumens in circulation
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs fee_pool %}
 The sum of all transaction fees
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs base_fee %}
 The fee (in stroops) the network charges per operation in a transaction for the given ledger. The minimum base fee is 100, with the ability to increase if transaction demand exceeds ledger capacity. When this occurs, the ledger enters surge pricing.
@@ -65,6 +67,7 @@ The fee (in stroops) the network charges per operation in a transaction for the 
 - Required Field
 
 #### Notes:
+
 The stroop is the fractional representation of a lumen (XLM). 1 stroop is 0.0000001 XLM.
 {% enddocs %}
 
@@ -74,6 +77,7 @@ The reserve (in stroops) the network requires an account to retain as a minimum 
 - Required Field
 
 #### Notes:
+
 The stroop is the fractional representation of a lumen (XLM). 1 stroop is 0.0000001 XLM.
 {% enddocs %}
 
@@ -81,13 +85,13 @@ The stroop is the fractional representation of a lumen (XLM). 1 stroop is 0.0000
 The maximum number of operations that Stellar validator nodes have agreed to process in a given ledger. Since Protocol 11, ledger capacity has been measured in operations rather than transactions.
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs protocol_version %}
 The protocol verstion that the Stellar network was running when this ledger was committed. Protocol versions are released ~every 6 months.
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs ledger_header %}
 A base64-encoded string of the raw LedgerHeader xdr struct for this ledger

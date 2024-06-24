@@ -9,18 +9,18 @@ models:
           field: cast(day_agg as timestamp)
           interval: 2
           config:
-                severity: warn
+            severity: warn
           meta:
-            description:
-              "Monitors the freshness of your table over time, as the expected time between data updates."
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - day_agg
             - asset_a
             - asset_b
           config:
-            where: day_agg >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day) 
-                    and day_agg < datetime_trunc(current_datetime(), day)
+            where:
+              day_agg >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
+              and day_agg < datetime_trunc(current_datetime(), day)
     columns:
       - name: day_agg
         description: '{{ doc("trade_day_agg") }}'
@@ -28,14 +28,14 @@ models:
           - not_null:
               config:
                 where: day_agg > current_datetime - interval 2 day
-      
+
       - name: asset_a
         description: '{{ doc("asset_a") }}'
         tests:
           - not_null:
               config:
                 where: day_agg > current_datetime - interval 2 day
-      
+
       - name: asset_a_type
         description: '{{ doc("asset_a_type") }}'
         tests:
@@ -56,14 +56,14 @@ models:
           - not_null:
               config:
                 where: day_agg > current_datetime - interval 2 day
-      
+
       - name: asset_a_volume_daily
         description: '{{ doc("asset_a_volume_daily") }}'
         tests:
           - not_null:
               config:
                 where: day_agg > current_datetime - interval 2 day
-      
+
       - name: asset_b
         description: '{{ doc("asset_b") }}'
         tests:
@@ -91,7 +91,7 @@ models:
           - not_null:
               config:
                 where: day_agg > current_datetime - interval 2 day
-      
+
       - name: asset_b_volume_daily
         description: '{{ doc("asset_b_volume_daily") }}'
         tests:

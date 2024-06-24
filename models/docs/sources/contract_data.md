@@ -8,10 +8,11 @@ The contract data table contains the soroban contract data ledger entries data. 
 Contract key type which is an ScVal that can have the following values
 
 | Type                                  |
-|---------------------------------------|
+| ------------------------------------- |
 | ScValTypeScvContractInstance          |
 | ScValTypeScvLedgerKeyContractInstance |
 | ScValTypeScvLedgerKeyNonce            |
+
 {% enddocs %}
 
 {% docs contract_durability %}
