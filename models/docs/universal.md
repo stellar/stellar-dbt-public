@@ -6,6 +6,7 @@ The identifier for type of asset code, can be an alphanumeric with 4 characters,
 - Required Field
 
 #### Notes:
+
 XLM is the native asset to the network. XLM has no asset code or issuer representation and will instead be displayed with an asset type of 'native'
 {% enddocs %}
 
@@ -15,7 +16,7 @@ The Farm Hash encoding of Asset Code + Asset Issuer + Asset Type. This field is 
 {% enddocs %}
 
 {% docs unique_id %}
-Current snapshot tables (tables that end in `*_current`) require a singular, unique identifier so that only records that change are updated. This column is a concatenation of the natural keys to create a unique key. 
+Current snapshot tables (tables that end in `*_current`) require a singular, unique identifier so that only records that change are updated. This column is a concatenation of the natural keys to create a unique key.
 {% enddocs %}
 
 {% docs upstream_insert_ts %}
@@ -26,6 +27,7 @@ The timestamp in UTC when a batch of records was inserted into an upstream table
 The 4 or 12 character code representation of the asset on the network.
 
 #### Notes:
+
 Asset codes have no guarantees of uniqueness. The combination of asset code, issuer and type represents a distinct asset
 {% enddocs %}
 
@@ -37,7 +39,7 @@ The account address of the original asset issuer that created the asset.
 The raw number of units of an asset. Precision for an amount is 10^-7 of the asset token. For example, XLM is scaled down to a denomination of a **stroop,** where 10,000,000 stroops = 1 XLM. More information about amount precision can be found [here](https://developers.stellar.org/docs/fundamentals-and-concepts/stellar-data-structures/assets#amount-precision).
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs price_n %}
 The numerator of the precise representation of the buy and sell price of assets on offer (The buy amount desired).
@@ -45,6 +47,7 @@ The numerator of the precise representation of the buy and sell price of assets 
 - Required Field
 
 #### Notes:
+
 If an offer wants to sell 10 XLM in exchange for 1 USD, the numerator will be 1.
 {% enddocs %}
 
@@ -54,6 +57,7 @@ The denominator of the precise represenation of the buy and sell price of assets
 - Required Field
 
 #### Notes:
+
 If an offer wants to sell 10 XLM in exchange for 1 USD, the numerator will be 1.
 {% enddocs %}
 
@@ -63,15 +67,16 @@ How many units of buying it takes to get 1 unit of selling. This number is the d
 - Required Field
 
 #### Notes:
+
 If an offer wants to sell 10 XLM for 1 USD, the price will be 0.10 USD.
 {% enddocs %}
 
 {% docs batch_id %}
-String representation of the run id for a given DAG in Airflow. Takes the form of "scheduled__<batch_end_date>-<dag_alias>". Batch ids are unique to the batch and help with monitoring and rerun capabilities
+String representation of the run id for a given DAG in Airflow. Takes the form of "scheduled\_\_<batch_end_date>-<dag_alias>". Batch ids are unique to the batch and help with monitoring and rerun capabilities
 {% enddocs %}
 
 {% docs batch_run_date %}
-The start date for the batch interval. When taken with the date in the batch_id, the date represents the interval of ledgers processed. The batch run date can be seen as a proxy of closed_at for a ledger. 
+The start date for the batch interval. When taken with the date in the batch_id, the date represents the interval of ledgers processed. The batch run date can be seen as a proxy of closed_at for a ledger.
 {% enddocs %}
 
 {% docs batch_insert_ts %}

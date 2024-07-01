@@ -1,8 +1,8 @@
-name: 'stellar_dbt_public' # the name of a dbt project
-version: '1.0.0' # version of your project
-config-version: 2 
+name: "stellar_dbt_public" # the name of a dbt project
+version: "1.0.0" # version of your project
+config-version: 2
 
-profile: 'stellar_dbt_public' # the profile dbt uses to connect to your data platform
+profile: "stellar_dbt_public" # the profile dbt uses to connect to your data platform
 
 # These configurations specify where dbt should look for different types of files.
 # The `model-paths` config, for example, states that models in this project can be
@@ -14,11 +14,10 @@ seed-paths: ["seeds"] # directories where seed files are located
 macro-paths: ["macros"] # directories where macros are located
 snapshot-paths: ["snapshots"] # directories where snapshots are located
 
-target-path: "target"  # directory which will store the compiled SQL files
-clean-targets:         # directories to be removed by `dbt clean`
+target-path: "target" # directory which will store the compiled SQL files
+clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
-
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -28,7 +27,7 @@ models:
       +materialized: view # how the staging models will be materialized
     intermediate:
       +materialized: view # how the intermediate models will be materialized
-    marts: 
+    marts:
       +materialized: table # how the mart models will be materialized
 
   elementary:

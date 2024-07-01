@@ -11,8 +11,7 @@ models:
           config:
             severity: warn
           meta:
-            description:
-              "Monitors the freshness of your table over time, as the expected time between data updates."
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: contract_id
         description: '{{ doc("key_hash") }}'
@@ -27,7 +26,7 @@ models:
           - not_null:
               config:
                 where: closed_at > current_timestamp - interval 2 day
-        
+
       - name: contract_key_type
         description: '{{ doc("contract_key_type") }}'
         tests:
@@ -49,7 +48,7 @@ models:
         description: '{{ doc("asset_issuer") }}'
 
       - name: asset_type
-        description: '{{ doc("asset_type") }}'                
+        description: '{{ doc("asset_type") }}'
 
       - name: balance_holder
         description: '{{ doc("balance_holder") }}'
@@ -72,7 +71,7 @@ models:
                 where: closed_at > current_timestamp - interval 2 day
           - accepted_values:
               values: [0, 1, 2]
-              quote: false                
+              quote: false
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'

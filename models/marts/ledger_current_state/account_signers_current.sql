@@ -1,4 +1,4 @@
-{{ 
+{{
     config(
         tags = ["current_state"],
         materialized = "incremental",
@@ -28,10 +28,10 @@ with
             , s.batch_run_date
             , s.batch_insert_ts
             , row_number()
-            over (
-                partition by s.account_id, s.signer
-                order by s.last_modified_ledger desc, s.ledger_entry_change desc
-            ) as row_nr
+                over (
+                    partition by s.account_id, s.signer
+                    order by s.last_modified_ledger desc, s.ledger_entry_change desc
+                ) as row_nr
         from {{ ref('stg_account_signers') }} as s
         join {{ ref('stg_history_ledgers') }} as l
             on s.last_modified_ledger = l.sequence

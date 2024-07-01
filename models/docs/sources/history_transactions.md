@@ -12,45 +12,47 @@ A unique identifier for this transaction.
 - Natural Key
 - Cluster Field
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs transaction_hash %}
 A hex-encoded SHA-256 hash of this transaction's XDR-encoded form.
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs ledger_sequence %}
 The sequence number of the ledger that this transaction was included in.
 
 - Cluster Field
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs application_order %}
 Each transaction within the transaction set for a ledger is executed and applied sequentially to the network. The validator nodes randomly shuffle submitted transactions and assign them an application order number, which corresponds to the order in which they are applied.
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs account %}
 The account address that originates the transaction.
 
 - Cluster Field
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs account_sequence %}
 The source account's sequence number that this transaction consumed. Sequence numbers can only be used once and help maintain atomicity and idempotency on the network.
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs max_fee %}
 The maximum fee (in stroops) that the source account is willing to pay for the transaction to be included in a ledger. When the network enters surge pricing, this helps determine if a transaction is included in the set.
 
 - Required Field
+
 #### Notes:
+
 The stroop is the fractional representation of a lumen (XLM). 1 stroop is 0.0000001 XLM.
 {% enddocs %}
 
@@ -58,7 +60,9 @@ The stroop is the fractional representation of a lumen (XLM). 1 stroop is 0.0000
 The number of operations contained within this transaction.
 
 - Required Field
+
 #### Notes:
+
 A transaction is permitted to have up to 100 operations.
 {% enddocs %}
 
@@ -71,14 +75,16 @@ The type of memo.
 
 - Required Field
 
-| Acceptable Values |
-|-------------------|
-| MemoTypeMemoHash  |
-| MemoTypeMemoId    |
-| MemoTypeMemoNone  |
-| MemoTypeMemoReturn|
-| MemoTypeMemoText  |
+| Acceptable Values  |
+| ------------------ |
+| MemoTypeMemoHash   |
+| MemoTypeMemoId     |
+| MemoTypeMemoNone   |
+| MemoTypeMemoReturn |
+| MemoTypeMemoText   |
+
 #### Notes:
+
 Defaults to `MemoTypeMemoNone`
 {% enddocs %}
 
@@ -86,11 +92,12 @@ Defaults to `MemoTypeMemoNone`
 An optional freeform field that attaches a memo to a transaction
 
 #### Notes:
-Memos are heavily used by centralized exchanges to help with account management. 
+
+Memos are heavily used by centralized exchanges to help with account management.
 {% enddocs %}
 
 {% docs time_bounds %}
-A transaction precondition that can be set to determine when a transaction is valid. The user can set a lower and upper timebound, defined as a UNIX timestamp when the transaction can be executed. 
+A transaction precondition that can be set to determine when a transaction is valid. The user can set a lower and upper timebound, defined as a UNIX timestamp when the transaction can be executed.
 If the transaction attempts to execute outside of the time range, the transaction will fail
 {% enddocs %}
 
@@ -98,13 +105,15 @@ If the transaction attempts to execute outside of the time range, the transactio
 Indicates if this transaction was successful or not
 
 #### Notes:
+
 A transaction's success does not indicate whether it was included and written to a ledger. It only indicates whether the operations in the transaction were successfully applied to mutate the ledger state.
 {% enddocs %}
 
 {% docs fee_charged %}
-The fee (in stroops) paid by the source account to apply this transaction to the ledger. At minimum, a transaction is charged # of operations * base fee. The minimum base fee is 100 stroops
+The fee (in stroops) paid by the source account to apply this transaction to the ledger. At minimum, a transaction is charged # of operations \* base fee. The minimum base fee is 100 stroops
 
 #### Notes:
+
 The stroop is the fractional representation of a lumen (XLM). 1 stroop is 0.0000001 XLM.
 {% enddocs %}
 
@@ -132,7 +141,7 @@ If the fee account that sponsors fee is a multiplexed account, the virtual addre
 {% enddocs %}
 
 {% docs ledger_bounds %}
-A transaction precondition that can be set to determine valid conditions for a transaction to be submitted to the network. 
+A transaction precondition that can be set to determine valid conditions for a transaction to be submitted to the network.
 Ledger bounds allow the user to specify a minimum and maxiumum ledger sequence number in which the transaction can successfully execute
 {% enddocs %}
 
@@ -142,12 +151,12 @@ This condition contains an integer representation of the lowest source account s
 {% enddocs %}
 
 {% docs min_account_sequence_age %}
-A transaction precondition that can be set to determine valid conditions for a transaction to be submitted to the network. 
+A transaction precondition that can be set to determine valid conditions for a transaction to be submitted to the network.
 This condition contains a minimum duration of time that must have passed since the source account's sequence number changed for the transaction to be valid
 {% enddocs %}
 
 {% docs min_account_sequence_ledger_gap %}
-A transaction precondition that can be set to determine valid conditions for a transaction to be submitted to the network. 
+A transaction precondition that can be set to determine valid conditions for a transaction to be submitted to the network.
 This condition contains an integer representation of the minimum number of ledgers that must have closed since the source account's sequence number change for the transaction to be valid
 {% enddocs %}
 
@@ -200,5 +209,5 @@ The fee charged for the transaction to be included in the ledger.
 {% enddocs %}
 
 {% docs resource_fee_refund %}
-The amount of the resource fee refunded to the transaction submitter. The refundable fees are calculated from rent, events and return value. Refundable fees are charged from teh source account before the transaction is executed and then refunded based on the actual usage. 
+The amount of the resource fee refunded to the transaction submitter. The refundable fees are calculated from rent, events and return value. Refundable fees are charged from teh source account before the transaction is executed and then refunded based on the actual usage.
 {% enddocs %}

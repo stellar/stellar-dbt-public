@@ -13,9 +13,9 @@ Unique identifier for a liquidity pool. There cannot be duplicate pools for the 
 - Required Field
 
 #### Notes:
+
 There is a good primer on AMMs [here](https://developers.stellar.org/docs/glossary/liquidity-pool?q=glossary+liquidity+pool).
 {% enddocs %}
-
 
 {% docs pool_type%}
 The mechanism that calculates pricing and division of shares for the pool. With the initial AMM rollout, the only type of liquidity pool allowed to be created is a constant product pool.
@@ -23,11 +23,13 @@ The mechanism that calculates pricing and division of shares for the pool. With 
 - Required Field
 
 #### Notes:
+
 For more information regarding pricing and deposit calculations, read [Cap-38](https://github.com/stellar/stellar-protocol/blob/master/core/cap-0038.md).
 
 | Default Value    |
-|------------------|
+| ---------------- |
 | constant_product |
+
 {% enddocs %}
 
 {% docs fee %}
@@ -36,11 +38,13 @@ The number of basis points charged as a percentage of the trade in order to comp
 - Required Field
 
 #### Notes:
+
 Fees are distributed immediately to accounts as the transaction completes. There is no schedule for fee distribution
 
-| Default Value    |
-|------------------|
-| 30               |
+| Default Value |
+| ------------- |
+| 30            |
+
 {% enddocs %}
 
 {% docs trustline_count %}
@@ -49,6 +53,7 @@ Total number of accounts with trustlines authorized to the pool. To create a tru
 - Required Field
 
 #### Notes:
+
 If the issuer of A or B revokes authorization on the trustline, the account will automatically withdraw from every liquidity pool containing that asset and those pool trustlines will be deleted.
 {% enddocs %}
 
@@ -59,11 +64,12 @@ The total number of pool shares is calculated by a constant product formula and 
 - Required Field
 
 #### Notes:
+
 Shares are not transferable; the only way to increase the number of pool shares held is to deposit into a liquidity pool. Conversely, decreasing pools shares can only be accomplished through a withdraw operation. Shares cannot be sent in payments or sold using offers.
 {% enddocs %}
 
 {% docs asset_a_id %}
-The Farm Hash encoding of the Asset Code + Asset Issuer and Asset Type for one of the asset pairs in a liquidity pool. 
+The Farm Hash encoding of the Asset Code + Asset Issuer and Asset Type for one of the asset pairs in a liquidity pool.
 
 {% enddocs %}
 
@@ -71,7 +77,7 @@ The Farm Hash encoding of the Asset Code + Asset Issuer and Asset Type for one o
 The raw number of tokens locked in the pool for one of the two asset pairs in the liquidity pool.
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs asset_b_id %}
 The Farm Hash encoding of the Asset Code + Asset Issuer and Asset Type for the corresponding asset in the liquidity pool.
@@ -82,4 +88,4 @@ The Farm Hash encoding of the Asset Code + Asset Issuer and Asset Type for the c
 The raw number of tokens locked in the pool for one of the two asset pairs in the liquidity pool.
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}

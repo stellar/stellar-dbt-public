@@ -7,7 +7,7 @@
         , "data_type": "timestamp"
         , "granularity": "month"},
     cluster_by=["ledger_sequence","transaction_id","op_account_id","type"]
-    ) 
+    )
 }}
 
 with
@@ -385,8 +385,8 @@ with
             , hist_ledg.successful_transaction_count
             , hist_ledg.failed_transaction_count
             -- general fields
-            , hist_ops.batch_id as batch_id
-            , hist_ops.batch_run_date as batch_run_date
+            , hist_ops.batch_id
+            , hist_ops.batch_run_date
             , current_timestamp() as batch_insert_ts
         from history_operations as hist_ops
         join history_transactions as hist_trans

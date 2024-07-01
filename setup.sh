@@ -34,4 +34,3 @@ chmod +x ./pre-commit/cleanup.sh
 
 # It gives permission to execute the for_pre_commit script
 chmod +x ./pre-commit/for_pre_commit.sh
-

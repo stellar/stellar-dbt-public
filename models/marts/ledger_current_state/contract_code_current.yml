@@ -3,7 +3,7 @@ version: 2
 models:
   - name: contract_code_current
     description: '{{ doc("contract_code_current") }}'
-    
+
     columns:
       - name: contract_code_hash
         description: '{{ doc("key_hash") }}'

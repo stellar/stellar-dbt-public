@@ -13,6 +13,7 @@ Unique identifier for an operation.
 - Required Field
 
 #### Notes:
+
 The operation id is the transaction id + order number
 {% enddocs %}
 
@@ -23,6 +24,7 @@ The account address that originates the operation
 - Required Field
 
 #### Notes:
+
 Defaults to ''
 {% enddocs %}
 
@@ -35,19 +37,19 @@ The transaction identifier in which the operation executed. There can be up to 1
 
 - Cluster Field
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs type %}
 The number indicating which type of operation this operation executes
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs type_string %}
 The type of operation this operation executes
 
 - Required Field
-{% enddocs %}
+  {% enddocs %}
 
 {% docs operation_result_code %}
 The result code returned when the Stellar Network applies an operation. This code is helpful for understanding failed transactions.
@@ -66,10 +68,11 @@ The amount of sold asset that was moved from the seller account to the buyer acc
 
 ### Only exists for the following operations:
 
-| Type    | Operation         |
-|---------|-------------------|
-| 0       | Create Account    |
-| 8       | Account Merge     |
+| Type | Operation      |
+| ---- | -------------- |
+| 0    | Create Account |
+| 8    | Account Merge  |
+
 {% enddocs %}
 
 {% docs details_account_muxed %}
@@ -77,9 +80,10 @@ The virtual address of the account if the account is multiplexed
 
 ### Only exists for the following operations:
 
-| Type    | Operation         |
-|---------|-------------------|
-| 8       | Account Merge     |
+| Type | Operation     |
+| ---- | ------------- |
+| 8    | Account Merge |
+
 {% enddocs %}
 
 {% docs details_account_muxed_id %}
@@ -87,9 +91,10 @@ Integer representation of the virtual address of the account if the account is m
 
 ### Only exists for the following operations:
 
-| Type    | Operation         |
-|---------|-------------------|
-| 8       | Account Merge     |
+| Type | Operation     |
+| ---- | ------------- |
+| 8    | Account Merge |
+
 {% enddocs %}
 
 {% docs details_account_id %}
@@ -97,9 +102,10 @@ The address of the account which is no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type    | Operation                   |
-|---------|-----------------------------|
-| 18      | Revoke Sponsorship          |
+| Type | Operation          |
+| ---- | ------------------ |
+| 18   | Revoke Sponsorship |
+
 {% enddocs %}
 
 {% docs details_amount %}
@@ -107,16 +113,17 @@ Float representation of the amount of an asset sent/offered/etc
 
 ### Only exists for the following operations:
 
-| Type    | Operation                   |
-|---------|-----------------------------|
-| 1       | Payment                     |
-| 2       | Path Payment Strict Receive |
-| 3       | Manage Sell Offer           |
-| 4       | Create Passive Sell Offer   |
-| 12      | Manage Buy Offer            |
-| 13      | Path Payment Strict Send    |
-| 14      | Create Claimable Balance    |
-| 19      | Clawback                    |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 3    | Manage Sell Offer           |
+| 4    | Create Passive Sell Offer   |
+| 12   | Manage Buy Offer            |
+| 13   | Path Payment Strict Send    |
+| 14   | Create Claimable Balance    |
+| 19   | Clawback                    |
+
 {% enddocs %}
 
 {% docs details_asset %}
@@ -124,9 +131,10 @@ The asset available to be claimed in the form of "asset_code:issuing_address". I
 
 ### Only exists for the following operations:
 
-| Type    | Operation                   |
-|---------|-----------------------------|
-| 14      | Create Claimable Balance    |
+| Type | Operation                |
+| ---- | ------------------------ |
+| 14   | Create Claimable Balance |
+
 {% enddocs %}
 
 {% docs details_asset_code %}
@@ -134,17 +142,18 @@ The 4 or 12 character code representation of the asset on the network
 
 ### Only exists for the following operations:
 
-| Type    | Operation                   |
-|---------|-----------------------------|
-| 1       | Payment                     |
-| 2       | Path Payment Strict Receive |
-| 6       | Change Trust                |
-| 7       | Allow Trust                 |
-| 13      | Path Payment Strict Send    |
-| 19      | Clawback                    |
-| 21      | Set Trustline Flags         |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 6    | Change Trust                |
+| 7    | Allow Trust                 |
+| 13   | Path Payment Strict Send    |
+| 19   | Clawback                    |
+| 21   | Set Trustline Flags         |
 
 #### Notes:
+
 Asset codes have no guarantees of uniqueness. The combination of asset code, issuer and type represents a distinct asset
 {% enddocs %}
 
@@ -153,15 +162,16 @@ The account address of the original asset issuer that created the asset
 
 ### Only exists for the following operations:
 
-| Type    | Operation                   |
-|---------|-----------------------------|
-| 1       | Payment                     |
-| 2       | Path Payment Strict Receive |
-| 6       | Change Trust                |
-| 7       | Allow Trust                 |
-| 13      | Path Payment Strict Send    |
-| 19      | Clawback                    |
-| 21      | Set Trustline Flags         |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 6    | Change Trust                |
+| 7    | Allow Trust                 |
+| 13   | Path Payment Strict Send    |
+| 19   | Clawback                    |
+| 21   | Set Trustline Flags         |
+
 {% enddocs %}
 
 {% docs details_asset_type %}
@@ -169,17 +179,18 @@ The identifier for type of asset code, can be a alphanumeric with 4 characters, 
 
 ### Only exists for the following operations:
 
-| Type    | Operation                   |
-|---------|-----------------------------|
-| 1       | Payment                     |
-| 2       | Path Payment Strict Receive |
-| 6       | Change Trust                |
-| 7       | Allow Trust                 |
-| 13      | Path Payment Strict Send    |
-| 19      | Clawback                    |
-| 21      | Set Trustline Flags         |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 6    | Change Trust                |
+| 7    | Allow Trust                 |
+| 13   | Path Payment Strict Send    |
+| 19   | Clawback                    |
+| 21   | Set Trustline Flags         |
 
 #### Notes:
+
 XLM is the native asset to the network. XLM has no asset code or issuer representation and will instead be displayed with an asset type of 'native'
 {% enddocs %}
 
@@ -188,9 +199,10 @@ Indicates whether the trustline is authorized. 0 is if the account is not author
 
 ### Only exists for the following operations:
 
-| Type    | Operation                   |
-|---------|-----------------------------|
-| 7       | Allow Trust                 |
+| Type | Operation   |
+| ---- | ----------- |
+| 7    | Allow Trust |
+
 {% enddocs %}
 
 {% docs details_balance_id %}
@@ -198,10 +210,11 @@ The balance id of the claimable balance which is claimed or no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 15       | Claim Claimable Balance    |
-| 20       | Clawback Claimable Balance |
+| Type | Operation                  |
+| ---- | -------------------------- |
+| 15   | Claim Claimable Balance    |
+| 20   | Clawback Claimable Balance |
+
 {% enddocs %}
 
 {% docs details_buying_asset_code %}
@@ -209,11 +222,12 @@ The 4 or 12 character code representation of the asset that is either bought or 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 4        | Create Passive Sell Offer  |
-| 12       | Manage Buy Offer           |
+| Type | Operation                 |
+| ---- | ------------------------- |
+| 3    | Manage Sell Offer         |
+| 4    | Create Passive Sell Offer |
+| 12   | Manage Buy Offer          |
+
 {% enddocs %}
 
 {% docs details_buying_asset_issuer %}
@@ -221,11 +235,12 @@ The account address of the original asset issuer that created the asset bought o
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 4        | Create Passive Sell Offer  |
-| 12       | Manage Buy Offer           |
+| Type | Operation                 |
+| ---- | ------------------------- |
+| 3    | Manage Sell Offer         |
+| 4    | Create Passive Sell Offer |
+| 12   | Manage Buy Offer          |
+
 {% enddocs %}
 
 {% docs details_buying_asset_type %}
@@ -233,13 +248,14 @@ The identifier for type of asset code, can be a alphanumeric with 4 characters, 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 4        | Create Passive Sell Offer  |
-| 12       | Manage Buy Offer           |
+| Type | Operation                 |
+| ---- | ------------------------- |
+| 3    | Manage Sell Offer         |
+| 4    | Create Passive Sell Offer |
+| 12   | Manage Buy Offer          |
 
 #### Notes:
+
 XLM is the native asset to the network. XLM has no asset code or issuer representation and will instead be displayed with an asset type of 'native'
 {% enddocs %}
 
@@ -248,9 +264,10 @@ The balance id of the claimable balance which is no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 18       | Revoke Sponsorship         |
+| Type | Operation          |
+| ---- | ------------------ |
+| 18   | Revoke Sponsorship |
+
 {% enddocs %}
 
 {% docs details_claimant %}
@@ -258,9 +275,10 @@ The account address of the account which claimed the claimable balance
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 15       | Claim Claimable Balance    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 15   | Claim Claimable Balance |
+
 {% enddocs %}
 
 {% docs details_claimant_muxed %}
@@ -268,9 +286,10 @@ If the account is multiplexed, the virtual address of the account which claimed 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 15       | Claim Claimable Balance    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 15   | Claim Claimable Balance |
+
 {% enddocs %}
 
 {% docs details_claimant_muxed_id %}
@@ -278,9 +297,10 @@ If the account is multiplexed, an integer representation of the muxed account wh
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 15       | Claim Claimable Balance    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 15   | Claim Claimable Balance |
+
 {% enddocs %}
 
 {% docs details_claimants %}
@@ -288,9 +308,10 @@ An unstructured field that lists account addresses eligible to claim a balance a
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 14       | Create Claimable Balance   |
+| Type | Operation                |
+| ---- | ------------------------ |
+| 14   | Create Claimable Balance |
+
 {% enddocs %}
 
 {% docs details_data_account_id %}
@@ -298,9 +319,10 @@ The account address of the account whose data entry is no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 18       | Revoke Sponsorship         |
+| Type | Operation          |
+| ---- | ------------------ |
+| 18   | Revoke Sponsorship |
+
 {% enddocs %}
 
 {% docs details_data_name %}
@@ -308,9 +330,10 @@ The name of the data entry which is no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 18       | Revoke Sponsorship         |
+| Type | Operation          |
+| ---- | ------------------ |
+| 18   | Revoke Sponsorship |
+
 {% enddocs %}
 
 {% docs details_from %}
@@ -318,13 +341,14 @@ The account address from which the payment/contract originates (the sender accou
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 1        | Payment                    |
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
-| 19       | Clawback                   |
-| 24       | Invoke Host Function       |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+| 19   | Clawback                    |
+| 24   | Invoke Host Function        |
+
 {% enddocs %}
 
 {% docs details_from_muxed %}
@@ -332,12 +356,13 @@ If the account is multiplexed, the virtual address of the sender account
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 1        | Payment                    |
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
-| 19       | Clawback                   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+| 19   | Clawback                    |
+
 {% enddocs %}
 
 {% docs details_from_muxed_id %}
@@ -345,12 +370,13 @@ If the account is multiplexed, the integer representation of the virtual address
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 1        | Payment                    |
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
-| 19       | Clawback                   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+| 19   | Clawback                    |
+
 {% enddocs %}
 
 {% docs details_funder %}
@@ -358,9 +384,10 @@ When a new account is created, an account address "funds" the new account
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 0        | Create Account             |
+| Type | Operation      |
+| ---- | -------------- |
+| 0    | Create Account |
+
 {% enddocs %}
 
 {% docs details_funder_muxed %}
@@ -368,9 +395,10 @@ If the account is multiplexed, the virtual address of the account funding the ne
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 0        | Create Account             |
+| Type | Operation      |
+| ---- | -------------- |
+| 0    | Create Account |
+
 {% enddocs %}
 
 {% docs details_funder_muxed_id %}
@@ -378,9 +406,10 @@ If the account is multiplexed, the integer representation of the account funding
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 0        | Create Account             |
+| Type | Operation      |
+| ---- | -------------- |
+| 0    | Create Account |
+
 {% enddocs %}
 
 {% docs details_high_threshold %}
@@ -388,18 +417,20 @@ The sum of the weight of all signatures that sign a transaction for the high thr
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
+| Type | Operation   |
+| ---- | ----------- |
+| 5    | Set Options |
 
 #### Notes:
+
 Each operation falls under a specific threshold category: low, medium or high. Thresholds define the level of privilege an operation needs in order to succeed (this is a security measure)
 
-| Security | Operations                 |
-|----------|----------------------------|
+| Security | Operations                                                                   |
+| -------- | ---------------------------------------------------------------------------- |
 | Low      | Allow Trust, Set Trust Line Flags, Bump Sequence and Claim Claimable Balance |
-| Medium   | Everything Else            |
-| High     | Account Merge, Set Options |
+| Medium   | Everything Else                                                              |
+| High     | Account Merge, Set Options                                                   |
+
 {% enddocs %}
 
 {% docs details_home_domain %}
@@ -407,9 +438,10 @@ The home domain used for the stellar.toml file discovery
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
+| Type | Operation   |
+| ---- | ----------- |
+| 5    | Set Options |
+
 {% enddocs %}
 
 {% docs details_inflation_dest %}
@@ -417,22 +449,24 @@ The account address specifying where to send inflation funds. The concept of inf
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
+| Type | Operation   |
+| ---- | ----------- |
+| 5    | Set Options |
 
-## *Removed Field*
+## _Removed Field_
+
 - Inflation was retired from the network in 2019.
-{% enddocs %}
+  {% enddocs %}
 
 {% docs details_into %}
 The account address receiving the deleted account's lumens. This is the account in which the intended deleted account will be merged
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 8        | Account Merge              |
+| Type | Operation     |
+| ---- | ------------- |
+| 8    | Account Merge |
+
 {% enddocs %}
 
 {% docs details_into_muxed %}
@@ -440,9 +474,10 @@ If the account is multiplexed, the virtual address of the account receive the de
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 8        | Account Merge              |
+| Type | Operation     |
+| ---- | ------------- |
+| 8    | Account Merge |
+
 {% enddocs %}
 
 {% docs details_into_muxed_id %}
@@ -450,9 +485,10 @@ If the account is multiplexed, the integer representation of the account receivi
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 8        | Account Merge              |
+| Type | Operation     |
+| ---- | ------------- |
+| 8    | Account Merge |
+
 {% enddocs %}
 
 {% docs details_limit %}
@@ -460,9 +496,10 @@ The upper bound amount of an asset that an account can hold
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 6        | Change Trust               |
+| Type | Operation    |
+| ---- | ------------ |
+| 6    | Change Trust |
+
 {% enddocs %}
 
 {% docs details_low_threshold %}
@@ -470,18 +507,20 @@ The sum of the weight of all signatures that sign a transaction for the low thre
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
+| Type | Operation   |
+| ---- | ----------- |
+| 5    | Set Options |
 
 #### Notes:
+
 Each operation falls under a specific threshold category: low, medium or high. Thresholds define the level of privilege an operation needs in order to succeed (this is a security measure)
 
-| Security | Operations                 |
-|----------|----------------------------|
+| Security | Operations                                                                   |
+| -------- | ---------------------------------------------------------------------------- |
 | Low      | Allow Trust, Set Trust Line Flags, Bump Sequence and Claim Claimable Balance |
-| Medium   | Everything Else            |
-| High     | Account Merge, Set Options |
+| Medium   | Everything Else                                                              |
+| High     | Account Merge, Set Options                                                   |
+
 {% enddocs %}
 
 {% docs details_master_key_weight %}
@@ -491,11 +530,12 @@ An accounts private key is called the master key. For signing transactions, the 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
+| Type | Operation   |
+| ---- | ----------- |
+| 5    | Set Options |
 
 #### Notes:
+
 Defaults to 1
 {% enddocs %}
 
@@ -504,30 +544,33 @@ The sum of the weight of all signatures that sign a transaction for the medium t
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
+| Type | Operation   |
+| ---- | ----------- |
+| 5    | Set Options |
 
 #### Notes:
+
 Each operation falls under a specific threshold category: low, medium or high. Thresholds define the level of privilege an operation needs in order to succeed (this is a security measure)
 
-| Security | Operations                 |
-|----------|----------------------------|
+| Security | Operations                                                                   |
+| -------- | ---------------------------------------------------------------------------- |
 | Low      | Allow Trust, Set Trust Line Flags, Bump Sequence and Claim Claimable Balance |
-| Medium   | Everything Else            |
-| High     | Account Merge, Set Options |
+| Medium   | Everything Else                                                              |
+| High     | Account Merge, Set Options                                                   |
+
 {% enddocs %}
 
 {% docs details_name %}
-The manage data operation allows an account to write and store data directly on the ledger in a key value pair format.  The name is the key for a data entry.
+The manage data operation allows an account to write and store data directly on the ledger in a key value pair format. The name is the key for a data entry.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 10       | Manage Data                |
+| Type | Operation   |
+| ---- | ----------- |
+| 10   | Manage Data |
 
 #### Notes:
+
 If the name is new, the manage data operation will add the given name/value pair to the account. If the name is already present, the associated value will be modified.
 {% enddocs %}
 
@@ -536,11 +579,12 @@ The unique id for the offer. This id can be joined with the 'offers' table
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 12       | Manage Buy Offer           |
-| 18       | Revoke Sponsorship         |
+| Type | Operation          |
+| ---- | ------------------ |
+| 3    | Manage Sell Offer  |
+| 12   | Manage Buy Offer   |
+| 18   | Revoke Sponsorship |
+
 {% enddocs %}
 
 {% docs details_path %}
@@ -548,13 +592,14 @@ Path payments maximize the best exchange rate path when sending money from one a
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
 
 #### Notes:
-Up to 6 paths are permitted for a single payment. 
+
+Up to 6 paths are permitted for a single payment.
 Example: sending EUR -- MXN could look like EUR -- BTC -- CNY -- XLM -- MXN to maximize the best exchange rate. Payments are atomic, so if an exchange in the middle of a path payment fails, the entire payment will fail which means the user will keep their original funds. They will not be stuck with an intermediary asset in the event of payment failure.
 {% enddocs %}
 
@@ -563,11 +608,12 @@ The ratio of selling asset to buying asset. This is a number representing how ma
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 4        | Create Passive Sell Offer  |
-| 12       | Manage Buy Offer           |
+| Type | Operation                 |
+| ---- | ------------------------- |
+| 3    | Manage Sell Offer         |
+| 4    | Create Passive Sell Offer |
+| 12   | Manage Buy Offer          |
+
 {% enddocs %}
 
 {% docs details_price_r %}
@@ -575,11 +621,12 @@ Precise representation of the buy and sell price of the assets on an offer. The 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 4        | Create Passive Sell Offer  |
-| 12       | Manage Buy Offer           |
+| Type | Operation                 |
+| ---- | ------------------------- |
+| 3    | Manage Sell Offer         |
+| 4    | Create Passive Sell Offer |
+| 12   | Manage Buy Offer          |
+
 {% enddocs %}
 
 {% docs details_price_r_d %}
@@ -595,11 +642,12 @@ The 4 or 12 character code representation of the asset that is either sold or of
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 4        | Create Passive Sell Offer  |
-| 12       | Manage Buy Offer           |
+| Type | Operation                 |
+| ---- | ------------------------- |
+| 3    | Manage Sell Offer         |
+| 4    | Create Passive Sell Offer |
+| 12   | Manage Buy Offer          |
+
 {% enddocs %}
 
 {% docs details_selling_asset_issuer %}
@@ -607,11 +655,12 @@ The account address of the original asset issuer that created the asset sold or 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 4        | Create Passive Sell Offer  |
-| 12       | Manage Buy Offer           |
+| Type | Operation                 |
+| ---- | ------------------------- |
+| 3    | Manage Sell Offer         |
+| 4    | Create Passive Sell Offer |
+| 12   | Manage Buy Offer          |
+
 {% enddocs %}
 
 {% docs details_selling_asset_type %}
@@ -619,13 +668,14 @@ The identifier for type of asset code, can be a alphanumeric with 4 characters, 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 3        | Manage Sell Offer          |
-| 4        | Create Passive Sell Offer  |
-| 12       | Manage Buy Offer           |
+| Type | Operation                 |
+| ---- | ------------------------- |
+| 3    | Manage Sell Offer         |
+| 4    | Create Passive Sell Offer |
+| 12   | Manage Buy Offer          |
 
 #### Notes:
+
 XLM is the native asset to the network. XLM has no asset code or issuer representation and will instead be displayed with an asset type of 'native'
 {% enddocs %}
 
@@ -634,17 +684,18 @@ Array of numeric values of the flags set for a given trustline in the operation
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 21       | Set Trust Line Flags       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 21   | Set Trust Line Flags |
 
 #### Notes:
 
-| Values   | Flags                      |
-|----------|----------------------------|
-| 1        | Auth Required              |
-| 2        | Auth Revocable             |
-| 4        | Auth Immutable             |
+| Values | Flags          |
+| ------ | -------------- |
+| 1      | Auth Required  |
+| 2      | Auth Revocable |
+| 4      | Auth Immutable |
+
 {% enddocs %}
 
 {% docs details_set_flags_s %}
@@ -652,17 +703,18 @@ Array of string values of the flags set for a given trustline in the operation
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 21       | Set Trust Line Flags       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 21   | Set Trust Line Flags |
 
 #### Notes:
 
-| Flags                      |
-|----------------------------|
-| Auth Required              |
-| Auth Revocable             |
-| Auth Immutable             |
+| Flags          |
+| -------------- |
+| Auth Required  |
+| Auth Revocable |
+| Auth Immutable |
+
 {% enddocs %}
 
 {% docs details_signer_account_id %}
@@ -670,9 +722,10 @@ The address of the account of the signer no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 18       | Revoke Sponsorship         |
+| Type | Operation          |
+| ---- | ------------------ |
+| 18   | Revoke Sponsorship |
+
 {% enddocs %}
 
 {% docs details_signer_key %}
@@ -680,10 +733,11 @@ The address of the signer which is no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
-| 18       | Revoke Sponsorship         |
+| Type | Operation          |
+| ---- | ------------------ |
+| 5    | Set Options        |
+| 18   | Revoke Sponsorship |
+
 {% enddocs %}
 
 {% docs details_signer_weight %}
@@ -691,9 +745,10 @@ The weight of the new signer. For transactions, multiple accounts can sign a tra
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
+| Type | Operation   |
+| ---- | ----------- |
+| 5    | Set Options |
+
 {% enddocs %}
 
 {% docs details_source_amount %}
@@ -701,10 +756,11 @@ The originating amount sent designated in the source asset
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+
 {% enddocs %}
 
 {% docs details_source_asset_code %}
@@ -712,10 +768,11 @@ The 4 or 12 character code representation of the asset that is originally sent
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+
 {% enddocs %}
 
 {% docs details_source_asset_issuer %}
@@ -723,10 +780,11 @@ The account address of the original asset issuer that created the asset sent
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+
 {% enddocs %}
 
 {% docs details_source_asset_type %}
@@ -734,12 +792,13 @@ The identifier for type of asset code, can be a alphanumeric with 4 characters, 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
 
 #### Notes:
+
 XLM is the native asset to the network. XLM has no asset code or issuer representation and will instead be displayed with an asset type of 'native'
 {% enddocs %}
 
@@ -748,11 +807,12 @@ The maxium amount to be sent, designated in the source asset
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 2        | Path Payment Strict Receive|
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 2    | Path Payment Strict Receive |
 
 #### Notes:
+
 Exchanging an asset causes a small amount of the asset value to be spent in fees and exchange rates. The sender can specify a maximum amount they are willing to send if the rates between the asset pair are bad.
 {% enddocs %}
 
@@ -762,9 +822,10 @@ The account starting balance will need to exceed the minimum balance necessary t
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 0        | Create Account             |
+| Type | Operation      |
+| ---- | -------------- |
+| 0    | Create Account |
+
 {% enddocs %}
 
 {% docs details_to %}
@@ -772,11 +833,12 @@ The address of the account receiving the payment funds
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 1        | Payment                    |
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+
 {% enddocs %}
 
 {% docs details_to_muxed %}
@@ -784,11 +846,12 @@ If the account is multiplexed, the virtual address of the account receiving the 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 1        | Payment                    |
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+
 {% enddocs %}
 
 {% docs details_to_muxed_id %}
@@ -796,11 +859,12 @@ If the account is multiplexed, the integer representation of the virtual address
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 1        | Payment                    |
-| 2        | Path Payment Strict Receive|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                   |
+| ---- | --------------------------- |
+| 1    | Payment                     |
+| 2    | Path Payment Strict Receive |
+| 13   | Path Payment Strict Send    |
+
 {% enddocs %}
 
 {% docs details_trustee %}
@@ -808,10 +872,11 @@ The issuing account address (only present for 'credit' asset types)
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 6        | Change Trust               |
-| 7        | Allow Trust                |
+| Type | Operation    |
+| ---- | ------------ |
+| 6    | Change Trust |
+| 7    | Allow Trust  |
+
 {% enddocs %}
 
 {% docs details_trustee_muxed %}
@@ -819,9 +884,10 @@ If the issuing account address is multiplexed, the virtual address
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 7        | Allow Trust                |
+| Type | Operation   |
+| ---- | ----------- |
+| 7    | Allow Trust |
+
 {% enddocs %}
 
 {% docs details_trustee_muxed_id %}
@@ -829,9 +895,10 @@ If the issuing account address is multiplexed, the integer representation of the
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 7        | Allow Trust                |
+| Type | Operation   |
+| ---- | ----------- |
+| 7    | Allow Trust |
+
 {% enddocs %}
 
 {% docs details_trustline_account_id %}
@@ -839,9 +906,10 @@ The address of the account whose trustline is no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 18       | Revoke Sponsorship         |
+| Type | Operation          |
+| ---- | ------------------ |
+| 18   | Revoke Sponsorship |
+
 {% enddocs %}
 
 {% docs details_trustline_asset %}
@@ -849,11 +917,12 @@ The asset of the trustline which is no longer sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 18       | Revoke Sponsorship         |
+| Type | Operation          |
+| ---- | ------------------ |
+| 18   | Revoke Sponsorship |
 
 #### Notes:
+
 A sponsor can determine they want to revoke sponsorship of certain assets but maintain the sponsorship of other assets
 {% enddocs %}
 
@@ -862,11 +931,12 @@ The trusting account address, or the account being authorized or unauthorized
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 6        | Change Trust               |
-| 7        | Allow Trust                |
-| 21       | Set Trustline Flags        |
+| Type | Operation           |
+| ---- | ------------------- |
+| 6    | Change Trust        |
+| 7    | Allow Trust         |
+| 21   | Set Trustline Flags |
+
 {% enddocs %}
 
 {% docs details_trustor_muxed %}
@@ -874,9 +944,10 @@ If the trusting account is multiplexed, the virtual address of the account
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 6        | Change Trust               |
+| Type | Operation    |
+| ---- | ------------ |
+| 6    | Change Trust |
+
 {% enddocs %}
 
 {% docs details_trustor_muxed_id %}
@@ -884,19 +955,21 @@ If the trusting account is multiplexed, the integer representation of the virtua
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 6        | Change Trust               |
+| Type | Operation    |
+| ---- | ------------ |
+| 6    | Change Trust |
+
 {% enddocs %}
 
 {% docs details_value %}
-The manage data operation allows an account to write and store data directly on the ledger in a key value pair format.  The value is the value of a key for a data entry.
+The manage data operation allows an account to write and store data directly on the ledger in a key value pair format. The value is the value of a key for a data entry.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 10       | Manage Data                |
+| Type | Operation   |
+| ---- | ----------- |
+| 10   | Manage Data |
+
 {% enddocs %}
 
 {% docs details_clear_flags %}
@@ -904,17 +977,18 @@ Array of numeric values of the flags cleared for a given trustline in the operat
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 21       | Set Trustline Flags        |
+| Type | Operation           |
+| ---- | ------------------- |
+| 21   | Set Trustline Flags |
 
 #### Notes:
 
-| Values   | Flags                      |
-|----------|----------------------------|
-| 1        | Auth Required              |
-| 2        | Auth Revocable             |
-| 4        | Auth Immutable             |
+| Values | Flags          |
+| ------ | -------------- |
+| 1      | Auth Required  |
+| 2      | Auth Revocable |
+| 4      | Auth Immutable |
+
 {% enddocs %}
 
 {% docs details_clear_flags_s %}
@@ -922,17 +996,18 @@ Array of string values of the flags cleared for a given trustline in the operati
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 21       | Set Trustline Flags        |
+| Type | Operation           |
+| ---- | ------------------- |
+| 21   | Set Trustline Flags |
 
 #### Notes:
 
-| Flags                      |
-|----------------------------|
-| Auth Required              |
-| Auth Revocable             |
-| Auth Immutable             |
+| Flags          |
+| -------------- |
+| Auth Required  |
+| Auth Revocable |
+| Auth Immutable |
+
 {% enddocs %}
 
 {% docs details_destination_min %}
@@ -940,11 +1015,12 @@ The minimum amount to be received, designated in the expected destination asset
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 13       | Path Payment Strict Send   |
+| Type | Operation                |
+| ---- | ------------------------ |
+| 13   | Path Payment Strict Send |
 
 #### Notes:
+
 Exchanging an asset causes a small amount of the asset value to be spent in fees and exchange rates. The sender can specify a guaranteed minimum amount they want sent to the recipient to ensure they receive a specified value.
 {% enddocs %}
 
@@ -953,9 +1029,10 @@ The new desired value of the source account's sequence number
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 11       | Bump Sequence              |
+| Type | Operation     |
+| ---- | ------------- |
+| 11   | Bump Sequence |
+
 {% enddocs %}
 
 {% docs details_authorize_to_maintain_liabilities %}
@@ -963,9 +1040,10 @@ Indicates whether the trustline is authorized. 0 is if the account is not author
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 7        | Allow Trust                |
+| Type | Operation   |
+| ---- | ----------- |
+| 7    | Allow Trust |
+
 {% enddocs %}
 
 {% docs details_clawback_enabled %}
@@ -973,26 +1051,28 @@ Indicates whether the asset can be clawed back by the asset issuer
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 5        | Set Options                |
-| 7        | Allow Trust                |
+| Type | Operation   |
+| ---- | ----------- |
+| 5    | Set Options |
+| 7    | Allow Trust |
+
 {% enddocs %}
 
 {% docs details_sponsor %}
 The account address of another account that maintains the minimum balance in XLM for the source account to complete operations
 
 - May exist for any operation type
-{% enddocs %}
+  {% enddocs %}
 
 {% docs details_sponsored_id %}
 The account address of the account which will be sponsored
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 16       | Begin Sponsoring Future Reserves |
+| Type | Operation                        |
+| ---- | -------------------------------- |
+| 16   | Begin Sponsoring Future Reserves |
+
 {% enddocs %}
 
 {% docs details_begin_sponsor %}
@@ -1000,9 +1080,10 @@ The account address of the account which initiated the sponsorship
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 17       | End Sponsoring Future Reserves |
+| Type | Operation                      |
+| ---- | ------------------------------ |
+| 17   | End Sponsoring Future Reserves |
+
 {% enddocs %}
 
 {% docs details_begin_sponsor_muxed %}
@@ -1010,9 +1091,10 @@ If the initiating sponsorship account is multiplexed, the virtual address
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 17       | End Sponsoring Future Reserves |
+| Type | Operation                      |
+| ---- | ------------------------------ |
+| 17   | End Sponsoring Future Reserves |
+
 {% enddocs %}
 
 {% docs details_begin_sponsor_muxed_id %}
@@ -1020,9 +1102,10 @@ If the initiating sponsorship account is multiplexed, the integer representation
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 17       | End Sponsoring Future Reserves |
+| Type | Operation                      |
+| ---- | ------------------------------ |
+| 17   | End Sponsoring Future Reserves |
+
 {% enddocs %}
 
 {% docs details_liquidity_pool_id %}
@@ -1030,14 +1113,15 @@ Unique identifier for a liquidity pool
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 6        | Change Trust               |
-| 18       | Revoke Sponsorship         |
-| 22       | Liquidity Pool Deposit     |
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 6    | Change Trust            |
+| 18   | Revoke Sponsorship      |
+| 22   | Liquidity Pool Deposit  |
+| 23   | Liquidity Pool Withdraw |
 
 #### Notes:
+
 Liquidity pools are automated money markets between an asset pair. A given pool will only ever have two assets unless there is a protocol change
 {% enddocs %}
 
@@ -1046,10 +1130,11 @@ The identifier for type of asset code, can be a alphanumeric with 4 characters, 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 22   | Liquidity Pool Deposit  |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_a_asset_code %}
@@ -1057,10 +1142,11 @@ The 4 or 12 character code representation of the asset of one of the two asset p
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 22   | Liquidity Pool Deposit  |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_a_asset_issuer %}
@@ -1068,10 +1154,11 @@ The account address of the original asset issuer that created one of the two ass
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 22   | Liquidity Pool Deposit  |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_a_max_amount %}
@@ -1079,11 +1166,12 @@ The maximum amount of reserve a that can be deposited into the pool.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
 
 #### Notes:
+
 Deposit operations calculate via formula how much of both asset a and asset b should be deposited out of a source account and into a pool. The source account must deposit an equivalent value of both asset a and b. Since markets fluctuate, a maximum amount will specify the upper limit of an asset the account is willing to deposit.
 {% enddocs %}
 
@@ -1092,9 +1180,10 @@ The amount of reserve a that ended up actually deposited into the pool
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
+
 {% enddocs %}
 
 {% docs details_reserve_b_asset_type %}
@@ -1102,10 +1191,11 @@ The identifier for type of asset code, can be a alphanumeric with 4 characters, 
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 22   | Liquidity Pool Deposit  |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_b_asset_code %}
@@ -1113,10 +1203,11 @@ The 4 or 12 character code representation of the asset of one of the two asset p
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 22   | Liquidity Pool Deposit  |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_b_asset_issuer %}
@@ -1124,10 +1215,11 @@ The account address of the original asset issuer that created one of the two ass
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 22   | Liquidity Pool Deposit  |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_b_max_amount %}
@@ -1135,11 +1227,12 @@ The maximum amount of reserve b that can be deposited into the pool.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
 
 #### Notes:
+
 Deposit operations calculate via formula how much of both asset a and asset b should be deposited out of a source account and into a pool. The source account must deposit an equivalent value of both asset a and b. Since markets fluctuate, a maximum amount will specify the upper limit of an asset the account is willing to deposit.
 {% enddocs %}
 
@@ -1148,9 +1241,10 @@ The amount of reserve b that ended up actually deposited into the pool.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
+
 {% enddocs %}
 
 {% docs details_min_price %}
@@ -1158,22 +1252,24 @@ The floating point value indicating the minimum exchange rate for this deposit o
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
 
 #### Notes:
+
 Market rates fluctuate for pricing and the source account can specify a maximum price they expect to receive as a ratio of the two assets in the pool
 {% enddocs %}
 
 {% docs details_min_price_r %}
-A fractional representation of the prices of the two assets in  a pool. The n is the numerator (value of asset a) and the d is the denominator (value of asset b).
+A fractional representation of the prices of the two assets in a pool. The n is the numerator (value of asset a) and the d is the denominator (value of asset b).
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
+
 {% enddocs %}
 
 {% docs details_max_price %}
@@ -1181,22 +1277,24 @@ The floating point value indicating the maximum exchange rate for this deposit o
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
 
 #### Notes:
+
 Market rates fluctuate for pricing and the source account can specify a maximum price they expect to receive as a ratio of the two assets in the pool
 {% enddocs %}
 
 {% docs details_max_price_r %}
-A fractional representation of the prices of the two assets in  a pool. The n is the numerator (value of asset a) and the d is the denominator (value of asset b).
+A fractional representation of the prices of the two assets in a pool. The n is the numerator (value of asset a) and the d is the denominator (value of asset b).
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
+
 {% enddocs %}
 
 {% docs details_shares_received %}
@@ -1204,9 +1302,10 @@ A floating point number representing the number of pool shares received for this
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 22       | Liquidity Pool Deposit     |
+| Type | Operation              |
+| ---- | ---------------------- |
+| 22   | Liquidity Pool Deposit |
+
 {% enddocs %}
 
 {% docs details_reserve_a_min_amount %}
@@ -1214,9 +1313,10 @@ The minimum amount of reserve a that can be withdrawn from the pool.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_a_withdraw_amount %}
@@ -1224,9 +1324,10 @@ The amount of reserve a that ended up actually withdrawn from the pool.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_b_min_amount %}
@@ -1234,9 +1335,10 @@ The minimum amount of reserve b that can be withdrawn from the pool.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_reserve_b_withdraw_amount %}
@@ -1244,9 +1346,10 @@ The amount of reserve b that ended up actually withdrawn from the pool.
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_shares %}
@@ -1254,25 +1357,27 @@ The number of shares withdrawn from the pool. It is not possible to withdraw onl
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 23       | Liquidity Pool Withdraw    |
+| Type | Operation               |
+| ---- | ----------------------- |
+| 23   | Liquidity Pool Withdraw |
+
 {% enddocs %}
 
 {% docs details_function %}
 Soroban field - invoke_host_function function type
 
 | Type                                               |
-|----------------------------------------------------|
+| -------------------------------------------------- |
 | HostFunctionTypeHostFunctionTypeInvokeContract     |
 | HostFunctionTypeHostFunctionTypeCreateContract     |
 | HostFunctionTypeHostFunctionTypeUploadContractWasm |
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 24       | Invoke Host Function       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+
 {% enddocs %}
 
 {% docs from_address %}
@@ -1280,21 +1385,23 @@ Soroban field - address used to create the Soroban contract
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 24       | Invoke Host Function       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+
 {% enddocs %}
 
 {% docs from_asset %}
 Soroban field - asset used to create the Soroban contract
 
-*Note:* Only applies to Stellar Asset Contracts
+_Note:_ Only applies to Stellar Asset Contracts
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 24       | Invoke Host Function       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+
 {% enddocs %}
 
 {% docs details_extend_to %}
@@ -1302,9 +1409,10 @@ Soroban field - ledger extended to
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 25       | Extend Footprint Ttl       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 25   | Extend Footprint Ttl |
+
 {% enddocs %}
 
 {% docs details_asset_balance_changes %}
@@ -1312,9 +1420,10 @@ Soroban field - asset balance changes from invoke host function
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 24       | Invoke Host Function       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+
 {% enddocs %}
 
 {% docs details_parameters %}
@@ -1322,27 +1431,29 @@ Soroban field - parameters from contract function call
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 24       | Invoke Host Function       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+
 {% enddocs %}
 
 {% docs details_type %}
 Soroban field - type of soroban operation
 
-| Type                      |
-|---------------------------|
-| invoke_contract           |
-| create_contract           |
-| upload_wasm               |
-| extend_footprint_ttl      |
-| restore_footprint         |
+| Type                 |
+| -------------------- |
+| invoke_contract      |
+| create_contract      |
+| upload_wasm          |
+| extend_footprint_ttl |
+| restore_footprint    |
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 24       | Invoke Host Function       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+
 {% enddocs %}
 
 {% docs details_soroban_operation_type %}
@@ -1350,7 +1461,8 @@ Soroban field - soroban invoke function (invoke contract, create contract, uploa
 
 ### Only exists for the following operations:
 
-| Type     | Operation                  |
-|----------|----------------------------|
-| 24       | Invoke Host Function       |
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+
 {% enddocs %}

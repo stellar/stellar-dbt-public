@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: contract_code
         description: '{{ doc("contract_code") }}'
@@ -14,11 +14,11 @@ sources:
                 - last_modified_ledger
                 - ledger_entry_change
               config:
-                where:  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
-                          and closed_at < timestamp_trunc(current_timestamp(), day)
+                where:
+                  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+                  and closed_at < timestamp_trunc(current_timestamp(), day)
               meta:
-                description:
-                  "Tests the uniqueness combination of: contract_code_hash, contract_code_ext_v, last_modified_ledger, and ledger_entry_change."
+                description: "Tests the uniqueness combination of: contract_code_hash, contract_code_ext_v, last_modified_ledger, and ledger_entry_change."
         columns:
           - name: contract_code_hash
             description: '{{ doc("contract_code_hash") }}'

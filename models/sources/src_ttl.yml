@@ -2,13 +2,13 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: ttl
         description: '{{ doc("ttl") }}'
         freshness:
-          warn_after: {count: 30, period: minute}
-          error_after: {count: 60, period: minute}
+          warn_after: { count: 30, period: minute }
+          error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
           - dbt_utils.unique_combination_of_columns:
@@ -18,11 +18,11 @@ sources:
                 - last_modified_ledger
                 - ledger_entry_change
               config:
-                where:  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
-                          and closed_at < timestamp_trunc(current_timestamp(), day)
+                where:
+                  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+                  and closed_at < timestamp_trunc(current_timestamp(), day)
               meta:
-                description:
-                  "Tests the uniqueness combination of: key_hash, live_until_ledger_seq, last_modified_ledger, and ledger_entry_change."
+                description: "Tests the uniqueness combination of: key_hash, live_until_ledger_seq, last_modified_ledger, and ledger_entry_change."
         columns:
           - name: key_hash
             description: '{{ doc("key_hash") }}'

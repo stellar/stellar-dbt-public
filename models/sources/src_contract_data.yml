@@ -2,13 +2,13 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: contract_data
         description: '{{ doc("contract_data") }}'
         freshness:
-          warn_after: {count: 30, period: minute}
-          error_after: {count: 60, period: minute}
+          warn_after: { count: 30, period: minute }
+          error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
         columns:
@@ -38,16 +38,16 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: asset_type != 'native' 
-                              and closed_at > current_timestamp - interval 2 day
+                    where: asset_type != 'native'
+                      and closed_at > current_timestamp - interval 2 day
 
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
             tests:
               - not_null:
                   config:
-                    where: asset_type != 'native' 
-                              and closed_at > current_timestamp - interval 2 day
+                    where: asset_type != 'native'
+                      and closed_at > current_timestamp - interval 2 day
 
           - name: asset_type
             description: '{{ doc("asset_type") }}'
@@ -77,7 +77,7 @@ sources:
                     where: closed_at > current_timestamp - interval 2 day
           - accepted_values:
               values: [0, 1, 2]
-              quote: false                    
+              quote: false
 
           - name: deleted
             description: '{{ doc("deleted") }}'

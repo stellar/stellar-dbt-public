@@ -2,13 +2,13 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: 'crypto-stellar'
+    database: "crypto-stellar"
     tables:
       - name: history_ledgers
         description: '{{ doc("history_ledgers") }}'
         freshness:
-          warn_after: {count: 30, period: minute}
-          error_after: {count: 60, period: minute}
+          warn_after: { count: 30, period: minute }
+          error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
         columns:
@@ -17,7 +17,8 @@ sources:
             tests:
               - unique:
                   config:
-                    where: closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+                    where:
+                      closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
                       and closed_at < timestamp_trunc(current_timestamp(), day)
               - not_null:
                   config:
