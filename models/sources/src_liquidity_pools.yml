@@ -77,14 +77,16 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: asset_a_type != 'native'
+                      and batch_run_date > current_datetime - interval 2 day
 
           - name: asset_a_issuer
             description: '{{ doc("asset_a_issuer") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: asset_a_type != 'native'
+                      and batch_run_date > current_datetime - interval 2 day
 
           - name: asset_a_amount
             description: '{{ doc("asset_a_amount") }}'
@@ -112,14 +114,16 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: asset_b_type != 'native'
+                      and batch_run_date > current_datetime - interval 2 day
 
           - name: asset_b_issuer
             description: '{{ doc("asset_a_issuer") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: asset_b_type != 'native'
+                      and batch_run_date > current_datetime - interval 2 day
 
           - name: asset_b_amount
             description: '{{ doc("asset_a_amount") }}'
@@ -141,6 +145,9 @@ sources:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
+              - accepted_values:
+                  values: [0, 1, 2]
+                  quote: false
 
           - name: deleted
             description: '{{ doc("deleted") }}'

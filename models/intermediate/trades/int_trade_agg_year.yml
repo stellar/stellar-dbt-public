@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: int_trade_agg_day
+    description: Intermediate for the aggregation of yearly trade data. This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying.
+    columns:
+      - name: day_agg
+        description: Date from which all metrics are aggregated.
+
+      - name: asset_a
+        description: '{{ doc("asset_a") }}'
+
+      - name: asset_a_code
+        description: '{{ doc("asset_a_code") }}'
+
+      - name: asset_a_issuer
+        description: '{{ doc("asset_a_issuer") }}'
+
+      - name: asset_a_type
+        description: '{{ doc("asset_a_type") }}'
+
+      - name: asset_b
+        description: '{{ doc("asset_b") }}'
+
+      - name: asset_b_code
+        description: '{{ doc("asset_b_code") }}'
+
+      - name: asset_b_issuer
+        description: '{{ doc("asset_b_issuer") }}'
+
+      - name: asset_b_type
+        description: '{{ doc("asset_b_type") }}'
+
+      - name: trade_count_yearly
+        description: '{{ doc("trade_count_yearly") }}'
+
+      - name: asset_a_volume_yearly
+        description: '{{ doc("asset_a_volume_yearly") }}'
+
+      - name: asset_b_volume_yearly
+        description: '{{ doc("asset_b_volume_yearly") }}'
+
+      - name: avg_price_yearly
+        description: '{{ doc("avg_price_yearly") }}'
+
+      - name: high_price_yearly
+        description: '{{ doc("high_price_yearly") }}'
+
+      - name: low_price_yearly
+        description: '{{ doc("low_price_yearly") }}'
+
+      - name: open_n_yearly
+        description: '{{ doc("open_n_yearly") }}'
+
+      - name: open_d_yearly
+        description: '{{ doc("open_d_yearly") }}'
+
+      - name: close_n_yearly
+        description: '{{ doc("close_n_yearly") }}'
+
+      - name: close_d_yearly
+        description: '{{ doc("close_d_yearly") }}'

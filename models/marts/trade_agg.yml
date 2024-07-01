@@ -48,14 +48,16 @@ models:
         tests:
           - not_null:
               config:
-                where: day_agg > current_datetime - interval 2 day
+                where: asset_a_type != 'native'
+                  and day_agg > current_datetime - interval 2 day
 
       - name: asset_a_issuer
         description: '{{ doc("asset_a_issuer") }}'
         tests:
           - not_null:
               config:
-                where: day_agg > current_datetime - interval 2 day
+                where: asset_a_type != 'native'
+                  and day_agg > current_datetime - interval 2 day
 
       - name: asset_a_volume_daily
         description: '{{ doc("asset_a_volume_daily") }}'
@@ -83,14 +85,16 @@ models:
         tests:
           - not_null:
               config:
-                where: day_agg > current_datetime - interval 2 day
+                where: asset_b_type != 'native'
+                  and day_agg > current_datetime - interval 2 day
 
       - name: asset_b_issuer
         description: '{{ doc("asset_a_issuer") }}'
         tests:
           - not_null:
               config:
-                where: day_agg > current_datetime - interval 2 day
+                where: asset_b_type != 'native'
+                  and day_agg > current_datetime - interval 2 day
 
       - name: asset_b_volume_daily
         description: '{{ doc("asset_b_volume_daily") }}'

@@ -35,12 +35,26 @@ sources:
 
           - name: asset_code
             description: '{{ doc("asset_code") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: asset_type != 'native'
+                      and closed_at > current_timestamp - interval 2 day
 
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: asset_type != 'native'
+                      and closed_at > current_timestamp - interval 2 day
 
           - name: asset_type
             description: '{{ doc("asset_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: balance_holder
             description: '{{ doc("balance_holder") }}'
@@ -61,6 +75,9 @@ sources:
               - not_null:
                   config:
                     where: closed_at > current_timestamp - interval 2 day
+          - accepted_values:
+              values: [0, 1, 2]
+              quote: false
 
           - name: deleted
             description: '{{ doc("deleted") }}'

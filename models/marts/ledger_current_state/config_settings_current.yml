@@ -7,6 +7,9 @@ models:
     columns:
       - name: config_setting_id
         description: '{{ doc("config_setting_id") }}'
+        tests:
+          - unique
+          - not_null
 
       - name: contract_max_size_bytes
         description: '{{ doc("contract_max_size_bytes") }}'

@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: int_trade_agg_day
+    description: Intermediate for the aggregation of daily trade data. This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying.
+    columns:
+      - name: day_agg
+        description: Date from which all metrics are aggregated.
+
+      - name: asset_a
+        description: '{{ doc("asset_a") }}'
+
+      - name: asset_a_code
+        description: '{{ doc("asset_a_code") }}'
+
+      - name: asset_a_issuer
+        description: '{{ doc("asset_a_issuer") }}'
+
+      - name: asset_a_type
+        description: '{{ doc("asset_a_type") }}'
+
+      - name: asset_b
+        description: '{{ doc("asset_b") }}'
+
+      - name: asset_b_code
+        description: '{{ doc("asset_b_code") }}'
+
+      - name: asset_b_issuer
+        description: '{{ doc("asset_b_issuer") }}'
+
+      - name: asset_b_type
+        description: '{{ doc("asset_b_type") }}'
+
+      - name: trade_count_daily
+        description: '{{ doc("trade_count_daily") }}'
+
+      - name: asset_a_volume_daily
+        description: '{{ doc("asset_a_volume_daily") }}'
+
+      - name: asset_b_volume_daily
+        description: '{{ doc("asset_b_volume_daily") }}'
+
+      - name: avg_price_daily
+        description: '{{ doc("avg_price_daily") }}'
+
+      - name: high_price_daily
+        description: '{{ doc("high_price_daily") }}'
+
+      - name: low_price_daily
+        description: '{{ doc("low_price_daily") }}'
+
+      - name: open_n_daily
+        description: '{{ doc("open_n_daily") }}'
+
+      - name: open_d_daily
+        description: '{{ doc("open_d_daily") }}'
+
+      - name: close_n_daily
+        description: '{{ doc("close_n_daily") }}'
+
+      - name: close_d_daily
+        description: '{{ doc("close_d_daily") }}'

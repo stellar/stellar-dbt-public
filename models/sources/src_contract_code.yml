@@ -47,6 +47,9 @@ sources:
               - not_null:
                   config:
                     where: closed_at > current_timestamp - interval 2 day
+              - accepted_values:
+                  values: [0, 1, 2]
+                  quote: false
 
           - name: deleted
             description: '{{ doc("deleted") }}'

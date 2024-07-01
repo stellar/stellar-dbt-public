@@ -128,6 +128,9 @@ sources:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
+              - accepted_values:
+                  values: [0, 1, 2]
+                  quote: false
 
           - name: deleted
             description: '{{ doc("deleted") }}'

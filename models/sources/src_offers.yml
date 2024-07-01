@@ -39,21 +39,49 @@ sources:
 
           - name: selling_asset_type
             description: '{{ doc("asset_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: selling_asset_code
             description: '{{ doc("asset_code") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: selling_asset_type != 'native'
+                      and batch_run_date > current_datetime - interval 2 day
 
           - name: selling_asset_issuer
             description: '{{ doc("asset_issuer") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: selling_asset_type != 'native'
+                      and batch_run_date > current_datetime - interval 2 day
 
           - name: buying_asset_type
             description: '{{ doc("asset_type") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: buying_asset_code
             description: '{{ doc("asset_code") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: buying_asset_type != 'native'
+                      and batch_run_date > current_datetime - interval 2 day
 
           - name: buying_asset_issuer
             description: '{{ doc("asset_issuer") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: buying_asset_type != 'native'
+                      and batch_run_date > current_datetime - interval 2 day
 
           - name: amount
             description: '{{ doc("amount") }}'
@@ -103,6 +131,9 @@ sources:
               - not_null:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
+              - accepted_values:
+                  values: [0, 1, 2]
+                  quote: false
 
           - name: deleted
             description: '{{ doc("deleted") }}'

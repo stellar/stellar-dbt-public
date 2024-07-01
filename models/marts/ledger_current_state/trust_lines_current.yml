@@ -39,14 +39,16 @@ models:
         tests:
           - not_null:
               config:
-                where: closed_at > current_timestamp - interval 2 day
+                where: asset_type != 3
+                  and closed_at > current_timestamp - interval 2 day
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
           - not_null:
               config:
-                where: closed_at > current_timestamp - interval 2 day
+                where: asset_type != 3
+                  and closed_at > current_timestamp - interval 2 day
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
