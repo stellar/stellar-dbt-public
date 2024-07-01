@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: int_trade_agg_day
+  - name: int_trade_agg_month
     description: Intermediate for the aggregation of monthly trade data. This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying.
     columns:
       - name: day_agg
@@ -31,32 +31,32 @@ models:
       - name: asset_b_type
         description: '{{ doc("asset_b_type") }}'
 
-      - name: trade_count_month
-        description: '{{ doc("trade_count_month") }}'
+      - name: trade_count_monthly
+        description: '{{ doc("trade_count_monthly") }}'
 
-      - name: asset_a_volume_month
-        description: '{{ doc("asset_a_volume_month") }}'
+      - name: asset_a_volume_monthly
+        description: '{{ doc("asset_a_volume_monthly") }}'
 
-      - name: asset_b_volume_month
-        description: '{{ doc("asset_b_volume_month") }}'
+      - name: asset_b_volume_monthly
+        description: '{{ doc("asset_b_volume_monthly") }}'
 
-      - name: avg_price_month
-        description: '{{ doc("avg_price_month") }}'
+      - name: avg_price_monthly
+        description: '{{ doc("avg_price_monthly") }}'
 
-      - name: high_price_month
-        description: '{{ doc("high_price_month") }}'
+      - name: high_price_monthly
+        description: '{{ doc("high_price_monthly") }}'
 
-      - name: low_price_month
-        description: '{{ doc("low_price_month") }}'
+      - name: low_price_monthly
+        description: '{{ doc("low_price_monthly") }}'
 
-      - name: open_n_month
-        description: '{{ doc("open_n_month") }}'
+      - name: open_n_monthly
+        description: '{{ doc("open_n_monthly") }}'
 
-      - name: open_d_month
-        description: '{{ doc("open_d_month") }}'
+      - name: open_d_monthly
+        description: '{{ doc("open_d_monthly") }}'
 
-      - name: close_n_month
-        description: '{{ doc("close_n_month") }}'
+      - name: close_n_monthly
+        description: '{{ doc("close_n_monthly") }}'
 
-      - name: close_d_month
-        description: '{{ doc("close_d_month") }}'
+      - name: close_d_monthly
+        description: '{{ doc("close_d_monthly") }}'
