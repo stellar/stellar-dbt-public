@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: int_trade_agg_day
+  - name: int_trade_agg_week
     description: Intermediate for the aggregation of weekly trade data. This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying.
     columns:
       - name: day_agg
