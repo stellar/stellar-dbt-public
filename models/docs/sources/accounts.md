@@ -37,7 +37,7 @@ The total number of ledger entries connected to this account. Ledger entries inc
 
 #### Notes:
 
-Each entry on a ledger takes up space, which is expensive to store on the blockchain. For each entry, an account is required to hold a [minimum XLM balance](https://developers.stellar.org/docs/fundamentals-and-concepts/lumens#minimum-balance). The reserve is calculated by (2 + num_subentries - num_sponsoring + num_sponsored) \* 0.5XLM
+Each entry on a ledger takes up space, which is expensive to store on the blockchain. For each entry, an account is required to hold a [minimum XLM balance](https://developers.stellar.org/docs/fundamentals-and-concepts/lumens#minimum-balance). The reserve is calculated by (2 + num_subentries - num_sponsoring + num_sponsored) * 0.5XLM
 {% enddocs %}
 
 {% docs inflation_destination %}

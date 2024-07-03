@@ -110,7 +110,7 @@ A transaction's success does not indicate whether it was included and written to
 {% enddocs %}
 
 {% docs fee_charged %}
-The fee (in stroops) paid by the source account to apply this transaction to the ledger. At minimum, a transaction is charged # of operations \* base fee. The minimum base fee is 100 stroops
+The fee (in stroops) paid by the source account to apply this transaction to the ledger. At minimum, a transaction is charged # of operations * base fee. The minimum base fee is 100 stroops
 
 #### Notes:
 
