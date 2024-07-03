@@ -108,3 +108,15 @@ The number of failed transactions submitted to the network in this ledger. The t
 {% docs tx_set_operation_count %}
 The total number of operations in the transaction set for this ledger, including failed transactions.
 {% enddocs %}
+
+{% docs soroban_fee_write_1kb %}
+Add description
+{% enddocs %}
+
+{% docs node_id %}
+The id of winning validator node which is allowed to write transaction set to the network. The winning validator is decided by the network.
+{% enddocs %}
+
+{% docs signature %}
+The signing hash of the validator node which writes the transaction set to the network.
+{% enddocs %}
