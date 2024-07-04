@@ -72,7 +72,7 @@ If an offer wants to sell 10 XLM for 1 USD, the price will be 0.10 USD.
 {% enddocs %}
 
 {% docs batch_id %}
-String representation of the run id for a given DAG in Airflow. Takes the form of "scheduled\_\_<batch_end_date>-<dag_alias>". Batch ids are unique to the batch and help with monitoring and rerun capabilities
+String representation of the run id for a given DAG in Airflow. Takes the form of "scheduled__<batch_end_date>-<dag_alias>". Batch ids are unique to the batch and help with monitoring and rerun capabilities
 {% enddocs %}
 
 {% docs batch_run_date %}
