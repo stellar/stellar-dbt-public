@@ -1,0 +1,55 @@
+name: dbt project evaluator CI
+
+on:
+  pull_request:
+    branches:
+      - master
+
+env:
+  DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
+  DBT_PROFILES_DIR: ${{ github.workspace }}
+  DBT_TARGET: test
+  DBT_DATASET: test_crypto_stellar
+  DBT_PROJECT: test-hubble-319619
+  DBT_MAX_BYTES_BILLED: 1000000000000
+  DBT_JOB_TIMEOUT: 300
+  DBT_THREADS: 1
+  DBT_JOB_RETRIES: 1
+
+jobs:
+  dbt-project-evaluator:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.pull_request.merged == false &&
+      github.event.pull_request.state == 'open'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up python
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Authenticate to Test-Hubble
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: test-hubble-319619
+          credentials_json: "${{ secrets.CREDS_TEST_HUBBLE }}"
+
+      - name: Set up Cloud SDK
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - name: Run dbt debug
+        run: |
+          dbt debug
+
+      - name: Run dbt deps
+        run: |
+          dbt deps
+
+      - name: Run dbt build project evaluator
+        run: |
+          dbt build --select package:dbt_project_evaluator dbt_project_evaluator_exceptions
