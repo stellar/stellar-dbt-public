@@ -6,7 +6,8 @@
         "field": "closed_at"
         , "data_type": "timestamp"
         , "granularity": "month"},
-    cluster_by=["ledger_sequence","transaction_id","op_account_id","type"]
+    cluster_by=["ledger_sequence","transaction_id","op_account_id","type"],
+    on_schema_change="append_new_columns"
     )
 }}
 
