@@ -1,4 +1,4 @@
-{{ 
+{{
     config(
         tags = ["current_state"],
         materialized = "incremental",
