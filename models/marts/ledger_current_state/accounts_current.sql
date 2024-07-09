@@ -59,7 +59,7 @@ with
                 > (select max(t.upstream_insert_ts) from {{ this }} as t)
         {% endif %}
     )
-    
+
     , account_date as (
         select
             account_id
