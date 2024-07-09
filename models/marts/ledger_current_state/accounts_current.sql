@@ -75,7 +75,7 @@ with
             , account_date.account_creation_date
             , account_date.min_sequence_number
         from current_accts
-        left join account_date
+        join account_date
             on current_accts.account_id = account_date.account_id
         where current_accts.row_nr = 1
     )
