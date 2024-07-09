@@ -110,7 +110,7 @@ The total number of operations in the transaction set for this ledger, including
 {% enddocs %}
 
 {% docs soroban_fee_write_1kb %}
-Add description
+The write fee is dynamic fee that grows linearly with the size of the ledger. The write fee for a given ledger is recorded in the ledger header and has a direct relationship to the bucketlist size of the ledger db.
 {% enddocs %}
 
 {% docs node_id %}
