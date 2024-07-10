@@ -1,7 +1,7 @@
 stellar_dbt_public:
   target: "{{ env_var('DBT_TARGET') }}"
   outputs:
-    prod:
+    prod: &default
       dataset: "{{ env_var('DBT_DATASET') }}" # the name of your dataset
       maximum_bytes_billed: "{{ env_var('DBT_MAX_BYTES_BILLED') | as_number }}" # limits the maximum number of processed bytes
       job_execution_timeout_seconds: "{{ env_var('DBT_JOB_TIMEOUT') | int }}" # the number of seconds dbt should wait for queries to complete, after being submitted successfully
@@ -12,3 +12,6 @@ stellar_dbt_public:
       location: us # the BigQuery dataset location
       method: oauth
       type: bigquery
+
+    test:
+      <<: *default
