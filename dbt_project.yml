@@ -19,6 +19,12 @@ clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
 
+vars:
+  dbt_project_evaluator:
+    documentation_coverage_target: 50
+    test_coverage_target: 50
+    exclude_packages: ["elementary"]
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 models:
@@ -34,3 +40,33 @@ models:
     +schema: elementary
     +docs:
       show: false
+
+  dbt_project_evaluator:
+    +dataset: dbt_project_evaluator
+    +enabled: "{{ target.name != 'prod' }}"
+    marts:
+      dag:
+        fct_model_fanout:
+          +enabled: false
+      structure:
+        fct_source_directories:
+          +enabled: false
+        fct_model_naming_conventions:
+          +enabled: false
+        fct_model_directories:
+          +enabled: false
+      tests:
+        fct_missing_primary_key_tests:
+          +enabled: false
+
+seeds:
+  stellar_dbt_public:
+    dbt_project_evaluator_config:
+      +dataset: dbt_project_evaluator
+  dbt_project_evaluator:
+    dbt_project_evaluator_exceptions:
+      +enabled: false
+
+tests:
+  dbt_project_evaluator:
+    +severity: "{{ env_var('DBT_PROJECT_EVALUATOR_SEVERITY', 'error') }}"
