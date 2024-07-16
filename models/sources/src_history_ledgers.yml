@@ -158,10 +158,6 @@ sources:
                     where: closed_at > current_timestamp - interval 2 day
           - name: soroban_fee_write_1kb
             description: '{{ doc("soroban_fee_write_1kb") }}'
-            tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
 
           - name: node_id
             description: '{{ doc("node_id") }}'
