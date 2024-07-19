@@ -55,7 +55,7 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: asset_type != pool_share
+                    where: asset_type != 'pool_share'
                       and batch_run_date > current_datetime - interval 2 day
 
           - name: asset_code
@@ -63,7 +63,7 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: asset_type != pool_share
+                    where: asset_type != 'pool_share'
                       and batch_run_date > current_datetime - interval 2 day
 
           - name: liquidity_pool_id
