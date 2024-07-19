@@ -119,7 +119,7 @@ models:
               config:
                 where: closed_at > current_timestamp - interval 2 day
           - accepted_values:
-              values: ["credit_alphanum4", "credit_alphanum12", "pool_share"]
+              values: [0, 1, 2]
               quote: false
 
       - name: closed_at
