@@ -57,7 +57,7 @@ models:
               config:
                 where: closed_at > current_timestamp - interval 2 day
           - accepted_values:
-              values: [1, 2, 3]
+              values: ["credit_alphanum4", "credit_alphanum12", "pool_share"]
               quote: false
 
       - name: liquidity_pool_id
