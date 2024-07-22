@@ -39,7 +39,7 @@ models:
         tests:
           - not_null:
               config:
-                where: asset_type != 3
+                where: asset_type != 'pool_share'
                   and closed_at > current_timestamp - interval 2 day
 
       - name: asset_issuer
@@ -47,7 +47,7 @@ models:
         tests:
           - not_null:
               config:
-                where: asset_type != 3
+                where: asset_type != 'pool_share'
                   and closed_at > current_timestamp - interval 2 day
 
       - name: asset_type
@@ -57,8 +57,7 @@ models:
               config:
                 where: closed_at > current_timestamp - interval 2 day
           - accepted_values:
-              values: [1, 2, 3]
-              quote: false
+              values: ["credit_alphanum4", "credit_alphanum12", "pool_share"]
 
       - name: liquidity_pool_id
         description: '{{ doc("liquidity_pool_id") }}'
