@@ -17,7 +17,6 @@ with
             , cb.asset_type
             , cb.asset_code
             , cb.asset_issuer
-            , cb.asset_id
             , cb.asset_amount
             , cb.sponsor
             , cb.flags
@@ -51,7 +50,6 @@ select
     , asset_type
     , asset_code
     , asset_issuer
-    , asset_id
     , asset_amount
     , sponsor
     , flags

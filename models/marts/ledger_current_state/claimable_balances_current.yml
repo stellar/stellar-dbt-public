@@ -46,13 +46,6 @@ models:
                 where: asset_type != 'native'
                   and batch_run_date > current_datetime - interval 2 day
 
-      - name: asset_id
-        description: '{{ doc("asset_id") }}'
-        tests:
-          - not_null:
-              config:
-                where: batch_run_date > current_datetime - interval 2 day
-
       - name: asset_amount
         description: '{{ doc("asset_amount") }}'
         tests:
