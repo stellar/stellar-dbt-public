@@ -37,7 +37,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                cb.batch_run_date >= timestamp_sub(current_timestamp(), interval 7 day)
+                cb.batch_run_date >= date_sub(current_date(), interval 7 day)
         {% endif %}
     )
 
