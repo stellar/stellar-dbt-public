@@ -207,6 +207,7 @@ with
             , contract_code_hash
             , operation_result_code
             , operation_trace_code
+            , details_json
         from {{ ref('stg_history_operations') }}
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
@@ -384,6 +385,8 @@ with
             , hist_ledg.protocol_version
             , hist_ledg.successful_transaction_count
             , hist_ledg.failed_transaction_count
+            -- json blob for operation details
+            , hist_ops.details_json
             -- general fields
             , hist_ops.batch_id
             , hist_ops.batch_run_date

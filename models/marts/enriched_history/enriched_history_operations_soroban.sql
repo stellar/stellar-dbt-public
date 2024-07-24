@@ -78,6 +78,8 @@ with
             , enriched.protocol_version
             , enriched.successful_transaction_count
             , enriched.failed_transaction_count
+            -- json blob for operation details
+            , enriched.details_json
             -- general fields
             , enriched.batch_id
             , enriched.batch_run_date
