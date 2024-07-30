@@ -283,3 +283,6 @@ models:
 
       - name: operation_trace_code
         description: '{{ doc("operation_trace_code") }}'
+
+      - name: details_json
+        description: '{{ doc("details") }}'

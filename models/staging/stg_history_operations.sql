@@ -126,6 +126,7 @@ with
             , details.extend_to
             , details.contract_id
             , details.contract_code_hash
+            , details_json
             , operation_result_code
             , operation_trace_code
             , closed_at
