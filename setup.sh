@@ -20,6 +20,9 @@ source env/bin/activate  # On Windows, use `env\Scripts\activate`
 # # Load the environment variables
 source .env
 
+# You can pip install dbt if need; Currently running on dbt-core==1.3.0
+# pip install dbt-core==1.3.0
+
 # Install requirements
 pip install -r ./requirements.txt
 

@@ -15,3 +15,6 @@ stellar_dbt_public:
 
     test:
       <<: *default
+
+    development:
+      <<: *default
