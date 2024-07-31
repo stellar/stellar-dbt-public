@@ -110,7 +110,7 @@ The total number of operations in the transaction set for this ledger, including
 {% enddocs %}
 
 {% docs soroban_fee_write_1kb %}
-The write fee is dynamic fee that grows linearly with the size of the ledger. The write fee for a given ledger is recorded in the ledger header and has a direct relationship to the bucketlist size of the ledger db.
+The fee associated with writing 1KB of data to the Soroban ledger.The write fee is dynamic fee that grows linearly with the size of the ledger. The write fee for a given ledger is recorded in the ledger header and has a direct relationship to the bucketlist size of the ledger db.
 {% enddocs %}
 
 {% docs node_id %}
@@ -118,5 +118,5 @@ The id of winning validator node which is allowed to write transaction set to th
 {% enddocs %}
 
 {% docs signature %}
-The signing hash of the validator node which writes the transaction set to the network.
+The signing hash of the validator node which writes the transaction set to the network.This signature ensures the integrity and authenticity of the ledger, confirming that it has not been tampered with.
 {% enddocs %}

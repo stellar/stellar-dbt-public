@@ -14,6 +14,7 @@ with
             id as op_id
             , source_account as op_source_account
             , source_account_muxed as op_source_account_muxed
+            , ledger_sequence
             , transaction_id
             , type
             , type_string
@@ -25,11 +26,13 @@ with
             , details.asset
             , details.asset_code
             , details.asset_issuer
+            , details.asset_id
             , details.asset_type
             , details.authorize
             , details.balance_id
             , details.buying_asset_code
             , details.buying_asset_issuer
+            , details.buying_asset_id
             , details.buying_asset_type
             , details.claimable_balance_id
             , details.claimant
@@ -61,6 +64,7 @@ with
             , details.price_r
             , details.selling_asset_code
             , details.selling_asset_issuer
+            , details.selling_asset_id
             , details.selling_asset_type
             , details.set_flags
             , details.set_flags_s
@@ -70,6 +74,7 @@ with
             , details.source_amount
             , details.source_asset_code
             , details.source_asset_issuer
+            , details.source_asset_id
             , details.source_asset_type
             , details.source_max
             , details.starting_balance
@@ -100,11 +105,13 @@ with
             , details.reserve_a_asset_type
             , details.reserve_a_asset_code
             , details.reserve_a_asset_issuer
+            , details.reserve_a_asset_id
             , details.reserve_a_max_amount
             , details.reserve_a_deposit_amount
             , details.reserve_b_asset_type
             , details.reserve_b_asset_code
             , details.reserve_b_asset_issuer
+            , details.reserve_b_asset_id
             , details.reserve_b_max_amount
             , details.reserve_b_deposit_amount
             , details.min_price
@@ -126,6 +133,9 @@ with
             , details.extend_to
             , details.contract_id
             , details.contract_code_hash
+            , details.ledger_key_hash
+            , details.ledgers_to_expire
+            , details_json
             , operation_result_code
             , operation_trace_code
             , closed_at

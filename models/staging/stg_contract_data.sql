@@ -23,6 +23,11 @@ with
             , ledger_entry_change
             , ledger_sequence
             , ledger_key_hash
+            , key
+            , key_decoded
+            , val
+            , val_decoded
+            , contract_data_xdr
             , closed_at
             , deleted
             , batch_id

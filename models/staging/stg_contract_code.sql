@@ -17,6 +17,16 @@ with
             , ledger_entry_change
             , ledger_sequence
             , ledger_key_hash
+            , n_data_segment_bytes
+            , n_data_segments
+            , n_elem_segments
+            , n_exports
+            , n_functions
+            , n_globals
+            , n_imports
+            , n_instructions
+            , n_table_entries
+            , n_types
             , closed_at
             , deleted
             , batch_id

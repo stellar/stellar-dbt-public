@@ -11,7 +11,9 @@ with
 
     , history_effects as (
         select
-            address
+            id
+            , ledger_sequence
+            , address
             , address_muxed
             , operation_id
             , type
@@ -75,6 +77,8 @@ with
             , details.contract
             , details.ledgers_to_expire
             , details.entries
+            , details.extend_to
+            , index
             , closed_at
             , batch_id
             , batch_run_date

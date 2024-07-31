@@ -1404,17 +1404,6 @@ _Note:_ Only applies to Stellar Asset Contracts
 
 {% enddocs %}
 
-{% docs details_extend_to %}
-Soroban field - ledger extended to
-
-### Only exists for the following operations:
-
-| Type | Operation            |
-| ---- | -------------------- |
-| 25   | Extend Footprint Ttl |
-
-{% enddocs %}
-
 {% docs details_asset_balance_changes %}
 Soroban field - asset balance changes from invoke host function
 
@@ -1465,4 +1454,28 @@ Soroban field - soroban invoke function (invoke contract, create contract, uploa
 | ---- | -------------------- |
 | 24   | Invoke Host Function |
 
+{% enddocs %}
+
+{% docs details_asset_id %}
+The identifier of the asset involved in the operation. This field provides details about the specific asset being operated on, such as in payment or transfer operations.
+{% enddocs %}
+
+{% docs details_buying_asset_id %}
+The identifier of the asset being bought in the operation. This is relevant for operations involving trades, where one asset is exchanged for another.
+{% enddocs %}
+
+{% docs details_selling_asset_id %}
+The identifier of the asset being sold in the operation. This field is used in trade operations, where one asset is exchanged for another.
+{% enddocs %}
+
+{% docs details_source_asset_id %}
+The identifier of the source asset in the operation. This is used in operations where an asset is transferred or converted from one form to another.
+{% enddocs %}
+
+{% docs details_reserve_a_asset_id %}
+The identifier of the first reserve asset in a liquidity pool or similar construct. This field is relevant for operations involving liquidity pools, where multiple assets are pooled together.
+{% enddocs %}
+
+{% docs details_reserve_b_asset_id %}
+The identifier of the second reserve asset in a liquidity pool or similar construct. This field complements `details.reserve_a_asset_id` in describing the assets involved in a liquidity pool.
 {% enddocs %}
