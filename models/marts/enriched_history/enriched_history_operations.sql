@@ -35,7 +35,7 @@ with
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
             and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
                 and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% endif %}
@@ -80,7 +80,7 @@ with
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
             and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
                 and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% endif %}
@@ -212,7 +212,7 @@ with
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
             and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
                 and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
             {% endif %}
