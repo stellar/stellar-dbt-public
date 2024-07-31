@@ -24,7 +24,7 @@ The address/account that holds the balance of the asset in contract data
 {% enddocs %}
 
 {% docs key %}
-The encoded key used to identify a specific piece of contract data. This key is typically a hashed value representing the unique identifier for the data entry.
+The encoded key used to identify a specific piece of contract data. The encoded key has two components (type and value) where type describes the data type and the value describes the encoded value of the data type for the contract data.
 {% enddocs %}
 
 {% docs key_decoded %}
@@ -32,7 +32,7 @@ The human-readable or decoded version of the key. This provides an understandabl
 {% enddocs %}
 
 {% docs val %}
-The encoded value associated with the key in the contract data. This value is typically stored in a compact, machine-readable format.
+The encoded value associated with the key in the contract data. The encoded val has two components (type and value) where type describes the data type and the value describes the encoded value of the data type for the contract data.
 {% enddocs %}
 
 {% docs val_decoded %}

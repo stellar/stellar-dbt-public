@@ -145,7 +145,7 @@ Soroban ledger change entries related to contract extension
 {% enddocs %}
 
 {% docs id %}
-A unique identifier for the effect. This is typically an auto-incremented integer that uniquely distinguishes each effect record in the table.
+This unique effect id is the concatenation of the operation id and the effect index
 {% enddocs %}
 
 {% docs index %}

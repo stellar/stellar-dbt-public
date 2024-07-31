@@ -1461,15 +1461,15 @@ The identifier of the asset involved in the operation. This field provides detai
 {% enddocs %}
 
 {% docs details_buying_asset_id %}
-The identifier of the asset being bought in the operation. This is relevant for operations involving trades, where one asset is exchanged for another.
+The identifier of the asset being bought in the operation. This is relevant for trade and offer operations, where one asset is exchanged for another.
 {% enddocs %}
 
 {% docs details_selling_asset_id %}
-The identifier of the asset being sold in the operation. This field is used in trade operations, where one asset is exchanged for another.
+The identifier of the asset being sold in the operation. This field is used in trade and offer operations, where one asset is exchanged for another.
 {% enddocs %}
 
 {% docs details_source_asset_id %}
-The identifier of the source asset in the operation. This is used in operations where an asset is transferred or converted from one form to another.
+The identifier of the source asset in the operation. This is used in payment operations where an asset is transferred or converted from one form to another.
 {% enddocs %}
 
 {% docs details_reserve_a_asset_id %}
