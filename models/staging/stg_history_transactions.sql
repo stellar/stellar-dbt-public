@@ -29,11 +29,12 @@ with
             , new_max_fee
             , account_muxed
             , fee_account_muxed
-            , ledger_bounds as ledger_bounds
-            , min_account_sequence as min_account_sequence
-            , min_account_sequence_age as min_account_sequence_age
-            , min_account_sequence_ledger_gap as min_account_sequence_ledger_gap
+            , ledger_bounds
+            , min_account_sequence
+            , min_account_sequence_age
+            , min_account_sequence_ledger_gap
             , extra_signers
+            , tx_signers
             , tx_envelope
             , tx_result
             , tx_meta
@@ -47,6 +48,10 @@ with
             , inclusion_fee_bid
             , inclusion_fee_charged
             , resource_fee_refund
+            , non_refundable_resource_fee_charged
+            , refundable_resource_fee_charged
+            , rent_fee_charged
+            , refundable_fee
             , batch_id
             , batch_run_date
             , batch_insert_ts

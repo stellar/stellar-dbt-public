@@ -25,10 +25,10 @@ with
             , cc.ledger_sequence
             , cc.ledger_key_hash
             , row_number()
-            over (
-                partition by cc.contract_code_hash
-                order by cc.closed_at desc
-            ) as rn
+                over (
+                    partition by cc.contract_code_hash
+                    order by cc.closed_at desc
+                ) as rn
         from {{ ref('stg_contract_code') }} as cc
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
