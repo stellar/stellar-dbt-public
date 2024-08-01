@@ -18,6 +18,7 @@ with
             , operation_count as ledger_operation_count
             , closed_at
             , id as ledger_id
+            , node_id
             , total_coins
             , fee_pool
             , base_fee
@@ -28,6 +29,8 @@ with
             , successful_transaction_count
             , failed_transaction_count
             , tx_set_operation_count
+            , signature
+            , soroban_fee_write_1kb
             , batch_id
             , batch_run_date
             , batch_insert_ts

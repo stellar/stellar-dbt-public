@@ -143,3 +143,11 @@ Soroban contract invoke host function event type: transfer, mint, clawback, or b
 {% docs details_entries %}
 Soroban ledger change entries related to contract extension
 {% enddocs %}
+
+{% docs id %}
+This unique effect id is the concatenation of the operation id and the effect index
+{% enddocs %}
+
+{% docs index %}
+The index of the effect within the transaction. This index helps to order effects that result from the same transaction, indicating the sequence in which they occurred.
+{% enddocs %}

@@ -99,6 +99,18 @@ The timestamp in UTC when the ledger with this trade was closed.
 Soroban contract id
 {% enddocs %}
 
+
+{% docs details_extend_to %}
+Soroban field - ledger extended to
+
+### Only exists for the following operations:
+
+| Type | Operation            |
+| ---- | -------------------- |
+| 25   | Extend Footprint Ttl |
+
+{% enddocs %}
+
 {% docs contract_code_hash %}
 Soroban contract code hash
 {% enddocs %}
@@ -109,4 +121,11 @@ Hash of the ledgerKey which is a subset of the ledgerEntry. The subset of ledger
 
 {% docs closed_at %}
 Timestamp in UTC when this ledger closed and committed to the network. Ledgers are expected to close ~every 5 seconds
+{% enddocs %}
+
+{% docs ledger_sequence %}
+The sequence number of this ledger. It represents the order of the ledger within the Stellar blockchain. Each ledger has a unique sequence number that increments with every new ledger, ensuring that ledgers are processed in the correct order.
+
+- Cluster Field
+- Required Field
 {% enddocs %}

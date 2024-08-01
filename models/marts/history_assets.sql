@@ -31,8 +31,9 @@
                 , new_load.asset_type
             from new_load
             left join
-                deduplicated_table on
-            new_load.asset_id = deduplicated_table.asset_id
+                deduplicated_table
+                on
+                new_load.asset_id = deduplicated_table.asset_id
             where
                 deduplicated_table.asset_id is null
         )

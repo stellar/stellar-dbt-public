@@ -64,10 +64,10 @@ with
             , cfg.batch_insert_ts
             , cfg.ledger_sequence
             , row_number()
-            over (
-                partition by cfg.config_setting_id
-                order by cfg.closed_at desc
-            ) as rn
+                over (
+                    partition by cfg.config_setting_id
+                    order by cfg.closed_at desc
+                ) as rn
         from {{ ref('stg_config_settings') }} as cfg
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally

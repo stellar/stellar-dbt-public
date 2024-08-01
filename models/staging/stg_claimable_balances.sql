@@ -16,6 +16,7 @@ with
             , asset_type
             , asset_code
             , asset_issuer
+            , asset_id
             , asset_amount
             , sponsor
             , flags

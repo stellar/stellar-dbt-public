@@ -20,13 +20,6 @@ A hex-encoded SHA-256 hash of this transaction's XDR-encoded form.
 - Required Field
   {% enddocs %}
 
-{% docs ledger_sequence %}
-The sequence number of the ledger that this transaction was included in.
-
-- Cluster Field
-- Required Field
-  {% enddocs %}
-
 {% docs application_order %}
 Each transaction within the transaction set for a ledger is executed and applied sequentially to the network. The validator nodes randomly shuffle submitted transactions and assign them an application order number, which corresponds to the order in which they are applied.
 
@@ -210,4 +203,24 @@ The fee charged for the transaction to be included in the ledger.
 
 {% docs resource_fee_refund %}
 The amount of the resource fee refunded to the transaction submitter. The refundable fees are calculated from rent, events and return value. Refundable fees are charged from teh source account before the transaction is executed and then refunded based on the actual usage.
+{% enddocs %}
+
+{% docs tx_signers %}
+The public keys of the signers who authorized the transaction. This field lists all the signatories that validated and approved the transaction, ensuring it meets the required authorization thresholds.
+{% enddocs %}
+
+{% docs non_refundable_resource_fee_charged %}
+The amount of the resource fee charged for the transaction that is non-refundable. This fee is deducted from the transaction initiator's account and is not returned, regardless of the transaction's success or failure. It covers the cost of network resources consumed.
+{% enddocs %}
+
+{% docs refundable_resource_fee_charged %}
+The amount of the resource fee charged for the transaction that is refundable. This fee may be returned to the transaction initiator if certain conditions are met, such as the transaction failing to be included in a ledger.
+{% enddocs %}
+
+{% docs rent_fee_charged %}
+The fee charged for renting resources on the network, such as storage space for data. This fee is deducted from the transaction initiator's account and is non-refundable, covering the ongoing cost of maintaining the data on the network. A rent fee wouldn't be charged on failed transactions.
+{% enddocs %}
+
+{% docs refundable_fee %}
+The portion of the transaction fee that is refundable under certain conditions. This field indicates the amount that can be returned to the transaction initiator if the transaction does not fully execute or meets specific refund criteria.
 {% enddocs %}
