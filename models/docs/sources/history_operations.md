@@ -1480,26 +1480,6 @@ The identifier of the first reserve asset in a liquidity pool or similar constru
 The identifier of the second reserve asset in a liquidity pool or similar construct. This field complements `details.reserve_a_asset_id` in describing the assets involved in a liquidity pool.
 {% enddocs %}
 
-{% docs details_buying_asset_id %}
-The identifier of the asset being bought in the operation. This is relevant for trade and offer operations, where one asset is exchanged for another.
-{% enddocs %}
-
-{% docs details_selling_asset_id %}
-The identifier of the asset being sold in the operation. This field is used in trade and offer operations, where one asset is exchanged for another.
-{% enddocs %}
-
-{% docs details_source_asset_id %}
-The identifier of the source asset in the operation. This is used in payment operations where an asset is transferred or converted from one form to another.
-{% enddocs %}
-
-{% docs details_reserve_a_asset_id %}
-The identifier of the first reserve asset in a liquidity pool or similar construct. This field is relevant for operations involving liquidity pools, where multiple assets are pooled together.
-{% enddocs %}
-
-{% docs details_reserve_b_asset_id %}
-The identifier of the second reserve asset in a liquidity pool or similar construct. This field complements `details.reserve_a_asset_id` in describing the assets involved in a liquidity pool.
-{% enddocs %}
-
 {% docs details_ledgers_to_expire %}
 The number of ledgers after which the operation will expire if its not executed.
 {% enddocs %}
