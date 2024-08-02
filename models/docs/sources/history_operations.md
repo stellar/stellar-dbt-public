@@ -1480,10 +1480,6 @@ The identifier of the first reserve asset in a liquidity pool or similar constru
 The identifier of the second reserve asset in a liquidity pool or similar construct. This field complements `details.reserve_a_asset_id` in describing the assets involved in a liquidity pool.
 {% enddocs %}
 
-{% docs details_asset_id %}
-The identifier of the asset involved in the operation. This field provides details about the specific asset being operated on, such as in payment or transfer operations.
-{% enddocs %}
-
 {% docs details_buying_asset_id %}
 The identifier of the asset being bought in the operation. This is relevant for trade and offer operations, where one asset is exchanged for another.
 {% enddocs %}
