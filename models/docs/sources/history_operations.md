@@ -1479,3 +1479,7 @@ The identifier of the first reserve asset in a liquidity pool or similar constru
 {% docs details_reserve_b_asset_id %}
 The identifier of the second reserve asset in a liquidity pool or similar construct. This field complements `details.reserve_a_asset_id` in describing the assets involved in a liquidity pool.
 {% enddocs %}
+
+{% docs details_ledgers_to_expire %}
+The number of ledgers after which the operation will expire if not executed.
+{% enddocs %}

@@ -29,6 +29,20 @@ sources:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
+          - name: id
+            description: '{{ doc("id") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
+          - name: ledger_sequence
+            description: '{{ doc("ledger_sequence") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
           - name: type
             description: '{{ doc("type") }}'
             tests:
@@ -312,6 +326,13 @@ sources:
 
           - name: details.entries
             description: '{{ doc("details_entries") }}'
+
+          - name: index
+            description: '{{ doc("index") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'

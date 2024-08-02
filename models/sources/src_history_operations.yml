@@ -41,6 +41,13 @@ sources:
                   config:
                     where: batch_run_date > current_datetime - interval 2 day
 
+          - name: ledger_sequence
+            description: '{{ doc("ledger_sequence") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: batch_run_date > current_datetime - interval 2 day
+
           - name: type
             description: '{{ doc("type") }}'
             tests:
@@ -75,6 +82,30 @@ sources:
 
           - name: details.asset
             description: '{{ doc("details_asset") }}'
+
+          - name: details.asset_id
+            description: '{{ doc("details_asset_id") }}'
+
+          - name: details.buying_asset_id
+            description: '{{ doc("details_buying_asset_id") }}'
+
+          - name: details.selling_asset_id
+            description: '{{ doc("details_selling_asset_id") }}'
+
+          - name: details.source_asset_id
+            description: '{{ doc("details_source_asset_id") }}'
+
+          - name: details.reserve_a_asset_id
+            description: '{{ doc("details_reserve_a_asset_id") }}'
+
+          - name: details.reserve_b_asset_id
+            description: '{{ doc("details_reserve_b_asset_id") }}'
+
+          - name: details.ledger_key_hash
+            description: '{{ doc("ledger_key_hash") }}'
+
+          - name: details.ledgers_to_expire
+            description: '{{ doc("details_ledgers_to_expire") }}'
 
           - name: details.asset_code
             description: '{{ doc("details_asset_code") }}'
