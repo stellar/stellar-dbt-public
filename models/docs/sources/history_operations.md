@@ -1481,5 +1481,5 @@ The identifier of the second reserve asset in a liquidity pool or similar constr
 {% enddocs %}
 
 {% docs details_ledgers_to_expire %}
-The number of ledgers after which the operation will expire if not executed.
+The number of ledgers after which the operation will expire if its not executed.
 {% enddocs %}
