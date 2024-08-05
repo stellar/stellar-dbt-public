@@ -41,6 +41,76 @@ sources:
                   config:
                     where: closed_at > current_timestamp - interval 2 day
 
+          - name: n_data_segment_bytes
+            description: '{{ doc("n_data_segment_bytes") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_data_segments
+            description: '{{ doc("n_data_segments") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_elem_segments
+            description: '{{ doc("n_elem_segments") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_exports
+            description: '{{ doc("n_exports") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_functions
+            description: '{{ doc("n_functions") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_globals
+            description: '{{ doc("n_globals") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_imports
+            description: '{{ doc("n_imports") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_instructions
+            description: '{{ doc("n_instructions") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_table_entries
+            description: '{{ doc("n_table_entries") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: n_types
+            description: '{{ doc("n_types") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
             tests:

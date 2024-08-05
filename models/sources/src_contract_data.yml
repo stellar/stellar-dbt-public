@@ -86,6 +86,41 @@ sources:
                   config:
                     where: closed_at > current_timestamp - interval 2 day
 
+          - name: key
+            description: '{{ doc("key") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: key_decoded
+            description: '{{ doc("key_decoded") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: val
+            description: '{{ doc("val") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: val_decoded
+            description: '{{ doc("val_decoded") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
+          - name: contract_data_xdr
+            description: '{{ doc("contract_data_xdr") }}'
+            tests:
+              - not_null:
+                  config:
+                    where: closed_at > current_timestamp - interval 2 day
+
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:

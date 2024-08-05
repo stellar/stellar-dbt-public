@@ -137,6 +137,9 @@ sources:
           - name: extra_signers
             description: '{{ doc("extra_signers") }}'
 
+          - name: tx_signers
+            description: '{{ doc("tx_signers") }}'
+
           - name: tx_envelope
             description: '{{ doc("tx_envelope") }}'
             tests:
@@ -216,3 +219,15 @@ sources:
 
           - name: resource_fee_refund
             description: '{{ doc("resource_fee_refund") }}'
+
+          - name: non_refundable_resource_fee_charged
+            description: '{{ doc("non_refundable_resource_fee_charged") }}'
+
+          - name: refundable_resource_fee_charged
+            description: '{{ doc("refundable_resource_fee_charged") }}'
+
+          - name: rent_fee_charged
+            description: '{{ doc("rent_fee_charged") }}'
+
+          - name: refundable_fee
+            description: '{{ doc("refundable_fee") }}'
