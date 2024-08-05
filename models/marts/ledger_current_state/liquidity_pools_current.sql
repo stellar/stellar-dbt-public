@@ -33,7 +33,7 @@ with
             , lp.asset_b_amount
             , lp.last_modified_ledger
             , lp.ledger_entry_change
-            , l.closed_at
+            , lp.closed_at
             , lp.deleted
             , lp.batch_run_date
             , lp.batch_insert_ts
@@ -43,16 +43,10 @@ with
                     order by lp.last_modified_ledger desc, lp.ledger_entry_change desc
                 ) as row_nr
         from {{ ref('stg_liquidity_pools') }} as lp
-        join {{ ref('stg_history_ledgers') }} as l
-            on lp.last_modified_ledger = l.sequence
-
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                lp.batch_run_date >= date_sub(current_date(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(lp.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                lp.closed_at >= timestamp_sub(current_timestamp(), interval 7 day)
         {% endif %}
 
     )

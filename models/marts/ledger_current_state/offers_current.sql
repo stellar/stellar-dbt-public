@@ -25,7 +25,7 @@ with
             , o.price
             , o.flags
             , o.last_modified_ledger
-            , l.closed_at
+            , o.closed_at
             , o.ledger_entry_change
             , o.deleted
             , o.sponsor
@@ -37,16 +37,10 @@ with
                     order by o.last_modified_ledger desc, o.ledger_entry_change desc
                 ) as row_nr
         from {{ ref('stg_offers') }} as o
-        join {{ ref('stg_history_ledgers') }} as l
-            on o.last_modified_ledger = l.sequence
-
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                o.batch_run_date >= date_sub(current_date(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(o.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                o.closed_at >= timestamp_sub(current_timestamp(), interval 7 day)
         {% endif %}
 
     )

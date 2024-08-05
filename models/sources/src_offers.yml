@@ -18,8 +18,8 @@ sources:
                 - last_modified_ledger
               config:
                 where:
-                  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
-                  and batch_run_date < datetime_trunc(current_datetime(), day)
+                  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
+                  and closed_at < timestamp_trunc(current_timestamp(), day)
               meta:
                 description: "Tests the uniqueness combination of: offer_id, ledger_entry_change and last_modified_ledger."
         columns:
@@ -28,21 +28,21 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: offer_id
             description: '{{ doc("offer_id") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_type
             description: '{{ doc("asset_type") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_code
             description: '{{ doc("asset_code") }}'
@@ -50,7 +50,7 @@ sources:
               - not_null:
                   config:
                     where: selling_asset_type != 'native'
-                      and batch_run_date > current_datetime - interval 2 day
+                      and closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_issuer
             description: '{{ doc("asset_issuer") }}'
@@ -58,14 +58,14 @@ sources:
               - not_null:
                   config:
                     where: selling_asset_type != 'native'
-                      and batch_run_date > current_datetime - interval 2 day
+                      and closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_type
             description: '{{ doc("asset_type") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_code
             description: '{{ doc("asset_code") }}'
@@ -73,7 +73,7 @@ sources:
               - not_null:
                   config:
                     where: buying_asset_type != 'native'
-                      and batch_run_date > current_datetime - interval 2 day
+                      and closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_issuer
             description: '{{ doc("asset_issuer") }}'
@@ -81,56 +81,56 @@ sources:
               - not_null:
                   config:
                     where: buying_asset_type != 'native'
-                      and batch_run_date > current_datetime - interval 2 day
+                      and closed_at > current_timestamp - interval 2 day
 
           - name: amount
             description: '{{ doc("amount") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: pricen
             description: '{{ doc("price_n") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: priced
             description: '{{ doc("price_d") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: price
             description: '{{ doc("price") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: flags
             description: '{{ doc("flags_offers") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
               - accepted_values:
                   values: [0, 1, 2]
                   quote: false
@@ -140,7 +140,7 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: sponsor
             description: '{{ doc("sponsor") }}'
@@ -150,42 +150,42 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: selling_asset_id
             description: '{{ doc("assets_id") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: buying_asset_id
             description: '{{ doc("assets_id") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'

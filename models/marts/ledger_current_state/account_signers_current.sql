@@ -19,7 +19,7 @@ with
             , s.weight
             , s.sponsor
             , s.last_modified_ledger
-            , l.closed_at
+            , s.closed_at
             , s.ledger_entry_change
             , s.deleted
             -- table only has natural keys, creating a primary key
@@ -33,16 +33,10 @@ with
                     order by s.last_modified_ledger desc, s.ledger_entry_change desc
                 ) as row_nr
         from {{ ref('stg_account_signers') }} as s
-        join {{ ref('stg_history_ledgers') }} as l
-            on s.last_modified_ledger = l.sequence
-
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                s.batch_run_date >= date_sub(current_date(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(s.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                s.closed_at >= timestamp_sub(current_timestamp(), interval 7 day)
         {% endif %}
     )
 select
