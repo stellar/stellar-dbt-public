@@ -10,7 +10,6 @@ sources:
           warn_after: { count: 30, period: minute }
           error_after: { count: 60, period: minute }
         loaded_at_field: batch_run_date
-        tests:
         columns:
           - name: asset_id
             description: '{{ doc("asset_id") }}'
