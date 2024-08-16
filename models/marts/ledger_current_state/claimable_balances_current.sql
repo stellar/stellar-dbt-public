@@ -36,7 +36,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                cb.batch_run_date >= date_sub(current_date(), interval 2 day)
+                cb.batch_run_date >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
         {% endif %}
     )
 

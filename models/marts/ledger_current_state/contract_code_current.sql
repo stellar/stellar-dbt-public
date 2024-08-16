@@ -32,10 +32,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                cc.closed_at >= timestamp_sub(current_timestamp(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(cc.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                date(cc.closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 30 day)
         {% endif %}
     )
 
