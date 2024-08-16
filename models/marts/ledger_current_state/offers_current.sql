@@ -30,7 +30,6 @@ with
             , o.deleted
             , o.sponsor
             , o.batch_run_date
-            , o.batch_insert_ts
             , row_number()
                 over (
                     partition by o.offer_id
@@ -70,7 +69,5 @@ select
     , deleted
     , sponsor
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_offers
 where row_nr = 1

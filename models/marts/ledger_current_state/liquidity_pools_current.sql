@@ -36,7 +36,6 @@ with
             , l.closed_at
             , lp.deleted
             , lp.batch_run_date
-            , lp.batch_insert_ts
             , row_number()
                 over (
                     partition by lp.liquidity_pool_id
@@ -75,7 +74,5 @@ select
     , closed_at
     , deleted
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_lps
 where row_nr = 1

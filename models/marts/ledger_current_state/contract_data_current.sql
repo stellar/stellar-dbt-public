@@ -27,7 +27,6 @@ with
             , cd.deleted
             , cd.batch_id
             , cd.batch_run_date
-            , cd.batch_insert_ts
             , cd.ledger_sequence
             , cd.ledger_key_hash
             , concat(cd.contract_id, '-', cd.ledger_key_hash) as unique_id
@@ -64,8 +63,6 @@ select
     , deleted
     , batch_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
     , unique_id
 from current_data
 where rn = 1

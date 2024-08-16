@@ -25,7 +25,6 @@ with
             , cb.deleted
             , cb.batch_id
             , cb.batch_run_date
-            , cb.batch_insert_ts
             , cb.closed_at
             , cb.ledger_sequence
             , row_number()
@@ -57,7 +56,5 @@ select
     , batch_run_date
     , closed_at
     , ledger_sequence
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_balance
 where rn = 1

@@ -37,7 +37,6 @@ with
             , a.sequence_ledger
             , a.sequence_time
             , a.batch_run_date
-            , a.batch_insert_ts
             , row_number()
                 over (
                     partition by a.account_id
@@ -107,6 +106,4 @@ select
     , sequence_ledger
     , sequence_time
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from get_creation_account

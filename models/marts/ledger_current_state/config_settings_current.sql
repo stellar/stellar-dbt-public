@@ -61,7 +61,6 @@ with
             , cfg.deleted
             , cfg.batch_id
             , cfg.batch_run_date
-            , cfg.batch_insert_ts
             , cfg.ledger_sequence
             , row_number()
                 over (
@@ -130,7 +129,5 @@ select
     , deleted
     , batch_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_settings
 where rn = 1

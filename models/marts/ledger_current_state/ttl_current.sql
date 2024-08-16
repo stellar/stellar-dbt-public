@@ -21,7 +21,6 @@ with
             , ttl.deleted
             , ttl.batch_id
             , ttl.batch_run_date
-            , ttl.batch_insert_ts
             , row_number()
                 over (
                     partition by ttl.key_hash
@@ -47,7 +46,5 @@ select
     , deleted
     , batch_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_expiration
 where rn = 1

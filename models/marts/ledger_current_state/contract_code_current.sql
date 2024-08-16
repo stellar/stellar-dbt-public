@@ -21,7 +21,6 @@ with
             , cc.deleted
             , cc.batch_id
             , cc.batch_run_date
-            , cc.batch_insert_ts
             , cc.ledger_sequence
             , cc.ledger_key_hash
             , row_number()
@@ -51,7 +50,5 @@ select
     , deleted
     , batch_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_code
 where rn = 1

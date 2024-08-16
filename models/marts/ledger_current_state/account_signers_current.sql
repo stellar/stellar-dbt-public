@@ -26,7 +26,6 @@ with
             , concat(s.account_id, '-', s.signer
             ) as unique_id
             , s.batch_run_date
-            , s.batch_insert_ts
             , row_number()
                 over (
                     partition by s.account_id, s.signer
@@ -56,7 +55,5 @@ select
     , deleted
     , unique_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_signers
 where row_nr = 1

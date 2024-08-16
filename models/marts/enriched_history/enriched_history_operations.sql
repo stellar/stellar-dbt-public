@@ -30,7 +30,6 @@ with
             , failed_transaction_count
             , batch_id
             , batch_run_date
-            , batch_insert_ts
         from {{ ref('stg_history_ledgers') }}
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
@@ -67,7 +66,6 @@ with
             , extra_signers
             , batch_id
             , batch_run_date
-            , batch_insert_ts
             , resource_fee
             , soroban_resources_instructions
             , soroban_resources_read_bytes
@@ -195,7 +193,6 @@ with
             , type_string
             , batch_id
             , batch_run_date
-            , batch_insert_ts
             , asset_balance_changes
             , parameters
             , parameters_decoded
@@ -390,7 +387,6 @@ with
             -- general fields
             , hist_ops.batch_id
             , hist_ops.batch_run_date
-            , current_timestamp() as batch_insert_ts
         from history_operations as hist_ops
         join history_transactions as hist_trans
             on hist_ops.transaction_id = hist_trans.transaction_id
