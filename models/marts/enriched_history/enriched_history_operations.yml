@@ -426,6 +426,8 @@ models:
           - accepted_values:
               values: [true, false]
               quote: false
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: fee_charged
         description: '{{ doc("fee_charged") }}'
