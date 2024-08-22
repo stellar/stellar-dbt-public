@@ -83,6 +83,8 @@ models:
           - accepted_values:
               values: [0, 1, 2]
               quote: false
+              config:
+                where: batch_run_date > current_datetime - interval 2 day
 
       - name: deleted
         description: '{{ doc("deleted") }}'
