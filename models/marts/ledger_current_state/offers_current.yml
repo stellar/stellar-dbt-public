@@ -150,6 +150,8 @@ models:
           - accepted_values:
               values: [0, 1, 2]
               quote: false
+              config:
+                where: closed_at > current_timestamp - interval 2 day
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
