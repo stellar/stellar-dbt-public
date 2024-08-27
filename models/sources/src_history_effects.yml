@@ -16,7 +16,7 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: address_muxed
             description: '{{ doc("address_muxed") }}'
@@ -26,7 +26,7 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: id
             description: '{{ doc("id") }}'
@@ -47,14 +47,14 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: type_string
             description: '{{ doc("type_string") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: details
             description: '{{ doc("details_effects") }}'
@@ -64,21 +64,21 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day
 
           - name: details.liquidity_pool
             description: '{{ doc("details_liquidity_pool") }}'
@@ -338,4 +338,4 @@ sources:
             tests:
               - not_null:
                   config:
-                    where: batch_run_date > current_datetime - interval 2 day
+                    where: closed_at > current_timestamp - interval 2 day

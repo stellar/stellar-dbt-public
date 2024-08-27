@@ -2,7 +2,8 @@
     config(
         tags = ["current_state"],
         materialized = "incremental",
-        unique_key = "balance_id"
+        unique_key = "balance_id",
+        cluster_by = "balance_id"
     )
 }}
 /* Returns the latest state of each claimable balance in the `claimable_balances` table.
@@ -37,7 +38,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                cb.batch_run_date >= date_sub(current_date(), interval 2 day)
+                cb.closed_at >= timestamp_sub(current_timestamp(), interval 2 day)
         {% endif %}
     )
 
