@@ -84,7 +84,7 @@ models:
               values: [0, 1, 2]
               quote: false
               config:
-                where: batch_run_date > current_datetime - interval 2 day
+                where: batch_run_date > {{ dbt_airflow_macros.ts(timezone=none) }} - interval 2 day
 
       - name: deleted
         description: '{{ doc("deleted") }}'
