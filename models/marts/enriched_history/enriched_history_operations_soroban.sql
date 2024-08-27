@@ -87,9 +87,9 @@ with
         from {{ ref('enriched_history_operations') }} as enriched
         where
             enriched.type in (24, 25, 26)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts() }}'), interval 1 day)
         {% if is_incremental() %}
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts() }}'), interval 1 day)
             {% endif %}
     )
 

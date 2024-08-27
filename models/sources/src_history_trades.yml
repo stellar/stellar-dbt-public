@@ -11,139 +11,137 @@ sources:
           error_after: { count: 60, period: minute }
         loaded_at_field: ledger_closed_at
         tests:
-          - dbt_utils.unique_combination_of_columns:
+          - incremental_unique_combination_of_columns:
               combination_of_columns:
                 - history_operation_id
                 - "`order`"
-              config:
-                where:
-                  ledger_closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
-                  and ledger_closed_at < timestamp_trunc(current_timestamp(), day)
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: history_operation_id and order."
         columns:
           - name: history_operation_id
             description: '{{ doc("history_operation_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: "`order`"
             description: '{{ doc("order") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: ledger_closed_at
             description: '{{ doc("ledger_closed_at") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: selling_account_address
             description: '{{ doc("selling_account_address") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: selling_asset_code
             description: '{{ doc("trade_selling_asset_code") }}'
             tests:
-              - not_null:
-                  config:
-                    where: selling_asset_type != 'native'
-                      and ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_type != "native"'
 
           - name: selling_asset_issuer
             description: '{{ doc("trade_selling_asset_issuer") }}'
             tests:
-              - not_null:
-                  config:
-                    where: selling_asset_type != 'native'
-                      and ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_type != "native"'
 
           - name: selling_asset_type
             description: '{{ doc("trade_selling_asset_type") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: selling_asset_id
             description: '{{ doc("assets_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: selling_amount
             description: '{{ doc("trade_selling_amount") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: buying_account_address
             description: '{{ doc("buying_account_address") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: buying_asset_code
             description: '{{ doc("trade_buying_asset_code") }}'
             tests:
-              - not_null:
-                  config:
-                    where: buying_asset_type != 'native'
-                      and ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
+              condition: 'buying_asset_type != "native"'
 
           - name: buying_asset_issuer
             description: '{{ doc("trade_buying_asset_issuer") }}'
             tests:
-              - not_null:
-                  config:
-                    where: buying_asset_type != 'native'
-                      and ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
+              condition: 'buying_asset_type != "native"'
 
           - name: buying_asset_type
             description: '{{ doc("trade_buying_asset_type") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: buying_asset_id
             description: '{{ doc("assets_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: buying_amount
             description: '{{ doc("trade_buying_amount") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: price_n
             description: '{{ doc("trade_price_n") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: price_d
             description: '{{ doc("trade_price_d") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: selling_offer_id
             description: '{{ doc("selling_offer_id") }}'
@@ -160,9 +158,9 @@ sources:
           - name: trade_type
             description: '{{ doc("trade_type") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: rounding_slippage
             description: '{{ doc("rounding_slippage") }}'
@@ -173,20 +171,20 @@ sources:
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
-              - not_null:
-                  config:
-                    where: ledger_closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "ledger_closed_at"
+              greater_than_equal_to: "2 day"

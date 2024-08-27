@@ -7,24 +7,22 @@ sources:
       - name: config_settings
         description: '{{ doc("config_settings") }}'
         tests:
-          - dbt_utils.unique_combination_of_columns:
+          - incremental_unique_combination_of_columns:
               combination_of_columns:
                 - config_setting_id
                 - last_modified_ledger
                 - ledger_entry_change
-              config:
-                where:
-                  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
-                  and closed_at < timestamp_trunc(current_timestamp(), day)
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: config_setting_id, last_modified_ledger, and ledger_entry_change."
         columns:
           - name: config_setting_id
             description: '{{ doc("config_setting_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: contract_max_size_bytes
             description: '{{ doc("contract_max_size_bytes") }}'
@@ -155,16 +153,16 @@ sources:
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
               - accepted_values:
                   values: [0, 1, 2]
                   quote: false
@@ -172,34 +170,34 @@ sources:
           - name: deleted
             description: '{{ doc("deleted") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"

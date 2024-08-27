@@ -11,39 +11,37 @@ sources:
           error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
-          - dbt_utils.unique_combination_of_columns:
+          - incremental_unique_combination_of_columns:
               combination_of_columns:
                 - account_id
                 - signer
                 - ledger_entry_change
                 - last_modified_ledger
-              config:
-                where:
-                  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
-                  and batch_run_date < datetime_trunc(current_datetime(), day)
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: account_id, signer, ledger_entry_change and last_modified_ledger."
         columns:
           - name: account_id
             description: '{{ doc("account_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
 
           - name: signer
             description: '{{ doc("signer") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
 
           - name: weight
             description: '{{ doc("weight") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
 
           - name: sponsor
             description: '{{ doc("sponsor") }}'
@@ -51,27 +49,27 @@ sources:
           - name: deleted
             description: '{{ doc("deleted") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
