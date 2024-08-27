@@ -31,12 +31,12 @@ Flags are set on the issuer accounts for an asset. When user accounts trust an a
 
 #### `trust_lines`:
 
-| Flag    | Meaning                      |
-|---------|------------------------------|
-| 0       | None, Default                      |
-| 1       | Authorized (issuer has authorized account to perform transaction with its credit)        |
-| 2       | Authorized to Maintain Liabilities (issuer has authorized account to maintain and reduce liabilities for its credit)        |
-| 4       | Clawback Enabled (issuer has specified that it may clawback its credit, including claimable balances)     |
+| Flag | Meaning                                                                                                              |
+| ---- | -------------------------------------------------------------------------------------------------------------------- |
+| 0    | None, Default                                                                                                        |
+| 1    | Authorized (issuer has authorized account to perform transaction with its credit)                                    |
+| 2    | Authorized to Maintain Liabilities (issuer has authorized account to maintain and reduce liabilities for its credit) |
+| 4    | Clawback Enabled (issuer has specified that it may clawback its credit, including claimable balances)                |
 
 {% enddocs %}
 
@@ -51,13 +51,13 @@ Flags are set on the issuer accounts for an asset. When user accounts trust an a
 
 #### `accounts` and `claimable_balances`:
 
-| Flag    | Meaning                |
-|----------|----------------------------|
-| 0        | None - Default             |
-| 1        | Auth Required (all trustlines by default are untrusted and require manual trust established)            |
-| 2        | Auth Revocable (allows trustlines to be revoked if account no longer trusts asset) |
-| 4        | Auth Immutable (all auth flags are read only when set)         |
-| 8        | Auth Clawback Enabled (asset can be clawed back from the user) |
+| Flag | Meaning                                                                                      |
+| ---- | -------------------------------------------------------------------------------------------- |
+| 0    | None - Default                                                                               |
+| 1    | Auth Required (all trustlines by default are untrusted and require manual trust established) |
+| 2    | Auth Revocable (allows trustlines to be revoked if account no longer trusts asset)           |
+| 4    | Auth Immutable (all auth flags are read only when set)                                       |
+| 8    | Auth Clawback Enabled (asset can be clawed back from the user)                               |
 
 {% enddocs %}
 

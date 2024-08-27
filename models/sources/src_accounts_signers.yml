@@ -25,23 +25,23 @@ sources:
           - name: account_id
             description: '{{ doc("account_id") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
           - name: signer
             description: '{{ doc("signer") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
           - name: weight
             description: '{{ doc("weight") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
           - name: sponsor
             description: '{{ doc("sponsor") }}'
@@ -49,27 +49,27 @@ sources:
           - name: deleted
             description: '{{ doc("deleted") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"

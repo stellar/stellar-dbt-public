@@ -12,13 +12,13 @@ sources:
         loaded_at_field: closed_at
         tests:
           - incremental_unique_combination_of_columns:
-                combination_of_columns:
+              combination_of_columns:
                 - key_hash
                 - live_until_ledger_seq
                 - last_modified_ledger
                 - ledger_entry_change
-                date_column_name: "closed_at"
-                greater_than_equal_to: "2 day"
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: key_hash, live_until_ledger_seq, last_modified_ledger, and ledger_entry_change."
         columns:
@@ -49,10 +49,9 @@ sources:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
-              - accepted_values:
-                  values: [0, 1, 2]
-                  quote: false
-
+          - accepted_values:
+              values: [0, 1, 2]
+              quote: false
           - name: deleted
             description: '{{ doc("deleted") }}'
             tests:
