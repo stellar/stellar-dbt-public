@@ -14,19 +14,19 @@ sources:
           - name: id
             description: '{{ doc("operation_id") }}'
             tests:
-          - incremental_unique:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              - incremental_unique:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: source_account
             description: '{{ doc("source_account") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: source_account_muxed
             description: '{{ doc("source_account_muxed") }}'
@@ -35,29 +35,29 @@ sources:
             description: '{{ doc("op_transaction_id") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: type
             description: '{{ doc("type") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: type_string
             description: '{{ doc("type_string") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: details
             description: '{{ doc("details") }}'
@@ -390,22 +390,22 @@ sources:
             description: '{{ doc("batch_id") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: details.asset_balance_changes
             description: '{{ doc("details_asset_balance_changes") }}'
@@ -441,8 +441,8 @@ sources:
             description: '{{ doc("closed_at") }}'
             tests:
               - incremental_not_null:
-                date_column_name: "batch_run_date"
-                greater_than_equal_to: "2 day"
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: details_json
             description: '{{ doc("details") }}'

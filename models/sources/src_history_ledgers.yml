@@ -14,165 +14,165 @@ sources:
           - name: sequence
             description: '{{ doc("sequence") }}'
             tests:
-          - incremental_unique:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_unique:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_hash
             description: '{{ doc("ledger_hash") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: previous_ledger_hash
             description: '{{ doc("previous_ledger_hash") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: transaction_count
             description: '{{ doc("transaction_count") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: operation_count
             description: '{{ doc("operation_count") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: id
             description: '{{ doc("ledger_id") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: total_coins
             description: '{{ doc("total_coins") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: fee_pool
             description: '{{ doc("fee_pool") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: base_fee
             description: '{{ doc("base_fee") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: base_reserve
             description: '{{ doc("base_reserve") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: max_tx_set_size
             description: '{{ doc("max_tx_set_size") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: protocol_version
             description: '{{ doc("protocol_version") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_header
             description: '{{ doc("ledger_header") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: successful_transaction_count
             description: '{{ doc("successful_transaction_count") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: failed_transaction_count
             description: '{{ doc("failed_transaction_count") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: tx_set_operation_count
             description: '{{ doc("tx_set_operation_count") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
           - name: soroban_fee_write_1kb
             description: '{{ doc("soroban_fee_write_1kb") }}'
 
           - name: node_id
             description: '{{ doc("node_id") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: signature
             description: '{{ doc("signature") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: soroban_fee_write_1kb
             description: '{{ doc("soroban_fee_write_1kb") }}'
             tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
