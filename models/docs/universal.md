@@ -72,7 +72,7 @@ If an offer wants to sell 10 XLM for 1 USD, the price will be 0.10 USD.
 {% enddocs %}
 
 {% docs batch_id %}
-String representation of the run id for a given DAG in Airflow. Takes the form of "scheduled\_\_<batch_end_date>-<dag_alias>". Batch ids are unique to the batch and help with monitoring and rerun capabilities
+String representation of the run id for a given DAG in Airflow. Takes the form of "scheduled__<batch_end_date>-<dag_alias>". Batch ids are unique to the batch and help with monitoring and rerun capabilities
 {% enddocs %}
 
 {% docs batch_run_date %}
@@ -98,6 +98,7 @@ The timestamp in UTC when the ledger with this trade was closed.
 {% docs contract_id %}
 Soroban contract id
 {% enddocs %}
+
 
 {% docs details_extend_to %}
 Soroban field - ledger extended to
@@ -127,4 +128,4 @@ The sequence number of this ledger. It represents the order of the ledger within
 
 - Cluster Field
 - Required Field
-  {% enddocs %}
+{% enddocs %}
