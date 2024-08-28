@@ -46,10 +46,10 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
-          - dbt_utils.expression_is_true:
+          - incremental_expression_is_true:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "90 day"
               expression: "<= 26"
-              config:
-                where: closed_at > current_timestamp - interval 90 day
               meta:
                 description: "Test to check if the type of operation added is not greater than 26."
 

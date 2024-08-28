@@ -145,11 +145,10 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
-          - accepted_values:
+          - incremental_accepted_values:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
               values: [0, 1, 2]
-              quote: false
-              config:
-                where: closed_at > current_timestamp - interval 2 day
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'

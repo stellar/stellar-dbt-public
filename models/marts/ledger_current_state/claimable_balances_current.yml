@@ -80,11 +80,10 @@ models:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
-          - accepted_values:
+          - incremental_accepted_values:
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
               values: [0, 1, 2]
-              quote: false
-              config:
-                where: batch_run_date > current_datetime - interval 2 day
 
       - name: deleted
         description: '{{ doc("deleted") }}'
