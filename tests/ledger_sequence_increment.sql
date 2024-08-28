@@ -12,7 +12,7 @@ with
             , closed_at
             , max(sequence) as max_sequence
         from {{ source('crypto_stellar', 'history_ledgers') }}
-        where (closed_at > current_timestamp - interval 7 day)
+        where TIMESTAMP({{ closed_at }}) > TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 DAY )
         group by id, batch_id, closed_at
     )
 
