@@ -256,13 +256,6 @@ models:
               config:
                 where: closed_at > current_timestamp - interval 2 day
 
-      - name: batch_insert_ts
-        description: '{{ doc("batch_insert_ts") }}'
-        tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
-
       - name: transaction_result_code
         description: '{{ doc("transaction_result_code") }}'
 

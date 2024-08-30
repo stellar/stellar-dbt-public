@@ -21,7 +21,6 @@ with
             , ttl.deleted
             , ttl.batch_id
             , ttl.batch_run_date
-            , ttl.batch_insert_ts
             , row_number()
                 over (
                     partition by ttl.key_hash
@@ -31,10 +30,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                ttl.closed_at >= timestamp_sub(current_timestamp(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(ttl.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                TIMESTAMP(ttl.closed_at) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 DAY )
         {% endif %}
     )
 
@@ -47,7 +43,5 @@ select
     , deleted
     , batch_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_expiration
 where rn = 1

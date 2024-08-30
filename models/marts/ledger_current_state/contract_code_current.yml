@@ -70,17 +70,3 @@ models:
           - not_null:
               config:
                 where: closed_at > current_timestamp - interval 2 day
-
-      - name: upstream_insert_ts
-        description: '{{ doc("upstream_insert_ts") }}'
-        tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
-
-      - name: batch_insert_ts
-        description: '{{ doc("batch_insert_ts") }}'
-        tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day

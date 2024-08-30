@@ -47,7 +47,6 @@
                 , exclude_duplicates.asset_issuer
                 , new_load.batch_id
                 , new_load.batch_run_date
-                , new_load.batch_insert_ts
             from exclude_duplicates
             left join
                 new_load on
@@ -76,7 +75,6 @@
                 , asset_issuer
                 , batch_id
                 , batch_run_date
-                , batch_insert_ts
             from prep_dedup
         )
 

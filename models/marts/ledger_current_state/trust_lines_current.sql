@@ -33,7 +33,6 @@ with
             , concat(tl.account_id, '-', tl.asset_code, '-', tl.asset_issuer, '-', tl.liquidity_pool_id
             ) as unique_id
             , tl.batch_run_date
-            , tl.batch_insert_ts
             , row_number()
                 over (
                     partition by tl.account_id, tl.asset_code, tl.asset_issuer, tl.liquidity_pool_id
@@ -46,10 +45,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                tl.batch_run_date >= date_sub(current_date(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(tl.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                TIMESTAMP(tl.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 DAYS )
         {% endif %}
 
     )
@@ -71,7 +67,5 @@ select
     , deleted
     , unique_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
 from current_tls
 where row_nr = 1

@@ -33,7 +33,6 @@ with
             , soroban_fee_write_1kb
             , batch_id
             , batch_run_date
-            , batch_insert_ts
         from raw_table
     )
 
