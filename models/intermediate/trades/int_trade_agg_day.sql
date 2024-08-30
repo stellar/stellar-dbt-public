@@ -25,8 +25,8 @@ with
             , buying_amount
         from {{ ref('stg_history_trades') }}
         where
-            ledger_closed_at < timestamp(date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day))
-            and ledger_closed_at >= timestamp(date('{{ dbt_airflow_macros.ts(timezone=none) }}'))
+            ledger_closed_at < TIMESTAMP_ADD('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
+            and ledger_closed_at >= '{{ dbt_airflow_macros.ts(timezone=none) }}'
     )
 
     /* duplicates trades in order to obtain all trades between an asset pair, regardless
