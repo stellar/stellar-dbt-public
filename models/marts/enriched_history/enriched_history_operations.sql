@@ -33,11 +33,11 @@ with
             , batch_insert_ts
         from {{ ref('stg_history_ledgers') }}
         where
-            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
+            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
             {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
             {% endif %}
     )
 
@@ -78,11 +78,11 @@ with
             , resource_fee_refund
         from {{ ref('stg_history_transactions') }}
         where
-            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
+            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
             {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
             {% endif %}
     )
 
@@ -210,11 +210,11 @@ with
             , details_json
         from {{ ref('stg_history_operations') }}
         where
-            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 2 day)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
+            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
             {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
+                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
             {% endif %}
 
     )

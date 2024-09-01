@@ -11,81 +11,78 @@ sources:
           error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
-          - dbt_utils.unique_combination_of_columns:
+          - incremental_unique_combination_of_columns:
               combination_of_columns:
                 - key_hash
                 - live_until_ledger_seq
                 - last_modified_ledger
                 - ledger_entry_change
-              config:
-                where:
-                  closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
-                  and closed_at < timestamp_trunc(current_timestamp(), day)
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: key_hash, live_until_ledger_seq, last_modified_ledger, and ledger_entry_change."
         columns:
           - name: key_hash
             description: '{{ doc("key_hash") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: live_until_ledger_seq
             description: '{{ doc("live_until_ledger_seq") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
               - accepted_values:
                   values: [0, 1, 2]
                   quote: false
-
           - name: deleted
             description: '{{ doc("deleted") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
-              - not_null:
-                  config:
-                    where: closed_at > current_timestamp - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"

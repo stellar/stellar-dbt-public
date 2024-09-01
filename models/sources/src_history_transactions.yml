@@ -14,28 +14,26 @@ sources:
           - name: id
             description: '{{ doc("transaction_id") }}'
             tests:
-              - unique:
-                  config:
-                    where:
-                      batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
-                      and batch_run_date < datetime_trunc(current_datetime(), day)
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_unique:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: transaction_hash
             description: '{{ doc("transaction_hash") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: application_order
             description: '{{ doc("application_order") }}'
@@ -43,44 +41,44 @@ sources:
           - name: account
             description: '{{ doc("account") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: account_sequence
             description: '{{ doc("account_sequence") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: max_fee
             description: '{{ doc("max_fee") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: operation_count
             description: '{{ doc("transaction_operation_count") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: created_at
             description: '{{ doc("created_at") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: memo_type
             description: '{{ doc("memo_type") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: memo
             description: '{{ doc("memo") }}'
@@ -88,23 +86,23 @@ sources:
           - name: time_bounds
             description: '{{ doc("time_bounds") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: successful
             description: '{{ doc("successful") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: fee_charged
             description: '{{ doc("fee_charged") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: inner_transaction_hash
             description: '{{ doc("inner_transaction_hash") }}'
@@ -142,58 +140,58 @@ sources:
           - name: tx_envelope
             description: '{{ doc("tx_envelope") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: tx_result
             description: '{{ doc("tx_result") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: tx_meta
             description: '{{ doc("tx_meta") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: tx_fee_meta
             description: '{{ doc("tx_fee_meta") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: resource_fee
             description: '{{ doc("resource_fee") }}'
