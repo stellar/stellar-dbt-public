@@ -14,7 +14,6 @@ sources:
           - incremental_unique_combination_of_columns:
               combination_of_columns:
                 - account_id
-                - sequence_number
                 - ledger_entry_change
                 - last_modified_ledger
               date_column_name: "batch_run_date"
