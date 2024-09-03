@@ -54,7 +54,7 @@ sources:
               - incremental_not_null:
                   date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
-                  condition: 'asset_type != "native"'
+                  condition: 'selling_asset_type != "native"'
 
           - name: selling_asset_issuer
             description: '{{ doc("trade_selling_asset_issuer") }}'
@@ -62,7 +62,7 @@ sources:
               - incremental_not_null:
                   date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
-                  condition: 'asset_type != "native"'
+                  condition: 'selling_asset_type != "native"'
 
           - name: selling_asset_type
             description: '{{ doc("trade_selling_asset_type") }}'
