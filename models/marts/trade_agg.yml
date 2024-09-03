@@ -12,359 +12,357 @@ models:
             severity: warn
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
-      - dbt_utils.unique_combination_of_columns:
+      - incremental_unique_combination_of_columns:
           combination_of_columns:
             - day_agg
             - asset_a
             - asset_b
-          config:
-            where:
-              day_agg >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
-              and day_agg < datetime_trunc(current_datetime(), day)
+          date_column_name: "day_agg"
+          greater_than_equal_to: "2 day"
     columns:
       - name: day_agg
         description: '{{ doc("trade_day_agg") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_a
         description: '{{ doc("asset_a") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_a_type
         description: '{{ doc("asset_a_type") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_a_code
         description: '{{ doc("asset_a_code") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_a_type != 'native'
-                  and day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_a_type != "native"'
 
       - name: asset_a_issuer
         description: '{{ doc("asset_a_issuer") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_a_type != 'native'
-                  and day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_a_type != "native"'
 
       - name: asset_a_volume_daily
         description: '{{ doc("asset_a_volume_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_b
         description: '{{ doc("asset_b") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_b_type
         description: '{{ doc("asset_a_type") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_b_code
         description: '{{ doc("asset_a_code") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_b_type != 'native'
-                  and day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_b_type != "native"'
 
       - name: asset_b_issuer
         description: '{{ doc("asset_a_issuer") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_b_type != 'native'
-                  and day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_b_type != "native"'
 
       - name: asset_b_volume_daily
         description: '{{ doc("asset_b_volume_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: trade_count_daily
         description: '{{ doc("trade_count_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: avg_price_daily
         description: '{{ doc("avg_price_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: high_price_daily
         description: '{{ doc("high_price_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: low_price_daily
         description: '{{ doc("low_price_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: open_n_daily
         description: '{{ doc("open_n_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: open_d_daily
         description: '{{ doc("open_d_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: close_n_daily
         description: '{{ doc("close_n_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: close_d_daily
         description: '{{ doc("close_d_daily") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: trade_count_weekly
         description: '{{ doc("trade_count_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_a_volume_weekly
         description: '{{ doc("asset_a_volume_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_b_volume_weekly
         description: '{{ doc("asset_b_volume_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: avg_price_weekly
         description: '{{ doc("avg_price_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: high_price_weekly
         description: '{{ doc("high_price_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: low_price_weekly
         description: '{{ doc("low_price_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: open_n_weekly
         description: '{{ doc("open_n_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: open_d_weekly
         description: '{{ doc("open_d_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: close_n_weekly
         description: '{{ doc("close_n_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: close_d_weekly
         description: '{{ doc("close_d_weekly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: trade_count_monthly
         description: '{{ doc("trade_count_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_a_volume_monthly
         description: '{{ doc("asset_a_volume_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_b_volume_monthly
         description: '{{ doc("asset_b_volume_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: avg_price_monthly
         description: '{{ doc("avg_price_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: high_price_monthly
         description: '{{ doc("high_price_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: low_price_monthly
         description: '{{ doc("low_price_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: open_n_monthly
         description: '{{ doc("open_n_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: open_d_monthly
         description: '{{ doc("open_d_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: close_n_monthly
         description: '{{ doc("close_n_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: close_d_monthly
         description: '{{ doc("close_d_monthly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: trade_count_yearly
         description: '{{ doc("trade_count_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_a_volume_yearly
         description: '{{ doc("asset_a_volume_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_b_volume_yearly
         description: '{{ doc("asset_b_volume_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: avg_price_yearly
         description: '{{ doc("avg_price_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: high_price_yearly
         description: '{{ doc("high_price_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: low_price_yearly
         description: '{{ doc("low_price_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: open_n_yearly
         description: '{{ doc("open_n_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: open_d_yearly
         description: '{{ doc("open_d_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: close_n_yearly
         description: '{{ doc("close_n_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: close_d_yearly
         description: '{{ doc("close_d_yearly") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"

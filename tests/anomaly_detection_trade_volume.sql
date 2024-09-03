@@ -11,8 +11,8 @@ with
             , sum(buying_amount) as amount
         from {{ ref('stg_history_trades') }}
         where
-            date(ledger_closed_at) >= date_sub(current_date(), interval 90 day)
-            and date(ledger_closed_at) <= current_date()
+            ledger_closed_at >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 90 DAY )
+            and ledger_closed_at <= '{{ dbt_airflow_macros.ts(timezone=none) }}'
         group by close_date
     )
 
@@ -22,8 +22,8 @@ with
             , sum(selling_amount) as amount
         from {{ ref('stg_history_trades') }}
         where
-            date(ledger_closed_at) >= date_sub(current_date(), interval 90 day)
-            and date(ledger_closed_at) < current_date()
+            ledger_closed_at >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 90 DAY )
+            and ledger_closed_at <= '{{ dbt_airflow_macros.ts(timezone=none) }}'
         group by close_date
     )
 
@@ -53,6 +53,6 @@ select
     , amount
 from data_table, bounds
 where
-    close_date = date_sub(current_date(), interval 1 day)
+    TIMESTAMP(close_date) = TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
     and amount >= upper_bound
     or amount <= lower_bound

@@ -14,9 +14,9 @@ sources:
           - name: address
             description: '{{ doc("address") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: address_muxed
             description: '{{ doc("address_muxed") }}'
@@ -24,37 +24,37 @@ sources:
           - name: operation_id
             description: '{{ doc("operation_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: id
             description: '{{ doc("id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: type
             description: '{{ doc("type") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: type_string
             description: '{{ doc("type_string") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: details
             description: '{{ doc("details_effects") }}'
@@ -62,16 +62,16 @@ sources:
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: details.liquidity_pool
             description: '{{ doc("details_liquidity_pool") }}'
@@ -322,13 +322,13 @@ sources:
           - name: index
             description: '{{ doc("index") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"

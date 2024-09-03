@@ -12,62 +12,62 @@ models:
       - name: asset_a
         description: '{{ doc("asset_a") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_a_code
         description: '{{ doc("asset_a_code") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_a_type != 'native'
-                  and day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_a_type != "native"'
 
       - name: asset_a_issuer
         description: '{{ doc("asset_a_issuer") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_a_type != 'native'
-                  and day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_a_type != "native"'
 
       - name: asset_a_type
         description: '{{ doc("asset_a_type") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_b
         description: '{{ doc("asset_b") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: asset_b_code
         description: '{{ doc("asset_b_code") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_b_type != 'native'
-                  and day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_b_type != "native"'
 
       - name: asset_b_issuer
         description: '{{ doc("asset_b_issuer") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_b_type != 'native'
-                  and day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_b_type != "native"'
 
       - name: asset_b_type
         description: '{{ doc("asset_b_type") }}'
         tests:
-          - not_null:
-              config:
-                where: day_agg > current_datetime - interval 2 day
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
 
       - name: trade_count_monthly
         description: '{{ doc("trade_count_monthly") }}'

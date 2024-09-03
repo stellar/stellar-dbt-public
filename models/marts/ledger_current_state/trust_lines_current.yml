@@ -12,7 +12,7 @@ models:
             severity: warn
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
-      - dbt_utils.unique_combination_of_columns:
+      - incremental_unique_combination_of_columns:
           combination_of_columns:
             - account_id
             - asset_code
@@ -20,86 +20,84 @@ models:
             - liquidity_pool_id
             - ledger_entry_change
             - last_modified_ledger
-          config:
-            where:
-              closed_at >= timestamp_trunc(timestamp_sub(current_timestamp(), interval 2 day), day)
-              and closed_at < timestamp_trunc(current_timestamp(), day)
+          date_column_name: "closed_at"
+          greater_than_equal_to: "2 day"
           meta:
             description: "Tests the uniqueness combination of: account_id, asset_code, asset_issuer, liquidity_pool_id, ledger_entry_change and last_modified_ledger."
     columns:
       - name: account_id
         description: '{{ doc("account_id") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_type != 'pool_share'
-                  and closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_type != "pool_share"'
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
-          - not_null:
-              config:
-                where: asset_type != 'pool_share'
-                  and closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+              condition: 'asset_type != "pool_share"'
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
           - accepted_values:
               values: ["credit_alphanum4", "credit_alphanum12", "pool_share"]
 
       - name: liquidity_pool_id
         description: '{{ doc("liquidity_pool_id") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: balance
         description: '{{ doc("balance") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: trust_line_limit
         description: '{{ doc("trust_line_limit") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: buying_liabilities
         description: '{{ doc("buying_liabilities") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: selling_liabilities
         description: '{{ doc("selling_liabilities") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: flags
         description: '{{ doc("flags_trust_lines") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: sponsor
         description: '{{ doc("sponsor") }}'
@@ -107,16 +105,16 @@ models:
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
           - accepted_values:
               values: [0, 1, 2]
               quote: false
@@ -124,16 +122,16 @@ models:
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: deleted
         description: '{{ doc("deleted") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
           - accepted_values:
               values: ["true", "false"]
               quote: false
@@ -141,13 +139,13 @@ models:
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: unique_id
         description: '{{ doc("unique_id") }}'
         tests:
-          - not_null:
-              config:
-                where: closed_at > current_timestamp - interval 2 day
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"

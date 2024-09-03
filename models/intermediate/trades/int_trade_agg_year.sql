@@ -31,9 +31,8 @@ with
             , buying_amount
         from {{ ref('stg_history_trades') }}
         where
-            ledger_closed_at < timestamp(date_add(date('{{ dbt_airflow_macros.ds() }}'), interval 1 day)
-            )
-            and ledger_closed_at >= timestamp_sub(timestamp(date('{{ dbt_airflow_macros.ds() }}')), interval 366 day)
+            ledger_closed_at < TIMESTAMP_ADD('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
+            and ledger_closed_at >= TIMESTAMP_ADD('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 366 DAY )
     )
 
     /* duplicates trades in order to obtain all trades between an asset pair, regardless
@@ -127,7 +126,7 @@ with
     /* obtain aggregate function metrics for the asset pair */
     , trade_day_agg_group as (
         select
-            date('{{ dbt_airflow_macros.ds() }}') as day_agg
+            date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day_agg
             , asset_a
             , asset_a_code
             , asset_a_issuer
@@ -143,7 +142,7 @@ with
             , max(price_n / price_d) as high_price_yearly
             , min(price_n / price_d) as low_price_yearly
         from dedup_asset_pair
-        where cast(ledger_closed_at as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 365 day)
+        where cast(ledger_closed_at as date) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 365 day)
         group by
             asset_a
             , asset_a_code
@@ -204,7 +203,7 @@ with
                 order by ledger_closed_at desc
             ) as dedup_rows
         from dedup_asset_pair
-        where cast(ledger_closed_at as date) >= date_sub(date('{{ dbt_airflow_macros.ds() }}'), interval 365 day)
+        where cast(ledger_closed_at as date) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 365 day)
     )
 
     /* joins all metrics related to the asset pair while deduplicating the window functions */

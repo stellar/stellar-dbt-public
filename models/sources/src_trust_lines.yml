@@ -11,7 +11,7 @@ sources:
           error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
         tests:
-          - dbt_utils.unique_combination_of_columns:
+          - incremental_unique_combination_of_columns:
               combination_of_columns:
                 - account_id
                 - asset_code
@@ -19,33 +19,30 @@ sources:
                 - liquidity_pool_id
                 - ledger_entry_change
                 - last_modified_ledger
-              config:
-                where:
-                  batch_run_date >= datetime_trunc(datetime_sub(current_datetime(), interval 2 day), day)
-                  and batch_run_date < datetime_trunc(current_datetime(), day)
+              date_column_name: "batch_run_date"
+              greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: account_id, asset_code, asset_issuer, liquidity_pool_id, ledger_entry_change and last_modified_ledger."
         columns:
           - name: ledger_key
             description: '{{ doc("ledger_key") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
-
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
           - name: account_id
             description: '{{ doc("account_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: asset_type
             description: '{{ doc("asset_type") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
               - accepted_values:
                   values:
                     ["credit_alphanum4", "credit_alphanum12", "pool_share"]
@@ -53,98 +50,97 @@ sources:
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
             tests:
-              - not_null:
-                  config:
-                    where: asset_type != 'pool_share'
-                      and batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
+                  condition: 'asset_type != "pool_share"'
 
           - name: asset_code
             description: '{{ doc("asset_code") }}'
             tests:
-              - not_null:
-                  config:
-                    where: asset_type != 'pool_share'
-                      and batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
+                  condition: 'asset_type != "pool_share"'
 
           - name: liquidity_pool_id
             description: '{{ doc("liquidity_pool_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: balance
             description: '{{ doc("trust_balance") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: trust_line_limit
             description: '{{ doc("trust_line_limit") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: buying_liabilities
             description: '{{ doc("buying_liabilities") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: selling_liabilities
             description: '{{ doc("selling_liabilities") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: flags
             description: '{{ doc("flags_trust_lines") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
               - accepted_values:
                   values: [0, 1, 2]
                   quote: false
-
           - name: deleted
             description: '{{ doc("deleted") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: sponsor
             description: '{{ doc("sponsor") }}'
@@ -152,16 +148,16 @@ sources:
           - name: asset_id
             description: asset id
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
-              - not_null:
-                  config:
-                    where: batch_run_date > current_datetime - interval 2 day
+              - incremental_not_null:
+                  date_column_name: "batch_run_date"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'
