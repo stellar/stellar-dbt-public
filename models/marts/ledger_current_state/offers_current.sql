@@ -42,7 +42,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                TIMESTAMP(o.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 DAYS )
+                TIMESTAMP(o.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
         {% endif %}
 
     )
