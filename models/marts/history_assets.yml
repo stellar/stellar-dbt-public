@@ -61,4 +61,3 @@ models:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
-
