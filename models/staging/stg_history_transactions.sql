@@ -54,6 +54,7 @@ with
             , refundable_fee
             , batch_id
             , batch_run_date
+            , batch_insert_ts
         from raw_table
     )
 
