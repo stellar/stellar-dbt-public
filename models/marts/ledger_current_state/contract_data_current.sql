@@ -61,5 +61,6 @@ select
     , batch_id
     , batch_run_date
     , unique_id
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_data
 where rn = 1

@@ -394,5 +394,7 @@ with
             on hist_trans.ledger_sequence = hist_ledg.sequence
     )
 
-select *
+select
+    *
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from enriched_operations

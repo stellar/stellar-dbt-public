@@ -126,5 +126,6 @@ select
     , deleted
     , batch_id
     , batch_run_date
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_settings
 where rn = 1

@@ -80,5 +80,7 @@
 
 {% endif %}
 
-select *
+select
+    *
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from add_assets

@@ -22,5 +22,7 @@ with
         where dedup_oldest_asset = 1
     )
 
-select *
+select
+    *
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from new_load_dedup

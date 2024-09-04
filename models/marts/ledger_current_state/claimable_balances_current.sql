@@ -56,5 +56,6 @@ select
     , batch_run_date
     , closed_at
     , ledger_sequence
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_balance
 where rn = 1

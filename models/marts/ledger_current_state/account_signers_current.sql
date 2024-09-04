@@ -52,5 +52,6 @@ select
     , deleted
     , unique_id
     , batch_run_date
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_signers
 where row_nr = 1

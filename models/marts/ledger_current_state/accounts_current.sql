@@ -103,4 +103,5 @@ select
     , sequence_ledger
     , sequence_time
     , batch_run_date
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from get_creation_account

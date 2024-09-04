@@ -158,6 +158,7 @@ with
             , agg_stats.max_ledger_sequence
             , surge_stats.total_ledgers
             , 100 * (surge_stats.surge_price_count / surge_stats.total_ledgers) as surge_price_pct
+            , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from agg_stats
         inner join
             surge_stats on

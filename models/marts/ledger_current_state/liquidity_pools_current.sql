@@ -71,5 +71,6 @@ select
     , closed_at
     , deleted
     , batch_run_date
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_lps
 where row_nr = 1
