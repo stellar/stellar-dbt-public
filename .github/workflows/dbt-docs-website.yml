@@ -41,7 +41,7 @@ jobs:
       - name: Generate dbt docs
         run: |
           dbt deps
-          dbt docs generate
+          dbt docs generate --select "stellar_dbt_public" --exclude "dbt_project_evaluator_exceptions"
 
       - id: "upload-folder"
         uses: "google-github-actions/upload-cloud-storage@v2"
