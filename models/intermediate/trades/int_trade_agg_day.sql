@@ -8,7 +8,7 @@
 with
     base_trades as (
         select
-            date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day_agg
+            date(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day)) as day_agg
             , ledger_closed_at
             , selling_asset_id
             , selling_asset_code
@@ -25,8 +25,8 @@ with
             , buying_amount
         from {{ ref('stg_history_trades') }}
         where
-            ledger_closed_at < TIMESTAMP_ADD('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
-            and ledger_closed_at >= '{{ dbt_airflow_macros.ts(timezone=none) }}'
+            ledger_closed_at < timestamp_add(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day), interval 1 day )
+            and ledger_closed_at >= timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day)
     )
 
     /* duplicates trades in order to obtain all trades between an asset pair, regardless
