@@ -15,7 +15,7 @@ with
         select *
         from {{ ref('int_trade_agg_day') }}
         {% if is_incremental() %}
-            where day_agg = date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+            where day_agg = date('{{ dbt_airflow_macros.ts() }}')
         {% endif %}
     )
 
@@ -23,7 +23,7 @@ with
         select *
         from {{ ref('int_trade_agg_week') }}
         {% if is_incremental() %}
-            where day_agg = date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+            where day_agg = date('{{ dbt_airflow_macros.ts() }}')
         {% endif %}
     )
 
@@ -31,7 +31,7 @@ with
         select *
         from {{ ref('int_trade_agg_month') }}
         {% if is_incremental() %}
-            where day_agg = date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+            where day_agg = date('{{ dbt_airflow_macros.ts() }}')
         {% endif %}
     )
 
@@ -39,7 +39,7 @@ with
         select *
         from {{ ref('int_trade_agg_year') }}
         {% if is_incremental() %}
-            where day_agg = date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+            where day_agg = date('{{ dbt_airflow_macros.ts() }}')
         {% endif %}
     )
 
