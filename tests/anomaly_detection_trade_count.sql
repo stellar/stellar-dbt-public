@@ -29,5 +29,5 @@ select
 from trade_counts, bounds
 where
     TIMESTAMP(close_date) = TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
-    and trade_count >= upper_bound
-    or trade_count <= lower_bound
+    and (trade_count >= upper_bound
+    or trade_count <= lower_bound)

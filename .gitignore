@@ -16,3 +16,7 @@ credentials.json
 
 ### other
 **/.DS_Store
+
+### dbt generated files
+package-lock.yml
+.user.yml
