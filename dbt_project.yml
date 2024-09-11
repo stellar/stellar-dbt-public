@@ -28,6 +28,8 @@ vars:
     test_coverage_target: 50
     exclude_packages: ["elementary"]
 
+  airflow_start_timestamp: "{{ env_var('AIRFLOW_START_TIMESTAMP', '2000-01-01') }}"
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 models:
