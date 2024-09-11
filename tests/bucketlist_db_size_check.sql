@@ -14,4 +14,4 @@ with bucketlist_db_size as (
     and total_byte_size_of_bucket_list / 1000000000 >= 12
 )
 
-select * from bucketlist_db_size;
+select * from bucketlist_db_size

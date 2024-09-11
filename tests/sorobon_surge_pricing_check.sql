@@ -14,4 +14,4 @@ where closed_at >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', I
   and inclusion_fee_charged > 100
 )
 
-select * from surge_pricing_check;
+select * from surge_pricing_check
