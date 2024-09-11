@@ -3,7 +3,7 @@ name: DBT Docs Generate and Upload to GCS
 on:
   push:
     branches:
-      - patch/fix-ci
+      - master
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_protected == 'true' && github.sha || github.ref }}-{{ github.event_name }}
@@ -48,7 +48,6 @@ jobs:
           dbt docs generate --select "stellar_dbt_public" --exclude "dbt_project_evaluator_exceptions"
 
       - id: "upload-folder"
-        if: github.ref == "refs/heads/master"
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           process_gcloudignore: false
