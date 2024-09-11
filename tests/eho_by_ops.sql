@@ -13,7 +13,7 @@ WITH find_missing AS (
     op.batch_run_date,
     op.batch_id
   FROM {{ source('crypto_stellar', 'history_operations') }} op
-  LEFT OUTER JOIN {{ source('crypto_stellar', 'enriched_history_operations') }} eho
+  LEFT OUTER JOIN {{ ref('enriched_history_operations') }} eho
     ON op.id = eho.op_id
   WHERE eho.op_id IS NULL
     -- Scan only the last 24 hours of data. Alert runs intraday so failures
