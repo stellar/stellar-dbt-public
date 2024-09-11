@@ -36,7 +36,6 @@ with
             , l.closed_at
             , lp.deleted
             , lp.batch_run_date
-            , lp.batch_insert_ts
             , row_number()
                 over (
                     partition by lp.liquidity_pool_id
@@ -49,10 +48,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                lp.batch_run_date >= date_sub(current_date(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(lp.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                TIMESTAMP(lp.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
         {% endif %}
 
     )
@@ -75,7 +71,6 @@ select
     , closed_at
     , deleted
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_lps
 where row_nr = 1

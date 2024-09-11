@@ -25,7 +25,6 @@ with
             , cb.deleted
             , cb.batch_id
             , cb.batch_run_date
-            , cb.batch_insert_ts
             , cb.closed_at
             , cb.ledger_sequence
             , row_number()
@@ -37,7 +36,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                cb.batch_run_date >= date_sub(current_date(), interval 2 day)
+                TIMESTAMP(cb.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 2 DAY )
         {% endif %}
     )
 
@@ -57,7 +56,6 @@ select
     , batch_run_date
     , closed_at
     , ledger_sequence
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_balance
 where rn = 1

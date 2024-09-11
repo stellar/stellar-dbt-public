@@ -83,7 +83,6 @@ with
             -- general fields
             , enriched.batch_id
             , enriched.batch_run_date
-            , enriched.batch_insert_ts
         from {{ ref('enriched_history_operations') }} as enriched
         where
             enriched.type in (24, 25, 26)
@@ -93,5 +92,7 @@ with
             {% endif %}
     )
 
-select *
+select
+    *
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from eho_soroban

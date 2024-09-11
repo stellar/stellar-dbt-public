@@ -157,13 +157,6 @@ sources:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
-          - name: batch_insert_ts
-            description: '{{ doc("batch_insert_ts") }}'
-            tests:
-              - incremental_not_null:
-                  date_column_name: "batch_run_date"
-                  greater_than_equal_to: "2 day"
-
           - name: selling_asset_id
             description: '{{ doc("assets_id") }}'
             tests:
@@ -187,3 +180,10 @@ sources:
 
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"

@@ -179,13 +179,6 @@ sources:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
-          - name: batch_insert_ts
-            description: '{{ doc("batch_insert_ts") }}'
-            tests:
-              - incremental_not_null:
-                  date_column_name: "batch_run_date"
-                  greater_than_equal_to: "2 day"
-
           - name: closed_at
             description: '{{ doc("closed_at") }}'
             tests:
@@ -228,3 +221,10 @@ sources:
 
           - name: refundable_fee
             description: '{{ doc("refundable_fee") }}'
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"

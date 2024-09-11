@@ -147,12 +147,6 @@ sources:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
-          - name: batch_insert_ts
-            description: '{{ doc("batch_insert_ts") }}'
-            tests:
-              - incremental_not_null:
-                  date_column_name: "closed_at"
-                  greater_than_equal_to: "2 day"
           - name: soroban_fee_write_1kb
             description: '{{ doc("soroban_fee_write_1kb") }}'
 
@@ -172,6 +166,13 @@ sources:
 
           - name: soroban_fee_write_1kb
             description: '{{ doc("soroban_fee_write_1kb") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'
             tests:
               - incremental_not_null:
                   date_column_name: "closed_at"

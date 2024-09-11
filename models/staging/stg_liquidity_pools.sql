@@ -31,9 +31,10 @@ with
             , deleted
             , batch_id
             , batch_run_date
-            , batch_insert_ts
             , closed_at
             , ledger_sequence
+            , batch_insert_ts
+            , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from raw_table
     )
 

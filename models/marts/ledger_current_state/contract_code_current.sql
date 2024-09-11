@@ -21,7 +21,6 @@ with
             , cc.deleted
             , cc.batch_id
             , cc.batch_run_date
-            , cc.batch_insert_ts
             , cc.ledger_sequence
             , cc.ledger_key_hash
             , row_number()
@@ -33,10 +32,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                cc.closed_at >= timestamp_sub(current_timestamp(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(cc.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                TIMESTAMP(cc.closed_at) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
         {% endif %}
     )
 
@@ -51,7 +47,6 @@ select
     , deleted
     , batch_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_code
 where rn = 1

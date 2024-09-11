@@ -112,5 +112,7 @@ with
             and join_table_yearly.asset_b = join_table_daily.asset_b
     )
 
-select *
+select
+    *
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from join_trades

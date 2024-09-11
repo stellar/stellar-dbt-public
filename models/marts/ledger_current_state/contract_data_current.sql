@@ -27,7 +27,6 @@ with
             , cd.deleted
             , cd.batch_id
             , cd.batch_run_date
-            , cd.batch_insert_ts
             , cd.ledger_sequence
             , cd.ledger_key_hash
             , concat(cd.contract_id, '-', cd.ledger_key_hash) as unique_id
@@ -40,10 +39,7 @@ with
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                cd.closed_at >= timestamp_sub(current_timestamp(), interval 30 day)
-                -- fetch the last week of records loaded
-                and timestamp_add(cd.batch_insert_ts, interval 7 day)
-                > (select max(t.upstream_insert_ts) from {{ this }} as t)
+                TIMESTAMP(cd.closed_at) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
         {% endif %}
     )
 
@@ -64,8 +60,7 @@ select
     , deleted
     , batch_id
     , batch_run_date
-    , batch_insert_ts as upstream_insert_ts
-    , current_timestamp() as batch_insert_ts
     , unique_id
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_data
 where rn = 1

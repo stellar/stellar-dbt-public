@@ -88,20 +88,6 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-      - name: batch_insert_ts
-        description: '{{ doc("batch_insert_ts") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-
-      - name: upstream_insert_ts
-        description: '{{ doc("upstream_insert_ts") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-
       - name: unique_id
         description: '{{ doc("unique_id") }}'
         tests:

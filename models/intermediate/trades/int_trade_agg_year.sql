@@ -239,5 +239,7 @@ with
     )
 
 
-select *
+select
+    *
+    , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from join_table_yearly
