@@ -12,7 +12,7 @@
 -- Get the actual count of transactions per ledger
 WITH txn_count AS (
     SELECT ledger_sequence, COUNT(id) as txn_transaction_count
-    FROM {{ source('crypto_stellar', 'history_transactions') }}
+    FROM {{ ref('stg_history_transactions') }}
     --Take all ledgers committed in the last 36 hours to validate newly written data
     -- Alert runs at 12pm UTC in GCP which creates the 36 hour interval
     WHERE TIMESTAMP(batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
@@ -21,8 +21,8 @@ WITH txn_count AS (
 -- Get the actual count of operations per ledger
      operation_count AS (
          SELECT A.ledger_sequence, COUNT(B.id) AS op_operation_count
-         FROM {{ source('crypto_stellar', 'history_transactions') }} A
-                  JOIN {{ source('crypto_stellar', 'history_operations') }} B
+         FROM {{ ref('stg_history_transactions') }} A
+                  JOIN {{ ref('stg_history_operations') }} B
                        ON A.id = B.transaction_id
          WHERE TIMESTAMP(A.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
             AND TIMESTAMP(B.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
@@ -36,7 +36,7 @@ WITH txn_count AS (
                 (A.failed_transaction_count + A.successful_transaction_count) as expected_transaction_count,
                 COALESCE(B.txn_transaction_count, 0) as actual_transaction_count,
                 COALESCE(C.op_operation_count, 0) as actual_operation_count
-         FROM {{ source('crypto_stellar', 'history_ledgers') }} A
+         FROM {{ ref('stg_history_ledgers') }} A
                   LEFT OUTER JOIN txn_count B
                                   ON A.sequence = B.ledger_sequence
                   LEFT OUTER JOIN operation_count C

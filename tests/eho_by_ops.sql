@@ -12,7 +12,7 @@ WITH find_missing AS (
   SELECT op.id,
     op.batch_run_date,
     op.batch_id
-  FROM {{ source('crypto_stellar', 'history_operations') }} op
+  FROM {{ ref('stg_history_operations') }} op
   LEFT OUTER JOIN {{ ref('enriched_history_operations') }} eho
     ON op.id = eho.op_id
   WHERE eho.op_id IS NULL
@@ -22,7 +22,7 @@ WITH find_missing AS (
 ),
 find_max_batch AS (
   SELECT MAX(batch_run_date) AS max_batch
-  FROM {{ source('crypto_stellar', 'history_operations') }}
+  FROM {{ ref('stg_history_operations') }}
   WHERE TIMESTAMP(batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
 )
 SELECT batch_run_date,
