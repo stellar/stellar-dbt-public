@@ -12,7 +12,7 @@ with
         from {{ ref('stg_history_trades') }}
         where
             ledger_closed_at >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 90 DAY )
-            and ledger_closed_at <= '{{ dbt_airflow_macros.ts(timezone=none) }}'
+            and ledger_closed_at <= timestamp_trunc('{{dbt_airflow_macros.ts(timezone=none) }}', day)
         group by close_date
     )
 
