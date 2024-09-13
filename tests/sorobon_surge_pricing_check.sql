@@ -1,6 +1,7 @@
 {{ config(
     severity="warn"
     , tags=["singular_test"]
+    , meta={"alert_suppression_interval": 24}
     )
 }}
 
