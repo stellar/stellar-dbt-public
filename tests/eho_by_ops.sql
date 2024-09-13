@@ -9,12 +9,12 @@
 -- any id present in the upstream table should be loaded in
 -- the downstream. If records are not present, alert the team.
 WITH find_missing AS (
-  SELECT op.id,
+  SELECT op.op_id,
     op.batch_run_date,
     op.batch_id
   FROM {{ ref('stg_history_operations') }} op
   LEFT OUTER JOIN {{ ref('enriched_history_operations') }} eho
-    ON op.id = eho.op_id
+    ON op.op_id = eho.op_id
   WHERE eho.op_id IS NULL
     -- Scan only the last 24 hours of data. Alert runs intraday so failures
     -- are caught and resolved quickly.

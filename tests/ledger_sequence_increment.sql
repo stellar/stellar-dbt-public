@@ -7,18 +7,18 @@
 with
     ledger_sequence as (
         select
-            id
+            ledger_id
             , batch_id
             , closed_at
             , max(sequence) as max_sequence
         from {{ ref('stg_history_ledgers') }}
         where closed_at > TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 DAY )
-        group by id, batch_id, closed_at
+        group by ledger_id, batch_id, closed_at
     )
 
     , lead_sequence as (
         select
-            id
+            ledger_id
             , batch_id
             , closed_at
             , max_sequence
