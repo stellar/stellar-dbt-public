@@ -20,11 +20,13 @@ WITH find_missing AS (
     -- Scan only the last 24 hours of data. Alert runs intraday so failures
     -- are caught and resolved quickly.
     AND TIMESTAMP(op.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
+    AND TIMESTAMP(op.batch_run_date) < TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 HOUR )
 ),
 find_max_batch AS (
   SELECT MAX(batch_run_date) AS max_batch
   FROM {{ ref('stg_history_operations') }}
   WHERE TIMESTAMP(batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
+    AND TIMESTAMP(batch_run_date) < TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 HOUR )
 )
 SELECT batch_run_date,
     batch_id,
