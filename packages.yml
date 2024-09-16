@@ -11,4 +11,4 @@ packages:
 
     ## https://dbt-labs.github.io/dbt-project-evaluator/latest/
   - package: dbt-labs/dbt_project_evaluator
-    version: 0.6.2
+    version: 0.13.2
