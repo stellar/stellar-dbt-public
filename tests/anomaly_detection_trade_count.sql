@@ -1,7 +1,7 @@
 {{ config(
     severity="warn"
     , tags=["singular_test"]
-    , enabled = (target.name == "prod" and '{{ var("is_singular_airflow_task") }}' == "true")
+    , enabled = (target.name == "prod" and {{ var("is_singular_airflow_task") }} == "true")
     )
 }}
 
