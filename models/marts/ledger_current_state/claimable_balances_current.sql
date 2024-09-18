@@ -1,10 +1,15 @@
-{{
-    config(
-        tags = ["current_state"],
-        materialized = "incremental",
-        unique_key = "balance_id"
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": "balance_id",
+} %}
+
+{{ config(
+    tags=["current_state"],
+    meta=meta_config,
+    **meta_config,
     )
 }}
+
 /* Returns the latest state of each claimable balance in the `claimable_balances` table.
 
     Rank all rows for a claimable balance by closed_at timestamp and pick the latest one.*/

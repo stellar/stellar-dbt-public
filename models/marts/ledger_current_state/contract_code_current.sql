@@ -1,8 +1,13 @@
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": ["contract_code_hash"],
+    "cluster_by": ["contract_code_hash"]
+} %}
+
 {{ config(
-    tags = ["current_state"]
-    , materialized='incremental'
-    , unique_key=["contract_code_hash"]
-    , cluster_by= ["contract_code_hash"]
+    tags=["current_state"],
+    meta=meta_config,
+    **meta_config,
     )
 }}
 

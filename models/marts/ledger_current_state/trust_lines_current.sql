@@ -1,9 +1,13 @@
-{{
-    config(
-        tags = ["current_state"],
-        materialized = "incremental",
-        unique_key = "unique_id",
-        cluster_by = ["asset_code", "asset_issuer"]
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": "unique_id",
+    "cluster_by": ["asset_code", "asset_issuer"]
+} %}
+
+{{ config(
+    tags=["current_state"],
+    meta=meta_config,
+    **meta_config,
     )
 }}
 

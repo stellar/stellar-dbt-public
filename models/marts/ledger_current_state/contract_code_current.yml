@@ -3,7 +3,15 @@ version: 2
 models:
   - name: contract_code_current
     description: '{{ doc("contract_code_current") }}'
-
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: cast(closed_at as timestamp)
+          interval: 2
+          config:
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: contract_code_hash
         description: '{{ doc("key_hash") }}'

@@ -1,12 +1,17 @@
-{{ config(
-    tags = ["enriched_history_operations"],
-    materialized='incremental',
-    unique_key=["op_id"],
-    partition_by={
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": ["op_id"],
+    "cluster_by": ["ledger_sequence", "transaction_id", "op_type"],
+    "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
-        , "granularity": "month"},
-    cluster_by=["ledger_sequence", "transaction_id", "op_type"]
+        , "granularity": "month"}
+} %}
+
+{{ config(
+    tags=["enriched_history_operations"],
+    meta=meta_config,
+    **meta_config,
     )
 }}
 

@@ -1,7 +1,12 @@
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": "config_setting_id",
+} %}
+
 {{ config(
-    tags = ["current_state"]
-    , materialized='incremental'
-    , unique_key=["config_setting_id"]
+    tags=["current_state"],
+    meta=meta_config,
+    **meta_config,
     )
 }}
 
