@@ -5,9 +5,9 @@ models:
     description: '{{ doc("config_settings_current") }}'
     tests:
       - dbt_utils.recency:
-          datepart: day
-          field: cast(closed_at as timestamp)
-          interval: 2
+          datepart: hour
+          field: closed_at
+          interval: 12
           config:
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
           meta:
