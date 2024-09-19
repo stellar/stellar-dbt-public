@@ -5,6 +5,7 @@
     , tags=["singular_test"]
     , meta={"alert_suppression_interval": 24}
     , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
+    , alert_suppression_interval=24
     )
 }}
 
