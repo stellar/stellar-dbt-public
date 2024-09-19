@@ -1,7 +1,10 @@
+-- Strictly use enabled condition to restrict singular tests from running in dbt build tasks.
+-- https://github.com/stellar/stellar-dbt-public/pull/95
 {{ config(
     severity="warn"
     , tags=["singular_test"]
     , meta={"alert_suppression_interval": 24}
+    , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
     )
 }}
 
