@@ -5,6 +5,7 @@ models:
     description: '{{ doc("history_assets") }}'
     tests:
       - dbt_utils.recency:
+          tags: [recency]
           datepart: day
           field: cast(batch_run_date as timestamp)
           interval: 2

@@ -5,6 +5,7 @@ models:
     description: '{{ doc("claimable_balances_current") }}'
     tests:
       - dbt_utils.recency:
+          tags: [recency]
           datepart: hour
           field: closed_at
           interval: 12

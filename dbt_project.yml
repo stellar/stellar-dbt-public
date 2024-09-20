@@ -30,6 +30,7 @@ vars:
 
   airflow_start_timestamp: "{{ env_var('AIRFLOW_START_TIMESTAMP', '2000-01-01') }}"
   is_singular_airflow_task: "{{ env_var('IS_SINGULAR_AIRFLOW_TASK', 'false') }}"
+  is_recency_airflow_task: "{{ env_var('IS_RECENCY_AIRFLOW_TASK', 'false') }}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models

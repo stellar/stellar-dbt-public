@@ -5,6 +5,7 @@ models:
     description: '{{ doc("trade_agg") }}'
     tests:
       - dbt_utils.recency:
+          tags: [recency]
           datepart: day
           field: cast(day_agg as timestamp)
           interval: 2

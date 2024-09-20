@@ -5,6 +5,7 @@ models:
     description: '{{ doc("contract_data_current") }}'
     tests:
       - dbt_utils.recency:
+          tags: [recency]
           datepart: hour
           field: closed_at
           interval: 12
