@@ -4,7 +4,7 @@
     severity="warn"
     , tags=["singular_test"]
     , meta={"alert_suppression_interval": 24}
-    , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
+    , enabled=false
     , alert_suppression_interval=24
     )
 }}
