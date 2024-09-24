@@ -8,7 +8,7 @@ models:
           tags: [recency]
           datepart: hour
           field: closed_at
-          interval: 12
+          interval: 24
           config:
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
           meta:
