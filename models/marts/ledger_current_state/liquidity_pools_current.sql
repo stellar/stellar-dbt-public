@@ -1,11 +1,11 @@
 {% set meta_config = {
     "materialized": "incremental",
     "unique_key": "liquidity_pool_id",
-    "cluster_by": ["asset_a_code", "asset_a_issuer", "asset_b_code", "asset_b_issuer"]
+    "cluster_by": ["asset_a_code", "asset_a_issuer", "asset_b_code", "asset_b_issuer"],
+    "tags": ["current_state"]
 } %}
 
 {{ config(
-    tags=["current_state"],
     meta=meta_config,
     **meta_config,
     )

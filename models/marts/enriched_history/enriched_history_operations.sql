@@ -5,11 +5,11 @@
     "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
-        , "granularity": "month"}
+        , "granularity": "month"},
+    "tags": ["enriched_history_operations"]
 } %}
 
 {{ config(
-    tags=["enriched_history_operations"],
     meta=meta_config,
     **meta_config,
     )

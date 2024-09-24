@@ -5,11 +5,11 @@
     "partition_by": {
         "field": "day_agg"
         , "data_type": "date"
-        , "granularity": "month"}
+        , "granularity": "month"},
+    "tags": ["trade_agg"]
 } %}
 
 {{ config(
-    tags=["trade_agg"],
     meta=meta_config,
     **meta_config,
     )

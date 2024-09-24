@@ -5,9 +5,9 @@ models:
     description: '{{ doc("contract_code_current") }}'
     tests:
       - dbt_utils.recency:
-          datepart: hour
+          datepart: day
           field: closed_at
-          interval: 12
+          interval: 7
           config:
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
           meta:

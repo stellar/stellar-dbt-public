@@ -1,10 +1,10 @@
 {% set meta_config = {
     "materialized": "incremental",
     "unique_key": "balance_id",
+    "tags": ["current_state"]
 } %}
 
 {{ config(
-    tags=["current_state"],
     meta=meta_config,
     **meta_config,
     )

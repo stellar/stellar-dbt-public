@@ -1,11 +1,11 @@
 {% set meta_config = {
     "materialized": "incremental",
     "unique_key": ["asset_id"],
-    "cluster_by": ["asset_id"]
+    "cluster_by": ["asset_id"],
+    "tags": ["history_assets"]
 } %}
 
 {{ config(
-    tags=["history_assets"],
     meta=meta_config,
     **meta_config,
     )
