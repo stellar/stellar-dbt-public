@@ -1,12 +1,15 @@
-{{
-    config(
-        tags = ["current_state"],
-        materialized = "incremental",
-        unique_key = "offer_id",
-        cluster_by = ["selling_asset_code", "selling_asset_issuer", "buying_asset_code", "buying_asset_issuer"]
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": "offer_id",
+    "cluster_by": ["selling_asset_code", "selling_asset_issuer", "buying_asset_code", "buying_asset_issuer"],
+    "tags": ["current_state"]
+} %}
+
+{{ config(
+    meta=meta_config,
+    **meta_config,
     )
 }}
-
 
 with
     current_offers as (

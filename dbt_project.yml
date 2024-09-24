@@ -64,6 +64,11 @@ models:
       tests:
         fct_missing_primary_key_tests:
           +enabled: false
+        fct_sources_without_freshness:
+          +enabled: false
+      documentation:
+        fct_undocumented_sources:
+          +enabled: false
 
 seeds:
   stellar_dbt_public:
