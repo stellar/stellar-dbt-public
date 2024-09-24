@@ -10,7 +10,7 @@ models:
           field: cast(batch_run_date as timestamp)
           interval: 2
           config:
-            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            enabled: '{{ target.name == "ci" or env_var("IS_RECENCY_AIRFLOW_TASK") == "true" }}'
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
