@@ -1,10 +1,15 @@
-{{
-    config(
-        tags = ["current_state"],
-        materialized = "incremental",
-        unique_key = "account_id"
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": "account_id",
+    "tags": ["current_state"]
+} %}
+
+{{ config(
+    meta=meta_config,
+    **meta_config,
     )
 }}
+
 /* Returns the latest state of each account in the `accounts` table.
    Table includes all accounts. (Deleted and Existing).
 

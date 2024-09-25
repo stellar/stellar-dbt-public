@@ -1,12 +1,17 @@
-{{ config(
-    tags = ["trade_agg"],
-    materialized = 'incremental',
-    partition_by = {
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": ["day_agg", "asset_a", "asset_b"],
+    "cluster_by": ["asset_a", "asset_b"],
+    "partition_by": {
         "field": "day_agg"
         , "data_type": "date"
-        , "granularity": "month"}
-    , unique_key = ["day_agg", "asset_a", "asset_b"]
-    , cluster_by =["asset_a", "asset_b"]
+        , "granularity": "month"},
+    "tags": ["trade_agg"]
+} %}
+
+{{ config(
+    meta=meta_config,
+    **meta_config,
     )
 }}
 

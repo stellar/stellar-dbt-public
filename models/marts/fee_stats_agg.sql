@@ -1,11 +1,16 @@
-{{ config(
-    tags=["fee_stats"],
-    materialized='incremental',
-    unique_key=["day_agg"],
-    partition_by={
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": ["day_agg"],
+    "tags": ["fee_stats"],
+    "partition_by": {
         "field": "day_agg"
         , "data_type": "date"
         , "granularity": "month"}
+} %}
+
+{{ config(
+    meta=meta_config,
+    **meta_config,
     )
 }}
 
