@@ -36,8 +36,7 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values:
-                ["credit_alphanum4", "credit_alphanum12", "pool_share"]
+              values: ["credit_alphanum4", "credit_alphanum12", "pool_share"]
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
