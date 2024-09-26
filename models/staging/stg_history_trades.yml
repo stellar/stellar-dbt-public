@@ -1,0 +1,142 @@
+version: 2
+
+models:
+  - name: stg_history_trades
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: cast(ledger_closed_at as timestamp)
+          interval: 2
+          config:
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - history_operation_id
+            - "`order`"
+          meta:
+            description: "Tests the uniqueness combination of: history_operation_id and order."
+    columns:
+      - name: history_operation_id
+        description: '{{ doc("history_operation_id") }}'
+        tests:
+          - not_null
+
+      - name: "`order`"
+        description: '{{ doc("order") }}'
+        tests:
+          - not_null
+
+      - name: ledger_closed_at
+        description: '{{ doc("ledger_closed_at") }}'
+        tests:
+          - not_null
+
+      - name: selling_account_address
+        description: '{{ doc("selling_account_address") }}'
+        tests:
+          - not_null
+
+      - name: selling_asset_code
+        description: '{{ doc("trade_selling_asset_code") }}'
+        tests:
+          - not_null
+
+      - name: selling_asset_issuer
+        description: '{{ doc("trade_selling_asset_issuer") }}'
+        tests:
+          - not_null
+
+      - name: selling_asset_type
+        description: '{{ doc("trade_selling_asset_type") }}'
+        tests:
+          - not_null
+
+      - name: selling_asset_id
+        description: '{{ doc("assets_id") }}'
+        tests:
+          - not_null
+
+      - name: selling_amount
+        description: '{{ doc("trade_selling_amount") }}'
+        tests:
+          - not_null
+
+      - name: buying_account_address
+        description: '{{ doc("buying_account_address") }}'
+        tests:
+          - not_null
+
+      - name: buying_asset_code
+        description: '{{ doc("trade_buying_asset_code") }}'
+        tests:
+          - not_null
+
+      - name: buying_asset_issuer
+        description: '{{ doc("trade_buying_asset_issuer") }}'
+        tests:
+          - not_null
+
+      - name: buying_asset_type
+        description: '{{ doc("trade_buying_asset_type") }}'
+        tests:
+          - not_null
+
+      - name: buying_asset_id
+        description: '{{ doc("assets_id") }}'
+        tests:
+          - not_null
+
+      - name: buying_amount
+        description: '{{ doc("trade_buying_amount") }}'
+        tests:
+          - not_null
+
+      - name: price_n
+        description: '{{ doc("trade_price_n") }}'
+        tests:
+          - not_null
+
+      - name: price_d
+        description: '{{ doc("trade_price_d") }}'
+        tests:
+          - not_null
+
+      - name: selling_offer_id
+        description: '{{ doc("selling_offer_id") }}'
+
+      - name: buying_offer_id
+        description: '{{ doc("buying_offer_id") }}'
+
+      - name: selling_liquidity_pool_id
+        description: '{{ doc("selling_liquidity_pool_id") }}'
+
+      - name: liquidity_pool_fee
+        description: '{{ doc("liquidity_pool_fee") }}'
+
+      - name: trade_type
+        description: '{{ doc("trade_type") }}'
+        tests:
+          - not_null
+
+      - name: rounding_slippage
+        description: '{{ doc("rounding_slippage") }}'
+
+      - name: seller_is_exact
+        description: '{{ doc("seller_is_exact") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - not_null

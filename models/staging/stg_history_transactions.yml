@@ -1,0 +1,189 @@
+version: 2
+
+models:
+  - name: stg_history_transactions
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: cast(closed_at as timestamp)
+          interval: 2
+          config:
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+    columns:
+      - name: id
+        description: '{{ doc("transaction_id") }}'
+        tests:
+          - unique
+          - not_null
+
+      - name: transaction_hash
+        description: '{{ doc("transaction_hash") }}'
+        tests:
+          - not_null
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - not_null
+
+      - name: application_order
+        description: '{{ doc("application_order") }}'
+
+      - name: account
+        description: '{{ doc("account") }}'
+        tests:
+          - not_null
+
+      - name: account_sequence
+        description: '{{ doc("account_sequence") }}'
+        tests:
+          - not_null
+
+      - name: max_fee
+        description: '{{ doc("max_fee") }}'
+        tests:
+          - not_null
+
+      - name: operation_count
+        description: '{{ doc("transaction_operation_count") }}'
+        tests:
+          - not_null
+
+      - name: created_at
+        description: '{{ doc("created_at") }}'
+        tests:
+          - not_null
+
+      - name: memo_type
+        description: '{{ doc("memo_type") }}'
+        tests:
+          - not_null
+
+      - name: memo
+        description: '{{ doc("memo") }}'
+
+      - name: time_bounds
+        description: '{{ doc("time_bounds") }}'
+        tests:
+          - not_null
+
+      - name: successful
+        description: '{{ doc("successful") }}'
+        tests:
+          - not_null
+
+      - name: fee_charged
+        description: '{{ doc("fee_charged") }}'
+        tests:
+          - not_null
+
+      - name: inner_transaction_hash
+        description: '{{ doc("inner_transaction_hash") }}'
+
+      - name: fee_account
+        description: '{{ doc("fee_account") }}'
+
+      - name: new_max_fee
+        description: '{{ doc("new_max_fee") }}'
+
+      - name: account_muxed
+        description: '{{ doc("account_muxed") }}'
+
+      - name: fee_account_muxed
+        description: '{{ doc("fee_account_muxed") }}'
+
+      - name: ledger_bounds
+        description: '{{ doc("ledger_bounds") }}'
+
+      - name: min_account_sequence
+        description: '{{ doc("min_account_sequence") }}'
+
+      - name: min_account_sequence_age
+        description: '{{ doc("min_account_sequence_age") }}'
+
+      - name: min_account_sequence_ledger_gap
+        description: '{{ doc("min_account_sequence_ledger_gap") }}'
+
+      - name: extra_signers
+        description: '{{ doc("extra_signers") }}'
+
+      - name: tx_signers
+        description: '{{ doc("tx_signers") }}'
+
+      - name: tx_envelope
+        description: '{{ doc("tx_envelope") }}'
+        tests:
+          - not_null
+
+      - name: tx_result
+        description: '{{ doc("tx_result") }}'
+        tests:
+          - not_null
+
+      - name: tx_meta
+        description: '{{ doc("tx_meta") }}'
+        tests:
+          - not_null
+
+      - name: tx_fee_meta
+        description: '{{ doc("tx_fee_meta") }}'
+        tests:
+          - not_null
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+
+      - name: resource_fee
+        description: '{{ doc("resource_fee") }}'
+
+      - name: soroban_resources_instructions
+        description: '{{ doc("soroban_resources_instructions") }}'
+
+      - name: soroban_resources_read_bytes
+        description: '{{ doc("soroban_resources_read_bytes") }}'
+
+      - name: soroban_resources_write_bytes
+        description: '{{ doc("soroban_resources_read_bytes") }}'
+
+      - name: transaction_result_code
+        description: '{{ doc("transaction_result_code") }}'
+
+      - name: inclusion_fee_bid
+        description: '{{ doc("inclusion_fee_bid") }}'
+
+      - name: inclusion_fee_charged
+        description: '{{ doc("inclusion_fee_charged") }}'
+
+      - name: resource_fee_refund
+        description: '{{ doc("resource_fee_refund") }}'
+
+      - name: non_refundable_resource_fee_charged
+        description: '{{ doc("non_refundable_resource_fee_charged") }}'
+
+      - name: refundable_resource_fee_charged
+        description: '{{ doc("refundable_resource_fee_charged") }}'
+
+      - name: rent_fee_charged
+        description: '{{ doc("rent_fee_charged") }}'
+
+      - name: refundable_fee
+        description: '{{ doc("refundable_fee") }}'
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - not_null

@@ -1,0 +1,122 @@
+version: 2
+
+models:
+  - name: stg_accounts
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: cast(closed_at as timestamp)
+          interval: 2
+          config:
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - account_id
+            - sequence_number
+            - ledger_entry_change
+            - last_modified_ledger
+          meta:
+            description: "Tests the uniqueness combination of: account_id, signer and ledger_sequence."
+    columns:
+      - name: account_id
+        description: '{{ doc("account_id") }}'
+        tests:
+          - not_null
+      - name: balance
+        description: '{{ doc("balance") }}'
+        tests:
+          - not_null
+      - name: buying_liabilities
+        description: '{{ doc("buying_liabilities") }}'
+        tests:
+          - not_null
+      - name: selling_liabilities
+        description: '{{ doc("selling_liabilities") }}'
+        tests:
+          - not_null
+      - name: sequence_number
+        description: '{{ doc("sequence_number") }}'
+        tests:
+          - not_null
+      - name: num_subentries
+        description: '{{ doc("num_subentries") }}'
+        tests:
+          - not_null
+      - name: inflation_destination
+        description: '{{ doc("inflation_destination") }}'
+        tests:
+          - not_null
+      - name: flags
+        description: '{{ doc("flags_accounts_balances") }}'
+        tests:
+          - not_null
+      - name: home_domain
+        description: '{{ doc("home_domain") }}'
+        tests:
+          - not_null
+      - name: master_weight
+        description: '{{ doc("master_weight") }}'
+        tests:
+          - not_null
+      - name: threshold_low
+        description: '{{ doc("threshold_low") }}'
+        tests:
+          - not_null
+      - name: threshold_medium
+        description: '{{ doc("threshold_medium") }}'
+        tests:
+          - not_null
+      - name: threshold_high
+        description: '{{ doc("threshold_high") }}'
+        tests:
+          - not_null
+      - name: last_modifed_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - not_null
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, 2]
+              quote: false
+      - name: deleted
+        description: '{{ doc("deleted") }}'
+        tests:
+          - not_null
+      - name: sponsor
+        description: '{{ doc("sponsor") }}'
+      - name: num_sponsored
+        description: '{{ doc("num_sponsored") }}'
+        tests:
+          - not_null
+      - name: num_sponsoring
+        description: '{{ doc("num_sponsoring") }}'
+        tests:
+          - not_null
+      - name: sequence_ledger
+        description: '{{ doc("sequence_ledger") }}'
+        tests:
+          - not_null
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+      - name: closed_at
+        tests:
+          - not_null
+      - name: ledger_sequence
+        tests:
+          - not_null
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - not_null
+      - name: airflow_start_ts

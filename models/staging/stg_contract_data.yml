@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: stg_contract_data
+    tests:
+      - dbt_utils.recency:
+          datepart: day
+          field: cast(closed_at as timestamp)
+          interval: 2
+          config:
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - contract_id
+            - contract_data_xdr
+            - last_modified_ledger
+            - ledger_entry_change
+          meta:
+            description: "Tests the uniqueness combination of: contract_id, contract_data_xdr, last_modified_ledger, and ledger_entry_change."
+    columns:
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - not_null
+
+      - name: contract_key_type
+        description: '{{ doc("contract_key_type") }}'
+        tests:
+          - not_null
+
+      - name: contract_durability
+        description: '{{ doc("contract_durability") }}'
+        tests:
+          - not_null
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+        tests:
+          - not_null
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+        tests:
+          - not_null
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - not_null
+
+      - name: balance_holder
+        description: '{{ doc("balance_holder") }}'
+
+      - name: balance
+        description: '{{ doc("balance") }}'
+
+      - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - not_null
+
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, 2]
+              quote: false
+
+      - name: deleted
+        description: '{{ doc("deleted") }}'
+        tests:
+          - not_null
+
+      - name: key
+        description: '{{ doc("key") }}'
+        tests:
+          - not_null
+
+      - name: key_decoded
+        description: '{{ doc("key_decoded") }}'
+        tests:
+          - not_null
+
+      - name: val
+        description: '{{ doc("val") }}'
+        tests:
+          - not_null
+
+      - name: val_decoded
+        description: '{{ doc("val_decoded") }}'
+        tests:
+          - not_null
+
+      - name: contract_data_xdr
+        description: '{{ doc("contract_data_xdr") }}'
+        tests:
+          - not_null
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - not_null
