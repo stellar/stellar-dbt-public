@@ -12,7 +12,7 @@ models:
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
-      - name: id
+      - name: transaction_id
         description: '{{ doc("transaction_id") }}'
         tests:
           - unique
@@ -31,7 +31,7 @@ models:
       - name: application_order
         description: '{{ doc("application_order") }}'
 
-      - name: account
+      - name: txn_account
         description: '{{ doc("account") }}'
         tests:
           - not_null
@@ -46,12 +46,12 @@ models:
         tests:
           - not_null
 
-      - name: operation_count
+      - name: txn_operation_count
         description: '{{ doc("transaction_operation_count") }}'
         tests:
           - not_null
 
-      - name: created_at
+      - name: txn_created_at
         description: '{{ doc("created_at") }}'
         tests:
           - not_null

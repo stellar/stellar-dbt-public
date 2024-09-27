@@ -72,7 +72,7 @@ models:
         description: '{{ doc("threshold_high") }}'
         tests:
           - not_null
-      - name: last_modifed_ledger
+      - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
         tests:
           - not_null

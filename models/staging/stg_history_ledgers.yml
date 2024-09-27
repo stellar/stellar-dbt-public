@@ -33,7 +33,7 @@ models:
         tests:
           - not_null
 
-      - name: operation_count
+      - name: ledger_operation_count
         description: '{{ doc("operation_count") }}'
         tests:
           - not_null
@@ -43,7 +43,7 @@ models:
         tests:
           - not_null
 
-      - name: id
+      - name: ledger_id
         description: '{{ doc("ledger_id") }}'
         tests:
           - not_null
