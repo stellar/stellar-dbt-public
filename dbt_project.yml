@@ -31,13 +31,6 @@ vars:
   airflow_start_timestamp: "{{ env_var('AIRFLOW_START_TIMESTAMP', '2000-01-01') }}"
   is_singular_airflow_task: "{{ env_var('IS_SINGULAR_AIRFLOW_TASK', 'false') }}"
 
-  # Soroban-contract dim airflow vars
-  recovery: "{{ env_var('RECOVERY', 'False') }}"
-  recovery_type: "{{ env_var('RECOVERY_TYPE', 'SingleDay') }}"
-  recovery_date: "{{ env_var('RECOVERY_DATE', '2024-09-01') }}"
-  recovery_start_day: "{{ env_var('RECOVERY_START_DAY', '2024-09-10') }}"
-  recovery_end_day: "{{ env_var('RECOVERY_END_DAY', '2024-09-15') }}"
-
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 models:
@@ -46,8 +39,6 @@ models:
       +materialized: view # how the staging models will be materialized
     intermediate:
       +materialized: view # how the intermediate models will be materialized
-    dims:
-      +materialized: table # how the dims models will be materialized
     marts:
       +materialized: table # how the mart models will be materialized
 
