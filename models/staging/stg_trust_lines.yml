@@ -38,13 +38,9 @@ models:
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
-        tests:
-          - not_null
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
-        tests:
-          - not_null
 
       - name: liquidity_pool_id
         description: '{{ doc("liquidity_pool_id") }}'

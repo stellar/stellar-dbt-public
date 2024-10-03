@@ -12,7 +12,6 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - contract_code_hash
-            - contract_code_ext_v
             - last_modified_ledger
             - ledger_entry_change
           meta:

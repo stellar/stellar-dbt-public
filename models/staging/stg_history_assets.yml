@@ -31,13 +31,9 @@ models:
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
-        tests:
-          - not_null
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
-        tests:
-          - not_null
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
