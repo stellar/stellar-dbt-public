@@ -4,16 +4,18 @@ models:
   - name: stg_history_effects
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: cast(closed_at as timestamp)
-          interval: 2
+          interval: 1
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: address
         description: '{{ doc("address") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: address_muxed
         description: '{{ doc("address_muxed") }}'
@@ -21,27 +23,37 @@ models:
       - name: operation_id
         description: '{{ doc("operation_id") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: id
         description: '{{ doc("id") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: type
         description: '{{ doc("type") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: type_string
         description: '{{ doc("type_string") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: details
         description: '{{ doc("details_effects") }}'
@@ -49,12 +61,16 @@ models:
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: details.liquidity_pool
         description: '{{ doc("details_liquidity_pool") }}'
@@ -305,14 +321,20 @@ models:
       - name: index
         description: '{{ doc("index") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"

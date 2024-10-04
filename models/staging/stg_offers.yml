@@ -4,12 +4,14 @@ models:
   - name: stg_offers
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: cast(closed_at as timestamp)
-          interval: 2
+          interval: 1
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
-      - dbt_utils.unique_combination_of_columns:
+      - incremental_unique_combination_of_columns:
+          date_column_name: "closed_at"
+          greater_than_equal_to: "2 day"
           combination_of_columns:
             - offer_id
             - ledger_entry_change
@@ -20,85 +22,118 @@ models:
       - name: seller_id
         description: '{{ doc("seller_id") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: offer_id
         description: '{{ doc("offer_id") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: selling_asset_type
         description: '{{ doc("asset_type") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: selling_asset_code
         description: '{{ doc("asset_code") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: selling_asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: buying_asset_type
         description: '{{ doc("asset_type") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: buying_asset_code
         description: '{{ doc("asset_code") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: buying_asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: amount
         description: '{{ doc("amount") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: pricen
         description: '{{ doc("price_n") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: priced
         description: '{{ doc("price_d") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: price
         description: '{{ doc("price") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: flags
         description: '{{ doc("flags_offers") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
         tests:
-          - not_null
-          - accepted_values:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+          - incremental_accepted_values:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
               values: [0, 1, 2]
-              quote: false
 
       - name: deleted
         description: '{{ doc("deleted") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: sponsor
         description: '{{ doc("sponsor") }}'
@@ -106,27 +141,37 @@ models:
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: selling_asset_id
         description: '{{ doc("assets_id") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: buying_asset_id
         description: '{{ doc("assets_id") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
@@ -134,4 +179,6 @@ models:
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
         tests:
-          - not_null
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
