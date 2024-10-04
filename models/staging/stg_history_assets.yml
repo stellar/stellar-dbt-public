@@ -36,6 +36,7 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
               values: ["credit_alphanum4", "credit_alphanum12", "native"]
+              quote: true
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'

@@ -1,12 +1,15 @@
-{% test incremental_accepted_values(model, column_name, date_column_name, greater_than_equal_to, less_than_equal_to, condition, values=[]) %}
+{% test incremental_accepted_values(model, column_name, date_column_name, greater_than_equal_to, less_than_equal_to, condition, values=[], quote=false) %}
 
     {{ config(severity = 'error') }}
     {% set condition = condition | default('') %}
     {% set date_column_name = date_column_name | default('closed_at') %}
     {% set greater_than_equal_to = greater_than_equal_to | default('2 day') %}
     {% set less_than_equal_to = less_than_equal_to | default('') %}
-    {% set values = values | join(', ') %}
-
+    {% if quote %}
+        {% set values = values | map(attribute='string') | join(', ') %}
+    {% else %}
+        {% set values = values | join(', ') %}
+    {% endif %}
 
     with all_values as (
 
