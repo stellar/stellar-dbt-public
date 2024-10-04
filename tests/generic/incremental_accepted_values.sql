@@ -1,15 +1,17 @@
-{% test incremental_accepted_values(model, column_name, date_column_name, greater_than_equal_to, less_than_equal_to, condition, values=[], quote=false) %}
+{% test incremental_accepted_values(model, column_name, date_column_name, greater_than_equal_to, less_than_equal_to, condition, quote, values=[]) %}
 
     {{ config(severity = 'error') }}
     {% set condition = condition | default('') %}
     {% set date_column_name = date_column_name | default('closed_at') %}
     {% set greater_than_equal_to = greater_than_equal_to | default('2 day') %}
     {% set less_than_equal_to = less_than_equal_to | default('') %}
-    {% if quote %}
-        {% set values = values | map(attribute='string') | join(', ') %}
-    {% else %}
-        {% set values = values | join(', ') %}
-    {% endif %}
+    {% set quote = quote | default(false) %}
+    {% set values_string = [] %}
+    {% for value in values %}
+        {% do values_string.append("'" + value|string + "'") %}
+    {% endfor %}
+    {% set values_string = values_string | join(', ') %}
+    {% set values = values | join(', ') %}
 
     with all_values as (
 
@@ -44,7 +46,11 @@
     select value_field
     from all_values
     where value_field not in (
-        {{ values }}
+        {% if quote %}
+            {{ values_string }}
+        {% else %}
+            {{ values }}
+        {% endif %}
     )
 
 {% endtest %}
