@@ -3,8 +3,8 @@
     unique_key = ['ledger_key_hash'],
     on_schema_change = 'sync_all_columns',
     partition_by = {
-        "field": "DATE(closed_at)",
-        "data_type": "timestamp"
+        "field": "TIMESTAMP_TRUNC(closed_at, MONTH)",
+        "data_type": "DATE"
     },
     cluster_by = ["contract_id"],
     tags = ["soroban_analytics"],
@@ -32,42 +32,43 @@
 -- Run:
 --     dbt run --models dim_contract_data_current
 
-WITH current_records AS (
-    SELECT
-        ledger_key_hash,
-        contract_id,
-        contract_durability,
-        contract_create_ts,
-        contract_delete_ts,
-        closed_at,
-        asset_code,
-        asset_issuer,
-        asset_type,
-        balance,
-        balance_holder,
-        batch_id,
-        batch_run_date,
-        airflow_start_ts,
-        CURRENT_TIMESTAMP() AS dw_load_ts
-    FROM {{ ref('dim_contract_data_hist') }}
-    WHERE is_current IS TRUE
-)
+with
+    current_records as (
+        select
+            ledger_key_hash
+            , contract_id
+            , contract_durability
+            , contract_create_ts
+            , contract_delete_ts
+            , closed_at
+            , asset_code
+            , asset_issuer
+            , asset_type
+            , balance
+            , balance_holder
+            , batch_id
+            , batch_run_date
+            , airflow_start_ts
+            , current_timestamp() as dw_load_ts
+        from {{ ref('dim_contract_data_hist') }}
+        where is_current is true
+    )
 
 -- Final Output: Selecting only current records for each `ledger_key_hash`
-SELECT
-    ledger_key_hash,
-    contract_id,
-    contract_durability,
-    contract_create_ts,
-    contract_delete_ts,
-    closed_at,
-    asset_code,
-    asset_issuer,
-    asset_type,
-    balance,
-    balance_holder,
-    batch_id,
-    batch_run_date,
-    airflow_start_ts,
-    dw_load_ts
-FROM current_records
+select
+    ledger_key_hash
+    , contract_id
+    , contract_durability
+    , contract_create_ts
+    , contract_delete_ts
+    , closed_at
+    , asset_code
+    , asset_issuer
+    , asset_type
+    , balance
+    , balance_holder
+    , batch_id
+    , batch_run_date
+    , airflow_start_ts
+    , dw_load_ts
+from current_records

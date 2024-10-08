@@ -3,8 +3,8 @@
     unique_key = ['ledger_key_hash'],
     on_schema_change = 'sync_all_columns',
     partition_by = {
-        "field": "DATE(closed_at)",
-        "data_type": "timestamp"
+        "field": "TIMESTAMP_TRUNC(closed_at, MONTH)",
+        "data_type": "DATE"
     },
     cluster_by = ["ledger_key_hash"],
     tags = ["soroban_analytics"],
@@ -32,46 +32,47 @@
 -- Run:
 --     dbt run --models dim_contract_code_current
 
-WITH current_records AS (
-    SELECT
-        ledger_key_hash,
-        contract_code_hash,
-        n_instructions,
-        n_functions,
-        n_globals,
-        n_table_entries,
-        n_types,
-        n_data_segments,
-        n_elem_segments,
-        n_imports,
-        n_exports,
-        n_data_segment_bytes,
-        contract_create_ts,
-        contract_delete_ts,
-        closed_at,
-        airflow_start_ts,
-        CURRENT_TIMESTAMP() AS dw_load_ts
-    FROM {{ ref('dim_contract_code_hist') }}
-    WHERE is_current IS TRUE
-)
+with
+    current_records as (
+        select
+            ledger_key_hash
+            , contract_code_hash
+            , n_instructions
+            , n_functions
+            , n_globals
+            , n_table_entries
+            , n_types
+            , n_data_segments
+            , n_elem_segments
+            , n_imports
+            , n_exports
+            , n_data_segment_bytes
+            , contract_create_ts
+            , contract_delete_ts
+            , closed_at
+            , airflow_start_ts
+            , current_timestamp() as dw_load_ts
+        from {{ ref('dim_contract_code_hist') }}
+        where is_current is true
+    )
 
 -- Final Output: Selecting only current records for each `ledger_key_hash`
-SELECT
-    ledger_key_hash,
-    contract_code_hash,
-    n_instructions,
-    n_functions,
-    n_globals,
-    n_table_entries,
-    n_types,
-    n_data_segments,
-    n_elem_segments,
-    n_imports,
-    n_exports,
-    n_data_segment_bytes,
-    contract_create_ts,
-    contract_delete_ts,
-    closed_at,
-    airflow_start_ts,
-    dw_load_ts
-FROM current_records
+select
+    ledger_key_hash
+    , contract_code_hash
+    , n_instructions
+    , n_functions
+    , n_globals
+    , n_table_entries
+    , n_types
+    , n_data_segments
+    , n_elem_segments
+    , n_imports
+    , n_exports
+    , n_data_segment_bytes
+    , contract_create_ts
+    , contract_delete_ts
+    , closed_at
+    , airflow_start_ts
+    , dw_load_ts
+from current_records

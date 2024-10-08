@@ -42,48 +42,50 @@ Run:
 {% set recovery_mode = var('recovery', false) %}
 
 -- Source Data: Load contract code data from the intermediate model
-WITH source_data AS (
-    SELECT
-        contract_code_hash,
-        ledger_key_hash,
-        n_instructions,
-        n_functions,
-        n_globals,
-        n_table_entries,
-        n_types,
-        n_data_segments,
-        n_elem_segments,
-        n_imports,
-        n_exports,
-        n_data_segment_bytes,
-        contract_create_ts,
-        contract_delete_ts,
-        closed_at,
-        DATE(closed_at) AS start_date,
-        airflow_start_ts,
-        batch_id,
-        SAFE_CAST(batch_run_date AS DATETIME) AS batch_run_date,
-        row_hash,
-        NULL AS end_date
-    FROM {{ ref('int_transform_contract_code') }}
-),
+with
+    source_data as (
+        select
+            contract_code_hash
+            , ledger_key_hash
+            , n_instructions
+            , n_functions
+            , n_globals
+            , n_table_entries
+            , n_types
+            , n_data_segments
+            , n_elem_segments
+            , n_imports
+            , n_exports
+            , n_data_segment_bytes
+            , contract_create_ts
+            , contract_delete_ts
+            , closed_at
+            , date(closed_at) as start_date
+            , airflow_start_ts
+            , batch_id
+            , safe_cast(batch_run_date as datetime) as batch_run_date
+            , row_hash
+            , null as end_date
+        from {{ ref('int_transform_contract_code') }}
+    )
 
--- Target Data: Select relevant target records based on the mode (First Run, Incremental, or Recovery)
-target_data AS (
-    {% if is_incremental() %}
-        {% if recovery_mode %}
+    -- Target Data: Select relevant target records based on the mode (First Run, Incremental, or Recovery)
+    , target_data as (
+        {% if is_incremental() %}
+            {% if recovery_mode %}
             -- In recovery mode, pull all relevant target records for complete date chaining
             SELECT *
             FROM {{ this }}
             WHERE ledger_key_hash IN (SELECT DISTINCT ledger_key_hash FROM source_data)
         {% else %}
             -- For regular incremental runs, only pull current records related to the source data
-            SELECT *
-            FROM {{ this }}
-            WHERE is_current = TRUE
-            AND ledger_key_hash IN (SELECT DISTINCT ledger_key_hash FROM source_data)
-        {% endif %}
-    {% else %}
+                select *
+                from {{ this }}
+                where
+                    is_current = true
+                    and ledger_key_hash in (select distinct ledger_key_hash from source_data)
+            {% endif %}
+        {% else %}
         -- Initial load when the target table doesn't exist: create a dummy shell with placeholder values
         SELECT
             CAST(NULL AS STRING) AS ledger_key_hash,
@@ -113,142 +115,142 @@ target_data AS (
         FROM source_data
         WHERE 1 = 0
     {% endif %}
-),
+    )
 
--- Combine source and target data for change tracking
-combined_data AS (
-    SELECT
-        s.*,
-        t.contract_code_hash AS target_contract_code_hash,
-        t.n_instructions AS target_n_instructions,
-        t.n_functions AS target_n_functions,
-        t.n_globals AS target_n_globals,
-        t.n_table_entries AS target_n_table_entries,
-        t.n_types AS target_n_types,
-        t.n_data_segments AS target_n_data_segments,
-        t.n_elem_segments AS target_n_elem_segments,
-        t.n_imports AS target_n_imports,
-        t.n_exports AS target_n_exports,
-        t.n_data_segment_bytes AS target_n_data_segment_bytes,
-        t.contract_create_ts AS target_contract_create_ts,
-        t.contract_delete_ts AS target_contract_delete_ts,
-        t.closed_at AS target_closed_at,
-        t.start_date AS target_start_date,
-        t.end_date AS target_end_date,
-        t.is_current AS target_is_current,
-        t.row_hash AS target_row_hash,
-        t.dw_insert_ts AS target_dw_insert_ts,
-        t.dw_update_ts AS target_dw_update_ts,
-        t.airflow_start_ts AS target_airflow_start_ts,
-        t.batch_id AS target_batch_id,
-        t.batch_run_date AS target_batch_run_date,
-        CASE
-            WHEN t.ledger_key_hash IS NULL THEN 'Insert'  -- New record
-            WHEN s.row_hash != t.row_hash THEN 'Update'  -- Changed record
-            ELSE 'NoChange'  -- No change in the current record
-        END AS change_type
-    FROM source_data s
-    LEFT JOIN target_data t ON s.ledger_key_hash = t.ledger_key_hash
-),
+    -- Combine source and target data for change tracking
+    , combined_data as (
+        select
+            s.*
+            , t.contract_code_hash as target_contract_code_hash
+            , t.n_instructions as target_n_instructions
+            , t.n_functions as target_n_functions
+            , t.n_globals as target_n_globals
+            , t.n_table_entries as target_n_table_entries
+            , t.n_types as target_n_types
+            , t.n_data_segments as target_n_data_segments
+            , t.n_elem_segments as target_n_elem_segments
+            , t.n_imports as target_n_imports
+            , t.n_exports as target_n_exports
+            , t.n_data_segment_bytes as target_n_data_segment_bytes
+            , t.contract_create_ts as target_contract_create_ts
+            , t.contract_delete_ts as target_contract_delete_ts
+            , t.closed_at as target_closed_at
+            , t.start_date as target_start_date
+            , t.end_date as target_end_date
+            , t.is_current as target_is_current
+            , t.row_hash as target_row_hash
+            , t.dw_insert_ts as target_dw_insert_ts
+            , t.dw_update_ts as target_dw_update_ts
+            , t.airflow_start_ts as target_airflow_start_ts
+            , t.batch_id as target_batch_id
+            , t.batch_run_date as target_batch_run_date
+            , case
+                when t.ledger_key_hash is null then 'Insert'  -- New record
+                when s.row_hash != t.row_hash then 'Update'  -- Changed record
+                else 'NoChange'  -- No change in the current record
+            end as change_type
+        from source_data as s
+        left join target_data as t on s.ledger_key_hash = t.ledger_key_hash
+    )
 
--- Date chaining to maintain historical records
-date_chained AS (
-    SELECT
-        *,
-        LEAD(start_date) OVER (PARTITION BY ledger_key_hash ORDER BY start_date) AS next_start_date
-    FROM combined_data
-),
+    -- Date chaining to maintain historical records
+    , date_chained as (
+        select
+            *
+            , lead(start_date) over (partition by ledger_key_hash order by start_date) as next_start_date
+        from combined_data
+    )
 
-final_data AS (
+    , final_data as (
     -- Gather new Inserts and Updates to existing ledgers
-    SELECT
-        ledger_key_hash,
-        contract_code_hash,
-        n_instructions,
-        n_functions,
-        n_globals,
-        n_table_entries,
-        n_types,
-        n_data_segments,
-        n_elem_segments,
-        n_imports,
-        n_exports,
-        n_data_segment_bytes,
-        contract_create_ts,
-        contract_delete_ts,
-        closed_at,
-        start_date,
-        COALESCE(DATE_SUB(next_start_date, INTERVAL 1 DAY), DATE('9999-12-31')) AS end_date,
-        CASE WHEN next_start_date IS NULL THEN TRUE ELSE FALSE END AS is_current,
-        batch_id,
-        batch_run_date,
-        row_hash,
-        airflow_start_ts,
-        CURRENT_TIMESTAMP() AS dw_insert_ts,
-        CURRENT_TIMESTAMP() AS dw_update_ts,
-        change_type
-    FROM date_chained
-    WHERE change_type IN ('Insert', 'Update')
+        select
+            ledger_key_hash
+            , contract_code_hash
+            , n_instructions
+            , n_functions
+            , n_globals
+            , n_table_entries
+            , n_types
+            , n_data_segments
+            , n_elem_segments
+            , n_imports
+            , n_exports
+            , n_data_segment_bytes
+            , contract_create_ts
+            , contract_delete_ts
+            , closed_at
+            , start_date
+            , coalesce(date_sub(next_start_date, interval 1 day), date('9999-12-31')) as end_date
+            , coalesce(next_start_date is null, false) as is_current
+            , batch_id
+            , batch_run_date
+            , row_hash
+            , airflow_start_ts
+            , current_timestamp() as dw_insert_ts
+            , current_timestamp() as dw_update_ts
+            , change_type
+        from date_chained
+        where change_type in ('Insert', 'Update')
 
-    {% if is_incremental() %}
-    UNION ALL
+        {% if is_incremental() %}
+            union all
 
-    -- Close out previous current records for updates (only during incremental runs)
-    SELECT
-        ledger_key_hash,
-        target_contract_code_hash AS contract_code_hash,
-        target_n_instructions AS n_instructions,
-        target_n_functions AS n_functions,
-        target_n_globals AS n_globals,
-        target_n_table_entries AS n_table_entries,
-        target_n_types AS n_types,
-        target_n_data_segments AS n_data_segments,
-        target_n_elem_segments AS n_elem_segments,
-        target_n_imports AS n_imports,
-        target_n_exports AS n_exports,
-        target_n_data_segment_bytes AS n_data_segment_bytes,
-        target_contract_create_ts AS contract_create_ts,
-        target_contract_delete_ts AS contract_delete_ts,
-        target_closed_at AS closed_at,
-        target_start_date AS start_date,
-        DATE_SUB(target_start_date, INTERVAL 1 DAY) AS end_date,
-        FALSE AS is_current,
-        target_batch_id AS batch_id,
-        target_batch_run_date AS batch_run_date,
-        target_row_hash AS row_hash,
-        target_airflow_start_ts AS airflow_start_ts,
-        target_dw_insert_ts AS dw_insert_ts,
-        CURRENT_TIMESTAMP() AS dw_update_ts,
-        'Prev Current' AS change_type
-    FROM combined_data
-    WHERE change_type = 'Update' AND target_is_current = TRUE
-    {% endif %}
-)
+            -- Close out previous current records for updates (only during incremental runs)
+            select
+                ledger_key_hash
+                , target_contract_code_hash as contract_code_hash
+                , target_n_instructions as n_instructions
+                , target_n_functions as n_functions
+                , target_n_globals as n_globals
+                , target_n_table_entries as n_table_entries
+                , target_n_types as n_types
+                , target_n_data_segments as n_data_segments
+                , target_n_elem_segments as n_elem_segments
+                , target_n_imports as n_imports
+                , target_n_exports as n_exports
+                , target_n_data_segment_bytes as n_data_segment_bytes
+                , target_contract_create_ts as contract_create_ts
+                , target_contract_delete_ts as contract_delete_ts
+                , target_closed_at as closed_at
+                , target_start_date as start_date
+                , date_sub(target_start_date, interval 1 day) as end_date
+                , false as is_current
+                , s.airflow_start_ts
+                , s.batch_id
+                , s.batch_run_date
+                , target_row_hash as row_hash
+                , target_dw_insert_ts as dw_insert_ts
+                , current_timestamp() as dw_update_ts
+                , 'Prev Current' as change_type
+            from combined_data
+            where change_type = 'Update' and target_is_current = true
+        {% endif %}
+    )
 
 -- Select only the required columns in the final table
-SELECT
-    ledger_key_hash,
-    contract_code_hash,
-    closed_at,
-    start_date,
-    end_date,
-    is_current,
-    n_instructions,
-    n_functions,
-    n_globals,
-    n_table_entries,
-    n_types,
-    n_data_segments,
-    n_elem_segments,
-    n_imports,
-    n_exports,
-    n_data_segment_bytes,
-    contract_create_ts,
-    contract_delete_ts,
-    batch_id,
-    batch_run_date,
-    row_hash,
-    airflow_start_ts,
-    dw_insert_ts,
-    dw_update_ts
-FROM final_data
+select
+    ledger_key_hash
+    , contract_code_hash
+    , closed_at
+    , start_date
+    , end_date
+    , is_current
+    , n_instructions
+    , n_functions
+    , n_globals
+    , n_table_entries
+    , n_types
+    , n_data_segments
+    , n_elem_segments
+    , n_imports
+    , n_exports
+    , n_data_segment_bytes
+    , contract_create_ts
+    , contract_delete_ts
+    , batch_id
+    , batch_run_date
+    , row_hash
+    , airflow_start_ts
+    , dw_insert_ts
+    , dw_update_ts
+from final_data

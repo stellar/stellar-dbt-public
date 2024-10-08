@@ -6,11 +6,11 @@
 ) }}
 
 /*
-Model: int_incr_contract_code
+Model: int_incr_ttl
 
 Description:
 ------------
-This intermediate model handles the incremental loading of contract code from the staging layer.
+This intermediate model handles the incremental loading of ledger time to live data from the staging layer.
 It supports various loading scenarios including initial load, incremental updates, and data recovery.
 
 Load Type: Truncate and Reload.
@@ -19,9 +19,9 @@ Features:
 ---------
 1. Uses variables passed from Airflow to guide execution, including `execution_date`, `is_initial_load`, and `max_processed_date`.
 2. Applies filtering logic based on recovery mode (single day, date range, or full recovery), initial load, or incremental load.
-3. Selects the most recent record for each `ledger_key_hash` per day.
+3. Selects the most recent record for each `key_hash` per day.
 4. Processes the complete data up to the day before the `execution_date`.
-5. Generates a unique identifier for each record using `ledger_key_hash` and `closed_at`.
+5. Generates a unique identifier for each record using `key_hash` and `closed_at`.
 6. Supports multiple loading scenarios:
     - Initial Load
     - Daily Incremental Load
@@ -33,19 +33,19 @@ Features:
 Usage:
 ------
 Compile :
-    dbt compile --models int_incr_contract_code
-    dbt compile --models int_incr_contract_code --vars '{"is_initial_load": true}'
+    dbt compile --models int_incr_ttl
+    dbt compile --models int_incr_ttl --vars '{"is_initial_load": true}'
 
 Run:
-    dbt run --models int_incr_contract_code --full-refresh
-    dbt run --models int_incr_contract_code
-    dbt run --models int_incr_contract_code --vars '{"is_initial_load": true}'
-    dbt run --models int_incr_contract_code --vars '{"execution_date": "2024-10-03T00:00:00+00:00"}'
-    dbt run --models int_incr_contract_code --vars '{"max_processed_date": "2024-10-01T00:00:00"}'
-    dbt run --models int_incr_contract_code --vars '{"recovery": true, "recovery_type": "SingleDay", "recovery_date": "2024-09-20"}'
-    dbt run --models int_incr_contract_code --vars '{"recovery": true, "recovery_type": "Range",
+    dbt run --models int_incr_ttl --full-refresh
+    dbt run --models int_incr_ttl
+    dbt run --models int_incr_ttl --vars '{"is_initial_load": true}'
+    dbt run --models int_incr_ttl --vars '{"execution_date": "2024-10-03T00:00:00+00:00"}'
+    dbt run --models int_incr_ttl --vars '{"max_processed_date": "2024-10-01T00:00:00"}'
+    dbt run --models int_incr_ttl --vars '{"recovery": true, "recovery_type": "SingleDay", "recovery_date": "2024-09-20"}'
+    dbt run --models int_incr_ttl --vars '{"recovery": true, "recovery_type": "Range",
 "recovery_start_day": "2024-09-15", "recovery_end_day": "2024-09-25"}'
-    dbt run --models int_incr_contract_code --vars '{"recovery": true, "recovery_type": "Full"}'
+    dbt run --models int_incr_ttl --vars '{"recovery": true, "recovery_type": "Full"}'
 */
 
 -- Set the execution date from Airflow variable if provided; otherwise, use the current timestamp from dbt
@@ -81,73 +81,53 @@ Run:
 
 -- Apply recovery flow filters and incremental logic to select the required data from the source table
 with
-    contract_code as (
+    ttl as (
         select
-            cc.contract_code_hash
-            , cc.ledger_key_hash
-            , cc.last_modified_ledger
-            , cc.ledger_entry_change
-            , cc.ledger_sequence
-            , cc.deleted
-            , cc.closed_at
-            , cc.n_instructions
-            , cc.n_functions
-            , cc.n_globals
-            , cc.n_table_entries
-            , cc.n_types
-            , cc.n_data_segments
-            , cc.n_elem_segments
-            , cc.n_imports
-            , cc.n_exports
-            , cc.n_data_segment_bytes
-            , cc.batch_insert_ts
+            ttl.key_hash
+            , ttl.live_until_ledger_seq
+            , ttl.last_modified_ledger
+            , ttl.ledger_entry_change
+            , ttl.ledger_sequence
+            , ttl.deleted
+            , ttl.closed_at
+            , ttl.batch_insert_ts
             -- Set the start timestamp passed from Airflow as `airflow_start_ts`
             , cast('{{ var("airflow_start_timestamp") }}' as timestamp) as airflow_start_ts
-            , cc.batch_id
-            , cc.batch_run_date
-            -- Use `row_number()` to select the most recent record for each `ledger_key_hash` per day
+            , ttl.batch_id
+            , ttl.batch_run_date
+            -- Use `row_number()` to select the most recent record for each `key_hash` per day
             , row_number() over (
-                partition by cc.ledger_key_hash, cast(cc.closed_at as date)
-                order by cc.closed_at desc, cc.ledger_sequence desc
+                partition by ttl.key_hash, cast(ttl.closed_at as date)
+                order by ttl.closed_at desc, ttl.ledger_sequence desc
             ) as row_num
-        from {{ source('crypto_stellar', 'contract_code') }} as cc
-        --from {{ ref('stg_contract_code') }} as cc
+        from {{ source('crypto_stellar', 'ttl') }} as ttl
+        --from {{ ref('stg_ttl') }} as ttl
         where
         -- Apply recovery filters based on recovery variables passed from Airflow
-        {{ apply_recovery_filters('cc', 'closed_at', execution_date) }}
+        {{ apply_recovery_filters('ttl', 'closed_at', execution_date) }}
 
         -- If not in recovery mode, apply initial load or incremental load logic
             {% if not var('recovery', false) %}
                 {% if is_initial_load %}
                 -- Initial load: If the table is empty, process all historical data until the day before `execution_date`
-                or cc.closed_at < timestamp_trunc('{{ execution_date }}', day)
+                or ttl.closed_at < timestamp_trunc('{{ execution_date }}', day)
             {% else %}
                     -- Incremental load: Process new data since the last `max_processed_date` until the day before `execution_date`
                     or (
-                        cc.closed_at > cast('{{ max_processed_date }}' as timestamp)
-                        and cc.closed_at < timestamp_trunc('{{ execution_date }}', day)
+                        ttl.closed_at > cast('{{ max_processed_date }}' as timestamp)
+                        and ttl.closed_at < timestamp_trunc('{{ execution_date }}', day)
                     )
                 {% endif %}
             {% endif %}
     )
 
--- Select only the most recent record for each `ledger_key_hash` per day
+-- Select only the most recent record for each `key_hash` per day
 select
-    contract_code_hash
-    , ledger_key_hash
+    key_hash
+    , live_until_ledger_seq
     , last_modified_ledger
     , ledger_entry_change
     , ledger_sequence
-    , n_instructions
-    , n_functions
-    , n_globals
-    , n_table_entries
-    , n_types
-    , n_data_segments
-    , n_elem_segments
-    , n_imports
-    , n_exports
-    , n_data_segment_bytes
     , deleted
     , closed_at
     , batch_insert_ts
@@ -155,5 +135,5 @@ select
     , batch_id
     , batch_run_date
     , current_timestamp() as dw_load_ts
-from contract_code
+from ttl
 where row_num = 1
