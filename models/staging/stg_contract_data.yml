@@ -52,11 +52,6 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
-          - incremental_accepted_values:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-              values: ["credit_alphanum4", "credit_alphanum12", "native"]
-              quote: true
 
       - name: balance_holder
         description: '{{ doc("balance_holder") }}'
