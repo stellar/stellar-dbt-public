@@ -87,7 +87,7 @@ profiles_dir = ./
 profile = stellar_dbt_public
 
 [sqlfluff:templater:jinja]
-load_macros_from_path = macros/percentile_iteration.sql,dbt_packages/dbt_utils/macros/
+load_macros_from_path = macros/percentile_iteration.sql,dbt_packages/dbt_utils/macros/,tests/generic/incremental_accepted_values.sql
 
 # Some rules can be configured directly from the config common to other rules
 [sqlfluff:rules]
