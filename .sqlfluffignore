@@ -1,7 +1,5 @@
-tests/
 macros/
 snapshots/
 env/
 dbt_packages/
 target/
-
