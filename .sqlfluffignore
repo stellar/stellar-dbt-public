@@ -4,4 +4,3 @@ snapshots/
 env/
 dbt_packages/
 target/
-incremental_accepted_values.sql

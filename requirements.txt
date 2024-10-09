@@ -3,5 +3,5 @@ elementary-data[bigquery]==0.15.1
 MarkupSafe==2.0.1
 pre-commit==3.5.0
 pytz==2022.7.1
-sqlfluff==3.1.0
-sqlfluff-templater-dbt==3.1.0
+sqlfluff==3.0.7
+sqlfluff-templater-dbt==3.0.7
