@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: stg_history_assets
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: cast(closed_at as timestamp)
+          interval: '{{ 1 if target.name == "prod" else 6 }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - incremental_unique_combination_of_columns:
+          date_column_name: "closed_at"
+          greater_than_equal_to: "2 day"
+          combination_of_columns:
+            - asset_type
+            - asset_code
+            - asset_issuer
+          meta:
+            description: "Tests the uniqueness combination of: asset_type, asset_code, and asset_issuer."
+    columns:
+      - name: asset_id
+        description: '{{ doc("asset_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+          - incremental_accepted_values:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+              values: ["credit_alphanum4", "credit_alphanum12", "native"]
+              quote: true
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"

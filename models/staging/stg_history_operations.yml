@@ -1,0 +1,447 @@
+version: 2
+
+models:
+  - name: stg_history_operations
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: cast(closed_at as timestamp)
+          interval: '{{ 1 if target.name == "prod" else 6 }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+    columns:
+      - name: op_id
+        description: '{{ doc("operation_id") }}'
+        tests:
+          - incremental_unique:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: op_source_account
+        description: '{{ doc("source_account") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: op_source_account_muxed
+        description: '{{ doc("source_account_muxed") }}'
+
+      - name: transaction_id
+        description: '{{ doc("op_transaction_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: type
+        description: '{{ doc("type") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: type_string
+        description: '{{ doc("type_string") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: details
+        description: '{{ doc("details") }}'
+
+      - name: details.account
+        description: '{{ doc("details_account") }}'
+
+      - name: details.account_muxed
+        description: '{{ doc("details_account_muxed") }}'
+
+      - name: details.account_muxed_id
+        description: '{{ doc("details_account_muxed_id") }}'
+
+      - name: details.account_id
+        description: '{{ doc("details_account_id") }}'
+
+      - name: details.amount
+        description: '{{ doc("details_amount") }}'
+
+      - name: details.asset
+        description: '{{ doc("details_asset") }}'
+
+      - name: details.asset_id
+        description: '{{ doc("details_asset_id") }}'
+
+      - name: details.buying_asset_id
+        description: '{{ doc("details_buying_asset_id") }}'
+
+      - name: details.selling_asset_id
+        description: '{{ doc("details_selling_asset_id") }}'
+
+      - name: details.source_asset_id
+        description: '{{ doc("details_source_asset_id") }}'
+
+      - name: details.reserve_a_asset_id
+        description: '{{ doc("details_reserve_a_asset_id") }}'
+
+      - name: details.reserve_b_asset_id
+        description: '{{ doc("details_reserve_b_asset_id") }}'
+
+      - name: details.ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+
+      - name: details.ledgers_to_expire
+        description: '{{ doc("details_ledgers_to_expire") }}'
+
+      - name: details.asset_code
+        description: '{{ doc("details_asset_code") }}'
+
+      - name: details.asset_issuer
+        description: '{{ doc("details_asset_issuer") }}'
+
+      - name: details.asset_type
+        description: '{{ doc("details_asset_type") }}'
+
+      - name: details.authorize
+        description: '{{ doc("details_authorize") }}'
+
+      - name: details.balance_id
+        description: '{{ doc("details_balance_id") }}'
+
+      - name: details.buying_asset_code
+        description: '{{ doc("details_buying_asset_code") }}'
+
+      - name: details.buying_asset_issuer
+        description: '{{ doc("details_buying_asset_issuer") }}'
+
+      - name: details.buying_asset_type
+        description: '{{ doc("details_buying_asset_type") }}'
+
+      - name: details.claimable_balance_id
+        description: '{{ doc("details_claimable_balance_id") }}'
+
+      - name: details.claimant
+        description: '{{ doc("details_claimant") }}'
+
+      - name: details.claimant_muxed
+        description: '{{ doc("details_claimant_muxed") }}'
+
+      - name: details.claimant_muxed_id
+        description: '{{ doc("details_claimant_muxed_id") }}'
+
+      - name: details.claimants
+        description: '{{ doc("details_claimants") }}'
+
+      - name: details.data_account_id
+        description: '{{ doc("details_data_account_id") }}'
+
+      - name: details.data_name
+        description: '{{ doc("details_data_name") }}'
+
+      - name: details.from
+        description: '{{ doc("details_from") }}'
+
+      - name: details.from_muxed
+        description: '{{ doc("details_from_muxed") }}'
+
+      - name: details.from_muxed_id
+        description: '{{ doc("details_from_muxed_id") }}'
+
+      - name: details.funder
+        description: '{{ doc("details_funder") }}'
+
+      - name: details.funder_muxed
+        description: '{{ doc("details_funder_muxed") }}'
+
+      - name: details.funder_muxed_id
+        description: '{{ doc("details_funder_muxed_id") }}'
+
+      - name: details.high_threshold
+        description: '{{ doc("details_high_threshold") }}'
+
+      - name: details.home_domain
+        description: '{{ doc("details_home_domain") }}'
+
+      - name: details.inflation_dest
+        description: '{{ doc("details_inflation_dest") }}'
+
+      - name: details.into
+        description: '{{ doc("details_into") }}'
+
+      - name: details.into_muxed
+        description: '{{ doc("details_into_muxed") }}'
+
+      - name: details.into_muxed_id
+        description: '{{ doc("details_into_muxed_id") }}'
+
+      - name: details.limit
+        description: '{{ doc("details_limit") }}'
+
+      - name: details.low_threshold
+        description: '{{ doc("details_low_threshold") }}'
+
+      - name: details.master_key_weight
+        description: '{{ doc("details_master_key_weight") }}'
+
+      - name: details.med_threshold
+        description: '{{ doc("details_med_threshold") }}'
+
+      - name: details.name
+        description: '{{ doc("details_name") }}'
+
+      - name: details.offer_id
+        description: '{{ doc("details_offer_id") }}'
+
+      - name: details.path
+        description: '{{ doc("details_path") }}'
+
+      - name: details.price
+        description: '{{ doc("details_price") }}'
+
+      - name: details.price_r
+        description: '{{ doc("details_price_r") }}'
+
+      - name: details.selling_asset_code
+        description: '{{ doc("details_selling_asset_code") }}'
+
+      - name: details.selling_asset_issuer
+        description: '{{ doc("details_selling_asset_issuer") }}'
+
+      - name: details.selling_asset_type
+        description: '{{ doc("details_selling_asset_type") }}'
+
+      - name: details.set_flags
+        description: '{{ doc("details_set_flags") }}'
+
+      - name: details.set_flags_s
+        description: '{{ doc("details_set_flags_s") }}'
+
+      - name: details.signer_account_id
+        description: '{{ doc("details_signer_account_id") }}'
+
+      - name: details.signer_key
+        description: '{{ doc("details_signer_key") }}'
+
+      - name: details.signer_weight
+        description: '{{ doc("details_signer_weight") }}'
+
+      - name: details.source_amount
+        description: '{{ doc("details_source_amount") }}'
+
+      - name: details.source_asset_code
+        description: '{{ doc("details_source_asset_code") }}'
+
+      - name: details.source_asset_issuer
+        description: '{{ doc("details_source_asset_issuer") }}'
+
+      - name: details.source_asset_type
+        description: '{{ doc("details_source_asset_type") }}'
+
+      - name: details.source_max
+        description: '{{ doc("details_source_max") }}'
+
+      - name: details.starting_balance
+        description: '{{ doc("details_starting_balance") }}'
+
+      - name: details.to
+        description: '{{ doc("details_to") }}'
+
+      - name: details.to_muxed
+        description: '{{ doc("details_to_muxed") }}'
+
+      - name: details.to_muxed_id
+        description: '{{ doc("details_to_muxed_id") }}'
+
+      - name: details.trustee
+        description: '{{ doc("details_trustee") }}'
+
+      - name: details.trustee_muxed
+        description: '{{ doc("details_trustee_muxed") }}'
+
+      - name: details.trustee_muxed_id
+        description: '{{ doc("details_trustee_muxed_id") }}'
+
+      - name: details.trustline_account_id
+        description: '{{ doc("details_trustline_account_id") }}'
+
+      - name: details.trustline_asset
+        description: '{{ doc("details_trustline_asset") }}'
+
+      - name: details.trustor
+        description: '{{ doc("details_trustor") }}'
+
+      - name: details.trustor_muxed
+        description: '{{ doc("details_trustor_muxed") }}'
+
+      - name: details.trustor_muxed_id
+        description: '{{ doc("details_trustor_muxed_id") }}'
+
+      - name: details.value
+        description: '{{ doc("details_value") }}'
+
+      - name: details.clear_flags
+        description: '{{ doc("details_clear_flags") }}'
+
+      - name: details.clear_flags_s
+        description: '{{ doc("details_clear_flags_s") }}'
+
+      - name: details.destination_min
+        description: '{{ doc("details_destination_min") }}'
+
+      - name: details.bump_to
+        description: '{{ doc("details_bump_to") }}'
+
+      - name: details.authorize_to_maintain_liabilities
+        description: '{{ doc("details_authorize_to_maintain_liabilities") }}'
+
+      - name: details.clawback_enabled
+        description: '{{ doc("details_clawback_enabled") }}'
+
+      - name: details.sponsor
+        description: '{{ doc("details_sponsor") }}'
+
+      - name: details.sponsored_id
+        description: '{{ doc("details_sponsored_id") }}'
+
+      - name: details.begin_sponsor
+        description: '{{ doc("details_begin_sponsor") }}'
+
+      - name: details.begin_sponsor_muxed
+        description: '{{ doc("details_begin_sponsor_muxed") }}'
+
+      - name: details.begin_sponsor_muxed_id
+        description: '{{ doc("details_begin_sponsor_muxed_id") }}'
+
+      - name: details.liquidity_pool_id
+        description: '{{ doc("details_liquidity_pool_id") }}'
+
+      - name: details.reserve_a_asset_type
+        description: '{{ doc("details_reserve_a_asset_type") }}'
+
+      - name: details.reserve_a_asset_code
+        description: '{{ doc("details_reserve_a_asset_code") }}'
+
+      - name: details.reserve_a_asset_issuer
+        description: '{{ doc("details_reserve_a_asset_issuer") }}'
+
+      - name: details.reserve_a_max_amount
+        description: '{{ doc("details_reserve_a_max_amount") }}'
+
+      - name: details.reserve_a_deposit_amount
+        description: '{{ doc("details_reserve_a_deposit_amount") }}'
+
+      - name: details.reserve_b_asset_type
+        description: '{{ doc("details_reserve_b_asset_type") }}'
+
+      - name: details.reserve_b_asset_code
+        description: '{{ doc("details_reserve_b_asset_code") }}'
+
+      - name: details.reserve_b_asset_issuer
+        description: '{{ doc("details_reserve_b_asset_issuer") }}'
+
+      - name: details.reserve_b_max_amount
+        description: '{{ doc("details_reserve_b_max_amount") }}'
+
+      - name: details.reserve_b_deposit_amount
+        description: '{{ doc("details_reserve_b_deposit_amount") }}'
+
+      - name: details.min_price
+        description: '{{ doc("details_min_price") }}'
+
+      - name: details.min_price_r
+        description: '{{ doc("details_min_price_r") }}'
+
+      - name: details.max_price
+        description: '{{ doc("details_max_price") }}'
+
+      - name: details.max_price_r
+        description: '{{ doc("details_max_price_r") }}'
+
+      - name: details.shares_received
+        description: '{{ doc("details_shares_received") }}'
+
+      - name: details.reserve_a_min_amount
+        description: '{{ doc("details_reserve_a_min_amount") }}'
+
+      - name: details.reserve_a_withdraw_amount
+        description: '{{ doc("details_reserve_a_withdraw_amount") }}'
+
+      - name: details.reserve_b_min_amount
+        description: '{{ doc("details_reserve_b_min_amount") }}'
+
+      - name: details.reserve_b_withdraw_amount
+        description: '{{ doc("details_reserve_b_withdraw_amount") }}'
+
+      - name: details.shares
+        description: '{{ doc("details_shares") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: details.asset_balance_changes
+        description: '{{ doc("details_asset_balance_changes") }}'
+
+      - name: details.parameters
+        description: '{{ doc("details_parameters") }}'
+
+      - name: details.function
+        description: '{{ doc("details_function") }}'
+
+      - name: details.address
+        description: '{{ doc("from_address") }}'
+
+      - name: details.type
+        description: '{{ doc("details_type") }}'
+
+      - name: details.extend_to
+        description: '{{ doc("details_extend_to") }}'
+
+      - name: details.contract_id
+        description: '{{ doc("contract_id") }}'
+
+      - name: details.contract_code_hash
+        description: '{{ doc("contract_code_hash") }}'
+
+      - name: details.operation_result_code
+        description: '{{ doc("operation_result_code") }}'
+
+      - name: details.operation_trace_code
+        description: '{{ doc("operation_trace_code") }}'
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: details_json
+        description: '{{ doc("details") }}'
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"

@@ -1,0 +1,151 @@
+version: 2
+
+models:
+  - name: stg_contract_code
+    tests:
+      - incremental_unique_combination_of_columns:
+          date_column_name: "closed_at"
+          greater_than_equal_to: "2 day"
+          combination_of_columns:
+            - contract_code_hash
+            - last_modified_ledger
+            - ledger_entry_change
+          meta:
+            description: "Tests the uniqueness combination of: contract_code_hash, last_modified_ledger, and ledger_entry_change."
+    columns:
+      - name: contract_code_hash
+        description: '{{ doc("contract_code_hash") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: contract_code_ext_v
+        description: '{{ doc("contract_code_ext_v") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_data_segment_bytes
+        description: '{{ doc("n_data_segment_bytes") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_data_segments
+        description: '{{ doc("n_data_segments") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_elem_segments
+        description: '{{ doc("n_elem_segments") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_exports
+        description: '{{ doc("n_exports") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_functions
+        description: '{{ doc("n_functions") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_globals
+        description: '{{ doc("n_globals") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_imports
+        description: '{{ doc("n_imports") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_instructions
+        description: '{{ doc("n_instructions") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_table_entries
+        description: '{{ doc("n_table_entries") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: n_types
+        description: '{{ doc("n_types") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+          - incremental_accepted_values:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+              values: [0, 1, 2]
+
+      - name: deleted
+        description: '{{ doc("deleted") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
