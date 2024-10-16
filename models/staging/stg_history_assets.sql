@@ -10,7 +10,7 @@ with
         select
             *
             , row_number() over (
-                partition by asset_id order by batch_run_date asc
+                partition by asset_id order by batch_run_date desc
             ) as dedup_oldest_asset
         from {{ source('crypto_stellar', 'history_assets_staging') }}
     )
