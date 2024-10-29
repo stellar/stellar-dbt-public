@@ -23,6 +23,10 @@ models:
           greater_than_equal_to: "2 day"
           meta:
             description: "Tests the uniqueness combination of: liquidity_pool_id, ledger_entry_change and last_modified_ledger."
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
     columns:
       - name: liquidity_pool_id
         description: '{{ doc("liquidity_pool_id") }}'

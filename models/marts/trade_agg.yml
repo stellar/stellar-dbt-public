@@ -21,6 +21,10 @@ models:
             - asset_b
           date_column_name: "day_agg"
           greater_than_equal_to: "2 day"
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
     columns:
       - name: day_agg
         description: '{{ doc("trade_day_agg") }}'

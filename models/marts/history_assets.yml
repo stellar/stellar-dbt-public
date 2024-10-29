@@ -21,6 +21,10 @@ models:
             - asset_issuer
           date_column_name: "batch_run_date"
           greater_than_equal_to: "2 day"
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
     columns:
       - name: asset_id
         description: '{{ doc("assets_id") }}'
