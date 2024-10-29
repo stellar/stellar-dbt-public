@@ -3,6 +3,11 @@ version: 2
 models:
   - name: config_settings_current
     description: '{{ doc("config_settings_current") }}'
+    tests:
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
     columns:
       - name: config_setting_id
         description: '{{ doc("config_setting_id") }}'

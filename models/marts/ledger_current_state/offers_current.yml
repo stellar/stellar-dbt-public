@@ -23,6 +23,10 @@ models:
           greater_than_equal_to: "2 day"
           meta:
             description: "Tests the uniqueness combination of: offer_id, ledger_entry_change and last_modified_ledger."
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
     columns:
       - name: seller_id
         description: '{{ doc("seller_id") }}'
