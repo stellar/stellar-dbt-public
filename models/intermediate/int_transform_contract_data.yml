@@ -2,19 +2,25 @@ version: 2
 
 models:
   - name: int_transform_contract_data
-    description: "This intermediate model applies transformations to the contract data, calculates new fields like contract_create_ts and contract_delete_ts, and performs deduplication based on row hash."
+    description: |
+      This intermediate model combines incremental loading and transformations for contract data.
+      It processes new or updated data, calculates new fields like `contract_create_ts` and `contract_delete_ts`,
+      and performs deduplication based on row hash.
+
     meta:
-      owner: "Data team"
+      owner: "Data Team"
       update_schedule: "daily"
       description: "Transformed and deduplicated contract data with derived timestamps"
       upstream_dependencies: ["int_incr_contract_data"]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - ledger_key_hash
             - closed_at
           meta:
-            description: "Tests the uniqueness combination of contract data tracking fields"
+            description: "Tests the uniqueness combination of contract tracking fields"
+
     columns:
       - name: contract_id
         description: '{{ doc("contract_id") }}'
@@ -26,24 +32,28 @@ models:
         tests:
           - not_null
 
+      - name: contract_key_type
+        description: '{{ doc("contract_key_type") }}'
+
       - name: contract_durability
         description: '{{ doc("contract_durability") }}'
+        tests:
+          - not_null
+
+      - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - not_null
+
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - not_null
+          - incremental_accepted_values:
+              values: [0, 1, 2]
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
-        tests:
-          - not_null
-
-      - name: contract_create_ts
-        description: "Timestamp when the contract was created"
-        tests:
-          - not_null
-
-      - name: contract_delete_ts
-        description: "Timestamp when the contract was deleted (if applicable)"
-
-      - name: closed_at
-        description: '{{ doc("closed_at") }}'
         tests:
           - not_null
 
@@ -56,11 +66,19 @@ models:
       - name: asset_type
         description: '{{ doc("asset_type") }}'
 
+      - name: balance_holder
+        description: '{{ doc("balance_holder") }}'
+
       - name: balance
         description: '{{ doc("balance") }}'
 
-      - name: balance_holder
-        description: '{{ doc("balance_holder") }}'
+      - name: deleted
+        description: '{{ doc("deleted") }}'
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
@@ -78,9 +96,17 @@ models:
           - not_null
 
       - name: dw_load_ts
-        description: "The timestamp for when the data was loaded into the data warehouse."
+        description: "Timestamp when the record was loaded."
         tests:
           - not_null
+
+      - name: contract_create_ts
+        description: "Timestamp when the contract was created (ledger_entry_change = 0)"
+        tests:
+          - not_null
+
+      - name: contract_delete_ts
+        description: "Timestamp when the contract was deleted (ledger_entry_change = 2 and deleted = true)"
 
       - name: row_hash
         description: "SHA256 hash of the row data for deduplication"

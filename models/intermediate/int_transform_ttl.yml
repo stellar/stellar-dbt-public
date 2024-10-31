@@ -2,12 +2,15 @@ version: 2
 
 models:
   - name: int_transform_ttl
-    description: "This intermediate model applies transformations to TTL data, calculates new fields like ttl_create_ts and ttl_delete_ts, and performs deduplication based on the transformed data."
+    description: |
+      This intermediate model combines incremental loading and transformations for ledger TTL data, calculates new fields,
+        and performs deduplication based on the transformed data.
     meta:
       owner: "Data Team"
       update_schedule: "daily"
       description: "Transformed and deduplicated TTL data with derived timestamps"
-      upstream_dependencies: ["int_incr_ttl"]
+      upstream_dependencies: ["stg_ttl"]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -15,14 +18,12 @@ models:
             - closed_at
           meta:
             description: "Tests the uniqueness combination of TTL tracking fields"
+
     columns:
       - name: key_hash
         description: '{{ doc("key_hash") }}'
         tests:
           - not_null
-          - relationships:
-              to: ref('int_incr_ttl')
-              field: key_hash
 
       - name: live_until_ledger_seq
         description: '{{ doc("live_until_ledger_seq") }}'

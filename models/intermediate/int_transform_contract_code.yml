@@ -2,48 +2,55 @@ version: 2
 
 models:
   - name: int_transform_contract_code
-    description: "This intermediate model applies transformations to the contract code, calculates new fields like contract_create_ts and contract_delete_ts, and performs deduplication based on row hash."
+    description: |
+      This intermediate model combines incremental loading and transformations for contract code data.
+      It processes new or updated data, calculates new fields like `contract_create_ts` and `contract_delete_ts`,
+      and performs deduplication based on row hash.
+
     meta:
-      owner: "Data team"
+      owner: "Data Team"
       update_schedule: "daily"
       description: "Transformed and deduplicated contract code data with derived timestamps"
       upstream_dependencies: ["int_incr_contract_code"]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - ledger_key_hash
             - closed_at
           meta:
-            description: "Tests the uniqueness combination of contract code tracking fields"
+            description: "Tests the uniqueness combination of contract tracking fields"
+
     columns:
       - name: contract_code_hash
         description: '{{ doc("contract_code_hash") }}'
         tests:
           - not_null
-          - relationships:
-              to: ref('int_incr_contract_code')
-              field: contract_code_hash
 
       - name: ledger_key_hash
         description: '{{ doc("ledger_key_hash") }}'
         tests:
           - not_null
-          - relationships:
-              to: ref('int_incr_contract_code')
-              field: ledger_key_hash
+
+      - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - not_null
+
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - not_null
+          - incremental_accepted_values:
+              values: [0, 1, 2]
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
         tests:
           - not_null
 
-      - name: contract_create_ts
-        description: "Timestamp when the contract was created (ledger_entry_change = 0)"
-        tests:
-          - not_null
-
-      - name: contract_delete_ts
-        description: "Timestamp when the contract was deleted (ledger_entry_change = 2 and deleted = true)"
+      - name: deleted
+        description: '{{ doc("deleted") }}'
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
@@ -80,10 +87,13 @@ models:
       - name: n_data_segment_bytes
         description: '{{ doc("n_data_segment_bytes") }}'
 
-      - name: row_hash
-        description: "SHA256 hash of the row data for deduplication"
+      - name: contract_create_ts
+        description: "Timestamp when the contract was created (ledger_entry_change = 0)"
         tests:
           - not_null
+
+      - name: contract_delete_ts
+        description: "Timestamp when the contract was deleted (ledger_entry_change = 2 and deleted = true)"
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
@@ -101,6 +111,11 @@ models:
           - not_null
 
       - name: dw_load_ts
-        description: "The timestamp for when the data was loaded into the data warehouse."
+        description: "Timestamp when the record was loaded."
+        tests:
+          - not_null
+
+      - name: row_hash
+        description: "SHA256 hash of the row data for deduplication"
         tests:
           - not_null
