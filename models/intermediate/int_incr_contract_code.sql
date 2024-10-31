@@ -3,7 +3,7 @@
         materialized = 'incremental',
         unique_key = ['ledger_key_hash', 'closed_at'],
         cluster_by = ["ledger_key_hash", "closed_at"],
-        tags = ["soroban_analytics"]
+        tags = ["soroban_analytics", "intermediate", "daily"]
     )
 }}
 /*

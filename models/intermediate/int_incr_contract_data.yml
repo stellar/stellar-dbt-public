@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: int_incr_contract_data
+    description: "This intermediate model handles the incremental loading of contract data from the staging layer."
+    meta:
+      owner: "Data Team"
+      update_schedule: "daily"
+      description: "Incremental model for contract data with daily updates"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ledger_key_hash
+            - closed_at
+          meta:
+            description: "Tests the uniqueness combination of contract data tracking fields"
+
+    columns:
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+        tests:
+          - not_null
+
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - not_null
+
+      - name: contract_key_type
+        description: '{{ doc("contract_key_type") }}'
+        tests:
+          - not_null
+
+      - name: contract_durability
+        description: '{{ doc("contract_durability") }}'
+        tests:
+          - not_null
+
+      - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - not_null
+
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - not_null
+          - incremental_accepted_values:
+              values: [0, 1, 2]
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - not_null
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+
+      - name: balance_holder
+        description: '{{ doc("balance_holder") }}'
+
+      - name: balance
+        description: '{{ doc("balance") }}'
+
+      - name: deleted
+        description: '{{ doc("deleted") }}'
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: airflow_start_ts
+        description: "The timestamp indicating the start of the Airflow task."
+        tests:
+          - not_null
+
+      - name: dw_load_ts
+        description: "Timestamp when the record was loaded."
+        tests:
+          - not_null

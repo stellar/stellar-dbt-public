@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: int_transform_contract_data
+    description: "This intermediate model applies transformations to the contract data, calculates new fields like contract_create_ts and contract_delete_ts, and performs deduplication based on row hash."
+    meta:
+      owner: "Data team"
+      update_schedule: "daily"
+      description: "Transformed and deduplicated contract data with derived timestamps"
+      upstream_dependencies: ["int_incr_contract_data"]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ledger_key_hash
+            - closed_at
+          meta:
+            description: "Tests the uniqueness combination of contract data tracking fields"
+    columns:
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - not_null
+
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+        tests:
+          - not_null
+
+      - name: contract_durability
+        description: '{{ doc("contract_durability") }}'
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - not_null
+
+      - name: contract_create_ts
+        description: "Timestamp when the contract was created"
+        tests:
+          - not_null
+
+      - name: contract_delete_ts
+        description: "Timestamp when the contract was deleted (if applicable)"
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+
+      - name: balance
+        description: '{{ doc("balance") }}'
+
+      - name: balance_holder
+        description: '{{ doc("balance_holder") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: airflow_start_ts
+        description: "The timestamp indicating the start of the Airflow task."
+        tests:
+          - not_null
+
+      - name: dw_load_ts
+        description: "The timestamp for when the data was loaded into the data warehouse."
+        tests:
+          - not_null
+
+      - name: row_hash
+        description: "SHA256 hash of the row data for deduplication"
+        tests:
+          - not_null

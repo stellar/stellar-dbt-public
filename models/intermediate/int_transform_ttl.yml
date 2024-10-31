@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: int_transform_ttl
+    description: "This intermediate model applies transformations to TTL data, calculates new fields like ttl_create_ts and ttl_delete_ts, and performs deduplication based on the transformed data."
+    meta:
+      owner: "Data Team"
+      update_schedule: "daily"
+      description: "Transformed and deduplicated TTL data with derived timestamps"
+      upstream_dependencies: ["int_incr_ttl"]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - key_hash
+            - closed_at
+          meta:
+            description: "Tests the uniqueness combination of TTL tracking fields"
+    columns:
+      - name: key_hash
+        description: '{{ doc("key_hash") }}'
+        tests:
+          - not_null
+          - relationships:
+              to: ref('int_incr_ttl')
+              field: key_hash
+
+      - name: live_until_ledger_seq
+        description: '{{ doc("live_until_ledger_seq") }}'
+        tests:
+          - not_null
+
+      - name: ttl_create_ts
+        description: "Timestamp when the TTL was created (ledger_entry_change = 0)"
+        tests:
+          - not_null
+
+      - name: ttl_delete_ts
+        description: "Timestamp when the TTL was deleted (ledger_entry_change = 2 and deleted = true)"
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - not_null
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: airflow_start_ts
+        description: "The timestamp indicating the start of the Airflow task."
+        tests:
+          - not_null
+
+      - name: dw_load_ts
+        description: "The timestamp for when the data was loaded into the data warehouse."
+        tests:
+          - not_null
+
+      - name: row_hash
+        description: "SHA256 hash of the row data for deduplication"
+        tests:
+          - not_null

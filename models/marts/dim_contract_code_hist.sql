@@ -3,7 +3,7 @@
         materialized = 'incremental',
         unique_key = ['ledger_key_hash', 'start_date'],
         cluster_by = ["ledger_key_hash", "start_date", "row_hash"],
-        tags = ["soroban_analytics"]
+        tags = ["soroban_analytics", "dimension", "scd-2", "daily"]
     )
 }}
 
