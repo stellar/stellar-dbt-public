@@ -68,5 +68,6 @@ jobs:
       - name: Checkout source branch and diff quality
         run: |
           sqlfluff --version
+          sqlfluff lint
           git checkout ${{ github.head_ref }}
           diff-quality --violations=sqlfluff --exclude incremental_accepted_values.sql --compare-branch=origin/master --fail-under=95
