@@ -23,6 +23,7 @@ with
             , price_d
             , selling_amount
             , buying_amount
+            , CURRENT_TIMESTAMP as now
         from {{ ref('stg_history_trades') }}
         where
             ledger_closed_at < timestamp_add(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day), interval 1 day )
