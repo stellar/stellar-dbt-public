@@ -14,6 +14,7 @@ env:
   DBT_JOB_TIMEOUT: 300
   DBT_THREADS: 1
   DBT_JOB_RETRIES: 1
+  IS_RECENCY_AIRFLOW_TASK: false
 
 jobs:
   pre-commit:
@@ -28,7 +29,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.13
 
       - id: file_changes
         uses: trilom/file-changes-action@v1.2.4
@@ -52,7 +53,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: 3.8
+          python-version: 3.13
 
       - name: Install dependencies
         run: |
