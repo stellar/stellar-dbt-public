@@ -3,7 +3,7 @@
         materialized = 'table',
         unique_key = ['ledger_key_hash'],
         cluster_by = ["ledger_key_hash"],
-        tags = ["soroban_analytics", "dimension", "daily"]
+        tags = ["dim_contract_code_current", "soroban_analytics", "dimension", "daily"]
     )
 }}
 

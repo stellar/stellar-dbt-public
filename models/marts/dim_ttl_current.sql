@@ -6,7 +6,7 @@
         "data_type": "DATE"
     },
     cluster_by = ["key_hash"],
-    tags = ["soroban_analytics", "dimension", "daily"]
+    tags = ["dim_ttl_current", "soroban_analytics", "dimension", "daily"]
 ) }}
 
 -- Model: dim_ttl_current

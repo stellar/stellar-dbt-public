@@ -6,7 +6,7 @@
         "data_type": "DATE"
     },
     cluster_by = ["ledger_key_hash"],
-    tags = ["soroban_analytics", "dimension", "daily"]
+    tags = ["dim_contract_data_current", "soroban_analytics", "dimension", "daily"]
 ) }}
 
 -- Model: dim_contract_data_current

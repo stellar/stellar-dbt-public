@@ -7,7 +7,7 @@
         "granularity": "month"
     },
     cluster_by = ["key_hash", "start_date", "row_hash"],
-    tags = ["soroban_analytics", "dimension", "scd-2", "daily"]
+    tags = ["dim_ttl_hist", "soroban_analytics", "dimension", "scd-2", "daily"]
 ) }}
 
 /*

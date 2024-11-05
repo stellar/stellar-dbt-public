@@ -8,7 +8,7 @@
             "granularity": "month"
         },
         cluster_by = ["key_hash", "closed_at", "row_hash"],
-        tags = ["soroban_analytics", "intermediate", "daily"]
+        tags = ["int_transform_ttl", "soroban_analytics", "intermediate", "daily"]
     )
 }}
 
