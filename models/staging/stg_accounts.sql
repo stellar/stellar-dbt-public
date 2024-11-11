@@ -1,6 +1,3 @@
-{{ config()
-}}
-
 with
     raw_table as (
         select *

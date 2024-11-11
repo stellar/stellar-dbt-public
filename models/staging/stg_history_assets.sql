@@ -1,6 +1,3 @@
-{{ config()
-}}
-
 /* This query prepares the assets of each load for deduplication,
 in order to guarantee a new asset won't be loaded twice */
 with
