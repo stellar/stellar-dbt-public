@@ -1,6 +1,4 @@
-{{ config(
-    tags = ["enriched_history_operations"]
-    )
+{{ config()
 }}
 
 /* This query prepares the assets of each load for deduplication,

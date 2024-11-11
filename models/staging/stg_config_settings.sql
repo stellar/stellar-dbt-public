@@ -1,6 +1,4 @@
-{{ config(
-    tags = ["enriched_history_operations"]
-    )
+{{ config()
 }}
 
 with
