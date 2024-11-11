@@ -1,8 +1,3 @@
-{{ config(
-    tags = ["enriched_history_operations"]
-    )
-}}
-
 with
     raw_table as (
         select *
