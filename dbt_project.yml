@@ -36,7 +36,7 @@ vars:
 models:
   stellar_dbt_public:
     +tags: "public"
-    
+
     staging:
       +materialized: view # how the staging models will be materialized
     intermediate:
@@ -81,5 +81,7 @@ seeds:
       +enabled: false
 
 tests:
+  stellar_dbt_public:
+    +tags: "public"
   dbt_project_evaluator:
     +severity: "{{ env_var('DBT_PROJECT_EVALUATOR_SEVERITY', 'error') }}"
