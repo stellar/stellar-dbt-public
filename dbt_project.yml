@@ -35,6 +35,8 @@ vars:
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 models:
   stellar_dbt_public:
+    +tags: "public"
+    
     staging:
       +materialized: view # how the staging models will be materialized
     intermediate:

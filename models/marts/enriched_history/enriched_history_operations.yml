@@ -558,7 +558,7 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
           - dbt_utils.expression_is_true:
-              expression: "<= 21"
+              expression: "<= 22"
               meta:
                 description: "Test to check for the correct protocol. Will update after P21 vote."
 
