@@ -6,7 +6,7 @@ models:
       - dbt_utils.recency:
           datepart: hour
           field: cast(closed_at as timestamp)
-          interval: '{{ 1 if target.name == "prod" else 24 }}'
+          interval: '{{ 1 if target.name == "prod" else 48 }}'
           config:
             enabled: '{{ target.name != "jenkins" }}'
           meta:
