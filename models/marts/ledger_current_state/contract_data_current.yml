@@ -91,16 +91,16 @@ models:
 
       - name: key
         description: '{{ doc("key") }}'
-      
+
       - name: key_decoded
         description: '{{ doc("key_decoded") }}'
-      
+
       - name: val
         description: '{{ doc("val") }}'
-      
+
       - name: val_decoded
         description: '{{ doc("val_decoded") }}'
-        
+
       - name: contract_data_xdr
         description: '{{ doc("contract_data_xdr") }}'
 
