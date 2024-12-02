@@ -86,6 +86,24 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+
+      - name: key
+        description: '{{ doc("key") }}'
+      
+      - name: key_decoded
+        description: '{{ doc("key_decoded") }}'
+      
+      - name: val
+        description: '{{ doc("val") }}'
+      
+      - name: val_decoded
+        description: '{{ doc("val_decoded") }}'
+        
+      - name: contract_data_xdr
+        description: '{{ doc("contract_data_xdr") }}'
+
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:

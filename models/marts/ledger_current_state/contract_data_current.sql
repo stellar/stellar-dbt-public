@@ -34,6 +34,11 @@ with
             , cd.batch_run_date
             , cd.ledger_sequence
             , cd.ledger_key_hash
+            , cd.key
+            , cd.key_decoded
+            , cd.val
+            , cd.val_decoded
+            , cd.contract_data_xdr
             , concat(cd.contract_id, '-', cd.ledger_key_hash) as unique_id
             , row_number()
                 over (
@@ -61,6 +66,11 @@ select
     , ledger_entry_change
     , ledger_sequence
     , ledger_key_hash
+    , key
+    , key_decoded
+    , val
+    , val_decoded
+    , contract_data_xdr
     , closed_at
     , deleted
     , batch_id
