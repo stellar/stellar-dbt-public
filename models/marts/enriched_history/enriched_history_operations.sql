@@ -401,12 +401,12 @@ with
             -- general fields
             , hist_ops.batch_id
             , hist_ops.batch_run_date
-            -- missing ledger header fields
+            -- ledger header details
             , hist_ledg.soroban_fee_write_1kb
             , hist_ledg.node_id
             , hist_ledg.signature
             , hist_ledg.total_byte_size_of_bucket_list
-            -- missing fee fields
+            -- soroban fee details
             , hist_trans.non_refundable_resource_fee_charged
             , hist_trans.refundable_resource_fee_charged
             , hist_trans.rent_fee_charged
