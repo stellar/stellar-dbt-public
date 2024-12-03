@@ -88,6 +88,17 @@ with
             -- general fields
             , enriched.batch_id
             , enriched.batch_run_date
+            -- missing ledger details
+            , enriched.soroban_fee_write_1kb
+            , enriched.node_id
+            , enriched.signature
+            , enriched.total_byte_size_of_bucket_list
+            -- missing soroban fee details
+            , enriched.non_refundable_resource_fee_charged
+            , enriched.refundable_resource_fee_charged
+            , enriched.rent_fee_charged
+            , enriched.tx_signers
+            , enriched.refundable_fee
         from {{ ref('enriched_history_operations') }} as enriched
         where
             enriched.type in (24, 25, 26)

@@ -646,3 +646,30 @@ models:
 
       - name: details_json
         description: '{{ doc("details") }}'
+
+      - name: soroban_fee_write_1kb
+        description: '{{ doc("soroban_fee_write_1kb") }}'
+
+      - name: node_id
+        description: '{{ doc("node_id") }}'
+
+      - name: signature
+        description: '{{ doc("signature") }}'
+
+      - name: total_byte_size_of_bucket_list
+        description: '{{ doc("total_byte_size_of_bucket_list") }}'
+
+      - name: non_refundable_resource_fee_charged
+        description: '{{ doc("non_refundable_resource_fee_charged") }}'
+
+      - name: refundable_resource_fee_charged
+        description: '{{ doc("refundable_resource_fee_charged") }}'
+
+      - name: rent_fee_charged
+        description: '{{ doc("rent_fee_charged") }}'
+
+      - name: tx_signers
+        description: '{{ doc("tx_signers") }}'
+
+      - name: refundable_fee
+        description: '{{ doc("refundable_fee") }}'

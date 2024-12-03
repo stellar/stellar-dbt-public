@@ -120,3 +120,7 @@ The id of winning validator node which is allowed to write transaction set to th
 {% docs signature %}
 The signing hash of the validator node which writes the transaction set to the network.This signature ensures the integrity and authenticity of the ledger, confirming that it has not been tampered with.
 {% enddocs %}
+
+{% docs total_byte_size_of_bucket_list %}
+The total size, in bytes, of Stellar core's internal Bucketlist database. This value represents the total ledger size of the network at the given ledger sequence. The Bucketlist size is expected to be between 11GB and 14GB.
+{% enddocs %}
