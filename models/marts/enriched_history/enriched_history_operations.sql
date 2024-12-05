@@ -33,6 +33,10 @@ with
             , protocol_version
             , successful_transaction_count
             , failed_transaction_count
+            , soroban_fee_write_1kb
+            , node_id
+            , signature
+            , total_byte_size_of_bucket_list
             , batch_id
             , batch_run_date
         from {{ ref('stg_history_ledgers') }}
@@ -79,6 +83,11 @@ with
             , inclusion_fee_bid
             , inclusion_fee_charged
             , resource_fee_refund
+            , non_refundable_resource_fee_charged
+            , refundable_resource_fee_charged
+            , rent_fee_charged
+            , tx_signers
+            , refundable_fee
         from {{ ref('stg_history_transactions') }}
         where
             cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
@@ -392,6 +401,17 @@ with
             -- general fields
             , hist_ops.batch_id
             , hist_ops.batch_run_date
+            -- ledger header details
+            , hist_ledg.soroban_fee_write_1kb
+            , hist_ledg.node_id
+            , hist_ledg.signature
+            , hist_ledg.total_byte_size_of_bucket_list
+            -- soroban fee details
+            , hist_trans.non_refundable_resource_fee_charged
+            , hist_trans.refundable_resource_fee_charged
+            , hist_trans.rent_fee_charged
+            , hist_trans.tx_signers
+            , hist_trans.refundable_fee
         from history_operations as hist_ops
         join history_transactions as hist_trans
             on hist_ops.transaction_id = hist_trans.transaction_id

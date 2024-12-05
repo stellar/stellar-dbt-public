@@ -28,6 +28,16 @@ with
             , cc.batch_run_date
             , cc.ledger_sequence
             , cc.ledger_key_hash
+            , cc.n_instructions
+            , cc.n_functions
+            , cc.n_globals
+            , cc.n_table_entries
+            , cc.n_types
+            , cc.n_data_segments
+            , cc.n_elem_segments
+            , cc.n_imports
+            , cc.n_exports
+            , cc.n_data_segment_bytes
             , row_number()
                 over (
                     partition by cc.contract_code_hash
@@ -50,6 +60,16 @@ select
     , ledger_key_hash
     , closed_at
     , deleted
+    , n_instructions
+    , n_functions
+    , n_globals
+    , n_table_entries
+    , n_types
+    , n_data_segments
+    , n_elem_segments
+    , n_imports
+    , n_exports
+    , n_data_segment_bytes
     , batch_id
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
