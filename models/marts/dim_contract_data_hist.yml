@@ -1,0 +1,122 @@
+version: 2
+
+models:
+  - name: dim_contract_data_hist
+    description: "Slowly Changing Dimension (SCD) Type 2 implementation for tracking historical changes in contract data."
+    meta:
+      owner: "Data Team"
+      update_schedule: "daily"
+      description: "Historical tracking of contract data changes with effective start and end dates."
+      upstream_dependencies: ["int_transform_contract_data"]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ledger_key_hash
+            - start_date
+
+      - dbt_utils.expression_is_true:
+          expression: "start_date <= end_date"
+          meta:
+            description: "Ensures start_date is always before or equal to end_date"
+
+      - dbt_utils.expression_is_true:
+          expression: "(NOT is_current) OR (end_date = '9999-12-31')"
+          meta:
+            description: "Ensures current records have the maximum end_date"
+
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ledger_key_hash
+          where: "is_current = true"
+          meta:
+            description: "Ensures there is only one current record per key_hash"
+
+    columns:
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+        tests:
+          - not_null
+          - relationships:
+              to: ref('int_transform_contract_data')
+              field: ledger_key_hash
+
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - not_null
+
+      - name: start_date
+        description: "The date when this version of the contract became effective."
+        tests:
+          - not_null
+
+      - name: end_date
+        description: "The date when this version of the contract was superseded (9999-12-31 for current version)."
+        tests:
+          - not_null
+
+      - name: is_current
+        description: "Flag indicating if this is the current version of the contract."
+        tests:
+          - not_null
+
+      - name: contract_create_ts
+        description: "Timestamp when the contract was created."
+        tests:
+          - not_null
+
+      - name: contract_delete_ts
+        description: "Timestamp when the contract was deleted (if applicable)."
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+
+      - name: contract_durability
+        description: '{{ doc("contract_durability") }}'
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+
+      - name: balance
+        description: '{{ doc("balance") }}'
+
+      - name: balance_holder
+        description: '{{ doc("balance_holder") }}'
+
+      - name: row_hash
+        description: "SHA256 hash of the row data for change detection."
+        tests:
+          - not_null
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: airflow_start_ts
+        description: "The timestamp indicating the start of the Airflow task."
+        tests:
+          - not_null
+
+      - name: dw_load_ts
+        description: "The timestamp for when the data was loaded into the data warehouse."
+        tests:
+          - not_null
+
+      - name: dw_update_ts
+        description: "The timestamp for when the record was last updated."
+        tests:
+          - not_null

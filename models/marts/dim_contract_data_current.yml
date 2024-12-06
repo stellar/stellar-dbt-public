@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: dim_contract_data_current
+    description: "Current snapshot of contract data, showing only the latest active state for each contract."
+    meta:
+      owner: "Data Team"
+      update_schedule: "daily"
+      description: "Current state snapshot of all contracts"
+      upstream_dependencies: ["dim_contract_data_hist"]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ledger_key_hash
+          meta:
+            description: "Ensures each contract appears exactly once"
+
+    columns:
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_contract_data_hist')
+              field: ledger_key_hash
+
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - not_null
+
+      - name: contract_durability
+        description: '{{ doc("contract_durability") }}'
+
+      - name: contract_create_ts
+        description: "Timestamp when the contract was created."
+        tests:
+          - not_null
+
+      - name: contract_delete_ts
+        description: "Timestamp when the contract was deleted (if applicable)."
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+
+      - name: balance
+        description: '{{ doc("balance") }}'
+
+      - name: balance_holder
+        description: '{{ doc("balance_holder") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: airflow_start_ts
+        description: "The timestamp indicating the start of the Airflow task."
+        tests:
+          - not_null
+
+      - name: dw_load_ts
+        description: "Timestamp when the record was loaded."
+        tests:
+          - not_null
