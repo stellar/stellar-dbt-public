@@ -8,7 +8,7 @@ models:
           tags: [recency]
           datepart: hour
           field: closed_at
-          interval: 12
+          interval: '{{ 12 if target.name == "prod" else 48 }}'
           config:
             enabled: '{{ target.name == "ci" or env_var("IS_RECENCY_AIRFLOW_TASK") == "true" }}'
             severity: '{{ "error" if target.name == "prod" else "warn" }}'

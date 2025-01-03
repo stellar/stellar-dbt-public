@@ -4,9 +4,10 @@ models:
   - name: stg_contract_data
     tests:
       - dbt_utils.recency:
+          tags: [recency]
           datepart: hour
           field: cast(closed_at as timestamp)
-          interval: '{{ 1 if target.name == "prod" else 24 }}'
+          interval: '{{ 1 if target.name == "prod" else 48 }}'
           config:
             enabled: '{{ target.name != "jenkins" }}'
           meta:

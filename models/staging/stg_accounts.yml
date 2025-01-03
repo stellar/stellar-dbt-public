@@ -4,6 +4,7 @@ models:
   - name: stg_accounts
     tests:
       - dbt_utils.recency:
+          tags: [recency]
           datepart: hour
           field: cast(closed_at as timestamp)
           interval: '{{ 1 if target.name == "prod" else 24 }}'
