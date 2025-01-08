@@ -4,7 +4,6 @@ models:
   - name: stg_ttl
     tests:
       - dbt_utils.recency:
-          tags: [recency]
           datepart: hour
           field: cast(closed_at as timestamp)
           interval: '{{ 1 if target.name == "prod" else 48 }}'

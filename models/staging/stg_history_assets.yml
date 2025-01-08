@@ -4,7 +4,6 @@ models:
   - name: stg_history_assets
     tests:
       - dbt_utils.recency:
-          tags: [recency]
           datepart: hour
           field: cast(closed_at as timestamp)
           interval: '{{ 3 if target.name == "prod" else 24 }}'
