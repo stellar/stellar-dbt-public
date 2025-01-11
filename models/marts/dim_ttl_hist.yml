@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: dim_ttl_hist
+    description: "Slowly Changing Dimension (SCD) Type 2 implementation for tracking historical changes in TTL data."
+    meta:
+      owner: "Data Team"
+      update_schedule: "daily"
+      description: "Historical tracking of TTL changes with effective start and end dates"
+      upstream_dependencies: ["int_transform_ttl"]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - key_hash
+            - start_date
+
+      - dbt_utils.expression_is_true:
+          expression: "start_date <= end_date"
+          meta:
+            description: "Ensures start_date is always before or equal to end_date"
+
+      - dbt_utils.expression_is_true:
+          expression: "(NOT is_current) OR (end_date = '9999-12-31')"
+          meta:
+            description: "Ensures current records have the maximum end_date"
+
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - key_hash
+          where: "is_current = true"
+          meta:
+            description: "Ensures there is only one current record per key_hash"
+
+    columns:
+      - name: key_hash
+        description: '{{ doc("key_hash") }}'
+        tests:
+          - not_null
+          - relationships:
+              to: ref('int_transform_ttl')
+              field: key_hash
+
+      - name: live_until_ledger_seq
+        description: '{{ doc("live_until_ledger_seq") }}'
+        tests:
+          - not_null
+
+      - name: start_date
+        description: "The date when this version of the TTL became effective"
+        tests:
+          - not_null
+
+      - name: end_date
+        description: "The date when this version of the TTL was superseded (9999-12-31 for current version)"
+        tests:
+          - not_null
+
+      - name: is_current
+        description: "Flag indicating if this is the current version of the TTL"
+        tests:
+          - not_null
+
+      - name: ttl_create_ts
+        description: "Timestamp when the TTL was created"
+        tests:
+          - not_null
+
+      - name: ttl_delete_ts
+        description: "Timestamp when the TTL was deleted (if applicable)"
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - not_null
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - not_null
+
+      - name: airflow_start_ts
+        description: "The timestamp indicating the start of the Airflow task."
+        tests:
+          - not_null
+
+      - name: row_hash
+        description: "SHA256 hash of the row data for change detection"
+        tests:
+          - not_null
+
+      - name: dw_load_ts
+        description: "Timestamp when the record was first loaded"
+        tests:
+          - not_null
+
+      - name: dw_update_ts
+        description: "Timestamp when the record was last updated"
+        tests:
+          - not_null
