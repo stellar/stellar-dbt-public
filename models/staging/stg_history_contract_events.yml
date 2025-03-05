@@ -1,0 +1,132 @@
+version: 2
+
+models:
+  - name: stg_history_contract_events
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: cast(closed_at as timestamp)
+          interval: '{{ 1 if target.name == "prod" else 24 }}'
+          config:
+            enabled: '{{ target.name != "jenkins" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+    columns:
+      - name: transaction_hash
+        description: '{{ doc("transaction_hash") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: transaction_id
+        description: '{{ doc("transaction_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: successful
+        description: '{{ doc("successful") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: in_successful_contract_call
+        description: '{{ doc("in_successful_contract_call") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: type
+        description: '{{ doc("event_type") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: type_string
+        description: '{{ doc("event_type_string") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: topics
+        description: '{{ doc("event_topics") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: topics_decoded
+        description: '{{ doc("event_topics_decoded") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: data
+        description: '{{ doc("event_data") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: data_decoded
+        description: '{{ doc("event_data_decoded") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: contract_event_xdr
+        description: '{{ doc("contract_event_xdr") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
