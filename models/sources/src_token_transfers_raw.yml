@@ -1,0 +1,124 @@
+version: 2
+
+sources:
+  - name: crypto_stellar
+    database: "crypto-stellar"
+    tables:
+      - name: token_transfers_raw
+        description: '{{ doc("token_transfers_raw") }}'
+        freshness:
+          warn_after: { count: 30, period: minute }
+          error_after: { count: 60, period: minute }
+        loaded_at_field: closed_at
+        columns:
+          - name: transaction_hash
+            description: '{{ doc("transaction_hash") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: transaction_id
+            description: '{{ doc("transaction_id") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: operation_id
+            description: '{{ doc("transaction_id") }}'
+
+          - name: event_topic
+            description: '{{ doc("event_topic") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: from
+            description: '{{ doc("from") }}'
+
+          - name: to
+            description: '{{ doc("to") }}'
+
+          - name: asset
+            description: '{{ doc("asset") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: asset_type
+            description: '{{ doc("asset_type") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: asset_code
+            description: '{{ doc("asset_code") }}'
+
+          - name: asset_issuer
+            description: '{{ doc("asset_issuer") }}'
+
+          - name: amount
+            description: '{{ doc("amount_float") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: amount_raw
+            description: '{{ doc("amount_raw") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: contract_id
+            description: '{{ doc("contract_id") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: ledger_sequence
+            description: '{{ doc("ledger_sequence") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: closed_at
+            description: '{{ doc("closed_at") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: to_muxed
+            description: '{{ doc("to_muxed") }}'
+
+          - name: to_muxed_id
+            description: '{{ doc("to_muxed_id") }}'
+
+          - name: batch_id
+            description: '{{ doc("batch_id") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: batch_run_date
+            description: '{{ doc("batch_run_date") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+
+          - name: batch_insert_ts
+            description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
