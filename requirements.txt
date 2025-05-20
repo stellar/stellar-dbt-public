@@ -1,3 +1,4 @@
+click<8.2.0
 dbt-bigquery==1.9.1
 elementary-data[bigquery]==0.16.1
 MarkupSafe==2.0.1
