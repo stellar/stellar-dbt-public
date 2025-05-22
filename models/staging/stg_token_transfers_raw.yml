@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: stg_token_transfers_raw
+    tests:
+      - dbt_utils.recency:
+          datepart: hour
+          field: cast(closed_at as timestamp)
+          interval: '{{ 1 if target.name == "prod" else 24 }}'
+          config:
+            enabled: '{{ target.name != "jenkins" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+    columns:
+      - name: transaction_hash
+        description: '{{ doc("transaction_hash") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: transaction_id
+        description: '{{ doc("transaction_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: operation_id
+        description: '{{ doc("transaction_id") }}'
+
+      - name: event_topic
+        description: '{{ doc("event_topic") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: from
+        description: '{{ doc("from") }}'
+
+      - name: to
+        description: '{{ doc("to") }}'
+
+      - name: asset
+        description: '{{ doc("asset") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: amount
+        description: '{{ doc("amount_float") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: amount_raw
+        description: '{{ doc("amount_raw") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: to_muxed
+        description: '{{ doc("to_muxed") }}'
+
+      - name: to_muxed_id
+        description: '{{ doc("to_muxed_id") }}'
