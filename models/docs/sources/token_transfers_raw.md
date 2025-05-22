@@ -29,7 +29,7 @@ The destination address for the token transfer event amount
 {% enddocs %}
 
 {% docs amount_float %}
-The normalized float amount of the asset. This is equivalent to `raw stroop amount of asset * 0.0000001`
+The normalized float amount of the asset. Raw amount of asset * 0.0000001
 {% enddocs %}
 
 {% docs amount_raw %}
