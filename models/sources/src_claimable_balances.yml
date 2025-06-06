@@ -10,7 +10,7 @@ sources:
           warn_after: { count: 30, period: minute }
           error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
-        tests:
+        data_tests:
           - incremental_unique_combination_of_columns:
               combination_of_columns:
                 - balance_id
@@ -23,7 +23,7 @@ sources:
         columns:
           - name: balance_id
             description: '{{ doc("balance_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -51,14 +51,14 @@ sources:
 
           - name: asset_type
             description: '{{ doc("asset_type") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_code
             description: '{{ doc("asset_code") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -66,7 +66,7 @@ sources:
 
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -74,35 +74,35 @@ sources:
 
           - name: asset_amount
             description: '{{ doc("asset_amount") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: sponsor
             description: '{{ doc("sponsor") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: flags
             description: '{{ doc("flags_accounts_balances") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -112,35 +112,35 @@ sources:
 
           - name: deleted
             description: '{{ doc("deleted") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_id
             description: '{{ doc("asset_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"

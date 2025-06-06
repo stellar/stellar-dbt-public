@@ -10,7 +10,7 @@ sources:
           warn_after: { count: 30, period: minute }
           error_after: { count: 60, period: minute }
         loaded_at_field: closed_at
-        tests:
+        data_tests:
           - incremental_unique_combination_of_columns:
               combination_of_columns:
                 - liquidity_pool_id
@@ -23,56 +23,56 @@ sources:
         columns:
           - name: liquidity_pool_id
             description: '{{ doc("liquidity_pool_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: type
             description: '{{ doc("pool_type") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: fee
             description: '{{ doc("fee") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: trustline_count
             description: '{{ doc("trustline_count") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: pool_share_count
             description: '{{ doc("pool_share_count") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_a_id
             description: '{{ doc("asset_a_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_a_type
             description: '{{ doc("asset_a_type") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_a_code
             description: '{{ doc("asset_a_code") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -80,7 +80,7 @@ sources:
 
           - name: asset_a_issuer
             description: '{{ doc("asset_a_issuer") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -88,28 +88,28 @@ sources:
 
           - name: asset_a_amount
             description: '{{ doc("asset_a_amount") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_b_id
             description: '{{ doc("asset_b_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_b_type
             description: '{{ doc("asset_a_type") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_b_code
             description: '{{ doc("asset_a_code") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -117,7 +117,7 @@ sources:
 
           - name: asset_b_issuer
             description: '{{ doc("asset_a_issuer") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -125,21 +125,21 @@ sources:
 
           - name: asset_b_amount
             description: '{{ doc("asset_a_amount") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -149,28 +149,28 @@ sources:
 
           - name: deleted
             description: '{{ doc("deleted") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"

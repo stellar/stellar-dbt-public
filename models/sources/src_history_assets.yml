@@ -13,14 +13,14 @@ sources:
         columns:
           - name: asset_id
             description: '{{ doc("asset_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_type
             description: '{{ doc("asset_type") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -29,7 +29,7 @@ sources:
 
           - name: asset_code
             description: '{{ doc("asset_code") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -37,7 +37,7 @@ sources:
 
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
@@ -45,21 +45,21 @@ sources:
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"

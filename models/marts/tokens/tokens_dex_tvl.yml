@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: tokens_dex_tvl
+    description: "This table aggregates XLM and asset selling liabilities from accounts and trustlines to calculate TVL"
+    data_tests:
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
+      - dbt_utils.recency:
+          tags: [recency]
+          datepart: day
+          field: day
+          interval: 2
+          ignore_time_component: true
+          config:
+            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+    columns:
+      - name: day
+        description: '{{ doc("day") }}'
+        data_tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: amount_raw
+        description: '{{ doc("amount_raw") }}'
+        data_tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+          - elementary.column_anomalies:
+              column_anomalies: standard_deviation
+              anomaly_sensitivity: 3
+              anomaly_direction: both
+              timestamp_column: day
+              time_bucket:
+                period: day
+                count: 90
+              ignore_small_changes:
+                spike_failure_percent_threshold: 5
+                drop_failure_percent_threshold: 5

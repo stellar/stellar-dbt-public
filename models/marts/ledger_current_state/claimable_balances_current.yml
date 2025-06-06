@@ -3,7 +3,7 @@ version: 2
 models:
   - name: claimable_balances_current
     description: '{{ doc("claimable_balances_current") }}'
-    tests:
+    data_tests:
       - dbt_utils.recency:
           tags: [recency]
           datepart: hour
@@ -21,7 +21,7 @@ models:
     columns:
       - name: balance_id
         description: '{{ doc("balance_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
@@ -31,14 +31,14 @@ models:
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
@@ -46,7 +46,7 @@ models:
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
@@ -54,35 +54,35 @@ models:
 
       - name: asset_amount
         description: '{{ doc("asset_amount") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: sponsor
         description: '{{ doc("sponsor") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: flags
         description: '{{ doc("flags_accounts_balances") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
@@ -93,35 +93,35 @@ models:
 
       - name: deleted
         description: '{{ doc("deleted") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"

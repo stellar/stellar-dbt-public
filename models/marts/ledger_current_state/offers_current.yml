@@ -3,7 +3,7 @@ version: 2
 models:
   - name: offers_current
     description: '{{ doc("offers_current") }}'
-    tests:
+    data_tests:
       - dbt_utils.recency:
           tags: [recency]
           datepart: hour
@@ -30,35 +30,35 @@ models:
     columns:
       - name: seller_id
         description: '{{ doc("seller_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: offer_id
         description: '{{ doc("offer_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_asset_code
         description: '{{ doc("asset_code") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_asset_issuer
         description: '{{ doc("asset_issuer") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_asset_type
         description: '{{ doc("asset_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -67,21 +67,21 @@ models:
 
       - name: buying_asset_code
         description: '{{ doc("asset_code") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_asset_issuer
         description: '{{ doc("asset_issuer") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_asset_type
         description: '{{ doc("asset_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -90,7 +90,7 @@ models:
 
       - name: amount
         description: '{{ doc("amount") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -101,7 +101,7 @@ models:
 
       - name: pricen
         description: '{{ doc("price_n") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -112,7 +112,7 @@ models:
 
       - name: priced
         description: '{{ doc("price_d") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -123,14 +123,14 @@ models:
 
       - name: price
         description: '{{ doc("price") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: flags
         description: '{{ doc("flags_offers") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -140,14 +140,14 @@ models:
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -158,14 +158,14 @@ models:
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: deleted
         description: '{{ doc("deleted") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -175,7 +175,7 @@ models:
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"

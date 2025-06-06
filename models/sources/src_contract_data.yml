@@ -13,28 +13,28 @@ sources:
         columns:
           - name: contract_id
             description: '{{ doc("contract_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: contract_key_type
             description: '{{ doc("contract_key_type") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: contract_durability
             description: '{{ doc("contract_durability") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: asset_code
             description: '{{ doc("asset_code") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
@@ -42,7 +42,7 @@ sources:
 
           - name: asset_issuer
             description: '{{ doc("asset_issuer") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
@@ -50,7 +50,7 @@ sources:
 
           - name: asset_type
             description: '{{ doc("asset_type") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
@@ -63,14 +63,14 @@ sources:
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
@@ -80,70 +80,70 @@ sources:
 
           - name: deleted
             description: '{{ doc("deleted") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: key
             description: '{{ doc("key") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: key_decoded
             description: '{{ doc("key_decoded") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: val
             description: '{{ doc("val") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: val_decoded
             description: '{{ doc("val_decoded") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: contract_data_xdr
             description: '{{ doc("contract_data_xdr") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: closed_at
             description: '{{ doc("closed_at") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
-            tests:
+            data_tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
