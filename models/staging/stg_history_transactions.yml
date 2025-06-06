@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_history_transactions
-    tests:
+    data_tests:
       - dbt_utils.recency:
           datepart: hour
           field: cast(closed_at as timestamp)
@@ -14,7 +14,7 @@ models:
     columns:
       - name: transaction_id
         description: '{{ doc("transaction_id") }}'
-        tests:
+        data_tests:
           - incremental_unique:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -24,14 +24,14 @@ models:
 
       - name: transaction_hash
         description: '{{ doc("transaction_hash") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -41,42 +41,42 @@ models:
 
       - name: txn_account
         description: '{{ doc("account") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: account_sequence
         description: '{{ doc("account_sequence") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: max_fee
         description: '{{ doc("max_fee") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: txn_operation_count
         description: '{{ doc("transaction_operation_count") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: txn_created_at
         description: '{{ doc("created_at") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: memo_type
         description: '{{ doc("memo_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -86,21 +86,21 @@ models:
 
       - name: time_bounds
         description: '{{ doc("time_bounds") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: successful
         description: '{{ doc("successful") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged
         description: '{{ doc("fee_charged") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -140,49 +140,49 @@ models:
 
       - name: tx_envelope
         description: '{{ doc("tx_envelope") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: tx_result
         description: '{{ doc("tx_result") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: tx_meta
         description: '{{ doc("tx_meta") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: tx_fee_meta
         description: '{{ doc("tx_fee_meta") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -225,7 +225,7 @@ models:
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"

@@ -3,7 +3,7 @@ version: 2
 models:
   - name: enriched_history_operations_soroban
     description: Aggregate table for the history operations, taking only the soroban operations
-    tests:
+    data_tests:
       - dbt_utils.recency:
           tags: [recency]
           datepart: hour
@@ -21,7 +21,7 @@ models:
     columns:
       - name: op_id
         description: '{{ doc("operation_id") }}'
-        tests:
+        data_tests:
           - incremental_unique:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -31,7 +31,7 @@ models:
 
       - name: op_source_account
         description: '{{ doc("source_account") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -41,21 +41,21 @@ models:
 
       - name: transaction_id
         description: '{{ doc("transaction_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: op_type
         description: '{{ doc("type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: type_string
         description: '{{ doc("type_string") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -86,21 +86,21 @@ models:
 
       - name: transaction_hash
         description: '{{ doc("transaction_hash") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: account_sequence
         description: '{{ doc("account_sequence") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -113,7 +113,7 @@ models:
 
       - name: txn_created_at
         description: '{{ doc("created_at") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -129,7 +129,7 @@ models:
 
       - name: successful
         description: '{{ doc("successful") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -190,14 +190,14 @@ models:
 
       - name: ledger_hash
         description: '{{ doc("ledger_hash") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: previous_ledger_hash
         description: '{{ doc("previous_ledger_hash") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -210,14 +210,14 @@ models:
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: ledger_id
         description: '{{ doc("ledger_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -248,14 +248,14 @@ models:
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"

@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: int_tokens_accounts_tvl
+    description: "This table reports XLM selling liabilities from accounts to calculate TVL"
+    columns:
+      - name: day
+        description: '{{ doc("day") }}'
+        data_tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: account_id
+        description: "The account id of the tvl"
+        data_tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: asset
+        description: '{{ doc("asset") }}'
+        data_tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+        
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}' 
+
+      - name: amount_raw
+        description: '{{ doc("accounts_tvl_raw") }}'
+        data_tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
