@@ -35,6 +35,13 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
+      - name: liquidity_pool_id_strkey
+        description: '{{ doc("details_liquidity_pool_id_strkey") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
       - name: fee
         description: '{{ doc("fee") }}'
         tests:

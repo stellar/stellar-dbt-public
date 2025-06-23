@@ -99,6 +99,9 @@ models:
       - name: balance_id
         description: '{{ doc("details_balance_id") }}'
 
+      - name: balance_id_strkey
+        description: '{{ doc("details_balance_id_strkey") }}'
+
       - name: claimant
         description: '{{ doc("details_claimant") }}'
 
@@ -305,6 +308,9 @@ models:
 
       - name: liquidity_pool_id
         description: '{{ doc("details_liquidity_pool_id") }}'
+
+      - name: liquidity_pool_id_strkey
+        description: '{{ doc("details_liquidity_pool_id_strkey") }}'
 
       - name: reserve_a_asset_type
         description: '{{ doc("details_reserve_a_asset_type") }}'
