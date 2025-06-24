@@ -27,7 +27,7 @@ models:
               greater_than_equal_to: "2 day"
 
       - name: balance_id_strkey
-        description: '{{ doc("details_balance_id_strkey") }}'
+        description: '{{ doc("details_claimable_balance_id_strkey") }}'
         tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"

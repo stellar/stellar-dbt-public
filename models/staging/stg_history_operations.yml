@@ -432,7 +432,7 @@ models:
         description: '{{ doc("operation_trace_code") }}'
 
       - name: details.balance_id_strkey
-        description: '{{ doc("details_balance_id_strkey") }}'
+        description: '{{ doc("details_claimable_balance_id_strkey") }}'
 
       - name: details.claimable_balance_id_strkey
         description: '{{ doc("details_claimable_balance_id_strkey") }}'

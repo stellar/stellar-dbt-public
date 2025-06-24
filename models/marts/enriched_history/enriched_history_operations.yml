@@ -100,7 +100,7 @@ models:
         description: '{{ doc("details_balance_id") }}'
 
       - name: balance_id_strkey
-        description: '{{ doc("details_balance_id_strkey") }}'
+        description: '{{ doc("details_claimable_balance_id_strkey") }}'
 
       - name: claimant
         description: '{{ doc("details_claimant") }}'
