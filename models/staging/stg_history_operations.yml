@@ -2,6 +2,8 @@ version: 2
 
 models:
   - name: stg_history_operations
+    config:
+      event_time: batch_run_date
     tests:
       - dbt_utils.recency:
           datepart: hour

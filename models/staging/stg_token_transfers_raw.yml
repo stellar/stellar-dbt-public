@@ -2,6 +2,8 @@ version: 2
 
 models:
   - name: stg_token_transfers_raw
+    config:
+      event_time: closed_at
     tests:
       - dbt_utils.recency:
           datepart: hour
