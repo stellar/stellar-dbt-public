@@ -1,3 +1,14 @@
+{% set meta_config = {
+    "materialized": "view",
+    "event_time": "batch_run_date"
+} %}
+
+{{ config(
+    meta=meta_config,
+    **meta_config,
+    )
+}}
+
 with
     raw_table as (
         select *

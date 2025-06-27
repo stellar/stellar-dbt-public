@@ -1,6 +1,5 @@
 {% set meta_config = {
     "materialized": "view",
-    "preflight": false,
     "event_time": "batch_run_date"
 } %}
 
