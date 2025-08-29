@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: evicted_keys
+    description: '{{ doc("evicted_keys") }}'
+
+    columns:
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: is_evicted
+        description: '{{ doc("is_evicted") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
