@@ -30,6 +30,8 @@ with
             , batch_run_date
             , batch_insert_ts
             , total_byte_size_of_bucket_list
+            , evicted_ledger_keys_type
+            , evicted_ledger_keys_hash
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from raw_table
     )
