@@ -34,8 +34,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - id: "auth"
-        uses: "google-github-actions/auth@v2"
+      - id: auth
+        uses: google-github-actions/auth@b7593ed2efd1c1617e1b0254da33b86225adb2a5 # v2.1.12
         with:
           project_id: "hubble-261722"
           credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}"
@@ -48,8 +48,8 @@ jobs:
           dbt deps
           dbt docs generate --select "stellar_dbt_public" --exclude "dbt_project_evaluator_exceptions"
 
-      - id: "upload-folder"
-        uses: "google-github-actions/upload-cloud-storage@v2"
+      - id: upload-folder
+        uses: google-github-actions/upload-cloud-storage@7c73f5d6eae167341002e9c946f7479a609c588e # v2.2.3
         with:
           process_gcloudignore: false
           path: "${{ github.workspace }}/target"
