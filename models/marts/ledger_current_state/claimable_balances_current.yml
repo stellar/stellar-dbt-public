@@ -89,7 +89,7 @@ models:
           - incremental_accepted_values:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
-              values: [0, 1, 2]
+              values: [0, 1, 2, 4]
 
       - name: deleted
         description: '{{ doc("deleted") }}'

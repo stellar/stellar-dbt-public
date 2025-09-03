@@ -149,7 +149,7 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
           - accepted_values:
-              values: [0, 1, 2]
+              values: [0, 1, 2, 4]
               quote: false
 
       - name: closed_at
