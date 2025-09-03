@@ -11,7 +11,6 @@ with
             , last_modified_ledger
             , closed_at
             , ledger_sequence
-            , ledger_entry_change
             , batch_id
             , batch_run_date
             , batch_insert_ts
