@@ -55,17 +55,6 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-      - name: ledger_entry_change
-        description: '{{ doc("ledger_entry_change") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-          - incremental_accepted_values:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-              values: [0, 1, 2, 4]
-
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
