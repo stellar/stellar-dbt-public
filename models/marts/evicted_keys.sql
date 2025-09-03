@@ -1,7 +1,6 @@
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": 'ledger_key_hash || "-" || cast(closed_at as string) || "-" || is_evicted',
-    "incremental_strategy": "append",
+    "incremental_strategy": "merge",
     "tags": ["evicted_keys"]
 } %}
 
