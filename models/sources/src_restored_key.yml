@@ -50,15 +50,39 @@ sources:
 
           - name: ledger_sequence
             description: '{{ doc("sequence") }}'
+            tests:
+              - incremental_unique:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+              - incremental_accepted_values:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
+                  values: [0, 1, 2]
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
+            tests:
+              - incremental_not_null:
+                  date_column_name: "closed_at"
+                  greater_than_equal_to: "2 day"
