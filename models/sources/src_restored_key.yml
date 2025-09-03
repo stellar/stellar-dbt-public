@@ -4,8 +4,8 @@ sources:
   - name: crypto_stellar
     database: "crypto-stellar"
     tables:
-      - name: ttl
-        description: '{{ doc("ttl") }}'
+      - name: restored_key
+        description: '{{ doc("restored_key") }}'
         freshness:
           warn_after: { count: 30, period: minute }
           error_after: { count: 60, period: minute }
@@ -13,24 +13,22 @@ sources:
         tests:
           - incremental_unique_combination_of_columns:
               combination_of_columns:
-                - key_hash
-                - live_until_ledger_seq
+                - ledger_key_hash
                 - last_modified_ledger
-                - ledger_entry_change
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
               meta:
-                description: "Tests the uniqueness combination of: key_hash, live_until_ledger_seq, last_modified_ledger, and ledger_entry_change."
+                description: "Tests the uniqueness combination of: ledger_key_hash and last_modified_ledger."
         columns:
-          - name: key_hash
+          - name: ledger_key_hash
             description: '{{ doc("key_hash") }}'
             tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
-          - name: live_until_ledger_seq
-            description: '{{ doc("live_until_ledger_seq") }}'
+          - name: ledger_entry_type
+            description: '{{ doc("key_hash") }}'
             tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
@@ -43,17 +41,15 @@ sources:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
 
-          - name: ledger_entry_change
-            description: '{{ doc("ledger_entry_change") }}'
+          - name: closed_at
+            description: '{{ doc("closed_at") }}'
             tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
-              - accepted_values:
-                  values: [0, 1, 2, 4]
-                  quote: false
-          - name: deleted
-            description: '{{ doc("deleted") }}'
+
+          - name: ledger_sequence
+            description: '{{ doc("sequence") }}'
             tests:
               - incremental_not_null:
                   date_column_name: "closed_at"
@@ -68,13 +64,6 @@ sources:
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
-            tests:
-              - incremental_not_null:
-                  date_column_name: "closed_at"
-                  greater_than_equal_to: "2 day"
-
-          - name: closed_at
-            description: '{{ doc("closed_at") }}'
             tests:
               - incremental_not_null:
                   date_column_name: "closed_at"

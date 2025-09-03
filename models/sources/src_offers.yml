@@ -130,7 +130,7 @@ sources:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
               - accepted_values:
-                  values: [0, 1, 2]
+                  values: [0, 1, 2, 4]
                   quote: false
 
           - name: deleted

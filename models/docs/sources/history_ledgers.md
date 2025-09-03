@@ -124,3 +124,11 @@ The signing hash of the validator node which writes the transaction set to the n
 {% docs total_byte_size_of_bucket_list %}
 The total size, in bytes, of Stellar core's internal Bucketlist database. This value represents the total ledger size of the network at the given ledger sequence. The Bucketlist size is expected to be between 11GB and 14GB.
 {% enddocs %}
+
+{% docs evicted_ledger_keys_type %}
+The list of type of keys which have been evicted in a given ledger entry.
+{% enddocs %}
+
+{% docs evicted_ledger_keys_hash %}
+The list of keys hash which have been evicted in a given ledger entry.
+{% enddocs %}

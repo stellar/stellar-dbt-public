@@ -1,54 +1,34 @@
 version: 2
 
 models:
-  - name: ttl_current
-    description: '{{ doc("ttl_current") }}'
+  - name: stg_restored_key
     tests:
       - dbt_utils.recency:
-          tags: [recency]
           datepart: hour
-          field: closed_at
-          interval: '{{ 12 if target.name == "prod" else 24 }}'
+          field: cast(closed_at as timestamp)
+          interval: '{{ 1 if target.name == "prod" else 48 }}'
           config:
-            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
-            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+            enabled: '{{ target.name != "jenkins" }}'
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
-      - elementary.schema_changes:
-          tags: [schema_changes]
-          config:
-            severity: warn
+      - incremental_unique_combination_of_columns:
+          date_column_name: "closed_at"
+          greater_than_equal_to: "2 day"
+          combination_of_columns:
+            - ledger_key_hash
+            - last_modified_ledger
+          meta:
+            description: "Tests the uniqueness combination of: ledger_key_hash and last_modified_ledger."
     columns:
-      - name: key_hash
+      - name: ledger_key_hash
         description: '{{ doc("key_hash") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-      - name: live_until_ledger_seq
-        description: '{{ doc("live_until_ledger_seq") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-
-      - name: batch_run_date
-        description: '{{ doc("batch_run_date") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-
-      - name: closed_at
-        description: '{{ doc("closed_at") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-
-      - name: deleted
-        description: '{{ doc("deleted") }}'
+      - name: ledger_entry_type
+        description: '{{ doc("key_hash") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -61,12 +41,37 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-      - name: ledger_entry_change
-        description: '{{ doc("ledger_entry_change") }}'
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
-          - accepted_values:
-              values: [0, 1, 2, 4]
-              quote: false
+
+      - name: ledger_sequence
+        description: '{{ doc("sequence") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
