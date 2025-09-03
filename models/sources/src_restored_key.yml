@@ -15,7 +15,7 @@ sources:
               combination_of_columns:
                 - ledger_key_hash
                 - last_modified_ledger
-              date_column_name: "batch_run_date"
+              date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: ledger_key_hash and last_modified_ledger."

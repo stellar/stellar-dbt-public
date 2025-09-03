@@ -560,7 +560,7 @@ models:
           - dbt_utils.expression_is_true:
               expression: "<= 23"
               meta:
-                description: "Test to check for the correct protocol. Will update after P22 vote."
+                description: "Test to check for the correct protocol. Will update after P24 vote."
 
       - name: successful_transaction_count
         description: '{{ doc("successful_transaction_count") }}'

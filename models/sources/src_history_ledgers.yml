@@ -179,4 +179,7 @@ sources:
                   greater_than_equal_to: "2 day"
 
           - name: evicted_ledger_keys_type
+            description: '{{ doc("evicted_ledger_keys_type") }}'
+
           - name: evicted_ledger_keys_hash
+            description: '{{ doc("evicted_ledger_keys_hash") }}'
