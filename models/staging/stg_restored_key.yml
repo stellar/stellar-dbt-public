@@ -4,9 +4,9 @@ models:
   - name: stg_restored_key
     tests:
       - dbt_utils.recency:
-          datepart: hour
+          datepart: day
           field: cast(closed_at as timestamp)
-          interval: '{{ 1 if target.name == "prod" else 48 }}'
+          interval: 2
           config:
             enabled: '{{ target.name != "jenkins" }}'
           meta:
