@@ -1,3 +1,13 @@
+{% set meta_config = {
+    "tags": ["evicted_keys"]
+} %}
+
+{{ config(
+    meta=meta_config,
+    **meta_config,
+    )
+}}
+
 with
     raw_table as (
         select *
