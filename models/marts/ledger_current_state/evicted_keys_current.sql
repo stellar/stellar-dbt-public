@@ -1,5 +1,6 @@
 {% set meta_config = {
     "materialized": "incremental",
+    "unique_key": ["ledger_key_hash", "closed_at"],
     "incremental_strategy": "merge",
     "tags": ["current_state"]
 } %}
@@ -20,7 +21,7 @@ with
         cross join unnest(shl.evicted_ledger_keys_hash) as kh
         {% if is_incremental() %}
       where true
-        and date(closed_at) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+        and TIMESTAMP(closed_at) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 2 day )
 
     {% endif %}
     )
@@ -33,7 +34,7 @@ with
         from {{ ref('stg_restored_key') }}
         {% if is_incremental() %}
       where true
-        and date(closed_at) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+        and TIMESTAMP(closed_at) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 2 day )
     {% endif %}
     )
 
