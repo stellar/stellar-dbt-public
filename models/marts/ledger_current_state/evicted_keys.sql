@@ -1,7 +1,7 @@
 {% set meta_config = {
     "materialized": "incremental",
     "incremental_strategy": "merge",
-    "tags": ["evicted_keys"]
+    "tags": ["current_state"]
 } %}
 
 {{ config(
