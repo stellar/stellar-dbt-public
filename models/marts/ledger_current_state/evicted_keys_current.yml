@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: evicted_keys
+  - name: evicted_keys_current
     description: '{{ doc("evicted_keys") }}'
 
     columns:
