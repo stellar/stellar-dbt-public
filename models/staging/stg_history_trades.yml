@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_history_trades
-    tests:
+    data_tests:
       - dbt_utils.recency:
           datepart: hour
           field: cast(ledger_closed_at as timestamp)
@@ -22,119 +22,119 @@ models:
     columns:
       - name: history_operation_id
         description: '{{ doc("history_operation_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: "`order`"
         description: '{{ doc("order") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: ledger_closed_at
         description: '{{ doc("ledger_closed_at") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_account_address
         description: '{{ doc("selling_account_address") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_asset_code
         description: '{{ doc("trade_selling_asset_code") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_asset_issuer
         description: '{{ doc("trade_selling_asset_issuer") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_asset_type
         description: '{{ doc("trade_selling_asset_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_asset_id
         description: '{{ doc("assets_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_amount
         description: '{{ doc("trade_selling_amount") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_account_address
         description: '{{ doc("buying_account_address") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_asset_code
         description: '{{ doc("trade_buying_asset_code") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_asset_issuer
         description: '{{ doc("trade_buying_asset_issuer") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_asset_type
         description: '{{ doc("trade_buying_asset_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_asset_id
         description: '{{ doc("assets_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_amount
         description: '{{ doc("trade_buying_amount") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: price_n
         description: '{{ doc("trade_price_n") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: price_d
         description: '{{ doc("trade_price_d") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
@@ -153,7 +153,7 @@ models:
 
       - name: trade_type
         description: '{{ doc("trade_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
@@ -166,21 +166,21 @@ models:
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"

@@ -6,19 +6,19 @@ models:
     columns:
       - name: day_agg
         description: Date from which all metrics are aggregated.
-        tests:
+        data_tests:
           - not_null
 
       - name: asset_a
         description: '{{ doc("asset_a") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: asset_a_code
         description: '{{ doc("asset_a_code") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
@@ -26,7 +26,7 @@ models:
 
       - name: asset_a_issuer
         description: '{{ doc("asset_a_issuer") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
@@ -34,21 +34,21 @@ models:
 
       - name: asset_a_type
         description: '{{ doc("asset_a_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: asset_b
         description: '{{ doc("asset_b") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: asset_b_code
         description: '{{ doc("asset_b_code") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
@@ -56,7 +56,7 @@ models:
 
       - name: asset_b_issuer
         description: '{{ doc("asset_b_issuer") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
@@ -64,7 +64,7 @@ models:
 
       - name: asset_b_type
         description: '{{ doc("asset_b_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
