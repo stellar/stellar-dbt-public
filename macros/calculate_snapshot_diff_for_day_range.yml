@@ -1,0 +1,44 @@
+version: 2
+
+macros:
+  - name: calculate_snapshot_diff_for_day_range
+    description: A function to calculate snapshot for a given source table, for a range of days. The result is stored in temp_target_table.
+    docs:
+      show: true
+    arguments:
+      - name: source_name
+        type: string
+        description: Name of the model for which snapshot is being calculated
+      - name: target_name
+        type: string
+        description: Name of the model where snapshot records are stored
+      - name: temp_source_table
+        type: string
+        description: Name of the temporary table which stores snaphot diff for a day
+      - name: temp_target_table
+        type: string
+        description: Name of the temporary table which stores snaphot diff for a day range. This contains the final output from macro
+      - name: snapshot_start_date
+        type: string
+        description: Start date(yyyy-mm-dd) for snapshot day range. This is inclusive
+      - name: snapshot_end_date
+        type: string
+        description: End date(yyyy-mm-dd) for snapshot day range. This is non-inclusive
+      - name: updated_at_col_name
+        type: string
+        description: A column name in source data that indicates when each record was last updated
+      - name: valid_from_col_name
+        type: string
+        description: A column name in the snapshot table that indicates when the snapshot row was first inserted and became valid
+      - name: valid_to_col_name
+        type: string
+        description: A column name in the snapshot table that indicates when this row is no longer valid
+      - name: source_unique_key
+        type: string
+        description: A column name in source data that indicates the primary key column(s) (string or array)
+      - name: partition_by_key
+        type: json
+        description: BigQuery supports the use of a partition by clause to easily partition a table by a column or expression. This option can help decrease latency and cost when querying large tables
+      - name: cluster_by_key
+        type: string
+        description: A list of column name to co-locate related data in bigquery table
