@@ -1,0 +1,127 @@
+version: 2
+
+models:
+  - name: dummy_snapshot_full_refresh
+    description: "placeholder"
+    config:
+      materialized: "incremental_snapshot"
+      enabled: '{{ target.name == "ci" }}'
+      unique_key: ["account_id", "valid_from"]
+      source_name: "stg_dummy"
+      temp_source_table: "dummy_snapshot_source"
+      temp_target_table: "dummy_snapshot_target"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_sdf_snapshot.dummy_snapshot_expected"
+      snapshot_start_date: "2025-01-01"
+      snapshot_end_date: "2025-01-03"
+      full_refresh: true
+      updated_at_col_name: "closed_at"
+      valid_from_col_name: "valid_from"
+      valid_to_col_name: "valid_until"
+      source_unique_key: "account_id"
+      source_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at
+        from unnest([
+          struct('record to be ignored as it is out of backfill date range' as test_case_description, '1' as account_id, 100 as balance, timestamp('2024-01-01 00:00:00 UTC') as closed_at),
+          struct('record to be ignore as it is updated later in same day' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at),
+          struct('record to be inserted' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at),
+          struct('record to be inserted, as new version of existing source record' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
+          struct('record to be inserted as is, since target will be dropped for full refresh' as test_case_description, '2' as account_id, 500 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
+          struct('record to be inserted as is, since target will be dropped for full refresh' as test_case_description, '3' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at)
+        ]) as row
+      target_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at,
+          row.valid_from,
+          row.valid_until
+        from unnest([
+          struct('record will be dropped for full refresh' as test_case_description, '2' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('record will be dropped for full refresh' as test_case_description, '3' as account_id, 50 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+        ]) as row
+      expected_target_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at,
+          row.valid_from,
+          row.valid_until
+        from unnest([
+          struct('record to be inserted' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at, timestamp('2025-01-01 01:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
+          struct('record to be inserted, as new version of existing source record' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('record to be inserted as is, since target will be dropped for full refresh' as test_case_description, '2' as account_id, 500 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('record to be inserted as is, since target will be dropped for full refresh' as test_case_description, '3' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+        ]) as row
+
+    tests:
+      - dbt_utils.equality:
+          compare_model: "{{target.database}}.{{target.schema}}_sdf_snapshot.dummy_snapshot_expected"
+
+  - name: dummy_snapshot_incremental
+    description: "placeholder"
+    config:
+      materialized: "incremental_snapshot"
+      enabled: '{{ target.name == "ci" }}'
+      unique_key: ["account_id", "valid_from"]
+      source_name: "stg_dummy"
+      temp_source_table: "dummy_snapshot_source"
+      temp_target_table: "dummy_snapshot_target"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_sdf_snapshot.dummy_snapshot_expected"
+      snapshot_start_date: "2025-01-01"
+      snapshot_end_date: "2025-01-03"
+      full_refresh: false
+      updated_at_col_name: "closed_at"
+      valid_from_col_name: "valid_from"
+      valid_to_col_name: "valid_until"
+      source_unique_key: "account_id"
+      source_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at
+        from unnest([
+          struct('record to be ignored as it is out of backfill date range' as test_case_description, '1' as account_id, 100 as balance, timestamp('2024-01-01 00:00:00 UTC') as closed_at),
+          struct('record to be ignore as it is updated later in same day' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at),
+          struct('record to be inserted' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at),
+          struct('record to be inserted, as new version of existing source record' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
+          struct('record to be inserted as new version of existing record' as test_case_description, '2' as account_id, 500 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
+          struct('record to be dropped as new version exist in target' as test_case_description, '3' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at)
+        ]) as row
+      target_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at,
+          row.valid_from,
+          row.valid_until
+        from unnest([
+          struct('records valid_until will bet set' as test_case_description, '2' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('record will remain as is' as test_case_description, '3' as account_id, 50 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+        ]) as row
+      expected_target_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at,
+          row.valid_from,
+          row.valid_until
+        from unnest([
+          struct('record to be inserted' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at, timestamp('2025-01-01 01:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
+          struct('record to be inserted, as new version of existing source record' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('records valid_until will bet set' as test_case_description, '2' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
+          struct('record to be inserted as new version of existing record' as test_case_description, '2' as account_id, 500 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('record will remain as is' as test_case_description, '3' as account_id, 50 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+        ]) as row
+
+    tests:
+      - dbt_utils.equality:
+          compare_model: "{{target.database}}.{{target.schema}}_sdf_snapshot.dummy_snapshot_expected"
