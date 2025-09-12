@@ -1,0 +1,181 @@
+version: 2
+
+models:
+  - name: liquidity_pools_snapshot
+    description: '{{ doc("liquidity_pools_snapshot") }}'
+    tests:
+      - dbt_utils.recency:
+          tags: [recency]
+          datepart: day
+          field: cast(closed_at as timestamp)
+          interval: 2
+          config:
+            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - liquidity_pool_id
+            - valid_from
+          meta:
+            description: "Tests the uniqueness combination of: liquidity_pool_id, ledger_entry_change, last_modified_ledger and valid_from."
+    columns:
+      - name: liquidity_pool_id
+        description: '{{ doc("liquidity_pool_id") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: type
+        description: '{{ doc("pool_type") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: fee
+        description: '{{ doc("fee") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: trustline_count
+        description: '{{ doc("trustline_count") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: pool_share_count
+        description: '{{ doc("pool_share_count") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_a_id
+        description: '{{ doc("asset_a_id") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_a_type
+        description: '{{ doc("asset_a_type") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_a_code
+        description: '{{ doc("asset_a_code") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_a_issuer
+        description: '{{ doc("asset_a_issuer") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_a_amount
+        description: '{{ doc("asset_a_amount") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_b_id
+        description: '{{ doc("asset_b_id") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_b_type
+        description: '{{ doc("asset_a_type") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_b_code
+        description: '{{ doc("asset_a_code") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_b_issuer
+        description: '{{ doc("asset_a_issuer") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_b_amount
+        description: '{{ doc("asset_a_amount") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+          - stellar_dbt_public.incremental_accepted_values:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+              values: [0, 1, 2]
+
+      - name: deleted
+        description: '{{ doc("deleted") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+      - name: valid_from
+        description: '{{ doc("valid_from") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+      - name: valid_to
+        description: '{{ doc("valid_to") }}'

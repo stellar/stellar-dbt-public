@@ -1,0 +1,32 @@
+version: 2
+
+macros:
+  - name: calculate_snapshot_diff_for_day
+    description: A function to calculate snapshot for a given source table
+    docs:
+      show: true
+    arguments:
+      - name: source_name
+        type: string
+        description: Name of the model for which snapshot is being calculated
+      - name: target_name
+        type: string
+        description: Name of the model where snapshot records are stored
+      - name: source_start_date
+        type: string
+        description: Start date(yyyy-mm-dd) for snapshot day range. This is inclusive
+      - name: source_end_date
+        type: string
+        description: End date(yyyy-mm-dd) for snapshot day range. This is non-inclusive. All the changes occured to a given entity(identified by primary key) between start date and end date are compressed to a single record. The record with last updated at val is preferred.
+      - name: updated_at_col_name
+        type: string
+        description: A column name in source data that indicates when each record was last updated
+      - name: valid_from_col_name
+        type: string
+        description: A column name in the snapshot table that indicates when the snapshot row was first inserted and became valid
+      - name: valid_to_col_name
+        type: string
+        description: A column name in the snapshot table that indicates when this row is no longer valid
+      - name: source_unique_key_cols
+        type: string
+        description: A list of column names in source data that indicates the primary key column(s) (string or array)

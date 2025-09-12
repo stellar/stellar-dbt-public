@@ -1,0 +1,7 @@
+version: 2
+
+macros:
+  - name: incremental_snapshot
+    description: A custom materialization built over incremental materialization to compute snapshot before running the actual incremental model. This is equivalent to running a custom SQL as part of Sql header or pre_hook. However there is limitation in DBT which restricts usage of source/ref in pre_hook/sql header. https://github.com/dbt-labs/docs.getdbt.com/issues/4890
+    docs:
+      show: true
