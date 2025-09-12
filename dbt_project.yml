@@ -46,7 +46,7 @@ models:
     marts:
       +materialized: table # how the mart models will be materialized
     snapshots:
-      +materialized: table
+      +materialized: incremental_snapshot
 
   elementary:
     +schema: elementary
