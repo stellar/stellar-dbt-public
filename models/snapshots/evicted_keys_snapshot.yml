@@ -45,5 +45,12 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+
       - name: valid_to
         description: '{{ doc("valid_to") }}'
