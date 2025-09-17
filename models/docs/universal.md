@@ -125,3 +125,7 @@ The sequence number of this ledger. It represents the order of the ledger within
 - Cluster Field
 - Required Field
 {% enddocs %}
+
+{% docs ledger_entry_type %}
+The type ledger entry for data stored such as contract data or liquidity pools
+{% enddocs %}
