@@ -49,6 +49,7 @@ In dbt, you can configure the materialization of your models. Materializations a
 3. [Incremental](https://docs.getdbt.com/docs/build/materializations#incremental): allows dbt to insert or update records into a table since the last time that dbt was run
 4. [Ephemeral](https://docs.getdbt.com/docs/build/materializations#ephemeral): these are not directly built into the database. instead, dbt will interpolate the code from this model into dependent models as a common table expression
 5. [Materialized View](https://docs.getdbt.com/docs/build/materializations#materialized-view): allows the creation and maintenance of materialized views in the target database
+6. [Incremental Snapshot](./macros/materializations/incremental_snapshot.sql): This is a custom materialization built by SDF to support snapshots with backfilling capabilities.
 
 > _*Note:*_ More information about materializations can be found [here](https://docs.getdbt.com/docs/build/materializations#overview)
 
@@ -111,6 +112,26 @@ What not to do in marts:
 - The actions listed in staging or intermediate
 
 > _*Note:*_ More information about `marts` layer can be found [here](https://docs.getdbt.com/best-practices/how-we-structure/4-marts).
+
+
+4. Snapshots
+   The snapshots layer is used to capture and track changes in source data over time. It allows us to build Slowly Changing Dimension (SCD) Type-2 tables, where each record stores both its validity period (valid_from, valid_to) and current state. Snapshots enable analysts to answer point-in-time questions (e.g., “What was a user’s balance on March 30, 2024?”).
+
+What to do in snapshots:
+
+- Capture historical changes in source or staging tables
+- Maintain valid_from and valid_to fields for tracking record validity
+- Use for entities that require historical tracking (users, balances, contracts, etc.)
+- Apply deterministic backfills or repairs using Airflow orchestration
+- Build on top of custom snapshot macros (instead of DBT native snapshots) for reliability and backfilling capabilites.
+
+What not to do in snapshots:
+
+- Perform business aggregations or heavy joins (leave this to intermediate/marts)
+- Store unrelated business logic — snapshots should focus only on state tracking
+- Use for data that does not require historical changes (e.g., static reference tables)
+
+> _*Note:*_ More information about `snapshot` in this project (custom materialization, macros, orchestration, and repairs) can be found in [here](./docs/snapshot.md)
 
 ### Development Folders
 

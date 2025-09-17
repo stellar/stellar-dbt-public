@@ -126,6 +126,19 @@ The sequence number of this ledger. It represents the order of the ledger within
 - Required Field
 {% enddocs %}
 
+{% docs airflow_start_ts %}
+The timestamp when the airflow job starts. The airflow job writes data to the
+bigquery tables. This can be used to know if data was added as backfill. Example; When close_date is old, however airflow_start_ts is recent.
+{% enddocs %}
+
+{% docs valid_from %}
+The timestamp when this snapshot row was first inserted and became effective. This helps in tracking changes over time.
+{% enddocs %}
+
+{% docs valid_to %}
+The timestamp when this row is no longer valid. If `null`, the setting is currently active.
+{% enddocs %}
+
 {% docs ledger_entry_type %}
 The type ledger entry for data stored such as contract data or liquidity pools
 {% enddocs %}

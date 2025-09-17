@@ -31,6 +31,9 @@ vars:
   airflow_start_timestamp: "{{ env_var('AIRFLOW_START_TIMESTAMP', '2000-01-01') }}"
   is_recency_airflow_task: "{{ env_var('IS_RECENCY_AIRFLOW_TASK', 'false') }}"
   is_singular_airflow_task: "{{ env_var('IS_SINGULAR_AIRFLOW_TASK', 'false') }}"
+  snapshot_start_date: "{{ env_var('SNAPSHOT_START_DATE', '2000-01-01') }}"
+  snapshot_end_date: "{{ env_var('SNAPSHOT_END_DATE', '2000-01-02') }}"
+  snapshot_full_refresh: "{{ env_var('SNAPSHOT_FULL_REFRESH', 'false') }}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -42,6 +45,8 @@ models:
       +materialized: view # how the intermediate models will be materialized
     marts:
       +materialized: table # how the mart models will be materialized
+    snapshots:
+      +materialized: incremental_snapshot
 
   elementary:
     +schema: elementary
