@@ -16,7 +16,8 @@ with
         select
             kh as ledger_key_hash
             , shl.closed_at
-            , 'yes' as is_evicted
+            , shl.sequence as ledger_sequence
+            , true as is_evicted
         from {{ ref('stg_history_ledgers') }} as shl
         cross join unnest(shl.evicted_ledger_keys_hash) as kh
         {% if is_incremental() %}
@@ -28,9 +29,10 @@ with
 
     , restored as (
         select
-            ledger_key_hash as key_hash
+            ledger_key_hash
             , closed_at
-            , 'no' as is_evicted
+            , ledger_sequence
+            , false as is_evicted
         from {{ ref('stg_restored_key') }}
         {% if is_incremental() %}
       where true
