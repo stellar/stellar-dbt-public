@@ -29,7 +29,7 @@ with
 
     , restored as (
         select
-            ledger_key_hash as key_hash
+            ledger_key_hash
             , closed_at
             , ledger_sequence
             , 'no' as is_evicted
