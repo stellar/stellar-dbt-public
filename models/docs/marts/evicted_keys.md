@@ -8,6 +8,6 @@ The Evicted keys table tracks eviction and restoration of ledger entry keys.
 
 {% docs is_evicted %}
 
-Status flag indicates whether an entry is evicted or not. 'no' signifies key has been restored.
+Status flag indicates whether an entry is evicted or not. false signifies key has been restored.
 
 {% enddocs %}

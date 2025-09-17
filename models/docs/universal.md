@@ -137,4 +137,7 @@ The timestamp when this snapshot row was first inserted and became effective. Th
 
 {% docs valid_to %}
 The timestamp when this row is no longer valid. If `null`, the setting is currently active.
+
+{% docs ledger_entry_type %}
+The type ledger entry for data stored such as contract data or liquidity pools
 {% enddocs %}
