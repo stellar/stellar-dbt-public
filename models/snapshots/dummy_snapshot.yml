@@ -10,7 +10,7 @@ models:
       source_name: "stg_dummy"
       temp_source_table: "dummy_snapshot_source"
       temp_target_table: "dummy_snapshot_target"
-      expected_target_table_name: "{{target.database}}.{{target.schema}}_sdf_snapshot.dummy_snapshot_expected"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_expected"
       snapshot_start_date: "2025-01-01"
       snapshot_end_date: "2025-01-03"
       full_refresh: true
@@ -61,7 +61,7 @@ models:
 
     tests:
       - dbt_utils.equality:
-          compare_model: "{{target.database}}.{{target.schema}}_sdf_snapshot.dummy_snapshot_expected"
+          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_expected"
 
   - name: dummy_snapshot_incremental
     description: "placeholder"
@@ -72,7 +72,7 @@ models:
       source_name: "stg_dummy"
       temp_source_table: "dummy_snapshot_source"
       temp_target_table: "dummy_snapshot_target"
-      expected_target_table_name: "{{target.database}}.{{target.schema}}_sdf_snapshot.dummy_snapshot_expected"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_expected"
       snapshot_start_date: "2025-01-01"
       snapshot_end_date: "2025-01-03"
       full_refresh: false
@@ -124,4 +124,4 @@ models:
 
     tests:
       - dbt_utils.equality:
-          compare_model: "{{target.database}}.{{target.schema}}_sdf_snapshot.dummy_snapshot_expected"
+          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_expected"
