@@ -1,0 +1,84 @@
+version: 2
+
+models:
+  - name: asset_balances__daily_agg
+    description: '{{ doc("asset_balances__daily_agg") }}'
+    tests:
+      - dbt_utils.recency:
+          tags: [recency]
+          datepart: day
+          field: day
+          interval: 2
+          config:
+            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
+    columns:
+      - name: day
+        description: '{{ doc("day_agg") }}'
+        tests:
+          - not_null
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: liquidity_pool_balance
+        description: '{{ doc("liquidity_pool_balance") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: offer_balance
+        description: '{{ doc("offer_balance") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: trustline_balance
+        description: '{{ doc("trustline_balance") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: total_accounts_with_liquidity_pool_balance
+        description: '{{ doc("total_accounts_with_liquidity_pool_balance") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: total_accounts_with_offer_balance
+        description: '{{ doc("total_accounts_with_offer_balance") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: total_accounts_with_trustline_balance
+        description: '{{ doc("total_accounts_with_trustline_balance") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
