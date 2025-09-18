@@ -6,6 +6,12 @@ Table containing the daily aggregate of asset balances.
 
 {% enddocs %}
 
+{% docs day_agg %}
+
+Date by which all metrics are aggregated. In the agg_network_stats table, all aggregations are daily.
+
+{% enddocs %}
+
 {% docs liquidity_pool_balance %}
 
 The sum of balances across all liquidity pools for a given asset.
