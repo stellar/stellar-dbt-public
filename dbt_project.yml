@@ -34,6 +34,7 @@ vars:
   snapshot_start_date: "{{ env_var('SNAPSHOT_START_DATE', '2000-01-01') }}"
   snapshot_end_date: "{{ env_var('SNAPSHOT_END_DATE', '2000-01-02') }}"
   snapshot_full_refresh: "{{ env_var('SNAPSHOT_FULL_REFRESH', 'false') }}"
+  execution_date: "{{ env_var('EXECUTION_DATE', '2000-01-01') }}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
