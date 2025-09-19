@@ -161,9 +161,19 @@ There are three different test types:
 
 <br>
 
----
 
 # Getting Started
+
+## Download gcloud CLI
+Follow the instructions here: https://cloud.google.com/sdk/docs/install
+
+## Verify python and pip installation
+1. Run
+```
+python --version
+pip --version
+```
+to make sure python and pip are installed.
 
 ## Download the Repo
 
@@ -182,13 +192,56 @@ cp example.env .env
 ```
 
 2. Set the various `DBT_*` variables (e.g. `DBT_DATASET`, `DBT_PROJECT`)
+
+```
+export DBT_TARGET="prod";
+
+export DBT_DATASET="crypto_stellar";
+
+export DBT_PROJECT="crypto-stellar";
+
+export DBT_MAX_BYTES_BILLED="550000000000";
+
+export DBT_JOB_TIMEOUT="300";
+
+export DBT_THREADS="1";
+
+export DBT_JOB_RETRIES="1";
+
+export IS_RECENCY_AIRFLOW_TASK=False;
+```
 3. Execute `setup.sh` to create a virtual environment and install required dbt dependencies
 
 ```
 source setup.sh
 ```
+> _*Note:*_ Once the virtualenv is created, you will have to run
+```
+source env/bin/activate
+```
+to activate the virtual environment.
+
+
+> _*Note:*_ Once this command will set up a virtualenv, everytime you restart the bash command/or the virtual environment, you will have to run
+```
+source .env
+```
+to load the environment variables.
 
 4. Set up OAuth by running `gloud init` and following the account information prompts
+
+> _*Note:*_ You only need OAuth for local development
+
+> _*Note:*_ It is also possible to use a GCP service account key. Instructions [here](https://docs.getdbt.com/docs/core/connect-data-platform/bigquery-setup#service-account-file)
+
+> _*Note:*_ If using the GCS datastore, you can run the following to set GCP credentials to use in your shell
+
+```
+gcloud auth login
+gcloud config set project <your gcp project>
+gcloud auth application-default login
+```
+
 5. To verify if all libraries have been correctly installed, use the command `pip list`
 6. Execute the command `dbt debug` to ensure that all configurations are working correctly
 
