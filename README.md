@@ -238,7 +238,7 @@ to load the environment variables.
 
 ```
 gcloud auth login
-gcloud config set project dev-hubble
+gcloud config set project <your gcp project>
 gcloud auth application-default login
 ```
 
