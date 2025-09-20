@@ -3,7 +3,7 @@ version: 2
 models:
   - name: history_assets
     description: '{{ doc("history_assets") }}'
-    tests:
+    data_tests:
       - dbt_utils.recency:
           tags: [recency]
           datepart: day
@@ -28,7 +28,7 @@ models:
     columns:
       - name: asset_id
         description: '{{ doc("assets_id") }}'
-        tests:
+        data_tests:
           - incremental_unique:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
@@ -38,7 +38,7 @@ models:
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
@@ -47,7 +47,7 @@ models:
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
@@ -55,7 +55,7 @@ models:
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
@@ -63,14 +63,14 @@ models:
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
