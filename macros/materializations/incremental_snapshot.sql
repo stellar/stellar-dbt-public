@@ -36,7 +36,7 @@
 
   {{ return({'relations': [target_relation]}) }}
 {%- else -%}
-  {%- set presql = calculate_snapshot_diff_for_day_range(
+  {%- set presql = stellar_dbt_public.calculate_snapshot_diff_for_day_range(
       config.get('source_name'),
       this,
       this.project ~ '.' ~ this.schema ~ '.' ~ config.get('temp_source_table'),
