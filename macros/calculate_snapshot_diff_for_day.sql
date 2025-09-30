@@ -34,7 +34,7 @@ WITH source_ranked AS (
 source_deduped AS (
     SELECT * EXCEPT (row_num),
     -- Add two columns to normalize source and target datasets
-           {{ updated_at_col_name }} AS {{ valid_from_col_name }},
+           CAST({{ updated_at_col_name }} AS TIMESTAMP) AS {{ valid_from_col_name }},
            CAST(NULL AS TIMESTAMP) AS {{ valid_to_col_name }}
     FROM source_ranked
     WHERE row_num = 1
