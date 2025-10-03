@@ -21,7 +21,7 @@
 
 {%- set columns = adapter.get_columns_in_relation(ref(source_name)) -%}
 {%- set dest_cols_csv = get_quoted_csv(columns | map(attribute="name")) -%}
-{%- set date_range = generate_date_range(snapshot_start_date, snapshot_end_date) -%}
+{%- set date_range = stellar_dbt_public.generate_date_range(snapshot_start_date, snapshot_end_date) -%}
 {%- set full_refresh_mode = (should_full_refresh()) -%}
 {%- set existing_relation = load_relation(this) %}
 
@@ -43,7 +43,7 @@
     {% if loop.index == 1 %}
         {%- if existing_relation is none or full_refresh_mode -%}
             {#-- Use source data if target does not exist yet or macro is run in full refresh mode  --#}
-            {%- set source_data = calculate_snapshot_diff_for_day(
+            {%- set source_data = stellar_dbt_public.calculate_snapshot_diff_for_day(
                     source_name,
                     none,
                     date_range[i],
@@ -53,16 +53,16 @@
                     valid_to_col_name,
                     source_unique_key_cols
                 ) -%}
-            {{ create_temp_table_with_data(temp_target_table, source_data, partition_by_key, cluster_by_key) }}
+            {{ stellar_dbt_public.create_temp_table_with_data(temp_target_table, source_data, partition_by_key, cluster_by_key) }}
         {%- else -%}
             {#-- Use active records from target data  --#}
-            {%- set active_target_data = get_active_records_from_target_table(target_name, valid_to_col_name) -%}
-            {{ create_temp_table_with_data(temp_target_table, active_target_data, partition_by_key, cluster_by_key) }}
+            {%- set active_target_data = stellar_dbt_public.get_active_records_from_target_table(target_name, valid_to_col_name) -%}
+            {{ stellar_dbt_public.create_temp_table_with_data(temp_target_table, active_target_data, partition_by_key, cluster_by_key) }}
         {% endif %}
     {% endif %}
 
     {#-- Create source temp table for given day  --#}
-    {%- set source_data = calculate_snapshot_diff_for_day(
+    {%- set source_data = stellar_dbt_public.calculate_snapshot_diff_for_day(
             source_name,
             temp_target_table,
             date_range[i],
@@ -73,11 +73,11 @@
             source_unique_key_cols
         ) -%}
 
-    {{ create_temp_table_with_data(temp_source_table, source_data, none, none) }}
+    {{ stellar_dbt_public.create_temp_table_with_data(temp_source_table, source_data, none, none) }}
 
     {#-- Merge source temp table into target temp table  --#}
     {{
-        merge_source_into_target(
+        stellar_dbt_public.merge_source_into_target(
             temp_target_table,
             temp_source_table,
             source_unique_key_cols,
