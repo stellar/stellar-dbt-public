@@ -23,7 +23,7 @@ with
             , s.weight
             , s.sponsor
             , s.last_modified_ledger
-            , l.closed_at
+            , s.closed_at
             , s.ledger_entry_change
             , s.deleted
             -- table only has natural keys, creating a primary key
@@ -36,13 +36,11 @@ with
                     order by s.last_modified_ledger desc, s.ledger_entry_change desc
                 ) as row_nr
         from {{ ref('stg_account_signers') }} as s
-        join {{ ref('stg_history_ledgers') }} as l
-            on s.last_modified_ledger = l.sequence
 
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                TIMESTAMP(s.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
+                timestamp(s.batch_run_date) >= timestamp_sub('{{ dbt_airflow_macros.ts(timezone=none) }}', interval 7 day)
         {% endif %}
     )
 select

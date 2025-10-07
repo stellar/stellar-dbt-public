@@ -36,7 +36,7 @@ with
             , a.threshold_high
             , a.last_modified_ledger
             , a.ledger_entry_change
-            , l.closed_at
+            , a.closed_at
             , a.deleted
             , a.sponsor
             , a.sequence_ledger
@@ -51,13 +51,11 @@ with
                 )
                 as row_nr
         from {{ ref('stg_accounts') }} as a
-        join {{ ref('stg_history_ledgers') }} as l
-            on a.last_modified_ledger = l.sequence
 
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                TIMESTAMP(a.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
+                timestamp(a.batch_run_date) >= timestamp_sub('{{ dbt_airflow_macros.ts(timezone=none) }}', interval 7 day)
         {% endif %}
     )
 

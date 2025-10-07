@@ -37,7 +37,7 @@ with
             , lp.asset_b_amount
             , lp.last_modified_ledger
             , lp.ledger_entry_change
-            , l.closed_at
+            , lp.closed_at
             , lp.deleted
             , lp.batch_run_date
             , row_number()
@@ -46,13 +46,11 @@ with
                     order by lp.last_modified_ledger desc, lp.ledger_entry_change desc
                 ) as row_nr
         from {{ ref('stg_liquidity_pools') }} as lp
-        join {{ ref('stg_history_ledgers') }} as l
-            on lp.last_modified_ledger = l.sequence
 
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                TIMESTAMP(lp.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
+                timestamp(lp.batch_run_date) >= timestamp_sub('{{ dbt_airflow_macros.ts(timezone=none) }}', interval 7 day)
         {% endif %}
 
     )

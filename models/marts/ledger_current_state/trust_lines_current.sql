@@ -31,7 +31,7 @@ with
             , tl.trust_line_limit
             , tl.last_modified_ledger
             , tl.ledger_entry_change
-            , l.closed_at
+            , tl.closed_at
             , tl.deleted
             -- table only has natural keys, creating a primary key
             , concat(tl.account_id, '-', tl.asset_code, '-', tl.asset_issuer, '-', tl.liquidity_pool_id
@@ -43,13 +43,11 @@ with
                     order by tl.last_modified_ledger desc, tl.ledger_entry_change desc
                 ) as row_nr
         from {{ ref('stg_trust_lines') }} as tl
-        join {{ ref('stg_history_ledgers') }} as l
-            on tl.last_modified_ledger = l.sequence
 
         {% if is_incremental() %}
             -- limit the number of partitions fetched incrementally
             where
-                TIMESTAMP(tl.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
+                timestamp(tl.batch_run_date) >= timestamp_sub('{{ dbt_airflow_macros.ts(timezone=none) }}', interval 7 day)
         {% endif %}
 
     )
