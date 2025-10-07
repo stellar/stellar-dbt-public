@@ -13,9 +13,9 @@
 with
     dt as (
         {% if not is_incremental() %}
-        select dates as day
-        from unnest(generate_date_array('2023-01-01', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
-    {% else %}
+            select dates as day
+            from unnest(generate_date_array('2023-01-01', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+        {% else %}
             select date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day
         {% endif %}
     )
@@ -72,8 +72,8 @@ select
     dt.day
     , acc.account_id
     , acc.asset_type
-    , acc.asset_issuer
-    , acc.asset_code
+    , if(acc.asset_type = 'native', 'XLM', acc.asset_issuer) as asset_issuer
+    , if(acc.asset_type = 'native', 'XLM', acc.asset_code) as asset_code
     , acc.balance
 from dt
 inner join filtered_acc as acc
