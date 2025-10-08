@@ -28,7 +28,7 @@ with
             , o.price
             , o.flags
             , o.last_modified_ledger
-            , l.closed_at
+            , o.closed_at
             , o.ledger_entry_change
             , o.deleted
             , o.sponsor
@@ -39,13 +39,11 @@ with
                     order by o.last_modified_ledger desc, o.ledger_entry_change desc
                 ) as row_nr
         from {{ ref('stg_offers') }} as o
-        join {{ ref('stg_history_ledgers') }} as l
-            on o.last_modified_ledger = l.sequence
 
         {% if is_incremental() %}
             -- limit the number of partitions fetched
             where
-                TIMESTAMP(o.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
+                timestamp(o.batch_run_date) >= timestamp_sub('{{ dbt_airflow_macros.ts(timezone=none) }}', interval 7 day)
         {% endif %}
 
     )
