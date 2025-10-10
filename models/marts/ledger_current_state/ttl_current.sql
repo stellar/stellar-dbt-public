@@ -29,7 +29,7 @@ with
             , row_number()
                 over (
                     partition by ttl.key_hash
-                    order by ttl.closed_at
+                    order by ttl.closed_at desc
                 ) as rn
         from {{ ref('stg_ttl') }} as ttl
         {% if is_incremental() %}
