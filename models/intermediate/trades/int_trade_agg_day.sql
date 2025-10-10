@@ -24,7 +24,7 @@ with
             , buying_amount
         from {{ ref('stg_history_trades') }}
         where
-            ledger_closed_at < timestamp_add(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day), interval 1 day )
+            ledger_closed_at < timestamp_add(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day), interval 1 day)
             and ledger_closed_at >= timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day)
     )
 
