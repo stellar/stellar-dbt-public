@@ -4,11 +4,11 @@
 }}
 
 WITH data AS (
-  SELECT 
-    ledger_sequence, 
-    closed_at, 
-    ledger_key_hash, 
-    key_decoded, 
+  SELECT
+    ledger_sequence,
+    closed_at,
+    ledger_key_hash,
+    key_decoded,
     val_decoded
   FROM {{ ref('contract_data_snapshot') }}
   WHERE contract_id = 'CAFJZQWSED6YAWZU3GWRTOCNPPCGBN32L7QV43XX5LZLFTK6JLN34DLN'
@@ -36,11 +36,11 @@ parsed AS (
 SELECT *
 FROM parsed
 WHERE asset_code NOT IN (
-  'admin', 
-  'assets', 
-  'base_asset', 
-  'decimals', 
-  'last_timestamp', 
-  'period', 
+  'admin',
+  'assets',
+  'base_asset',
+  'decimals',
+  'last_timestamp',
+  'period',
   'resolution'
 )
