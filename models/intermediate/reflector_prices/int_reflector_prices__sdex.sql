@@ -4,11 +4,11 @@
 }}
 
 WITH data AS (
-  SELECT 
-    ledger_sequence, 
-    closed_at, 
+  SELECT
+    ledger_sequence,
+    closed_at,
     ledger_key_hash,
-    key_decoded, 
+    key_decoded,
     val_decoded
   FROM {{ ref('contract_data_snapshot') }}
   WHERE contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
