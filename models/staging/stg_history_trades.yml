@@ -164,6 +164,9 @@ models:
       - name: seller_is_exact
         description: '{{ doc("seller_is_exact") }}'
 
+      - name: selling_liquidity_pool_id_strkey
+        description: '{{ doc("selling_liquidity_pool_id_strkey") }}'
+
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
