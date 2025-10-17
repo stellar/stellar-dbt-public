@@ -142,3 +142,7 @@ Rounding Slippage is always unprofitable for the trader and is not a valid way t
 {% docs seller_is_exact %}
 Indicates whether the buying or selling party trade was impacted by rounding slippage. If true, the buyer was impacted. If false, the seller was impacted
 {% enddocs %}
+
+{% docs selling_liquidity_pool_id_strkey %}
+The unique strkey identifier for a liquidity pool if the trade was executed against a liquidity pool instead of the orderbook
+{% enddocs %}

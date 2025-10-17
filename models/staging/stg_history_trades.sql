@@ -30,6 +30,7 @@ with
             , trade_type
             , rounding_slippage
             , seller_is_exact
+            , selling_liquidity_pool_id_strkey
             , batch_id
             , batch_run_date
             , batch_insert_ts
