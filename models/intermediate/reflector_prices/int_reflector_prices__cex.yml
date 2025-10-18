@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: int_reflector_prices__cex
+    description: '{{ doc("int_reflector_prices__cex") }}'
+    tests:
+      - dbt_utils.recency:
+          tags: [recency]
+          datepart: day
+          field: updated_at
+          interval: 2
+          config:
+            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
+    columns:
+      - name: updated_at
+        description: '{{ doc("updated_at") }}'
+        tests:
+          - not_null
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+        tests:
+          - not_null
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+        tests:
+          - not_null
+
+      - name: usd_price
+        description: '{{ doc("asset_price") }}'
+        tests:
+          - not_null
