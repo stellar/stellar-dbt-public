@@ -19,7 +19,6 @@ env:
   DBT_JOB_TIMEOUT: 300
   DBT_THREADS: 1
   DBT_JOB_RETRIES: 1
-  IS_RECENCY_AIRFLOW_TASK: false
 
 jobs:
   dbt-docs:
