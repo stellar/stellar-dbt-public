@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: stg_assets
+    tests:
+      - incremental_unique_combination_of_columns:
+          date_column_name: "closed_at"
+          greater_than_equal_to: "2 day"
+          combination_of_columns:
+            - asset_type
+            - asset_code
+            - asset_issuer
+            - contract_id
+          meta:
+            description: "Tests the uniqueness combination of: asset_type, asset_code, asset_issuer and contract_id."
+    columns:
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["credit_alphanum4", "credit_alphanum12", "native", "contract"]
+              quote: true
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+        tests:
+          - not_null
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+        tests:
+          - not_null
+
+      - name: contract_id
+        description: '{{ doc("asset_contract_id") }}'
+        tests:
+          - not_null
+          - unique
+
+      - name: created_at
+        description: '{{ doc("asset_created_at") }}'
+        tests:
+          - not_null

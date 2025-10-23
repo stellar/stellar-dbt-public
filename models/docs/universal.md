@@ -95,6 +95,13 @@ The timestamp in UTC when the ledger with this trade was closed.
 Soroban contract id
 {% enddocs %}
 
+{% docs asset_contract_id %}
+contract id of the SAC or contract token.
+{% enddocs %}
+
+{% docs asset_created_at %}
+Timestamp when the asset was minted to stellar network.
+{% enddocs %}
 
 {% docs details_extend_to %}
 Soroban field - ledger extended to
