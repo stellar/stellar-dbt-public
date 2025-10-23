@@ -63,7 +63,7 @@
                 ds.day
                 , ds.account_id
                 , ds.contract_id
-                , last_value(c.balance_on_change_day ignore nulls) over (
+                , last_value(c.balance_on_day ignore nulls) over (
                     partition by ds.account_id, ds.contract_id
                     order by ds.day
                     rows between unbounded preceding and current row
