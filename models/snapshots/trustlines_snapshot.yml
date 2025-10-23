@@ -56,6 +56,9 @@ models:
       - name: asset_code
         description: '{{ doc("asset_code") }}'
 
+      - name: asset_contract_id
+        description: '{{ doc("asset_contract_id") }}'
+
       - name: liquidity_pool_id
         description: '{{ doc("liquidity_pool_id") }}'
         tests:

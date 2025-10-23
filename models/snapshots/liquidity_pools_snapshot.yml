@@ -91,6 +91,9 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
+      - name: asset_a_contract_id
+        description: '{{ doc("asset_contract_id") }}'
+
       - name: asset_b_id
         description: '{{ doc("asset_b_id") }}'
         tests:
@@ -125,6 +128,9 @@ models:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
+
+      - name: asset_b_contract_id
+        description: '{{ doc("asset_contract_id") }}'
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
