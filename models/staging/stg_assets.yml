@@ -16,6 +16,9 @@ models:
 
       - name: asset_contract_id
         description: '{{ doc("asset_contract_id") }}'
+        tests:
+          - not_null
+          - unique
 
       - name: created_at
         description: '{{ doc("asset_created_at") }}'
