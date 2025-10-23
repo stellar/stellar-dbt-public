@@ -153,3 +153,7 @@ models:
               greater_than_equal_to: "2 day"
 
       - name: airflow_start_ts
+      - name: asset_contract_id
+        description: '{{ doc("asset_contract_id") }}'
+        tests:
+          - not_null

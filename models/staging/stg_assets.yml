@@ -33,7 +33,7 @@ models:
         tests:
           - not_null
 
-      - name: contract_id
+      - name: asset_contract_id
         description: '{{ doc("asset_contract_id") }}'
         tests:
           - not_null
