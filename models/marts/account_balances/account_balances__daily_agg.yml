@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: asset_balances__daily_agg
-    description: '{{ doc("asset_balances__daily_agg") }}'
+  - name: account_balances__daily_agg
+    description: '{{ doc("account_balances__daily_agg") }}'
     tests:
       - dbt_utils.recency:
           tags: [recency]
@@ -23,6 +23,13 @@ models:
         description: '{{ doc("day_agg") }}'
         tests:
           - not_null
+
+      - name: account_id
+        description: '{{ doc("account_id") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
@@ -63,34 +70,6 @@ models:
 
       - name: contract_balance
         description: '{{ doc("contract_balance") }}'
-        tests:
-          - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
-
-      - name: total_accounts_with_liquidity_pool_balance
-        description: '{{ doc("total_accounts_with_liquidity_pool_balance") }}'
-        tests:
-          - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
-
-      - name: total_accounts_with_offer_balance
-        description: '{{ doc("total_accounts_with_offer_balance") }}'
-        tests:
-          - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
-
-      - name: total_accounts_with_trustline_balance
-        description: '{{ doc("total_accounts_with_trustline_balance") }}'
-        tests:
-          - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
-
-      - name: total_accounts_with_contract_balance
-        description: '{{ doc("total_accounts_with_contract_balance") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "day"

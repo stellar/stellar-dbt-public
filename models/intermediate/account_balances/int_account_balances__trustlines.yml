@@ -31,6 +31,13 @@ models:
               date_column_name: "day"
               greater_than_equal_to: "2 day"
 
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
       - name: balance
         description: '{{ doc("balance") }}'
         tests:

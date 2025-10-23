@@ -115,12 +115,28 @@ with
         select * from account_to_balances
     )
 
+    , aggregate as (
+        select
+            day
+            , account_id
+            , asset_type
+            , if(asset_type = 'native', 'XLM', asset_issuer) as asset_issuer
+            , if(asset_type = 'native', 'XLM', asset_code) as asset_code
+            , sum(balance) as balance
+        from all_balances
+        group by 1, 2, 3, 4, 5
+    )
+
 select
-    day
-    , account_id
-    , asset_type
-    , if(asset_type = 'native', 'XLM', asset_issuer) as asset_issuer
-    , if(asset_type = 'native', 'XLM', asset_code) as asset_code
-    , sum(balance) as balance
-from all_balances
-group by 1, 2, 3, 4, 5
+    agg.day
+    , agg.account_id
+    , agg.asset_type
+    , agg.asset_issuer
+    , agg.asset_code
+    , a.contract_id
+    , agg.balance
+from aggregate as agg
+left join {{ ref('int_assets') }} as a
+    on agg.asset_type = a.asset_type
+    and agg.asset_code = a.asset_code
+    and agg.asset_issuer = a.asset_issuer
