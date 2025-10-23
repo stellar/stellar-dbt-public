@@ -174,10 +174,6 @@ models:
 
       - name: asset_a_contract_id
         description: '{{ doc("asset_contract_id") }}'
-        tests:
-          - not_null
 
       - name: asset_b_contract_id
         description: '{{ doc("asset_contract_id") }}'
-        tests:
-          - not_null

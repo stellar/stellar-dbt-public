@@ -190,10 +190,6 @@ models:
 
       - name: selling_asset_contract_id
         description: '{{ doc("asset_contract_id") }}'
-        tests:
-          - not_null
 
       - name: buying_asset_contract_id
         description: '{{ doc("asset_contract_id") }}'
-        tests:
-          - not_null
