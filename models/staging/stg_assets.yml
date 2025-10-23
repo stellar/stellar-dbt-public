@@ -19,7 +19,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ["credit_alphanum4", "credit_alphanum12", "native", "contract"]
+              values:
+                ["credit_alphanum4", "credit_alphanum12", "native", "contract"]
               quote: true
 
       - name: asset_code
