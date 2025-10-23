@@ -21,7 +21,7 @@ with
     dates as (
         {% if not is_incremental() %}
             select dates as day
-            from unnest(generate_date_array('2023-01-01', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+            from unnest(generate_date_array('2015-09-30', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
         {% else %}
             select date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day
         {% endif %}

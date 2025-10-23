@@ -162,5 +162,6 @@ with
             and daap.day = cbc.day
         order by 1, 2, 3, 4, 5
     )
+
 select * from all_balances
 where liquidity_pool_balance > 0 or offer_balance > 0 or trustline_balance > 0 or contract_balance > 0

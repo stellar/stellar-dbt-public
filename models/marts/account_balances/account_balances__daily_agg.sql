@@ -30,8 +30,11 @@ with
             , iabc.contract_id
             , iabc.balance as total_balance
         from {{ ref('int_account_balances__trustlines') }} as iabc
+        where
+            true
+            and iabc.balance > 0
         {% if is_incremental() %}
-            where iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
     )
 
@@ -45,8 +48,11 @@ with
             , iablp.contract_id
             , iablp.balance as total_balance
         from {{ ref('int_account_balances__liquidity_pools') }} as iablp
+        where
+            true
+            and iablp.balance > 0
         {% if is_incremental() %}
-            where iablp.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iablp.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
     )
 
@@ -60,8 +66,11 @@ with
             , iabo.contract_id
             , iabo.balance as total_balance
         from {{ ref('int_account_balances__offers') }} as iabo
+        where
+            true
+            and iabo.balance > 0
         {% if is_incremental() %}
-            where iabo.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabo.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
     )
 
@@ -75,8 +84,11 @@ with
             , iabc.contract_id
             , iabc.balance as total_balance
         from {{ ref('int_account_balances__contracts') }} as iabc
+        where
+            true
+            and iabc.balance > 0
         {% if is_incremental() %}
-            where iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
     )
 
@@ -162,4 +174,6 @@ with
         order by 1, 2, 3, 4, 5, 6
     )
 
+-- Filter out rows where all balances are zero
 select * from all_balances
+where liquidity_pool_balance > 0 or offer_balance > 0 or trustline_balance > 0 or contract_balance > 0
