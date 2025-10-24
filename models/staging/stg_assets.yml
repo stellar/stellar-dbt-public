@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_assets
+    columns:
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - not_null
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_contract_id
+        description: '{{ doc("asset_contract_id") }}'
+        tests:
+          - not_null
+          - unique
+
+      - name: created_at
+        description: '{{ doc("asset_created_at") }}'
+        tests:
+          - not_null
