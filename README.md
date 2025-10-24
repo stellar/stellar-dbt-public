@@ -207,8 +207,6 @@ export DBT_JOB_TIMEOUT="300";
 export DBT_THREADS="1";
 
 export DBT_JOB_RETRIES="1";
-
-export IS_RECENCY_AIRFLOW_TASK=False;
 ```
 3. Execute `setup.sh` to create a virtual environment and install required dbt dependencies
 
