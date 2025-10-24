@@ -97,7 +97,7 @@ select
     , a.contract_id
     , agg.balance
 from aggregate as agg
-left join {{ ref('int_assets') }} as a
+left join {{ ref('stg_assets') }} as a
     on agg.asset_type = a.asset_type
     and agg.asset_code = a.asset_code
     and agg.asset_issuer = a.asset_issuer

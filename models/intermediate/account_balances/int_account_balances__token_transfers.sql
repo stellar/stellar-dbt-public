@@ -131,5 +131,5 @@ select
     , a.asset_code
     , db.balance
 from daily_balances as db
-left join {{ ref('int_assets') }} as a
+left join {{ ref('stg_assets') }} as a
     on db.contract_id = a.contract_id
