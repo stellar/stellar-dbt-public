@@ -8,11 +8,11 @@ with
         select
             ledger_key
             , account_id
-            , asset_type
-            , asset_issuer
-            , asset_code
+            , raw_table.asset_type
+            , raw_table.asset_issuer
+            , raw_table.asset_code
             , asset_id
-            , assets.contract_id as asset_contract_id
+            , assets.asset_contract_id
             , liquidity_pool_id
             , balance
             , trust_line_limit

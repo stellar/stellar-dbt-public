@@ -14,14 +14,14 @@ with
             , selling_asset_code
             , selling_asset_issuer
             , selling_asset_id
-            , selling_assets.contract_id as selling_asset_contract_id
+            , selling_assets.asset_contract_id as selling_asset_contract_id
             , selling_amount
             , buying_account_address
             , buying_asset_type
             , buying_asset_code
             , buying_asset_issuer
             , buying_asset_id
-            , buying_asset_id.contract_id as buying_asset_contract_id
+            , buying_asset_id.asset_contract_id as buying_asset_contract_id
             , buying_amount
             , price_n
             , price_d

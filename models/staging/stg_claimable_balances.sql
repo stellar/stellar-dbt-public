@@ -8,9 +8,9 @@ with
         select
             balance_id
             , claimants
-            , asset_type
-            , asset_code
-            , asset_issuer
+            , raw_table.asset_type
+            , raw_table.asset_code
+            , raw_table.asset_issuer
             , asset_id
             , asset_amount
             , sponsor
@@ -23,7 +23,7 @@ with
             , closed_at
             , ledger_sequence
             , batch_insert_ts
-            , assets.contract_id as asset_contract_id
+            , assets.asset_contract_id
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from raw_table
         left join {{ ref('stg_assets') }} as assets
