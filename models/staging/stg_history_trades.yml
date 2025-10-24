@@ -148,6 +148,9 @@ models:
       - name: selling_liquidity_pool_id
         description: '{{ doc("selling_liquidity_pool_id") }}'
 
+      - name: selling_liquidity_pool_id_strkey
+        description: '{{ doc("details_liquidity_pool_id_strkey") }}'
+
       - name: liquidity_pool_fee
         description: '{{ doc("liquidity_pool_fee") }}'
 

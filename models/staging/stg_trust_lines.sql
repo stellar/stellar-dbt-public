@@ -14,6 +14,7 @@ with
             , asset_id
             , assets.contract_id as asset_contract_id
             , liquidity_pool_id
+            , liquidity_pool_id_strkey
             , balance
             , trust_line_limit
             , buying_liabilities

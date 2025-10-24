@@ -7,6 +7,7 @@ with
     , claimable_balance as (
         select
             balance_id
+            , balance_id_strkey
             , claimants
             , asset_type
             , asset_code
