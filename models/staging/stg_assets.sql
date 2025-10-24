@@ -12,3 +12,13 @@ with
 
 select *
 from base_asset_list
+union all
+-- support downstream models that expect native asset to have empty code and issuer
+select
+    '' as asset_code
+    , '' as asset_issuer
+    , asset_type
+    , asset_contract_id
+    , created_at
+from base_asset_list
+where asset_type = 'native'
