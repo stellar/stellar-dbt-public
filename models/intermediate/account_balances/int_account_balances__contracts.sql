@@ -30,7 +30,8 @@ from {{ ref('int_account_balances__token_transfers') }} as tt
 where
     true
     -- Only count C address balances
-    and iabc.account_id like 'C%'
+    and tt.account_id like 'C%'
+    and tt.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
 {% if is_incremental() %}
-    and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+    and tt.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
 {% endif %}

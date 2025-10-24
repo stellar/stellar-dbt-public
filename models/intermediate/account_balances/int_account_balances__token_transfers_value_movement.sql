@@ -24,7 +24,10 @@ with
     dates as (
         {% if not is_incremental() %}
             select dates as day
-            from unnest(generate_date_array('2015-09-30', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+            -- Because table only contains C addresses, initial start date is when smart contracts were added to Stellar
+            from unnest(generate_date_array('2022-02-20', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+            -- If G, B, and L addresses are added in the future, change start date to genesis
+            -- from unnest(generate_date_array('2015-09-30', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
         {% else %}
             select date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day
         {% endif %}
