@@ -1,5 +1,6 @@
 {% set meta_config = {
     "materialized": "incremental",
+    "incremental_strategy": "insert_overwrite",
     "unique_key": ["day", "account_id", "contract_id"],
     "partition_by": {
          "field": "day"
@@ -17,6 +18,8 @@
 }}
 
 -- This table computes the daily balance for a given account_id
+-- Note that account_id currently only includes C addresses because int_account_balances__token_transfers_value_movement
+-- currently only includes C addresses
 with
 {% if is_incremental() %}
         -- Create a union of previous balances and new value movements for incremental runs
@@ -32,7 +35,7 @@ with
                 -- Get the latest balance from before the incremental run date
                 and day <= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
             qualify row_number() over (
-                partition by day, account_id, contract_id
+                partition by account_id, contract_id
                 order by day desc
             ) = 1
         ),

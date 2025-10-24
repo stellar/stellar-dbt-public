@@ -17,6 +17,7 @@
 }}
 
 -- Account balances for C addresses only
+-- This table doesn't do any transformations/filtering because int_account_balances__token_transfers currently only contains C addresses
 select
     d.day
     , tt.account_id

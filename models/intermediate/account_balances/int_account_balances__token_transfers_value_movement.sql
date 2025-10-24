@@ -17,7 +17,7 @@
 }}
 
 -- This int table computes the daily value movement for a given account_id NOT the daily balance.
--- account_id includes G, C, B, and L addresses.
+-- account_id includes only C addresses currently.
 -- The daily balance will be aggregated in int_account_balances__token_transfers.sql
 -- TODO: account_ids should really be named addresses; This can be refactored in the future if needed
 with
@@ -43,6 +43,9 @@ with
         where
             true
             and tt.to is not null
+            -- Only count C addresses
+            -- This filter can be removed in the future if we want to track G, B, L addresses but would make the table significantly larger
+            and tt.to like 'C%'
         group by 1, 2, 3
     )
 
@@ -59,6 +62,9 @@ with
         where
             true
             and tt.from is not null
+            -- Only count C addresses
+            -- This filter can be removed in the future if we want to track G, B, L addresses but would make the table significantly larger
+            and tt.to like 'C%'
         group by 1, 2, 3
     )
 
