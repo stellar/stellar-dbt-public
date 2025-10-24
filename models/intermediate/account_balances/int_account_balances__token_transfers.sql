@@ -1,6 +1,5 @@
 {% set meta_config = {
     "materialized": "incremental",
-    "incremental_strategy": "insert_overwrite",
     "unique_key": ["day", "account_id", "contract_id"],
     "partition_by": {
          "field": "day"

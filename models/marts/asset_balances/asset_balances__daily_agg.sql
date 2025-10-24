@@ -27,8 +27,11 @@ with
             , sum(iabc.balance) as total_balance
             , count(case when iabc.balance > 0 then 1 end) as total_accounts_with_balance
         from {{ ref('int_account_balances__trustlines') }} as iabc
+        where
+            true
+            and iabc.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% if is_incremental() %}
-            where iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
         group by 1, 2, 3, 4, 5
     )
@@ -43,8 +46,11 @@ with
             , sum(iablp.balance) as total_balance
             , count(case when iablp.balance > 0 then 1 end) as total_accounts_with_balance
         from {{ ref('int_account_balances__liquidity_pools') }} as iablp
+        where
+            true
+            and iablp.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% if is_incremental() %}
-            where iablp.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iablp.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
         group by 1, 2, 3, 4, 5
     )
@@ -59,8 +65,11 @@ with
             , sum(iabo.balance) as total_balance
             , count(case when iabo.balance > 0 then 1 end) as total_accounts_with_balance
         from {{ ref('int_account_balances__offers') }} as iabo
+        where
+            true
+            and iabo.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% if is_incremental() %}
-            where iabo.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabo.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
         group by 1, 2, 3, 4, 5
     )
@@ -75,7 +84,9 @@ with
             , sum(iabc.balance) as total_balance
             , count(case when iabc.balance > 0 then 1 end) as total_accounts_with_balance
         from {{ ref('int_account_balances__contracts') }} as iabc
-        where true
+        where
+            true
+            and iabc.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% if is_incremental() %}
             and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}

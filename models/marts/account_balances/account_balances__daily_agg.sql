@@ -33,6 +33,7 @@ with
         where
             true
             and iabc.balance > 0
+            and iabc.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% if is_incremental() %}
             and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
@@ -51,6 +52,7 @@ with
         where
             true
             and iablp.balance > 0
+            and iablp.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% if is_incremental() %}
             and iablp.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
@@ -69,6 +71,7 @@ with
         where
             true
             and iabo.balance > 0
+            and iabo.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% if is_incremental() %}
             and iabo.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
@@ -87,6 +90,7 @@ with
         where
             true
             and iabc.balance > 0
+            and iabc.day >= date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% if is_incremental() %}
             and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
         {% endif %}
