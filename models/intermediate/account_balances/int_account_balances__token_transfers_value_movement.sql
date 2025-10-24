@@ -67,7 +67,7 @@ with
             and tt.from is not null
             -- Only count C addresses
             -- This filter can be removed in the future if we want to track G, B, L addresses but would make the table significantly larger
-            and tt.to like 'C%'
+            and tt.from like 'C%'
         group by 1, 2, 3
     )
 
