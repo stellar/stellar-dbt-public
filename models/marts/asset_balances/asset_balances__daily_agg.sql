@@ -171,7 +171,6 @@ with
         left join contract_balance_changes as cbc
             on daap.contract_id = cbc.contract_id
             and daap.day = cbc.day
-        order by 1, 2, 3, 4, 5
     )
 
 select * from all_balances
