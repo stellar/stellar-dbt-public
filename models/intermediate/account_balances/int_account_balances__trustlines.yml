@@ -31,6 +31,9 @@ models:
               date_column_name: "day"
               greater_than_equal_to: "2 day"
 
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+
       - name: balance
         description: '{{ doc("balance") }}'
         tests:
