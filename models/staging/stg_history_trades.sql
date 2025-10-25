@@ -21,7 +21,7 @@ with
             , buying_asset_code
             , buying_asset_issuer
             , buying_asset_id
-            , buying_asset_id.asset_contract_id as buying_asset_contract_id
+            , buying_assets.asset_contract_id as buying_asset_contract_id
             , buying_amount
             , price_n
             , price_d
