@@ -18,9 +18,7 @@ models:
         description: '{{ doc("asset_contract_id") }}'
         tests:
           - not_null
-          - unique:
-              config:
-                where: "asset_type != 'native'"
+          - unique
 
       - name: created_at
         description: '{{ doc("asset_created_at") }}'
