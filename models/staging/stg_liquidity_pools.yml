@@ -171,9 +171,3 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
-
-      - name: asset_a_contract_id
-        description: '{{ doc("asset_contract_id") }}'
-
-      - name: asset_b_contract_id
-        description: '{{ doc("asset_contract_id") }}'

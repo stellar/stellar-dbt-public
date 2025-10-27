@@ -14,14 +14,12 @@ with
             , selling_asset_code
             , selling_asset_issuer
             , selling_asset_id
-            , selling_assets.contract_id as selling_asset_contract_id
             , selling_amount
             , buying_account_address
             , buying_asset_type
             , buying_asset_code
             , buying_asset_issuer
             , buying_asset_id
-            , buying_asset_id.contract_id as buying_asset_contract_id
             , buying_amount
             , price_n
             , price_d
@@ -38,14 +36,6 @@ with
             , batch_insert_ts
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from raw_table
-        left join {{ ref('stg_assets') }} as selling_assets
-            on raw_table.selling_asset_code = selling_assets.asset_code
-            and raw_table.selling_asset_issuer = selling_assets.asset_issuer
-            and raw_table.selling_asset_type = selling_assets.asset_type
-        left join {{ ref('stg_assets') }} as buying_assets
-            on raw_table.buying_asset_code = buying_assets.asset_code
-            and raw_table.buying_asset_issuer = buying_assets.asset_issuer
-            and raw_table.buying_asset_type = buying_assets.asset_type
     )
 
 select *
