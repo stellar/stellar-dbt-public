@@ -12,7 +12,6 @@ with
             , raw_table.asset_issuer
             , raw_table.asset_code
             , asset_id
-            , assets.asset_contract_id
             , liquidity_pool_id
             , balance
             , trust_line_limit
@@ -30,10 +29,6 @@ with
             , batch_insert_ts
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from raw_table
-        left join {{ ref('stg_assets') }} as assets
-            on raw_table.asset_code = assets.asset_code
-            and raw_table.asset_issuer = assets.asset_issuer
-            and raw_table.asset_type = assets.asset_type
     )
 
 select *
