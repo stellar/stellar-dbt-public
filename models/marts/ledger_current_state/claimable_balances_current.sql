@@ -38,11 +38,13 @@ with
                     order by cb.closed_at desc
                 ) as rn
         from {{ ref('stg_claimable_balances') }} as cb
+        where
+            true
+            -- TODO: change batch_run_date to closed_at once the table is repartitioned on closed_at
+            and timestamp(batch_run_date) < timestamp(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-            -- limit the number of partitions fetched incrementally
-            where
-                TIMESTAMP(cb.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 2 DAY )
-        {% endif %}
+            and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
+    {% endif %}
     )
 
 select
