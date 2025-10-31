@@ -20,10 +20,11 @@ with
             , true as is_evicted
         from {{ ref('stg_history_ledgers') }} as shl
         cross join unnest(shl.evicted_ledger_keys_hash) as kh
+        where
+            true
+            and closed_at < timestamp(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-      where true
-        and date(closed_at) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
-
+            and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
     )
 
@@ -34,9 +35,11 @@ with
             , ledger_sequence
             , false as is_evicted
         from {{ ref('stg_restored_key') }}
+        where
+            true
+            and closed_at < timestamp(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-      where true
-        and date(closed_at) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+            and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
     )
 

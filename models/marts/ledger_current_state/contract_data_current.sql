@@ -46,11 +46,12 @@ with
                     order by cd.closed_at desc
                 ) as rn
         from {{ ref('stg_contract_data') }} as cd
+        where
+            true
+            and closed_at < timestamp(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-            -- limit the number of partitions fetched incrementally
-            where
-                TIMESTAMP(cd.closed_at) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 day )
-        {% endif %}
+            and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
+    {% endif %}
     )
 
 select

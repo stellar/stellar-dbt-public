@@ -28,13 +28,15 @@ vars:
     test_coverage_target: 50
     exclude_packages: ["elementary"]
 
-  airflow_start_timestamp: "{{ env_var('AIRFLOW_START_TIMESTAMP', '2000-01-01') }}"
+  airflow_start_timestamp: "{{ env_var('AIRFLOW_START_TIMESTAMP', '2000-01-01T00:00:00') }}"
   is_recency_airflow_task: "{{ env_var('IS_RECENCY_AIRFLOW_TASK', 'false') }}"
   is_singular_airflow_task: "{{ env_var('IS_SINGULAR_AIRFLOW_TASK', 'false') }}"
   snapshot_start_date: "{{ env_var('SNAPSHOT_START_DATE', '2000-01-01') }}"
   snapshot_end_date: "{{ env_var('SNAPSHOT_END_DATE', '2000-01-02') }}"
   snapshot_full_refresh: "{{ env_var('SNAPSHOT_FULL_REFRESH', 'false') }}"
   execution_date: "{{ env_var('EXECUTION_DATE', '2000-01-01') }}"
+  batch_start_date: "{{ env_var('BATCH_START_DATE', '2000-01-01') }}"
+  batch_end_date: "{{ env_var('BATCH_END_DATE', '2000-01-02') }}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models

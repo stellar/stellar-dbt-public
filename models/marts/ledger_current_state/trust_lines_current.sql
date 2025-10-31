@@ -44,11 +44,13 @@ with
                 ) as row_nr
         from {{ ref('stg_trust_lines') }} as tl
 
+        where
+            true
+            -- TODO: change batch_run_date to closed_at once the table is repartitioned on closed_at
+            and timestamp(batch_run_date) < timestamp(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-            -- limit the number of partitions fetched incrementally
-            where
-                timestamp(tl.batch_run_date) >= timestamp_sub('{{ dbt_airflow_macros.ts(timezone=none) }}', interval 7 day)
-        {% endif %}
+            and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
+    {% endif %}
 
     )
 select

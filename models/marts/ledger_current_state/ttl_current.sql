@@ -32,11 +32,12 @@ with
                     order by ttl.closed_at desc
                 ) as rn
         from {{ ref('stg_ttl') }} as ttl
+        where
+            true
+            and closed_at < timestamp(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-            -- limit the number of partitions fetched incrementally
-            where
-                TIMESTAMP(ttl.closed_at) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 DAY )
-        {% endif %}
+            and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
+    {% endif %}
     )
 
 select
