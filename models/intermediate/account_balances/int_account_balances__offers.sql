@@ -13,11 +13,11 @@
 
 with
     dt as (
-        {% if not is_incremental() %}
-            select dates as day
-            from unnest(generate_date_array('2023-01-01', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+        select dates as day
+        {% if is_incremental() %}
+            from unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% else %}
-            select date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day
+            from unnest(generate_date_array('2023-01-01', date('{{ var("batch_start_date") }}'))) as dates
         {% endif %}
     )
 
@@ -57,30 +57,47 @@ with
             and (acc.valid_to is null or date(acc.valid_to) >= (select min(day) from dt))
     )
 
-select
-    dt.day
-    , tl.account_id
-    , tl.asset_type
-    , tl.asset_issuer
-    , tl.asset_code
-    , tl.balance
-from dt
-inner join filtered_tl as tl
-    on
-    dt.day >= date(tl.valid_from)
-    and (dt.day < date(tl.valid_to) or tl.valid_to is null)
 
-union all
+    , aggregate as (
+        select
+            dt.day
+            , tl.account_id
+            , tl.asset_type
+            , tl.asset_issuer
+            , tl.asset_code
+            , tl.balance
+        from dt
+        inner join filtered_tl as tl
+            on
+            dt.day >= date(tl.valid_from)
+            and (dt.day < date(tl.valid_to) or tl.valid_to is null)
+
+        union all
+
+        select
+            dt.day
+            , acc.account_id
+            , acc.asset_type
+            , if(acc.asset_type = 'native', 'XLM', acc.asset_issuer) as asset_issuer
+            , if(acc.asset_type = 'native', 'XLM', acc.asset_code) as asset_code
+            , acc.balance
+        from dt
+        inner join filtered_acc as acc
+            on
+            dt.day >= date(acc.valid_from)
+            and (dt.day < date(acc.valid_to) or acc.valid_to is null)
+    )
 
 select
-    dt.day
-    , acc.account_id
-    , acc.asset_type
-    , if(acc.asset_type = 'native', 'XLM', acc.asset_issuer) as asset_issuer
-    , if(acc.asset_type = 'native', 'XLM', acc.asset_code) as asset_code
-    , acc.balance
-from dt
-inner join filtered_acc as acc
-    on
-    dt.day >= date(acc.valid_from)
-    and (dt.day < date(acc.valid_to) or acc.valid_to is null)
+    agg.day
+    , agg.account_id
+    , agg.asset_type
+    , agg.asset_issuer
+    , agg.asset_code
+    , a.asset_contract_id as contract_id
+    , agg.balance
+from aggregate as agg
+left join {{ ref('stg_assets') }} as a
+    on agg.asset_type = a.asset_type
+    and agg.asset_code = a.asset_code
+    and agg.asset_issuer = a.asset_issuer
