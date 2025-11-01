@@ -32,7 +32,7 @@ with
             from {{ this }}
             where true
                 -- Get the latest balance from before the incremental run date
-                and day <= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+                and day < date('{{ var("batch_end_date") }}')
             qualify row_number() over (
                 partition by account_id, contract_id
                 order by day desc
@@ -49,7 +49,7 @@ with
             where true
                 -- Get the value movements since the last balance date
                 and day > (select max(day) from previous_balances)
-                and day <= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+                and day < date('{{ var("batch_end_date") }}')
         ),
 
         merged_value_movements as (
@@ -72,7 +72,11 @@ with
         {% endif %}
         where
             true
-            and day <= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+            {% if is_incremental() %}
+            and day < date('{{ var("batch_end_date") }}')
+        {% else %}
+                and day <= date('{{ var("batch_start_date") }}')
+            {% endif %}
         group by 1, 2
     )
 
@@ -82,7 +86,11 @@ with
             , adr.contract_id
             , day
         from account_date_ranges as adr
-        , unnest(generate_date_array(adr.start_day, date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as day
+        {% if is_incremental() %}
+            , unnest(generate_date_array(adr.start_day, date('{{ var("batch_end_date") }}'))) as day
+        {% else %}
+            , unnest(generate_date_array(adr.start_day, date('{{ var("batch_start_date") }}'))) as day
+        {% endif %}
     )
 
     , cumulative as (
@@ -102,7 +110,11 @@ with
         {% endif %}
         where
             true
-            and day <= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+            {% if is_incremental() %}
+            and day < date('{{ var("batch_end_date") }}')
+        {% else %}
+                and day <= date('{{ var("batch_start_date") }}')
+            {% endif %}
     )
 
     , daily_balances as (
@@ -132,4 +144,4 @@ select
     , db.balance
 from daily_balances as db
 left join {{ ref('stg_assets') }} as a
-    on db.contract_id = a.contract_id
+    on db.contract_id = a.asset_contract_id

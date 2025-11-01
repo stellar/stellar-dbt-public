@@ -16,15 +16,6 @@ models:
               date_column_name: "day"
               greater_than_equal_to: "2 day"
 
-      - name: asset_type
-        description: '{{ doc("asset_type") }}'
-
-      - name: asset_issuer
-        description: '{{ doc("asset_issuer") }}'
-
-      - name: asset_code
-        description: '{{ doc("asset_code") }}'
-
       - name: contract_id
         description: '{{ doc("contract_id") }}'
         tests:

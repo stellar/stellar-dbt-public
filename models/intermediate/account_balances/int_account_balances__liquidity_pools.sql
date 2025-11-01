@@ -133,7 +133,7 @@ select
     , agg.asset_type
     , agg.asset_issuer
     , agg.asset_code
-    , a.contract_id
+    , a.asset_contract_id as contract_id
     , agg.balance
 from aggregate as agg
 left join {{ ref('stg_assets') }} as a
