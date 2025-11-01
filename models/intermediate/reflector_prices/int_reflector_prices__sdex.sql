@@ -3,45 +3,44 @@
     )
 }}
 
-WITH data AS (
-  SELECT
-    ledger_sequence,
-    closed_at,
-    ledger_key_hash,
-    key_decoded,
-    val_decoded
-  FROM {{ ref('contract_data_snapshot') }}
-  WHERE contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
-    AND contract_key_type = 'ScValTypeScvLedgerKeyContractInstance'
+with asset_coding as (
+    select distinct
+        json_extract_scalar(storage_item, '$.key.address') as asset_contract_id,
+        cast(json_extract_scalar(storage_item, '$.val.u32') as int) as asset_index
+    from {{ ref('contract_data_snapshot') }},
+    unnest(json_extract_array(val_decoded, '$.contract_instance.storage')) as storage_item
+    where contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
+      and contract_durability = 'ContractDataDurabilityPersistent'
+      and json_extract_scalar(storage_item, '$.key.address') is not null
 ),
 
-parsed AS (
-  SELECT
-    closed_at AS updated_at,
-    COALESCE(
-      JSON_EXTRACT_SCALAR(item, '$.key.string'),
-      JSON_EXTRACT_SCALAR(item, '$.key.symbol'),
-      JSON_EXTRACT_SCALAR(item, '$.key.address')
-    ) AS asset_id,
-    'GC2M2UTZ57GSENZBTPMLPB6QSAL2USIPHMXSUCT2I3V24GYWF3EI6RFA' AS asset_issuer,  -- value of admin key
-    COALESCE(
-      JSON_EXTRACT_SCALAR(item, '$.val.address'),
-      JSON_EXTRACT_SCALAR(item, '$.val.u32'),
-      JSON_EXTRACT_SCALAR(item, '$.val.u64'),
-      JSON_EXTRACT_SCALAR(item, '$.val.string')
-    ) AS usd_price
-  FROM data,
-  UNNEST(JSON_EXTRACT_ARRAY(val_decoded, '$.contract_instance.storage')) AS item
+price_data as (
+    select
+        ledger_sequence,
+        closed_at,
+        cast(right(json_extract_scalar(key_decoded, '$.u128'), 2) as int) as asset_index,
+        cast(json_extract_scalar(val_decoded, '$.i128') as float64) as price,
+        json_extract_scalar(key_decoded, '$.u128') as key_name
+    from {{ ref('contract_data_snapshot') }}
+    where contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
+      and contract_durability != 'ContractDataDurabilityPersistent'
+),
+
+joined as (
+    select
+        price_data.key_name,
+        price_data.ledger_sequence,
+        price_data.closed_at,
+        asset_coding.asset_contract_id,
+        stg_assets.asset_code,
+        stg_assets.asset_type,
+        stg_assets.asset_issuer,
+        asset_coding.asset_index,
+        price_data.price
+    from price_data
+    left join asset_coding using (asset_index)
+    left join {{ ref('stg_assets') }} stg_assets using (asset_contract_id)
 )
 
-SELECT *
-FROM parsed
-WHERE asset_id NOT IN (
-  'admin',
-  'assets',
-  'base_asset',
-  'decimals',
-  'last_timestamp',
-  'period',
-  'resolution'
-)
+select *
+from joined
