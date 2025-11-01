@@ -22,14 +22,13 @@
 -- TODO: account_ids should really be named addresses; This can be refactored in the future if needed
 with
     dates as (
-        {% if not is_incremental() %}
-            select dates as day
-            -- Because table only contains C addresses, initial start date is when smart contracts were added to Stellar
-            from unnest(generate_date_array('2022-02-20', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
-            -- If G, B, and L addresses are added in the future, change start date to genesis
-            -- from unnest(generate_date_array('2015-09-30', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+        select dates as day
+        {% if is_incremental() %}
+            from unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% else %}
-            select date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day
+            -- Because table only contains C addresses, initial start date is when smart contracts were added to Stellar
+            -- If G, B, and L addresses are added in the future, change start date to genesis at '2015-09-30'
+            from unnest(generate_date_array('2022-02-20', date('{{ var("batch_start_date") }}'))) as dates
         {% endif %}
     )
 

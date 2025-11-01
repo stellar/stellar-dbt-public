@@ -31,7 +31,7 @@ where
     true
     -- Only count C address balances
     and tt.account_id like 'C%'
-    and tt.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+    and tt.day < date('{{ var("batch_end_date") }}')
 {% if is_incremental() %}
-    and tt.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+    and tt.day >= date('{{ var("batch_start_date") }}')
 {% endif %}

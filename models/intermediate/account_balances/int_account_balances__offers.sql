@@ -13,11 +13,11 @@
 
 with
     dt as (
-        {% if not is_incremental() %}
-            select dates as day
-            from unnest(generate_date_array('2023-01-01', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+        select dates as day
+        {% if is_incremental() %}
+            from unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% else %}
-            select date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day
+            from unnest(generate_date_array('2023-01-01', date('{{ var("batch_start_date") }}'))) as dates
         {% endif %}
     )
 

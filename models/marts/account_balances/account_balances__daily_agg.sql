@@ -22,20 +22,20 @@
 with
     trustline_balance_changes as (
         select
-            iabc.day
-            , iabc.account_id
-            , iabc.asset_code
-            , iabc.asset_issuer
-            , iabc.asset_type
-            , iabc.contract_id
-            , iabc.balance as total_balance
-        from {{ ref('int_account_balances__trustlines') }} as iabc
+            iabt.day
+            , iabt.account_id
+            , iabt.asset_code
+            , iabt.asset_issuer
+            , iabt.asset_type
+            , iabt.contract_id
+            , iabt.balance as total_balance
+        from {{ ref('int_account_balances__trustlines') }} as iabt
         where
             true
-            and iabc.balance > 0
-            and iabc.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabt.balance > 0
+            and iabt.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabt.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
     )
 
@@ -52,9 +52,9 @@ with
         where
             true
             and iablp.balance > 0
-            and iablp.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iablp.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            and iablp.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iablp.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
     )
 
@@ -71,9 +71,9 @@ with
         where
             true
             and iabo.balance > 0
-            and iabo.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabo.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            and iabo.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabo.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
     )
 
@@ -90,9 +90,9 @@ with
         where
             true
             and iabc.balance > 0
-            and iabc.day >= date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabc.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabc.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
     )
 

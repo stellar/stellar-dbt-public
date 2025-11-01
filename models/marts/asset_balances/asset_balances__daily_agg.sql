@@ -19,19 +19,19 @@
 with
     trustline_balance_changes as (
         select
-            iabc.day
-            , iabc.asset_code
-            , iabc.asset_issuer
-            , iabc.asset_type
-            , iabc.contract_id
-            , sum(iabc.balance) as total_balance
-            , count(case when iabc.balance > 0 then 1 end) as total_accounts_with_balance
-        from {{ ref('int_account_balances__trustlines') }} as iabc
+            iabt.day
+            , iabt.asset_code
+            , iabt.asset_issuer
+            , iabt.asset_type
+            , iabt.contract_id
+            , sum(iabt.balance) as total_balance
+            , count(case when iabt.balance > 0 then 1 end) as total_accounts_with_balance
+        from {{ ref('int_account_balances__trustlines') }} as iabt
         where
             true
-            and iabc.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabt.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabt.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
         group by 1, 2, 3, 4, 5
     )
@@ -48,9 +48,9 @@ with
         from {{ ref('int_account_balances__liquidity_pools') }} as iablp
         where
             true
-            and iablp.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iablp.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            and iablp.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iablp.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
         group by 1, 2, 3, 4, 5
     )
@@ -67,9 +67,9 @@ with
         from {{ ref('int_account_balances__offers') }} as iabo
         where
             true
-            and iabo.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabo.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            and iabo.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabo.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
         group by 1, 2, 3, 4, 5
     )
@@ -86,9 +86,9 @@ with
         from {{ ref('int_account_balances__contracts') }} as iabc
         where
             true
-            and iabc.day < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabc.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            and iabc.day >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and iabc.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
         group by 1, 2, 3, 4, 5
     )
