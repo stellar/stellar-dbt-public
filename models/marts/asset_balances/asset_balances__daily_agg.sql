@@ -104,7 +104,7 @@ with
             , coalesce(lpbc.total_accounts_with_balance, 0) as total_accounts_with_liquidity_pool_balance
             , coalesce(obc.total_accounts_with_balance, 0) as total_accounts_with_offer_balance
             , coalesce(tbc.total_accounts_with_balance, 0) as total_accounts_with_trustline_balance
-            , coalesce(tbc.total_accounts_with_trustline) as total_accounts_with_trustline
+            , coalesce(tbc.total_accounts_with_trustline, 0) as total_accounts_with_trustline
 
         from day_account_asset_pairs as daap
 
