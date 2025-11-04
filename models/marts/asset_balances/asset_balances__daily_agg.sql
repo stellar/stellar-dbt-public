@@ -24,6 +24,7 @@ with
             , iabc.asset_issuer
             , iabc.asset_type
             , sum(iabc.balance) as total_balance
+            , count(account_id) as total_accounts_with_trustline
             , count(case when iabc.balance > 0 then 1 end) as total_accounts_with_balance
         from {{ ref('int_account_balances__trustlines') }} as iabc
         {% if is_incremental() %}
@@ -103,6 +104,7 @@ with
             , coalesce(lpbc.total_accounts_with_balance, 0) as total_accounts_with_liquidity_pool_balance
             , coalesce(obc.total_accounts_with_balance, 0) as total_accounts_with_offer_balance
             , coalesce(tbc.total_accounts_with_balance, 0) as total_accounts_with_trustline_balance
+            , coalesce(tbc.total_accounts_with_trustline, 0) as total_accounts_with_trustline
 
         from day_account_asset_pairs as daap
 
