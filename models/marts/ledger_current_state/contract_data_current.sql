@@ -40,11 +40,6 @@ with
             , cd.val_decoded
             , cd.contract_data_xdr
             , concat(cd.contract_id, '-', cd.ledger_key_hash) as unique_id
-            , row_number()
-                over (
-                    partition by cd.contract_id, cd.ledger_key_hash
-                    order by cd.closed_at desc
-                ) as rn
         from {{ ref('stg_contract_data') }} as cd
         where
             true
@@ -52,6 +47,12 @@ with
         {% if is_incremental() %}
             and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by cd.contract_id, cd.ledger_key_hash
+                order by cd.closed_at desc
+            )
+        = 1
     )
 
 select
@@ -79,4 +80,3 @@ select
     , unique_id
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_data
-where rn = 1

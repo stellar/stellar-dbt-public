@@ -38,11 +38,6 @@ with
             , cc.n_imports
             , cc.n_exports
             , cc.n_data_segment_bytes
-            , row_number()
-                over (
-                    partition by cc.contract_code_hash
-                    order by cc.closed_at desc
-                ) as rn
         from {{ ref('stg_contract_code') }} as cc
         where
             true
@@ -50,6 +45,12 @@ with
         {% if is_incremental() %}
             and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by cc.contract_code_hash
+                order by cc.closed_at desc
+            )
+        = 1
     )
 
 select
@@ -75,4 +76,3 @@ select
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_code
-where rn = 1

@@ -33,11 +33,6 @@ with
             , o.deleted
             , o.sponsor
             , o.batch_run_date
-            , row_number()
-                over (
-                    partition by o.offer_id
-                    order by o.last_modified_ledger desc, o.ledger_entry_change desc
-                ) as row_nr
         from {{ ref('stg_offers') }} as o
         where
             true
@@ -46,6 +41,12 @@ with
         {% if is_incremental() %}
             and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by o.offer_id
+                order by o.last_modified_ledger desc, o.ledger_entry_change desc
+            )
+        = 1
 
     )
 select
@@ -70,4 +71,3 @@ select
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_offers
-where row_nr = 1

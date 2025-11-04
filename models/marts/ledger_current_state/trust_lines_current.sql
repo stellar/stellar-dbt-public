@@ -37,11 +37,6 @@ with
             , concat(tl.account_id, '-', tl.asset_code, '-', tl.asset_issuer, '-', tl.liquidity_pool_id
             ) as unique_id
             , tl.batch_run_date
-            , row_number()
-                over (
-                    partition by tl.account_id, tl.asset_code, tl.asset_issuer, tl.liquidity_pool_id
-                    order by tl.last_modified_ledger desc, tl.ledger_entry_change desc
-                ) as row_nr
         from {{ ref('stg_trust_lines') }} as tl
 
         where
@@ -51,7 +46,12 @@ with
         {% if is_incremental() %}
             and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
-
+        qualify row_number()
+            over (
+                partition by tl.account_id, tl.asset_code, tl.asset_issuer, tl.liquidity_pool_id
+                order by tl.last_modified_ledger desc, tl.ledger_entry_change desc
+            )
+        = 1
     )
 select
     account_id
@@ -73,4 +73,3 @@ select
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_tls
-where row_nr = 1

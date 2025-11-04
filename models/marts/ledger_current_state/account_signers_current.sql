@@ -30,11 +30,6 @@ with
             , concat(s.account_id, '-', s.signer
             ) as unique_id
             , s.batch_run_date
-            , row_number()
-                over (
-                    partition by s.account_id, s.signer
-                    order by s.last_modified_ledger desc, s.ledger_entry_change desc
-                ) as row_nr
         from {{ ref('stg_account_signers') }} as s
         where
             true
@@ -43,6 +38,12 @@ with
         {% if is_incremental() %}
             and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by s.account_id, s.signer
+                order by s.last_modified_ledger desc, s.ledger_entry_change desc
+            )
+        = 1
     )
 select
     account_id
@@ -57,4 +58,3 @@ select
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_signers
-where row_nr = 1

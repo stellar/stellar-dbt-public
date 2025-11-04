@@ -67,11 +67,6 @@ with
             , cfg.batch_id
             , cfg.batch_run_date
             , cfg.ledger_sequence
-            , row_number()
-                over (
-                    partition by cfg.config_setting_id
-                    order by cfg.closed_at desc
-                ) as rn
         from {{ ref('stg_config_settings') }} as cfg
         where
             true
@@ -79,6 +74,12 @@ with
         {% if is_incremental() %}
             and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by cfg.config_setting_id
+                order by cfg.closed_at desc
+            )
+        = 1
     )
 
 select
@@ -134,4 +135,3 @@ select
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_settings
-where rn = 1

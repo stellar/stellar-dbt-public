@@ -26,11 +26,6 @@ with
             , ttl.deleted
             , ttl.batch_id
             , ttl.batch_run_date
-            , row_number()
-                over (
-                    partition by ttl.key_hash
-                    order by ttl.closed_at desc
-                ) as rn
         from {{ ref('stg_ttl') }} as ttl
         where
             true
@@ -38,6 +33,12 @@ with
         {% if is_incremental() %}
             and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by ttl.key_hash
+                order by ttl.closed_at desc
+            )
+        = 1
     )
 
 select
@@ -51,4 +52,3 @@ select
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_expiration
-where rn = 1

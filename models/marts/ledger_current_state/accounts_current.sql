@@ -42,14 +42,6 @@ with
             , a.sequence_ledger
             , a.sequence_time
             , a.batch_run_date
-            , row_number()
-                over (
-                    partition by a.account_id
-                    order by
-                        a.last_modified_ledger desc
-                        , a.ledger_entry_change desc
-                )
-                as row_nr
         from {{ ref('stg_accounts') }} as a
         where
             true
@@ -58,6 +50,14 @@ with
         {% if is_incremental() %}
             and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by a.account_id
+                order by
+                    a.last_modified_ledger desc
+                    , a.ledger_entry_change desc
+            )
+        = 1
     )
 
     , account_date as (
@@ -77,7 +77,6 @@ with
         from current_accts
         join account_date
             on current_accts.account_id = account_date.account_id
-        where current_accts.row_nr = 1
     )
 
 /* Return the same fields as the `accounts` table */

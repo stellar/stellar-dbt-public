@@ -32,11 +32,6 @@ with
             , cb.batch_run_date
             , cb.closed_at
             , cb.ledger_sequence
-            , row_number()
-                over (
-                    partition by cb.balance_id
-                    order by cb.closed_at desc
-                ) as rn
         from {{ ref('stg_claimable_balances') }} as cb
         where
             true
@@ -45,6 +40,12 @@ with
         {% if is_incremental() %}
             and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by cb.balance_id
+                order by cb.closed_at desc
+            )
+        = 1
     )
 
 select
@@ -65,4 +66,3 @@ select
     , ledger_sequence
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_balance
-where rn = 1

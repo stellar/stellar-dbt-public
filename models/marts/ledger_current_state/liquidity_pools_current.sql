@@ -40,11 +40,6 @@ with
             , lp.closed_at
             , lp.deleted
             , lp.batch_run_date
-            , row_number()
-                over (
-                    partition by lp.liquidity_pool_id
-                    order by lp.last_modified_ledger desc, lp.ledger_entry_change desc
-                ) as row_nr
         from {{ ref('stg_liquidity_pools') }} as lp
         where
             true
@@ -53,6 +48,12 @@ with
         {% if is_incremental() %}
             and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
     {% endif %}
+        qualify row_number()
+            over (
+                partition by lp.liquidity_pool_id
+                order by lp.last_modified_ledger desc, lp.ledger_entry_change desc
+            )
+        = 1
 
     )
 select
@@ -76,4 +77,3 @@ select
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_lps
-where row_nr = 1
