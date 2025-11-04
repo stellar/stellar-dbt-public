@@ -125,7 +125,6 @@ with
             and daap.asset_code = tbc.asset_code
             and daap.asset_issuer = tbc.asset_issuer
             and daap.day = tbc.day
-        order by 1, 2, 3, 4
     )
 select * from all_balances
 where liquidity_pool_balance > 0 or offer_balance > 0 or trustline_balance > 0
