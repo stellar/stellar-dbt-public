@@ -18,7 +18,7 @@ WITH txn_count AS (
     FROM {{ ref('stg_history_transactions') }}
     --Take all ledgers committed in the last 36 hours to validate newly written data
     -- Alert runs at 12pm UTC in GCP which creates the 36 hour interval
-    WHERE TIMESTAMP(batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
+    WHERE batch_run_date >= DATETIME(TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY ))
     GROUP BY ledger_sequence
 ),
 -- Get the actual count of operations per ledger
@@ -27,8 +27,8 @@ WITH txn_count AS (
          FROM {{ ref('stg_history_transactions') }} A
                   JOIN {{ ref('stg_history_operations') }} B
                        ON A.transaction_id = B.transaction_id
-         WHERE TIMESTAMP(A.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
-            AND TIMESTAMP(B.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
+         WHERE A.batch_run_date >= DATETIME(TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY ))
+            AND B.batch_run_date >= DATETIME(TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY ))
          GROUP BY A.ledger_sequence
      ),
 -- compare actual counts with the counts reported in the ledgers table
@@ -44,7 +44,7 @@ WITH txn_count AS (
                                   ON A.sequence = B.ledger_sequence
                   LEFT OUTER JOIN operation_count C
                                   ON A.sequence = C.ledger_sequence
-         WHERE TIMESTAMP(A.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
+         WHERE A.closed_at >= TIMESTAMP(TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY ))
      )
         , raw_values AS (
     SELECT sequence, closed_at, batch_id,
