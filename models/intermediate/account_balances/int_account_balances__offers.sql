@@ -7,7 +7,7 @@
         , "granularity": "day"
     },
     cluster_by=["asset_type", "asset_code", "asset_issuer"],
-    incremental_predicates=["DBT_INTERNAL_DEST.day >= DATE('" ~ var('execution_date') ~ "')"]
+    incremental_predicates=["DBT_INTERNAL_DEST.day >= DATE('" ~ var('batch_start_date') ~ "')"]
     )
 }}
 
@@ -17,7 +17,7 @@ with
         {% if is_incremental() %}
             from unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% else %}
-            from unnest(generate_date_array('2023-01-01', date('{{ var("batch_start_date") }}'))) as dates
+            from unnest(generate_date_array('2023-01-01', date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% endif %}
     )
 

@@ -84,15 +84,16 @@ with
     -- Given the first day the account_id, contract_id pair should appear,
     -- create a date spine to maintain a day, account_id, contract_id row
     -- from the first day the account_id, contract_id had a non-zero balance
-    -- up until the "batch_start_date" in order to keep a daily balance
-    -- from its first day through "batch_start_date" (usually the current day)
+    -- up until the "batch_end_date" in order to keep a daily balance
+    -- from its first day through "batch_end_date" - 1 day (usually the current day)
     , date_spine as (
         select
             adr.account_id
             , adr.contract_id
             , day
         from account_date_ranges as adr
-        , unnest(generate_date_array(adr.start_day, date('{{ var("batch_start_date") }}'))) as day
+        -- Using batch_end_date - 1 because batch_end_date should not be included in a given run
+        , unnest(generate_date_array(adr.start_day, date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as day
     )
 
     -- With the date spine, a daily balance can be calculated by summing all preceeding

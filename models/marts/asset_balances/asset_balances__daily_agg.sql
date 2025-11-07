@@ -7,7 +7,7 @@
         , "granularity": "day"
     },
     "tags": ["asset_balance_agg"],
-    "incremental_predicates": ["DBT_INTERNAL_DEST.day >= DATE_SUB(DATE('" ~ var('execution_date') ~ "'), INTERVAL 1 DAY)"]
+    "incremental_predicates": ["DBT_INTERNAL_DEST.day >= DATE_SUB(DATE('" ~ var('batch_start_date') ~ "'), INTERVAL 1 DAY)"]
 } %}
 
 {{ config(
