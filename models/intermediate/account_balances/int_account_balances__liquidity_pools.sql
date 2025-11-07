@@ -31,8 +31,8 @@ with
         where
             tl.liquidity_pool_id != ''
             and tl.deleted is false
-            and tl.valid_from <= timestamp(select max(day) from dt)
-            and (tl.valid_to is null or tl.valid_to >= timestamp(select min(day) from dt))
+            and tl.valid_from <= timestamp((select max(day) from dt))
+            and (tl.valid_to is null or tl.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , filtered_lp as (
@@ -40,8 +40,8 @@ with
         from {{ ref('liquidity_pools_snapshot') }} as lp
         where
             lp.deleted is false
-            and lp.valid_from <= timestamp(select max(day) from dt)
-            and (lp.valid_to is null or lp.valid_to >= timestamp(select min(day) from dt))
+            and lp.valid_from <= timestamp((select max(day) from dt))
+            and (lp.valid_to is null or lp.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , all_tl as (

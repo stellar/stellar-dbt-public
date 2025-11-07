@@ -33,8 +33,8 @@ with
         where
             tl.liquidity_pool_id = ''
             and tl.deleted is false
-            and tl.valid_from <= timestamp(select max(day) from dt)
-            and (tl.valid_to is null or tl.valid_to >= timestamp(select min(day) from dt))
+            and tl.valid_from <= timestamp((select max(day) from dt))
+            and (tl.valid_to is null or tl.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , filtered_acc as (
@@ -49,8 +49,8 @@ with
         from {{ ref('accounts_snapshot') }} as acc
         where
             acc.deleted is false
-            and acc.valid_from <= timestamp(select max(day) from dt)
-            and (acc.valid_to is null or acc.valid_to >= timestamp(select min(day) from dt))
+            and acc.valid_from <= timestamp((select max(day) from dt))
+            and (acc.valid_to is null or acc.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , aggregate as (
