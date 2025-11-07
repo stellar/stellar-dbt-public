@@ -112,7 +112,6 @@ with
             on ds.day = dc.day
             and ds.account_id = dc.account_id
             and ds.contract_id = dc.contract_id
-        group by 1, 2, 3
     )
 
 select
