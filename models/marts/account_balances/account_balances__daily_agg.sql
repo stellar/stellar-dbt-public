@@ -51,7 +51,6 @@ with
         from {{ ref('int_account_balances__liquidity_pools') }} as iablp
         where
             true
-            and iablp.balance > 0
             and iablp.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
             and iablp.day >= date('{{ var("batch_start_date") }}')
@@ -70,7 +69,6 @@ with
         from {{ ref('int_account_balances__offers') }} as iabo
         where
             true
-            and iabo.balance > 0
             and iabo.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
             and iabo.day >= date('{{ var("batch_start_date") }}')
@@ -89,7 +87,6 @@ with
         from {{ ref('int_account_balances__contracts') }} as iabc
         where
             true
-            and iabc.balance > 0
             and iabc.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
             and iabc.day >= date('{{ var("batch_start_date") }}')
@@ -177,6 +174,4 @@ with
             and daap.day = cbc.day
     )
 
--- Filter out rows where all balances are zero
 select * from all_balances
-where liquidity_pool_balance > 0 or offer_balance > 0 or trustline_balance > 0 or contract_balance > 0

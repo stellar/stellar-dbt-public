@@ -31,8 +31,8 @@ with
         where
             tl.liquidity_pool_id != ''
             and tl.deleted is false
-            and date(tl.valid_from) <= (select max(day) from dt)
-            and (tl.valid_to is null or date(tl.valid_to) >= (select min(day) from dt))
+            and tl.valid_from <= timestamp(select max(day) from dt)
+            and (tl.valid_to is null or tl.valid_to >= timestamp(select min(day) from dt))
     )
 
     , filtered_lp as (
@@ -40,8 +40,8 @@ with
         from {{ ref('liquidity_pools_snapshot') }} as lp
         where
             lp.deleted is false
-            and date(lp.valid_from) <= (select max(day) from dt)
-            and (lp.valid_to is null or date(lp.valid_to) >= (select min(day) from dt))
+            and lp.valid_from <= timestamp(select max(day) from dt)
+            and (lp.valid_to is null or lp.valid_to >= timestamp(select min(day) from dt))
     )
 
     , all_tl as (
@@ -51,8 +51,8 @@ with
         from dt
         inner join filtered_tl as ftl
             on
-            dt.day >= date(ftl.valid_from)
-            and (dt.day < date(ftl.valid_to) or ftl.valid_to is null)
+            timestamp(dt.day) >= ftl.valid_from
+            and (timestamp(dt.day) < ftl.valid_to or ftl.valid_to is null)
     )
 
     , all_lp as (
@@ -62,8 +62,8 @@ with
         from dt
         inner join filtered_lp as flp
             on
-            dt.day >= date(flp.valid_from)
-            and (dt.day < date(flp.valid_to) or flp.valid_to is null)
+            timestamp(dt.day) >= flp.valid_from
+            and (timestamp(dt.day) < flp.valid_to or flp.valid_to is null)
     )
 
     , joined as (

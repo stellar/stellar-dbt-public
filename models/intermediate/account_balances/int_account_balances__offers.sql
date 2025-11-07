@@ -35,8 +35,8 @@ with
             tl.deleted is false
             and tl.selling_liabilities > 0
             and tl.liquidity_pool_id = ''
-            and date(tl.valid_from) <= (select max(day) from dt)
-            and (tl.valid_to is null or date(tl.valid_to) >= (select min(day) from dt))
+            and tl.valid_from <= timestamp(select max(day) from dt)
+            and (tl.valid_to is null or tl.valid_to >= timestamp(select min(day) from dt))
 
     )
 
@@ -53,8 +53,8 @@ with
         where
             acc.deleted is false
             and acc.selling_liabilities > 0
-            and date(acc.valid_from) <= (select max(day) from dt)
-            and (acc.valid_to is null or date(acc.valid_to) >= (select min(day) from dt))
+            and acc.valid_from <= timestamp(select max(day) from dt)
+            and (acc.valid_to is null or acc.valid_to >= timestamp(select min(day) from dt))
     )
 
 
@@ -69,8 +69,8 @@ with
         from dt
         inner join filtered_tl as tl
             on
-            dt.day >= date(tl.valid_from)
-            and (dt.day < date(tl.valid_to) or tl.valid_to is null)
+            timestamp(dt.day) >= tl.valid_from
+            and (timestamp(dt.day) < tl.valid_to or tl.valid_to is null)
 
         union all
 
@@ -84,8 +84,8 @@ with
         from dt
         inner join filtered_acc as acc
             on
-            dt.day >= date(acc.valid_from)
-            and (dt.day < date(acc.valid_to) or acc.valid_to is null)
+            timestamp(dt.day) >= acc.valid_from
+            and (timestamp(dt.day) < acc.valid_to or acc.valid_to is null)
     )
 
 select
