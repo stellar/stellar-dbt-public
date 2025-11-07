@@ -93,7 +93,8 @@ select
     -- This is because there are trustlines that have been created for assets that have had
     -- zero asset value movement meaning they won't have any events in token_transfers.
     -- Because there are no events in token_transfers there is nothing for stg_assets to create
-    -- the asset --> contract_id association hence there being null contract_ids in this agg
+    -- the asset --> contract_id association hence there being null contract_ids in this agg.
+    -- This will be fixed in the future when stellar-etl adds contract_ids for assets.
     , a.asset_contract_id as contract_id
     , agg.balance
 from aggregate as agg
