@@ -1,5 +1,6 @@
 {{ config(
     materialized='incremental',
+    incremental_strategy="insert_overwrite",
     unique_key=["day", "account_id", "asset_code", "asset_issuer", "asset_type"],
     partition_by={
          "field": "day"

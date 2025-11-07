@@ -1,5 +1,6 @@
 {{ config(
     materialized='incremental',
+    incremental_strategy="insert_overwrite",
     unique_key=["day", "account_id", "asset_code", "asset_issuer", "asset_type"],
     partition_by={
          "field": "day"
@@ -41,8 +42,8 @@ with
         select
             acc.account_id
             , 'native' as asset_type
-            , '' as asset_issuer
-            , '' as asset_code
+            , 'XLM' as asset_issuer
+            , 'XLM' as asset_code
             , acc.balance
             , acc.valid_from
             , acc.valid_to
@@ -73,8 +74,8 @@ with
             dt.day
             , acc.account_id
             , acc.asset_type
-            , if(acc.asset_type = 'native', 'XLM', acc.asset_issuer) as asset_issuer
-            , if(acc.asset_type = 'native', 'XLM', acc.asset_code) as asset_code
+            , acc.asset_issuer
+            , acc.asset_code
             , acc.balance
         from dt
         inner join filtered_acc as acc
