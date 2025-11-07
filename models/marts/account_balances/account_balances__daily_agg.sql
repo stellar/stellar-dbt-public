@@ -162,18 +162,22 @@ with
 
         left join liquidity_pools_balance_changes as lpbc
             on daap.contract_id = lpbc.contract_id
+            and daap.account_id = lpbc.account_id
             and daap.day = lpbc.day
 
         left join offer_balance_changes as obc
             on daap.contract_id = obc.contract_id
+            and daap.account_id = obc.account_id
             and daap.day = obc.day
 
         left join trustline_balance_changes as tbc
             on daap.contract_id = tbc.contract_id
+            and daap.account_id = tbc.account_id
             and daap.day = tbc.day
 
         left join contract_balance_changes as cbc
             on daap.contract_id = cbc.contract_id
+            and daap.account_id = cbc.account_id
             and daap.day = cbc.day
     )
 
