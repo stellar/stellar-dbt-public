@@ -29,6 +29,9 @@ with
         from {{ ref('int_account_balances__trustlines') }} as iabt
         where
             true
+            -- TODO: Remove nulls for now until contract_ids are added to stellar-etl.
+            -- These assets would always have zero balance anyways so they have little impact
+            and iabt.contract_id is not null
             and iabt.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
             and iabt.day >= date('{{ var("batch_start_date") }}')

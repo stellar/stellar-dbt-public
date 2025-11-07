@@ -78,8 +78,8 @@ with
             dt.day
             , acc.account_id
             , acc.asset_type
-            , if(acc.asset_type = 'native', 'XLM', acc.asset_issuer) as asset_issuer
-            , if(acc.asset_type = 'native', 'XLM', acc.asset_code) as asset_code
+            , 'XLM' as asset_issuer
+            , 'XLM' as asset_code
             , acc.balance
         from dt
         inner join filtered_acc as acc

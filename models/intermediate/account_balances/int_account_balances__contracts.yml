@@ -7,7 +7,9 @@ models:
       - name: day
         description: '{{ doc("day_agg") }}'
         tests:
-          - not_null
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
 
       - name: account_id
         description: '{{ doc("account_id") }}'

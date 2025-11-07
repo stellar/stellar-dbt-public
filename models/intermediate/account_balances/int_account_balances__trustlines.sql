@@ -89,6 +89,11 @@ select
     , agg.asset_type
     , agg.asset_issuer
     , agg.asset_code
+    -- Note: There will be some null contract_ids from this trustlines aggregate
+    -- This is because there are trustlines that have been created for assets that have had
+    -- zero asset value movement meaning they won't have any events in token_transfers.
+    -- Because there are no events in token_transfers there is nothing for stg_assets to create
+    -- the asset --> contract_id association hence there being null contract_ids in this agg
     , a.asset_contract_id as contract_id
     , agg.balance
 from aggregate as agg
