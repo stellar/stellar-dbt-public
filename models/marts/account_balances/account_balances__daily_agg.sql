@@ -1,13 +1,14 @@
 {% set meta_config = {
     "materialized": "incremental",
     "incremental_strategy": "insert_overwrite",
-    "unique_key": ["day", "contract_id"],
+    "unique_key": ["day", "account_id", "contract_id"],
     "partition_by": {
          "field": "day"
         , "data_type": "date"
         , "granularity": "day"
     },
-    "tags": ["asset_balance_agg"],
+    "cluster_by": ["account_id", "contract_id"],
+    "tags": ["asset_balance_agg", "account_balance_agg"],
     "incremental_predicates": ["DBT_INTERNAL_DEST.day >= DATE_SUB(DATE('" ~ var('batch_start_date') ~ "'), INTERVAL 1 DAY)"]
 } %}
 
@@ -17,38 +18,39 @@
     )
 }}
 
+-- Note that this model is also tagged with asset_balance_agg because it shares the same upstream dependencies.
+-- The tag asset_balance_agg will be used in airflow to run this model and its upstream dependencies.
 with
     trustline_balance_changes as (
         select
             iabt.day
+            , iabt.account_id
             , iabt.asset_code
             , iabt.asset_issuer
             , iabt.asset_type
             , iabt.contract_id
-            , sum(iabt.balance) as total_balance
-            , count(case when iabt.balance > 0 then 1 end) as total_accounts_with_balance
+            , iabt.balance as total_balance
         from {{ ref('int_account_balances__trustlines') }} as iabt
         where
             true
             -- TODO: Remove nulls for now until contract_ids are added to stellar-etl.
-            -- These assets would always have zero balance anyways so they have little impact
+            -- These accounts would always have zero balance anyways so they have little impact
             and iabt.contract_id is not null
             and iabt.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
             and iabt.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
-        group by 1, 2, 3, 4, 5
     )
 
     , liquidity_pools_balance_changes as (
         select
             iablp.day
+            , iablp.account_id
             , iablp.asset_code
             , iablp.asset_issuer
             , iablp.asset_type
             , iablp.contract_id
-            , sum(iablp.balance) as total_balance
-            , count(case when iablp.balance > 0 then 1 end) as total_accounts_with_balance
+            , iablp.balance as total_balance
         from {{ ref('int_account_balances__liquidity_pools') }} as iablp
         where
             true
@@ -56,18 +58,17 @@ with
         {% if is_incremental() %}
             and iablp.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
-        group by 1, 2, 3, 4, 5
     )
 
     , offer_balance_changes as (
         select
             iabo.day
+            , iabo.account_id
             , iabo.asset_code
             , iabo.asset_issuer
             , iabo.asset_type
             , iabo.contract_id
-            , sum(iabo.balance) as total_balance
-            , count(case when iabo.balance > 0 then 1 end) as total_accounts_with_balance
+            , iabo.balance as total_balance
         from {{ ref('int_account_balances__offers') }} as iabo
         where
             true
@@ -75,18 +76,17 @@ with
         {% if is_incremental() %}
             and iabo.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
-        group by 1, 2, 3, 4, 5
     )
 
     , contract_balance_changes as (
         select
             iabc.day
+            , iabc.account_id
             , iabc.asset_type
             , iabc.asset_code
             , iabc.asset_issuer
             , iabc.contract_id
-            , sum(iabc.balance) as total_balance
-            , count(case when iabc.balance > 0 then 1 end) as total_accounts_with_balance
+            , iabc.balance as total_balance
         from {{ ref('int_account_balances__contracts') }} as iabc
         where
             true
@@ -94,12 +94,12 @@ with
         {% if is_incremental() %}
             and iabc.day >= date('{{ var("batch_start_date") }}')
         {% endif %}
-        group by 1, 2, 3, 4, 5
     )
 
     , day_account_asset_pairs_all as (
         select
             tbc.day
+            , tbc.account_id
             , tbc.asset_type
             , tbc.asset_code
             , tbc.asset_issuer
@@ -110,6 +110,7 @@ with
 
         select
             lpbc.day
+            , lpbc.account_id
             , lpbc.asset_type
             , lpbc.asset_code
             , lpbc.asset_issuer
@@ -120,6 +121,7 @@ with
 
         select
             obc.day
+            , obc.account_id
             , obc.asset_type
             , obc.asset_code
             , obc.asset_issuer
@@ -130,6 +132,7 @@ with
 
         select
             cbc.day
+            , cbc.account_id
             , cbc.asset_type
             , cbc.asset_code
             , cbc.asset_issuer
@@ -145,6 +148,7 @@ with
     , all_balances as (
         select
             daap.day
+            , daap.account_id
             , daap.asset_type
             , daap.asset_code
             , daap.asset_issuer
@@ -153,29 +157,28 @@ with
             , coalesce(obc.total_balance, 0) as offer_balance
             , coalesce(tbc.total_balance, 0) as trustline_balance
             , coalesce(cbc.total_balance, 0) as contract_balance
-            , coalesce(lpbc.total_accounts_with_balance, 0) as total_accounts_with_liquidity_pool_balance
-            , coalesce(obc.total_accounts_with_balance, 0) as total_accounts_with_offer_balance
-            , coalesce(tbc.total_accounts_with_balance, 0) as total_accounts_with_trustline_balance
-            , coalesce(cbc.total_accounts_with_balance, 0) as total_accounts_with_contract_balance
 
         from day_account_asset_pairs as daap
 
         left join liquidity_pools_balance_changes as lpbc
             on daap.contract_id = lpbc.contract_id
+            and daap.account_id = lpbc.account_id
             and daap.day = lpbc.day
 
         left join offer_balance_changes as obc
             on daap.contract_id = obc.contract_id
+            and daap.account_id = obc.account_id
             and daap.day = obc.day
 
         left join trustline_balance_changes as tbc
             on daap.contract_id = tbc.contract_id
+            and daap.account_id = tbc.account_id
             and daap.day = tbc.day
 
         left join contract_balance_changes as cbc
             on daap.contract_id = cbc.contract_id
+            and daap.account_id = cbc.account_id
             and daap.day = cbc.day
     )
 
 select * from all_balances
-where liquidity_pool_balance > 0 or offer_balance > 0 or trustline_balance > 0 or contract_balance > 0

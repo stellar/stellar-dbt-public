@@ -1,5 +1,6 @@
 {{ config(
     materialized='incremental',
+    incremental_strategy="insert_overwrite",
     unique_key=["day", "account_id", "asset_code", "asset_issuer", "asset_type"],
     partition_by={
          "field": "day"
@@ -7,16 +8,16 @@
         , "granularity": "day"
     },
     cluster_by=["asset_type", "asset_code", "asset_issuer"],
-    incremental_predicates=["DBT_INTERNAL_DEST.day >= DATE('" ~ var('execution_date') ~ "')"]
+    incremental_predicates=["DBT_INTERNAL_DEST.day >= DATE('" ~ var('batch_start_date') ~ "')"]
 ) }}
 
 with
     dt as (
-        {% if not is_incremental() %}
-            select dates as day
-            from unnest(generate_date_array('2023-01-01', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+        select dates as day
+        {% if is_incremental() %}
+            from unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% else %}
-            select date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day
+            from unnest(generate_date_array('2023-01-01', date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% endif %}
     )
 
@@ -33,50 +34,72 @@ with
         where
             tl.liquidity_pool_id = ''
             and tl.deleted is false
-            and date(tl.valid_from) <= (select max(day) from dt)
-            and (tl.valid_to is null or date(tl.valid_to) >= (select min(day) from dt))
+            and tl.valid_from <= timestamp((select max(day) from dt))
+            and (tl.valid_to is null or tl.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , filtered_acc as (
         select
             acc.account_id
             , 'native' as asset_type
-            , '' as asset_issuer
-            , '' as asset_code
+            , 'XLM' as asset_issuer
+            , 'XLM' as asset_code
             , acc.balance
             , acc.valid_from
             , acc.valid_to
         from {{ ref('accounts_snapshot') }} as acc
         where
             acc.deleted is false
-            and date(acc.valid_from) <= (select max(day) from dt)
-            and (acc.valid_to is null or date(acc.valid_to) >= (select min(day) from dt))
+            and acc.valid_from <= timestamp((select max(day) from dt))
+            and (acc.valid_to is null or acc.valid_to >= timestamp((select min(day) from dt)))
+    )
+
+    , aggregate as (
+        select
+            dt.day
+            , tl.account_id
+            , tl.asset_type
+            , tl.asset_issuer
+            , tl.asset_code
+            , tl.balance
+        from dt
+        inner join filtered_tl as tl
+            on
+            timestamp(dt.day) >= tl.valid_from
+            and (timestamp(dt.day) < tl.valid_to or tl.valid_to is null)
+
+        union all
+
+        select
+            dt.day
+            , acc.account_id
+            , acc.asset_type
+            , acc.asset_issuer
+            , acc.asset_code
+            , acc.balance
+        from dt
+        inner join filtered_acc as acc
+            on
+            timestamp(dt.day) >= acc.valid_from
+            and (timestamp(dt.day) < acc.valid_to or acc.valid_to is null)
     )
 
 select
-    dt.day
-    , tl.account_id
-    , tl.asset_type
-    , tl.asset_issuer
-    , tl.asset_code
-    , tl.balance
-from dt
-inner join filtered_tl as tl
-    on
-    dt.day >= date(tl.valid_from)
-    and (dt.day < date(tl.valid_to) or tl.valid_to is null)
-
-union all
-
-select
-    dt.day
-    , acc.account_id
-    , acc.asset_type
-    , if(acc.asset_type = 'native', 'XLM', acc.asset_issuer) as asset_issuer
-    , if(acc.asset_type = 'native', 'XLM', acc.asset_code) as asset_code
-    , acc.balance
-from dt
-inner join filtered_acc as acc
-    on
-    dt.day >= date(acc.valid_from)
-    and (dt.day < date(acc.valid_to) or acc.valid_to is null)
+    agg.day
+    , agg.account_id
+    , agg.asset_type
+    , agg.asset_issuer
+    , agg.asset_code
+    -- Note: There will be some null contract_ids from this trustlines aggregate
+    -- This is because there are trustlines that have been created for assets that have had
+    -- zero asset value movement meaning they won't have any events in token_transfers.
+    -- Because there are no events in token_transfers there is nothing for stg_assets to create
+    -- the asset --> contract_id association hence there being null contract_ids in this agg.
+    -- This will be fixed in the future when stellar-etl adds contract_ids for assets.
+    , a.asset_contract_id as contract_id
+    , agg.balance
+from aggregate as agg
+left join {{ ref('stg_assets') }} as a
+    on agg.asset_type = a.asset_type
+    and agg.asset_code = a.asset_code
+    and agg.asset_issuer = a.asset_issuer

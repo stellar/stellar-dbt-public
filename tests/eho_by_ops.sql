@@ -20,17 +20,18 @@ WITH find_missing AS (
   FROM {{ ref('stg_history_operations') }} op
   LEFT OUTER JOIN {{ ref('enriched_history_operations') }} eho
     ON op.op_id = eho.op_id
+    AND eho.closed_at >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
   WHERE eho.op_id IS NULL
     -- Scan only the last 24 hours of data. Alert runs intraday so failures
     -- are caught and resolved quickly.
-    AND TIMESTAMP(op.batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
-    AND TIMESTAMP(op.batch_run_date) < TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 HOUR )
+    AND op.batch_run_date >= DATETIME(TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY ))
+    AND op.batch_run_date < DATETIME(TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 HOUR ))
 ),
 find_max_batch AS (
   SELECT MAX(batch_run_date) AS max_batch
   FROM {{ ref('stg_history_operations') }}
-  WHERE TIMESTAMP(batch_run_date) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY )
-    AND TIMESTAMP(batch_run_date) < TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 HOUR )
+  WHERE batch_run_date >= DATETIME(TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 DAY ))
+    AND batch_run_date < DATETIME(TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 1 HOUR ))
 )
 SELECT batch_run_date,
     batch_id,

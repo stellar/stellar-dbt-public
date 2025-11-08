@@ -30,6 +30,12 @@ The sum of trustline balance for a given asset.
 
 {% enddocs %}
 
+{% docs contract_balance %}
+
+The sum of contract balance for a given asset.
+
+{% enddocs %}
+
 {% docs total_accounts_with_liquidity_pool_balance %}
 
 The count of positive liquidity pool balance holders for a given asset.
@@ -45,5 +51,11 @@ The count of positive offer balance holders for a given asset.
 {% docs total_accounts_with_trustline_balance %}
 
 The count of positive trustline balance holders for a given asset.
+
+{% enddocs %}
+
+{% docs total_accounts_with_contract_balance %}
+
+The count of positive contract balance holders for a given asset.
 
 {% enddocs %}
