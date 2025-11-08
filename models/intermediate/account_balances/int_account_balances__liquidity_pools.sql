@@ -1,5 +1,6 @@
 {{ config(
     materialized='incremental',
+    incremental_strategy="insert_overwrite",
     unique_key=["day", "account_id", "asset_code", "asset_issuer", "asset_type"],
     partition_by={
          "field": "day"
@@ -7,16 +8,16 @@
         , "granularity": "day"
     },
     cluster_by=["asset_type", "asset_code", "asset_issuer"],
-    incremental_predicates=["DBT_INTERNAL_DEST.day >= DATE('" ~ var('execution_date') ~ "')"]
+    incremental_predicates=["DBT_INTERNAL_DEST.day >= DATE('" ~ var('batch_start_date') ~ "')"]
 )}}
 
 with
     dt as (
-        {% if not is_incremental() %}
-            select dates as day
-            from unnest(generate_date_array('2023-01-01', date('{{ dbt_airflow_macros.ts(timezone=none) }}'))) as dates
+        select dates as day
+        {% if is_incremental() %}
+            from unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% else %}
-            select date('{{ dbt_airflow_macros.ts(timezone=none) }}') as day
+            from unnest(generate_date_array('2023-01-01', date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
         {% endif %}
     )
 
@@ -31,8 +32,8 @@ with
         where
             tl.liquidity_pool_id != ''
             and tl.deleted is false
-            and date(tl.valid_from) <= (select max(day) from dt)
-            and (tl.valid_to is null or date(tl.valid_to) >= (select min(day) from dt))
+            and tl.valid_from <= timestamp((select max(day) from dt))
+            and (tl.valid_to is null or tl.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , filtered_lp as (
@@ -40,8 +41,8 @@ with
         from {{ ref('liquidity_pools_snapshot') }} as lp
         where
             lp.deleted is false
-            and date(lp.valid_from) <= (select max(day) from dt)
-            and (lp.valid_to is null or date(lp.valid_to) >= (select min(day) from dt))
+            and lp.valid_from <= timestamp((select max(day) from dt))
+            and (lp.valid_to is null or lp.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , all_tl as (
@@ -51,8 +52,8 @@ with
         from dt
         inner join filtered_tl as ftl
             on
-            dt.day >= date(ftl.valid_from)
-            and (dt.day < date(ftl.valid_to) or ftl.valid_to is null)
+            timestamp(dt.day) >= ftl.valid_from
+            and (timestamp(dt.day) < ftl.valid_to or ftl.valid_to is null)
     )
 
     , all_lp as (
@@ -62,8 +63,8 @@ with
         from dt
         inner join filtered_lp as flp
             on
-            dt.day >= date(flp.valid_from)
-            and (dt.day < date(flp.valid_to) or flp.valid_to is null)
+            timestamp(dt.day) >= flp.valid_from
+            and (timestamp(dt.day) < flp.valid_to or flp.valid_to is null)
     )
 
     , joined as (
@@ -115,12 +116,28 @@ with
         select * from account_to_balances
     )
 
+    , aggregate as (
+        select
+            day
+            , account_id
+            , asset_type
+            , if(asset_type = 'native', 'XLM', asset_issuer) as asset_issuer
+            , if(asset_type = 'native', 'XLM', asset_code) as asset_code
+            , sum(balance) as balance
+        from all_balances
+        group by 1, 2, 3, 4, 5
+    )
+
 select
-    day
-    , account_id
-    , asset_type
-    , if(asset_type = 'native', 'XLM', asset_issuer) as asset_issuer
-    , if(asset_type = 'native', 'XLM', asset_code) as asset_code
-    , sum(balance) as balance
-from all_balances
-group by 1, 2, 3, 4, 5
+    agg.day
+    , agg.account_id
+    , agg.asset_type
+    , agg.asset_issuer
+    , agg.asset_code
+    , a.asset_contract_id as contract_id
+    , agg.balance
+from aggregate as agg
+left join {{ ref('stg_assets') }} as a
+    on agg.asset_type = a.asset_type
+    and agg.asset_code = a.asset_code
+    and agg.asset_issuer = a.asset_issuer
