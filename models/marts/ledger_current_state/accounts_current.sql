@@ -46,9 +46,9 @@ with
         where
             true
             -- TODO: change batch_run_date to closed_at once the table is repartitioned on closed_at
-            and timestamp(batch_run_date) < timestamp(date('{{ var("batch_end_date") }}'))
+            and batch_run_date < datetime(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-            and timestamp(batch_run_date) >= timestamp(date('{{ var("batch_start_date") }}'))
+            and batch_run_date >= datetime(date('{{ var("batch_start_date") }}'))
     {% endif %}
         qualify row_number()
             over (
