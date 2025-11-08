@@ -103,6 +103,9 @@ with
             ds.day
             , ds.account_id
             , ds.contract_id
+            -- Balances can be negative because custom token contracts may not emit all token value movement events.
+            -- This table uses token_transfers to calculate the C address balances
+            -- which only has SEP-41 compliant events from custom token contracts.
             , sum(coalesce(dc.balance, 0)) over (
                 partition by ds.account_id, ds.contract_id
                 order by ds.day
