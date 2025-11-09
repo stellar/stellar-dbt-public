@@ -15,6 +15,9 @@
     )
 }}
 
+-- The separate CTEs makse sense for organization and readability but lowers the
+-- performance of BQ. If performance is ever an issue we can write eho as
+-- a large join SQL statement instead of multiple CTEs.
 with
     history_ledgers as (
         select
@@ -41,11 +44,9 @@ with
             , batch_run_date
         from {{ ref('stg_history_ledgers') }}
         where
-            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
-            {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            closed_at < timestamp(date('{{ var("batch_end_date") }}'))
+        {% if is_incremental() %}
+                and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
             {% endif %}
     )
 
@@ -90,11 +91,9 @@ with
             , refundable_fee
         from {{ ref('stg_history_transactions') }}
         where
-            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
-            {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            batch_run_date < datetime(date('{{ var("batch_end_date") }}'))
+        {% if is_incremental() %}
+                and batch_run_date >= datetime(date('{{ var("batch_start_date") }}'))
             {% endif %}
     )
 
@@ -221,11 +220,9 @@ with
             , details_json
         from {{ ref('stg_history_operations') }}
         where
-            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
-            {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            batch_run_date < datetime(date('{{ var("batch_end_date") }}'))
+        {% if is_incremental() %}
+                and batch_run_date >= datetime(date('{{ var("batch_start_date") }}'))
             {% endif %}
 
     )

@@ -102,9 +102,9 @@ with
         from {{ ref('enriched_history_operations') }} as enriched
         where
             enriched.type in (24, 25, 26)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            and closed_at < timestamp(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+                and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
             {% endif %}
     )
 
