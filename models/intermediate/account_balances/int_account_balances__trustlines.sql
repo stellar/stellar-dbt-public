@@ -50,7 +50,7 @@ with
         from {{ ref('accounts_snapshot') }} as acc
         where
             acc.deleted is false
-            and acc.valid_from <= timestamp(date_add((select max(day) from dt), interval 1 day))
+            and acc.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
             and (acc.valid_to is null or acc.valid_to >= timestamp((select min(day) from dt)))
     )
 

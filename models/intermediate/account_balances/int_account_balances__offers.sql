@@ -36,7 +36,7 @@ with
             tl.deleted is false
             and tl.selling_liabilities > 0
             and tl.liquidity_pool_id = ''
-            and tl.valid_from <= timestamp(date_add((select max(day) from dt), interval 1 day))
+            and tl.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
             and (tl.valid_to is null or tl.valid_to >= timestamp((select min(day) from dt)))
 
     )
@@ -54,7 +54,7 @@ with
         where
             acc.deleted is false
             and acc.selling_liabilities > 0
-            and acc.valid_from <= timestamp(date_add((select max(day) from dt), interval 1 day))
+            and acc.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
             and (acc.valid_to is null or acc.valid_to >= timestamp((select min(day) from dt)))
     )
 
