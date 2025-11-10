@@ -18,12 +18,13 @@ models:
           tags: [schema_changes]
           config:
             severity: warn
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - asset_contract_id
+            - updated_at
+          meta:
+            description: "Tests the uniqueness combination of: asset_contract_id and updated_at."
     columns:
-      - name: updated_at
-        description: '{{ doc("updated_at") }}'
-        tests:
-          - not_null
-
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
@@ -34,7 +35,37 @@ models:
         tests:
           - not_null
 
-      - name: usd_price
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - not_null
+
+      - name: asset_contract_id
+        description: '{{ doc("asset_contract_id") }}'
+        tests:
+          - not_null
+
+      - name: updated_at
+        description: '{{ doc("updated_at") }}'
+        tests:
+          - not_null
+
+      - name: open_usd
+        description: '{{ doc("asset_price") }}'
+        tests:
+          - not_null
+
+      - name: high_usd
+        description: '{{ doc("asset_price") }}'
+        tests:
+          - not_null
+
+      - name: low_usd
+        description: '{{ doc("asset_price") }}'
+        tests:
+          - not_null
+
+      - name: close_usd
         description: '{{ doc("asset_price") }}'
         tests:
           - not_null

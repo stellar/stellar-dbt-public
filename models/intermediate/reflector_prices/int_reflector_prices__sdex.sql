@@ -16,11 +16,8 @@ with asset_coding as (
 
 price_data as (
     select
-        ledger_sequence,
         closed_at,
-        cast(right(json_extract_scalar(key_decoded, '$.u128'), 2) as int) as asset_index,
-        cast(json_extract_scalar(val_decoded, '$.i128') as float64) as price,
-        json_extract_scalar(key_decoded, '$.u128') as key_name
+        cast(json_extract_scalar(val_decoded, '$.i128') as float64) as price
     from {{ ref('contract_data_snapshot') }}
     where contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
       and contract_durability != 'ContractDataDurabilityPersistent'
@@ -28,15 +25,15 @@ price_data as (
 
 joined as (
     select
-        price_data.key_name,
-        price_data.ledger_sequence,
-        price_data.closed_at,
-        asset_coding.asset_contract_id,
         stg_assets.asset_code,
         stg_assets.asset_type,
         stg_assets.asset_issuer,
-        asset_coding.asset_index,
-        price_data.price
+        asset_coding.asset_contract_id,
+        price_data.closed_at as updated_at,
+        price_data.price * POWER (10, -14) as open_usd,
+        price_data.price * POWER (10, -14) as high_usd,
+        price_data.price * POWER (10, -14) as low_usd,
+        price_data.price * POWER (10, -14) as close_usd
     from price_data
     left join asset_coding using (asset_index)
     left join {{ ref('stg_assets') }} stg_assets using (asset_contract_id)
