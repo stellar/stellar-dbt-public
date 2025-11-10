@@ -40,13 +40,12 @@ with
             -- Without the additional date buffering the following would occur
             -- * batch_start_date == '2025-01-01 01:00:00' --> '2025-01-01'
             -- * batch_end_date == '2025-01-01 01:30:00' --> '2025-01-01'
-            -- * '2025-01-01 <= batch_run_date < '2025-01-01' would never have any data to processes
-            -- TODO: change batch_run_date to closed_at once the table is repartitioned on closed_at
-            and batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
+            -- * '2025-01-01 <= closed_at < '2025-01-01' would never have any data to processes
+            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
         {% if is_incremental() %}
             -- The extra day date_sub is useful in the case the first scheduled run for a day is skipped
             -- because the DAG is configured with catchup=false
-            and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
+            and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
     {% endif %}
         qualify row_number()
             over (

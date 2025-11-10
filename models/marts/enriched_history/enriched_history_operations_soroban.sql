@@ -6,7 +6,8 @@
         "field": "closed_at"
         , "data_type": "timestamp"
         , "granularity": "month"},
-    "tags": ["enriched_history_operations"]
+    "tags": ["enriched_history_operations"],
+    "incremental_predicates":["DBT_INTERNAL_DEST.closed_at >= timestamp_sub(timestamp(date('" ~ var('batch_start_date') ~ "')), interval 1 day)"]
 } %}
 
 {{ config(
