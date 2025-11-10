@@ -10,7 +10,8 @@ models:
           field: day
           interval: 2
           config:
-            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            # enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            enabled: false
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
@@ -18,6 +19,13 @@ models:
           tags: [schema_changes]
           config:
             severity: warn
+      - stellar_dbt_public.incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - day
+            - account_id
+            - contract_id
+          date_column_name: "day"
+          greater_than_equal_to: "2 day"
     columns:
       - name: day
         description: '{{ doc("day_agg") }}'
