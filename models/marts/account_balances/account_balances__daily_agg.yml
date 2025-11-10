@@ -19,6 +19,13 @@ models:
           tags: [schema_changes]
           config:
             severity: warn
+      - stellar_dbt_public.incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - day
+            - account_id
+            - contract_id
+          date_column_name: "day"
+          greater_than_equal_to: "2 day"
     columns:
       - name: day
         description: '{{ doc("day_agg") }}'
