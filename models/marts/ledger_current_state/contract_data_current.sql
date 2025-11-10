@@ -57,7 +57,7 @@ with
     {% endif %}
         qualify row_number()
             over (
-                partition by cd.contract_id, cd.ledger_key_hash
+                partition by cd.ledger_key_hash
                 order by cd.closed_at desc
             )
         = 1
