@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: int_reflector_prices__foreign_exchange
-    description: '{{ doc("int_reflector_prices__foreign_exchange") }}'
+  - name: int_reflector_prices__fex
+    description: '{{ doc("int_reflector_prices__fex") }}'
     tests:
       - dbt_utils.recency:
           tags: [recency]
