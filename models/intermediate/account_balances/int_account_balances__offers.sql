@@ -45,8 +45,8 @@ with
         select
             acc.account_id
             , 'native' as asset_type
-            , '' as asset_issuer
-            , '' as asset_code
+            , 'XLM' as asset_issuer
+            , 'XLM' as asset_code
             , acc.selling_liabilities as balance
             , acc.valid_from
             , acc.valid_to
@@ -79,8 +79,8 @@ with
             dt.day
             , acc.account_id
             , acc.asset_type
-            , 'XLM' as asset_issuer
-            , 'XLM' as asset_code
+            , acc.asset_issuer
+            , acc.asset_code
             , acc.balance
         from dt
         inner join filtered_acc as acc
