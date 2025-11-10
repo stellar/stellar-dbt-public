@@ -7,7 +7,7 @@ models:
       - dbt_utils.recency:
           tags: [recency]
           datepart: day
-          field: day
+          field: cast(day as timestamp)
           interval: 2
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
