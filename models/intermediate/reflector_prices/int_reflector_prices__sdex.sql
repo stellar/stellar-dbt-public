@@ -23,6 +23,7 @@ with asset_coding as (
 price_data as (
     select
         closed_at,
+        cast(right(json_extract_scalar(key_decoded, '$.u128'), 2) as int) as asset_index,
         cast(json_extract_scalar(val_decoded, '$.i128') as float64) as price
     from {{ ref('contract_data_snapshot') }}
     where contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
