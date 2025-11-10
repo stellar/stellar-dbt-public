@@ -1,5 +1,6 @@
 {{ config(
-    materialized='table'
+    materialized='table',
+    tags=['reflector_prices'],
     )
 }}
 
