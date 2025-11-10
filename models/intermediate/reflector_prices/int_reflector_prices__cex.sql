@@ -1,6 +1,11 @@
+{% set meta_config = {
+    "materialized": "table",
+    "tags": ["reflector_prices"],
+} %}
+
 {{ config(
-    materialized='table',
-    tags=['reflector_prices'],
+    meta=meta_config,
+    **meta_config,
     )
 }}
 
