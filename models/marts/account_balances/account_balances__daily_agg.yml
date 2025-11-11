@@ -22,7 +22,7 @@ models:
           date_column_name: "day"
           greater_than_equal_to: "2 day"
           meta:
-            description: "Tests the uniqueness combination of: account_id, signer, ledger_entry_change and last_modified_ledger."
+            description: "Tests the uniqueness combination of: day, account_id, and contract_id."
       - elementary.schema_changes:
           tags: [schema_changes]
           config:
