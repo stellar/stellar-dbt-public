@@ -27,7 +27,7 @@ repos:
         additional_dependencies:
           [
             "sqlfluff-templater-dbt==3.0.7",
-            "dbt-bigquery==1.8.2",
+            "dbt-bigquery==1.10.15",
             "python-dotenv",
           ]
         entry: ./pre-commit/for_pre_commit.sh
@@ -37,7 +37,7 @@ repos:
         additional_dependencies:
           [
             "sqlfluff-templater-dbt==3.0.7",
-            "dbt-bigquery==1.8.2",
+            "dbt-bigquery==1.10.15",
             "python-dotenv",
           ]
         entry: ./pre-commit/for_pre_commit.sh
