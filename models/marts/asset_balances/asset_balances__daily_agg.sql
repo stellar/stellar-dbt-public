@@ -27,6 +27,7 @@ with
             , iabt.contract_id
             , sum(iabt.balance) as total_balance
             , count(case when iabt.balance > 0 then 1 end) as total_accounts_with_balance
+            , count(account_id) as total_accounts_with_trustline
         from {{ ref('int_account_balances__trustlines') }} as iabt
         where
             true
