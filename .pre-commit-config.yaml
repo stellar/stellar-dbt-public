@@ -26,7 +26,7 @@ repos:
         args: ["lint", "--processes", "0", "--config=./.sqlfluff"]
         additional_dependencies:
           [
-            "sqlfluff-templater-dbt==3.0.7",
+            "sqlfluff-templater-dbt==3.5.0",
             "dbt-bigquery==1.10.3",
             "python-dotenv",
           ]
@@ -36,7 +36,7 @@ repos:
         args: ["fix", "--force", "--processes", "0", "--config=./.sqlfluff"]
         additional_dependencies:
           [
-            "sqlfluff-templater-dbt==3.0.7",
+            "sqlfluff-templater-dbt==3.5.0",
             "dbt-bigquery==1.10.3",
             "python-dotenv",
           ]
