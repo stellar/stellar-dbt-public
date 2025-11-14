@@ -19,33 +19,45 @@ with
     trade_daily as (
         select *
         from {{ ref('int_trade_agg_day') }}
+        where
+            true
+            and day_agg < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            where day_agg = date('{{ dbt_airflow_macros.ts() }}')
-        {% endif %}
+            and day_agg >= date('{{ var("batch_start_date") }}')
+    {% endif %}
     )
 
     , trade_weekly as (
         select *
         from {{ ref('int_trade_agg_week') }}
+        where
+            true
+            and day_agg < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            where day_agg = date('{{ dbt_airflow_macros.ts() }}')
-        {% endif %}
+            and day_agg >= date('{{ var("batch_start_date") }}')
+    {% endif %}
     )
 
     , trade_monthly as (
         select *
         from {{ ref('int_trade_agg_month') }}
+        where
+            true
+            and day_agg < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            where day_agg = date('{{ dbt_airflow_macros.ts() }}')
-        {% endif %}
+            and day_agg >= date('{{ var("batch_start_date") }}')
+    {% endif %}
     )
 
     , trade_yearly as (
         select *
         from {{ ref('int_trade_agg_year') }}
+        where
+            true
+            and day_agg < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
-            where day_agg = date('{{ dbt_airflow_macros.ts() }}')
-        {% endif %}
+            and day_agg >= date('{{ var("batch_start_date") }}')
+    {% endif %}
     )
 
     , join_trades as (

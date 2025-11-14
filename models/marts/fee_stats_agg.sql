@@ -87,11 +87,9 @@ with
             , max(ledger_sequence) as max_ledger_sequence
         from {{ ref('stg_history_transactions') }}
         where
-            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            batch_run_date < datetime(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}') -- batch run is the min bound of a batch
-                and date(closed_at) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+                and batch_run_date >= datetime(date('{{ var("batch_start_date") }}')) -- batch run is the min bound of a batch
             {% endif %}
         group by cast(batch_run_date as date)
     )
@@ -107,11 +105,9 @@ with
             end as surge_price_ind
         from {{ ref('stg_history_transactions') }}
         where
-            cast(batch_run_date as date) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 2 day)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            batch_run_date < datetime(date('{{ var("batch_end_date") }}'))
         {% if is_incremental() %}
-                and cast(batch_run_date as date) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}') -- batch run is the min bound of a batch
-                and date(closed_at) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+                and batch_run_date >= datetime(date('{{ var("batch_start_date") }}')) -- batch run is the min bound of a batch
             {% endif %}
         group by
             cast(batch_run_date as date)

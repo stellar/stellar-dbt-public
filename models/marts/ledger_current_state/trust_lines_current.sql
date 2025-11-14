@@ -37,19 +37,28 @@ with
             , concat(tl.account_id, '-', tl.asset_code, '-', tl.asset_issuer, '-', tl.liquidity_pool_id
             ) as unique_id
             , tl.batch_run_date
-            , row_number()
-                over (
-                    partition by tl.account_id, tl.asset_code, tl.asset_issuer, tl.liquidity_pool_id
-                    order by tl.last_modified_ledger desc, tl.ledger_entry_change desc
-                ) as row_nr
         from {{ ref('stg_trust_lines') }} as tl
 
+        where
+            true
+            -- Need to add/subtract one day to the window boundaries
+            -- because this model runs at 30 min increments.
+            -- Without the additional date buffering the following would occur
+            -- * batch_start_date == '2025-01-01 01:00:00' --> '2025-01-01'
+            -- * batch_end_date == '2025-01-01 01:30:00' --> '2025-01-01'
+            -- * '2025-01-01 <= closed_at < '2025-01-01' would never have any data to processes
+            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
         {% if is_incremental() %}
-            -- limit the number of partitions fetched incrementally
-            where
-                timestamp(tl.batch_run_date) >= timestamp_sub('{{ dbt_airflow_macros.ts(timezone=none) }}', interval 7 day)
-        {% endif %}
-
+            -- The extra day date_sub is useful in the case the first scheduled run for a day is skipped
+            -- because the DAG is configured with catchup=false
+            and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
+    {% endif %}
+        qualify row_number()
+            over (
+                partition by tl.account_id, tl.asset_code, tl.asset_issuer, tl.liquidity_pool_id
+                order by tl.last_modified_ledger desc, tl.ledger_entry_change desc
+            )
+        = 1
     )
 select
     account_id
@@ -71,4 +80,3 @@ select
     , batch_run_date
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_tls
-where row_nr = 1
