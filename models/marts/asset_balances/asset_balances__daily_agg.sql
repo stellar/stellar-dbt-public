@@ -27,12 +27,15 @@ with
             , iabt.contract_id
             , sum(iabt.balance) as total_balance
             , count(case when iabt.balance > 0 then 1 end) as total_accounts_with_balance
+            , count(account_id) as total_accounts_with_trustline
         from {{ ref('int_account_balances__trustlines') }} as iabt
         where
             true
             -- TODO: Remove nulls for now until contract_ids are added to stellar-etl.
             -- These assets would always have zero balance anyways so they have little impact
             and iabt.contract_id is not null
+            -- Exclude XLM burn address
+            and iabt.account_id != 'GALAXYVOIDAOPZTDLHILAJQKCVVFMD4IKLXLSZV5YHO7VY74IWZILUTO'
             and iabt.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
             and iabt.day >= date('{{ var("batch_start_date") }}')
@@ -52,6 +55,9 @@ with
         from {{ ref('int_account_balances__liquidity_pools') }} as iablp
         where
             true
+            -- Exclude XLM burn address
+            -- In theory there wouldn't be any XLM burn address LP but we can filter just in case
+            and iablp.account_id != 'GALAXYVOIDAOPZTDLHILAJQKCVVFMD4IKLXLSZV5YHO7VY74IWZILUTO'
             and iablp.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
             and iablp.day >= date('{{ var("batch_start_date") }}')
@@ -71,6 +77,8 @@ with
         from {{ ref('int_account_balances__offers') }} as iabo
         where
             true
+            -- Exclude XLM burn address
+            and iabo.account_id != 'GALAXYVOIDAOPZTDLHILAJQKCVVFMD4IKLXLSZV5YHO7VY74IWZILUTO'
             and iabo.day < date('{{ var("batch_end_date") }}')
         {% if is_incremental() %}
             and iabo.day >= date('{{ var("batch_start_date") }}')
@@ -157,6 +165,7 @@ with
             , coalesce(obc.total_accounts_with_balance, 0) as total_accounts_with_offer_balance
             , coalesce(tbc.total_accounts_with_balance, 0) as total_accounts_with_trustline_balance
             , coalesce(cbc.total_accounts_with_balance, 0) as total_accounts_with_contract_balance
+            , coalesce(tbc.total_accounts_with_trustline, 0) as total_accounts_with_trustline
 
         from day_account_asset_pairs as daap
 

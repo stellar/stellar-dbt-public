@@ -36,7 +36,7 @@ with
             tl.deleted is false
             and tl.selling_liabilities > 0
             and tl.liquidity_pool_id = ''
-            and tl.valid_from <= timestamp((select max(day) from dt))
+            and tl.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
             and (tl.valid_to is null or tl.valid_to >= timestamp((select min(day) from dt)))
 
     )
@@ -45,8 +45,8 @@ with
         select
             acc.account_id
             , 'native' as asset_type
-            , '' as asset_issuer
-            , '' as asset_code
+            , 'XLM' as asset_issuer
+            , 'XLM' as asset_code
             , acc.selling_liabilities as balance
             , acc.valid_from
             , acc.valid_to
@@ -54,7 +54,7 @@ with
         where
             acc.deleted is false
             and acc.selling_liabilities > 0
-            and acc.valid_from <= timestamp((select max(day) from dt))
+            and acc.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
             and (acc.valid_to is null or acc.valid_to >= timestamp((select min(day) from dt)))
     )
 
@@ -79,8 +79,8 @@ with
             dt.day
             , acc.account_id
             , acc.asset_type
-            , 'XLM' as asset_issuer
-            , 'XLM' as asset_code
+            , acc.asset_issuer
+            , acc.asset_code
             , acc.balance
         from dt
         inner join filtered_acc as acc
