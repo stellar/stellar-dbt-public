@@ -31,6 +31,7 @@ with
         where
             contract_id = 'CAFJZQWSED6YAWZU3GWRTOCNPPCGBN32L7QV43XX5LZLFTK6JLN34DLN'
             and contract_durability != 'ContractDataDurabilityPersistent'
+            and valid_to is null -- fetch only latest entry
     )
 
     , joined as (

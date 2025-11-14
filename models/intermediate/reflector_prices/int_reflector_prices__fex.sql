@@ -20,6 +20,7 @@ with
             contract_id = 'CBKGPWGKSKZF52CFHMTRR23TBWTPMRDIYZ4O2P5VS65BMHYH4DXMCJZC'
             and contract_durability = 'ContractDataDurabilityPersistent'
             and json_extract_scalar(storage_item, '$.key.symbol') is not null
+            and valid_to is null -- fetch only latest entry
     )
 
     , price_data as (
