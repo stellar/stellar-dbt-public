@@ -37,14 +37,22 @@ with
         select
             asset_coding.asset_code
             , price_data.closed_at as updated_at
-            , price_data.price * power(10, -14) as open_usd
-            , price_data.price * power(10, -14) as high_usd
-            , price_data.price * power(10, -14) as low_usd
-            , price_data.price * power(10, -14) as close_usd
+            , price_data.price * power(10, -14) as price
         from price_data
         left join asset_coding
             on price_data.asset_index = asset_coding.asset_index
     )
 
+    , ohlc as (
+        {{
+            calc_ohlc(
+                relation = 'joined',
+                ts_col = 'updated_at',
+                price_col = 'price',
+                partition_cols = ['asset_code'],
+            )
+        }}
+    )
+
 select *
-from joined
+from ohlc
