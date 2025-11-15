@@ -49,6 +49,7 @@ with
             on asset_coding.asset_contract_id = stg_assets.asset_contract_id
     )
 
+    -- Calculate daily OHLC prices from the raw price data
     , ohlc as (
         {{
             calc_ohlc(

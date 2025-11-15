@@ -44,6 +44,7 @@ with
             on price_data.asset_index = asset_coding.asset_index
     )
 
+    -- Calculate daily OHLC prices from the raw price data
     , ohlc as (
         {{
             calc_ohlc(

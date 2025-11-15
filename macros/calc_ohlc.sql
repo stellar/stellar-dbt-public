@@ -5,6 +5,11 @@
     partition_cols=['asset_code', 'asset_issuer', 'asset_type', 'asset_contract_id']
 ) %}
 
+{#
+-- Calculate the daily OHLC values based on the provided timestamp and price columns by asset.
+-- Consolidates intra-day price movements into daily open, high, low, and close values.
+#}
+
 with raw_table as (
 
     select
