@@ -4,11 +4,6 @@
 
 {% set meta_config = {
     "materialized": "incremental_snapshot",
-    "partition_by": {
-         "field": "valid_to"
-        , "data_type": "timestamp"
-        , "granularity": "month"
-    },
     "cluster_by": ["asset_contract_id"],
     "unique_key": ["asset_contract_id", "valid_from"],
     "source_unique_key": 'asset_contract_id',
