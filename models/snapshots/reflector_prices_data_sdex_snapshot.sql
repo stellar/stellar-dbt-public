@@ -13,7 +13,7 @@
     "snapshot_start_date": var("snapshot_start_date"),
     "snapshot_end_date": var("snapshot_end_date"),
     "full_refresh": var("snapshot_full_refresh") == 'true',
-    "updated_at_col_name": 'updated_at',
+    "updated_at_col_name": 'day',
     "valid_from_col_name": 'valid_from',
     "valid_to_col_name": 'valid_to',
     "on_schema_change": 'append_new_columns',
