@@ -31,7 +31,7 @@ models:
           - not_null
 
       - name: day
-        description: 'Price as of day'
+        description: '{{ doc("price_as_of_day") }}'
         tests:
           - not_null
 
