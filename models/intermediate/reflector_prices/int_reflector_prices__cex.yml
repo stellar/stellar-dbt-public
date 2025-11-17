@@ -7,7 +7,7 @@ models:
       - dbt_utils.recency:
           tags: [recency]
           datepart: day
-          field: updated_at
+          field: day
           interval: 2
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
@@ -21,36 +21,36 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - asset_code
-            - updated_at
+            - day
           meta:
-            description: "Tests the uniqueness combination of: asset_code and updated_at."
+            description: "Tests the uniqueness combination of: asset_code and day."
     columns:
       - name: asset_code
         description: '{{ doc("asset_code") }}'
         tests:
           - not_null
 
-      - name: updated_at
-        description: '{{ doc("updated_at") }}'
+      - name: day
+        description: 'Price as of day'
         tests:
           - not_null
 
       - name: open_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("open_usd") }}'
         tests:
           - not_null
 
       - name: high_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("high_usd") }}'
         tests:
           - not_null
 
       - name: low_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("low_usd") }}'
         tests:
           - not_null
 
       - name: close_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("close_usd") }}'
         tests:
           - not_null
