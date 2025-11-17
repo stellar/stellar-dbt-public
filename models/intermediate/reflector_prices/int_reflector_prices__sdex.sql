@@ -20,6 +20,7 @@ with
             contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
             and contract_durability = 'ContractDataDurabilityPersistent'
             and json_extract_scalar(storage_item, '$.key.address') is not null
+            and valid_to is null -- fetch only latest entry
     )
 
     , price_data as (
@@ -40,10 +41,7 @@ with
             , stg_assets.asset_issuer
             , asset_coding.asset_contract_id
             , price_data.closed_at as updated_at
-            , price_data.price * power(10, -14) as open_usd
-            , price_data.price * power(10, -14) as high_usd
-            , price_data.price * power(10, -14) as low_usd
-            , price_data.price * power(10, -14) as close_usd
+            , price_data.price * power(10, -14) as price
         from price_data
         left join asset_coding
             on price_data.asset_index = asset_coding.asset_index
@@ -51,5 +49,17 @@ with
             on asset_coding.asset_contract_id = stg_assets.asset_contract_id
     )
 
+    -- Calculate daily OHLC prices from the raw price data
+    , ohlc as (
+        {{
+            calc_ohlc(
+                relation = 'joined',
+                ts_col = 'updated_at',
+                price_col = 'price',
+                partition_cols = ['asset_code', 'asset_issuer', 'asset_type', 'asset_contract_id'],
+            )
+        }}
+    )
+
 select *
-from joined
+from ohlc
