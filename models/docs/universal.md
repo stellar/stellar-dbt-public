@@ -155,3 +155,19 @@ The type ledger entry for data stored such as contract data or liquidity pools
 The day when the asset price is valid.
 
 {% enddocs %}
+
+{% docs open_usd %}
+The open price in USD for the day.
+{% enddocs %}
+
+{% docs high_usd %}
+The high price in USD for the day.
+{% enddocs %}
+
+{% docs low_usd %}
+The low price in USD for the day.
+{% enddocs %}
+
+{% docs close_usd %}
+The close price in USD for the day.
+{% enddocs %}
