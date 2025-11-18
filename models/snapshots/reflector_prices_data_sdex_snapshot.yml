@@ -49,8 +49,8 @@ models:
               date_column_name: "valid_from"
               greater_than_equal_to: "2 day"
 
-      - name: updated_at
-        description: '{{ doc("updated_at") }}'
+      - name: day
+        description: '{{ doc("price_as_of_day") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "valid_from"
