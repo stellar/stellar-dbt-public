@@ -149,3 +149,25 @@ The timestamp when this row is no longer valid. If `null`, the setting is curren
 {% docs ledger_entry_type %}
 The type ledger entry for data stored such as contract data or liquidity pools
 {% enddocs %}
+
+{% docs price_as_of_day %}
+
+The day when the asset price is valid.
+
+{% enddocs %}
+
+{% docs open_usd %}
+The open price in USD for the day.
+{% enddocs %}
+
+{% docs high_usd %}
+The high price in USD for the day.
+{% enddocs %}
+
+{% docs low_usd %}
+The low price in USD for the day.
+{% enddocs %}
+
+{% docs close_usd %}
+The close price in USD for the day.
+{% enddocs %}

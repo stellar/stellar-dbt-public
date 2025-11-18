@@ -4,11 +4,6 @@
 
 {% set meta_config = {
     "materialized": "incremental_snapshot",
-    "partition_by": {
-         "field": "valid_to"
-        , "data_type": "timestamp"
-        , "granularity": "month"
-    },
     "cluster_by": ["asset_code"],
     "unique_key": ["asset_code", "valid_from"],
     "source_unique_key": 'asset_code',
@@ -18,7 +13,7 @@
     "snapshot_start_date": var("snapshot_start_date"),
     "snapshot_end_date": var("snapshot_end_date"),
     "full_refresh": var("snapshot_full_refresh") == 'true',
-    "updated_at_col_name": 'updated_at',
+    "updated_at_col_name": 'day',
     "valid_from_col_name": 'valid_from',
     "valid_to_col_name": 'valid_to',
     "on_schema_change": 'append_new_columns',
