@@ -3,11 +3,15 @@
     )
 }}
 
+-- TODO: The int_trade_agg tables need to be refactored to handle incremental
+-- builds correctly. Currently it only builds a single day even if the model
+-- is full-refreshed.
+
 /* select columns from the history_trades table and generates unique trade key*/
 with
     base_trades as (
         select
-            date(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day)) as day_agg
+            date('{{ var("batch_start_date") }}') as day_agg
             , ledger_closed_at
             , selling_asset_id
             , selling_asset_code
@@ -24,8 +28,9 @@ with
             , buying_amount
         from {{ ref('stg_history_trades') }}
         where
-            ledger_closed_at < timestamp_add(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day), interval 1 day )
-            and ledger_closed_at >= timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day)
+            -- TODO: Add incremental logic here
+            ledger_closed_at < timestamp(date('{{ var("batch_end_date") }}'))
+            and ledger_closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
     )
 
     /* duplicates trades in order to obtain all trades between an asset pair, regardless

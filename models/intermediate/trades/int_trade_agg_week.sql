@@ -3,6 +3,10 @@
     )
 }}
 
+-- TODO: The int_trade_agg tables need to be refactored to handle incremental
+-- builds correctly. Currently it only builds a single day even if the model
+-- is full-refreshed.
+
 /* select columns from the history_trades table and generates unique trade key*/
 with
     base_trades as (
@@ -24,8 +28,9 @@ with
             , buying_amount
         from {{ ref('stg_history_trades') }}
         where
-            ledger_closed_at < timestamp_add(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day), interval 1 day)
-            and ledger_closed_at >= timestamp_sub(timestamp_trunc('{{ dbt_airflow_macros.ts() }}', day), interval 8 day)
+            -- TODO: Add incremental logic here
+            ledger_closed_at < timestamp(date('{{ var("batch_end_date") }}'))
+            and ledger_closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 8 day))
     )
 
     /* duplicates trades in order to obtain all trades between an asset pair, regardless
@@ -119,7 +124,7 @@ with
     /* obtain aggregate function metrics for the asset pair */
     , trade_day_agg_group as (
         select
-            date('{{ dbt_airflow_macros.ts() }}') as day_agg
+            date('{{ var("batch_start_date") }}') as day_agg
             , asset_a
             , asset_a_code
             , asset_a_issuer
@@ -135,7 +140,7 @@ with
             , max(price_n / price_d) as high_price_weekly
             , min(price_n / price_d) as low_price_weekly
         from dedup_asset_pair
-        where cast(ledger_closed_at as date) >= date_sub(date('{{ dbt_airflow_macros.ts() }}'), interval 7 day)
+        where ledger_closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 7 day))
         group by
             asset_a
             , asset_a_code
@@ -196,7 +201,7 @@ with
                 order by ledger_closed_at desc
             ) as dedup_rows
         from dedup_asset_pair
-        where cast(ledger_closed_at as date) >= date_sub(date('{{ dbt_airflow_macros.ts() }}'), interval 7 day)
+        where ledger_closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 7 day))
     )
 
     /* joins all metrics related to the asset pair while deduplicating the window functions */

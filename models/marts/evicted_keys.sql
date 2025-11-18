@@ -20,10 +20,19 @@ with
             , true as is_evicted
         from {{ ref('stg_history_ledgers') }} as shl
         cross join unnest(shl.evicted_ledger_keys_hash) as kh
+        where
+            true
+            -- Need to add/subtract one day to the window boundaries
+            -- because this model runs at 30 min increments.
+            -- Without the additional date buffering the following would occur
+            -- * batch_start_date == '2025-01-01 01:00:00' --> '2025-01-01'
+            -- * batch_end_date == '2025-01-01 01:30:00' --> '2025-01-01'
+            -- * '2025-01-01 <= closed_at < '2025-01-01' would never have any data to processes
+            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
         {% if is_incremental() %}
-      where true
-        and date(closed_at) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
-
+            -- The extra day date_sub is useful in the case the first scheduled run for a day is skipped
+            -- because the DAG is configured with catchup=false
+            and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
     {% endif %}
     )
 
@@ -34,9 +43,11 @@ with
             , ledger_sequence
             , false as is_evicted
         from {{ ref('stg_restored_key') }}
+        where
+            true
+            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
         {% if is_incremental() %}
-      where true
-        and date(closed_at) >= date('{{ dbt_airflow_macros.ts(timezone=none) }}')
+            and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
     {% endif %}
     )
 

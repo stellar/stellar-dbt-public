@@ -6,7 +6,8 @@
         "field": "closed_at"
         , "data_type": "timestamp"
         , "granularity": "month"},
-    "tags": ["enriched_history_operations"]
+    "tags": ["enriched_history_operations"],
+    "incremental_predicates":["DBT_INTERNAL_DEST.closed_at >= timestamp_sub(timestamp(date('" ~ var('batch_start_date') ~ "')), interval 1 day)"]
 } %}
 
 {{ config(
@@ -102,9 +103,17 @@ with
         from {{ ref('enriched_history_operations') }} as enriched
         where
             enriched.type in (24, 25, 26)
-            and date(closed_at) < date_add(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+            -- Need to add/subtract one day to the window boundaries
+            -- because this model runs at 30 min increments.
+            -- Without the additional date buffering the following would occur
+            -- * batch_start_date == '2025-01-01 01:00:00' --> '2025-01-01'
+            -- * batch_end_date == '2025-01-01 01:30:00' --> '2025-01-01'
+            -- * '2025-01-01 <= closed_at < '2025-01-01' would never have any data to processes
+            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
         {% if is_incremental() %}
-                and date(closed_at) >= date_sub(date('{{ dbt_airflow_macros.ts(timezone=none) }}'), interval 1 day)
+                -- The extra day date_sub is useful in the case the first scheduled run for a day is skipped
+                -- because the DAG is configured with catchup=false
+                and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
     )
 
