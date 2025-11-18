@@ -33,7 +33,7 @@ models:
       - name: day
         description: '{{ doc("price_as_of_day") }}'
         tests:
-          - not_nullmodels/intermediate/reflector_prices/int_reflector_prices__sdex.yml
+          - not_null
 
       - name: open_usd
         description: '{{ doc("open_usd") }}'
