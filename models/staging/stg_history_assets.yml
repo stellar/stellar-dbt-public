@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_history_assets
-    tests:
+    data_tests:
       - dbt_utils.recency:
           datepart: hour
           field: cast(closed_at as timestamp)
@@ -23,14 +23,14 @@ models:
     columns:
       - name: asset_id
         description: '{{ doc("asset_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -48,21 +48,21 @@ models:
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"

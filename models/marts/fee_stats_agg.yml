@@ -3,7 +3,7 @@ version: 2
 models:
   - name: fee_stats_agg
     description: '{{ doc("fee_stats") }}'
-    tests:
+    data_tests:
       - dbt_utils.recency:
           tags: [recency]
           datepart: day
@@ -21,7 +21,7 @@ models:
     columns:
       - name: day_agg
         description: '{{ doc("fee_day_agg") }}'
-        tests:
+        data_tests:
           - incremental_unique:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
@@ -31,224 +31,224 @@ models:
 
       - name: fee_charged_p10
         description: '{{ doc("fee_charged_p10") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p20
         description: '{{ doc("fee_charged_p20") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p30
         description: '{{ doc("fee_charged_p30") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p40
         description: '{{ doc("fee_charged_p40") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p50
         description: '{{ doc("fee_charged_p50") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p60
         description: '{{ doc("fee_charged_p60") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p70
         description: '{{ doc("fee_charged_p70") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p80
         description: '{{ doc("fee_charged_p80") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p90
         description: '{{ doc("fee_charged_p90") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p95
         description: '{{ doc("fee_charged_p95") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_p99
         description: '{{ doc("fee_charged_p99") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_max
         description: '{{ doc("fee_charged_max") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_min
         description: '{{ doc("fee_charged_min") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: fee_charged_mode
         description: '{{ doc("fee_charged_mode") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p10
         description: '{{ doc("max_fee_p10") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p20
         description: '{{ doc("max_fee_p20") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p30
         description: '{{ doc("max_fee_p30") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p40
         description: '{{ doc("max_fee_p40") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p50
         description: '{{ doc("max_fee_p50") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p60
         description: '{{ doc("max_fee_p60") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p70
         description: '{{ doc("max_fee_p70") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p80
         description: '{{ doc("max_fee_p80") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p90
         description: '{{ doc("max_fee_p90") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p95
         description: '{{ doc("max_fee_p95") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_p99
         description: '{{ doc("max_fee_p99") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_max
         description: '{{ doc("max_fee_max") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_min
         description: '{{ doc("max_fee_min") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_fee_mode
         description: '{{ doc("max_fee_mode") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: min_ledger_sequence
         description: '{{ doc("min_ledger_sequence") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: max_ledger_sequence
         description: '{{ doc("max_ledger_sequence") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: total_ledgers
         description: '{{ doc("total_ledgers") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
       - name: surge_price_pct
         description: '{{ doc("surge_price_pct") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"

@@ -3,7 +3,7 @@ version: 2
 models:
   - name: accounts_current
     description: '{{ doc("accounts_current") }}'
-    tests:
+    data_tests:
       - dbt_utils.recency:
           tags: [recency]
           datepart: hour
@@ -30,119 +30,119 @@ models:
     columns:
       - name: account_id
         description: '{{ doc("account_id") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: balance
         description: '{{ doc("balance") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: buying_liabilities
         description: '{{ doc("buying_liabilities") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: selling_liabilities
         description: '{{ doc("selling_liabilities") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: sequence_number
         description: '{{ doc("sequence_number") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: num_subentries
         description: '{{ doc("num_subentries") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: num_sponsoring
         description: '{{ doc("num_sponsoring") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: num_sponsored
         description: '{{ doc("num_sponsored") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: inflation_destination
         description: '{{ doc("inflation_destination") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: flags
         description: '{{ doc("flags_accounts_balances") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: home_domain
         description: '{{ doc("home_domain") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: master_weight
         description: '{{ doc("master_weight") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: threshold_low
         description: '{{ doc("threshold_low") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: threshold_medium
         description: '{{ doc("threshold_medium") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: threshold_high
         description: '{{ doc("threshold_high") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -152,14 +152,14 @@ models:
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: deleted
         description: '{{ doc("deleted") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
@@ -172,21 +172,21 @@ models:
 
       - name: sequence_ledger
         description: '{{ doc("sequence_ledger") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: sequence_time
         description: '{{ doc("sequence_time") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
-        tests:
+        data_tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
