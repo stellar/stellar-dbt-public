@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - master
+      - staging
 
 env:
   DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
