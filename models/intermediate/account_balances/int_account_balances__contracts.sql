@@ -15,9 +15,9 @@
 }}
 
 
--- This SQL calculates the C address balances
+-- This SQL calculates the C address balances and C/G balances for custom contract tokens (not SAC).
 
--- Note: This currently doesn't need to be incremental because the amount of C address balances are small
+-- Note: This currently doesn't need to be incremental because the amount of C address and custom contract token balances are small
 -- re-aggregating from the start of smart contracts (2024-02-20) to current is very quick and not compute intensive.
 -- TODO: account_ids should really be named addresses; This can be refactored in the future if needed
 with
@@ -32,8 +32,9 @@ with
         where
             true
             and tt.to is not null
-            -- Only count C addresses
-            and tt.to like 'C%'
+            -- Only count C addresses for SACs or custom contract tokens.
+            -- Custom contract tokens won't have an asset_type and will contain both C and G addresses
+            and (tt.to like 'C%' or tt.asset_type = '')
         group by 1, 2, 3
     )
 
@@ -48,8 +49,9 @@ with
         where
             true
             and tt.from is not null
-            -- Only count C addresses
-            and tt.from like 'C%'
+            -- Only count C addresses for SACs or custom contract tokens.
+            -- Custom contract tokens won't have an asset_type and will contain both C and G addresses
+            and (tt.from like 'C%' or tt.asset_type = '')
         group by 1, 2, 3
     )
 
