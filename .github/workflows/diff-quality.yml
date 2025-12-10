@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - master
+      - staging
+
 env:
   DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
   DBT_TARGET: prod
@@ -58,12 +60,6 @@ jobs:
         run: |
           pip install -r requirements.txt
           dbt deps
-
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@b7593ed2efd1c1617e1b0254da33b86225adb2a5 # v2.1.12
-        with:
-          project_id: crypto-stellar
-          credentials_json: "${{ secrets.CREDS_PROD_HUBBLE }}"
 
       - name: Checkout source branch and diff quality
         run: |
