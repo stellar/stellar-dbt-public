@@ -70,8 +70,8 @@ with
         from dt
         inner join filtered_tl as tl
             on
-            timestamp(dt.day) >= tl.valid_from
-            and (timestamp(dt.day) < tl.valid_to or tl.valid_to is null)
+            timestamp(dt.day) >= timestamp_trunc(tl.valid_from, day)
+            and (timestamp(date_add(dt.day, interval 1 day)) < timestamp_trunc(tl.valid_to, day) or tl.valid_to is null)
 
         union all
 
@@ -85,8 +85,8 @@ with
         from dt
         inner join filtered_acc as acc
             on
-            timestamp(dt.day) >= acc.valid_from
-            and (timestamp(dt.day) < acc.valid_to or acc.valid_to is null)
+            timestamp(dt.day) >= timestamp_trunc(acc.valid_from, day)
+            and (timestamp(date_add(dt.day, interval 1 day)) < timestamp_trunc(acc.valid_to, day) or acc.valid_to is null)
     )
 
 select
