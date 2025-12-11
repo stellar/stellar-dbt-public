@@ -53,7 +53,7 @@ with
         inner join filtered_tl as ftl
             on
             timestamp(dt.day) >= timestamp_trunc(ftl.valid_from, day)
-            and (timestamp(date_add(dt.day, interval 1 day)) < timestamp_trunc(ftl.valid_to, day) or ftl.valid_to is null)
+            and (timestamp(date_add(dt.day, interval 1 day)) <= timestamp_trunc(ftl.valid_to, day) or ftl.valid_to is null)
     )
 
     , all_lp as (
@@ -64,7 +64,7 @@ with
         inner join filtered_lp as flp
             on
             timestamp(dt.day) >= timestamp_trunc(flp.valid_from, day)
-            and (timestamp(date_add(dt.day, interval 1 day)) < timestamp_trunc(flp.valid_to, day) or flp.valid_to is null)
+            and (timestamp(date_add(dt.day, interval 1 day)) <= timestamp_trunc(flp.valid_to, day) or flp.valid_to is null)
     )
 
     , joined as (
