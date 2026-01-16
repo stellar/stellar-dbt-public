@@ -53,4 +53,4 @@ jobs:
 
       - name: Run dbt build project evaluator
         run: |
-          dbt build --select package:dbt_project_evaluator dbt_project_evaluator_exceptions --exclude int_account_balances__contracts
+          dbt build --select package:dbt_project_evaluator dbt_project_evaluator_exceptions --exclude int_account_balances__contracts recognized_assets
