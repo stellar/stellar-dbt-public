@@ -45,7 +45,7 @@ with
     , token_transfers_from as (
         select
             date(tt.closed_at) as day
-            , tt.from as account_id
+            , tt.`from` as account_id
             , tt.contract_id
             -- Note that 10^-7 is the default precision for Stellar assets. Recognized assets with default precision will have null token_precision.
             , sum(cast(tt.amount_raw as numeric) * pow(10, coalesce(-ra.token_precision, -7))) as balance
@@ -54,10 +54,10 @@ with
             on tt.contract_id = ra.contract_id
         where
             true
-            and tt.from is not null
+            and tt.`from` is not null
             -- Only count C addresses for SACs or custom contract tokens.
             -- Custom contract tokens won't have an asset_type and will contain both C and G addresses
-            and (tt.from like 'C%' or tt.asset_type = '')
+            and (tt.`from` like 'C%' or tt.asset_type = '')
         group by 1, 2, 3
     )
 
