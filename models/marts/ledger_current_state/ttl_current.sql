@@ -20,6 +20,7 @@ with
         select
             ttl.key_hash
             , ttl.live_until_ledger_seq
+            , ttl.ledger_sequence
             , ttl.last_modified_ledger
             , ttl.ledger_entry_change
             , ttl.closed_at
@@ -52,6 +53,7 @@ with
 select
     key_hash
     , live_until_ledger_seq
+    , ledger_sequence
     , last_modified_ledger
     , ledger_entry_change
     , closed_at
