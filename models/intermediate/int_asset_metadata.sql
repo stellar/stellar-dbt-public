@@ -1,5 +1,4 @@
 {% set meta_config = {
-    "unique_key": ["contract_id"],
     "tags": ["assets"]
 } %}
 
@@ -10,13 +9,11 @@
 }}
 
 with
-    token_transfers as (
-        select contract_id
-        from {{ ref('stg_token_transfers_raw') }}
-        where closed_at >= '2024-02-01'
-    ), unique_contracts as (
+    unique_contracts as (
         select distinct contract_id
-        from token_transfers
+        from {{ ref('stg_token_transfers_raw') }}
+        -- filter only for soroban contracts
+        where closed_at >= '2024-02-01'
     ), contract_metadata as (
         select
             uc.contract_id
@@ -28,8 +25,8 @@ with
     ), flattened_data as (
         select
             contract_id
-            , json_value(s.key.symbol) as storage_key
             , json_value(m.key.symbol) as metadata_key
+            , json_value(s.key.vec[0].symbol) as admin_key
             , json_value(m.val.string) as val_string
             , json_value(m.val.u32) as val_u32
             , json_value(s.val.address) as admin_address
@@ -42,7 +39,7 @@ with
 select
     contract_id
     -- Extract Admin (from the storage level)
-    , max(if(storage_key is null and admin_address is not null, admin_address, null)) as `admin`
+    , max(if(admin_key = 'Admin', admin_address, null)) as `admin`
     -- Extract Metadata (from the map level)
     , max(if(metadata_key = 'symbol', val_string, null)) as `symbol`
     , max(if(metadata_key = 'name', val_string, null)) as `name`
