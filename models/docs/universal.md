@@ -37,6 +37,17 @@ The raw number of units of an asset. Precision for an amount is 10^-7 of the ass
 - Required Field
   {% enddocs %}
 
+{% docs precision %}
+The number of decimal places of precision an asset supports.
+
+- Required Field
+
+#### Notes:
+
+Standard Stellar assets (AlphaNum4, AlphaNum12, and Native) follow a fixed precision of 7 (10^-7).
+However, Soroban contract tokens can define custom precision, often set during contract initialization. For example, some Real World Assets (RWAs) use a precision of 5 or 0. Per the SEP-41 standard, this metadata is written to the ledger in a specific format to allow for direct reading. If precision is not explicitly defined in the contract metadata, it defaults to 7.
+{% enddocs %}
+
 {% docs price_n %}
 The numerator of the precise representation of the buy and sell price of assets on offer (The buy amount desired).
 
