@@ -226,7 +226,7 @@ source .env
 ```
 to load the environment variables.
 
-4. Set up OAuth by running `gloud init` and following the account information prompts
+4. Set up OAuth by running `gcloud init` and following the account information prompts
 
 > _*Note:*_ You only need OAuth for local development
 
