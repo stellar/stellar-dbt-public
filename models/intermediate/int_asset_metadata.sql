@@ -14,13 +14,9 @@ with
         select contract_id
         from {{ ref('stg_token_transfers_raw') }}
         where closed_at >= '2024-02-01'
-    ), recognized_assets as (
-        select contract_id
-        from {{ ref('recognized_assets') }}
     ), unique_contracts as (
-        select contract_id from token_transfers
-        union distinct
-        select contract_id from recognized_assets
+        select distinct contract_id 
+        from token_transfers
     ), contract_metadata as (
         select
             uc.contract_id
