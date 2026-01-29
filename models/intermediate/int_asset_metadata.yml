@@ -17,3 +17,4 @@ models:
         description: '{{ doc("contract_name") }}'
       - name: decimal
         description: '{{ doc("precision") }}'
+        
