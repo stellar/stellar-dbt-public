@@ -15,7 +15,7 @@ with
         from {{ ref('stg_token_transfers_raw') }}
         where closed_at >= '2024-02-01'
     ), unique_contracts as (
-        select distinct contract_id 
+        select distinct contract_id
         from token_transfers
     ), contract_metadata as (
         select
