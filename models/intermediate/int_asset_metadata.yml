@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: int_asset_metadata
+    description: "This model captures metadata about Stellar assets associated with contracts involved in token transfers."
+    columns:
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - not_null
+          - unique
+      - name: admin
+        description: '{{ doc("contract_admin") }}'
+      - name: symbol
+        description: '{{ doc("contract_symbol") }}'
+      - name: name
+        description: '{{ doc("contract_name") }}'
+      - name: decimal
+        description: '{{ doc("precision") }}'
