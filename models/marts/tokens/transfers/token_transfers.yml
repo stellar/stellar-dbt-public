@@ -1,0 +1,94 @@
+# version: 2
+
+# models:
+#   - name: token_transfers
+#     description: "Curated and enriched token transfer events across the entire Stellar network"
+#     tests:
+#       - dbt_utils.recency:
+#           tags: [recency]
+#           datepart: day
+#           field: closed_at
+#           interval: 1
+#           ignore_time_component: true
+#           config:
+#             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+#             severity: '{{ "error" if target.name == "prod" else "warn" }}'
+#           meta:
+#             description: "Monitors the freshness of your table over time, as the expected time between data updates."
+#       - stellar_dbt_public.incremental_unique_combination_of_columns:
+#           combination_of_columns:
+#             - unique_key
+#           date_column_name: "closed_at"
+#           greater_than_equal_to: "2 day"
+#           meta:
+#             description: "Tests the uniqueness combination of: unique key"
+#       - elementary.schema_changes:
+#           tags: [schema_changes]
+#           config:
+#             severity: warn
+#     columns:
+#       - name: transaction_hash
+#         description: '{{ doc("transaction_hash") }}'
+#         tests:
+#           - stellar_dbt_public.incremental_not_null:
+#               date_column_name: "closed_at"
+#               greater_than_equal_to: "2 day"
+
+#       - name: transaction_id
+#         description: '{{ doc("transaction_id") }}'
+#         tests:
+#           - stellar_dbt_public.incremental_not_null:
+#               date_column_name: "closed_at"
+#               greater_than_equal_to: "2 day"
+
+#       - name: operation_id
+#         description: '{{ doc("operation_id") }}'
+
+#       - name: closed_at
+#         description: '{{ doc("closed_at") }}'
+#         tests:
+#           - stellar_dbt_public.incremental_not_null:
+#               date_column_name: "closed_at"
+#               greater_than_equal_to: "2 day"
+
+#       - name: ledger_sequence
+#         description: '{{ doc("ledger_sequence") }}'
+
+#       - name: to
+#         description: '{{ doc("address") }}'
+
+#       - name: from
+#         description: '{{ doc("address") }}'
+
+#       - name: to_muxed
+#         description: '{{ doc("to_muxed")}}'
+
+#       - name: to_muxed_id
+#         description: '{{ doc("to_muxed_id")}}'
+
+#       - name: asset
+#         description: '{{ doc("token_asset") }}'
+
+#       - name: asset_type
+#         description: '{{ doc("asset_type") }}'
+
+#       - name: asset_code
+#         description: '{{ doc("asset_code") }}'
+
+#       - name: asset_issuer
+#         description: '{{ doc("asset_issuer") }}'
+
+#       - name: amount_raw
+#         description: '{{ doc("token_amount_raw") }}'
+
+#       - name: amount
+#         description: '{{ doc("token_amount") }}'
+
+#       - name: event_topic
+#         description: '{{ doc("event_topic") }}'
+
+#       - name: event_type
+#         description: '{{ doc("event_type") }}'
+
+#       - name: is_soroban
+#         description: '{{ doc("is_soroban") }}'
