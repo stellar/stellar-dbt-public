@@ -37,7 +37,7 @@ The raw number of units of an asset. Precision for an amount is 10^-7 of the ass
 - Required Field
   {% enddocs %}
 
-{% docs precision %}
+{% docs decimal_precision %}
 The number of decimal places of precision an asset supports.
 
 - Required Field
