@@ -38,15 +38,15 @@ with
             , tt.closed_at
             , tt.to_muxed
             , tt.to_muxed_id
-        from {{ ref('stg_token_transfers_raw') }} tt
-        left join {{ ref('int_asset_metadata') }} metadata
+        from {{ ref('stg_token_transfers_raw') }} as tt
+        left join {{ ref('int_asset_metadata') }} as metadata
             on tt.contract_id = metadata.contract_id
         where
             tt.closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and tt.closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
-        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, metadata.decimal
+        group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17
     )
     , operations as (
         select
@@ -57,7 +57,7 @@ with
         from {{ ref('stg_history_operations') }}
         where
             batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
     )
@@ -68,8 +68,8 @@ select
     , tt.operation_id
     , tt.event_topic
     , op.event_type
-    , tt.from
-    , tt.to
+    , tt.`from`
+    , tt.`to`
     , tt.asset
     , tt.asset_type
     , tt.asset_code
