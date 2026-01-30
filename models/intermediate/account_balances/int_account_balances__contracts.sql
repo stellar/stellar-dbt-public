@@ -28,10 +28,10 @@ with
             , tt.to as account_id
             , tt.contract_id
             -- Note that 10^-7 is the default precision for Stellar assets. Recognized assets with default precision will have null token_precision.
-            , sum(safe_cast(tt.amount_raw as numeric) * pow(10, coalesce(-ra.token_precision, -7))) as balance
+            , sum(safe_cast(tt.amount_raw as numeric) * pow(10, coalesce(-safe_cast(metadata.decimal as int64), -7))) as balance
         from {{ ref('stg_token_transfers_raw') }} as tt
-        left join {{ ref('recognized_assets') }} as ra
-            on tt.contract_id = ra.contract_id
+        left join {{ ref('int_asset_metadata') }} as metadata
+            on tt.contract_id = metadata.contract_id
         where
             true
             and tt.to is not null
@@ -48,10 +48,10 @@ with
             , tt.`from` as account_id
             , tt.contract_id
             -- Note that 10^-7 is the default precision for Stellar assets. Recognized assets with default precision will have null token_precision.
-            , -sum(safe_cast(tt.amount_raw as numeric) * pow(10, coalesce(-ra.token_precision, -7))) as balance
+            , -sum(safe_cast(tt.amount_raw as numeric) * pow(10, coalesce(-safe_cast(metadata.decimal as int64), -7))) as balance
         from {{ ref('stg_token_transfers_raw') }} as tt
-        left join {{ ref('recognized_assets') }} as ra
-            on tt.contract_id = ra.contract_id
+        left join {{ ref('int_asset_metadata') }} as metadata
+            on tt.contract_id = metadata.contract_id
         where
             true
             and tt.`from` is not null
