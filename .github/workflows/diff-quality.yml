@@ -61,6 +61,11 @@ jobs:
           pip install -r requirements.txt
           dbt deps
 
+      - name: Authenticate to GCP
+        uses: "google-github-actions/auth@140bb5113ffb6b65a7e9b937a81fa96cf5064462"
+        with:
+          credentials_json: "${{ secrets.CREDS_TEST_HUBBLE }}"
+
       - name: Checkout source branch and diff quality
         run: |
           git checkout ${{ github.head_ref }}
