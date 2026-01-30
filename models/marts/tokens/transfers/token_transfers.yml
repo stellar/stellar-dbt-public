@@ -87,8 +87,8 @@ models:
       - name: event_topic
         description: '{{ doc("event_topic") }}'
 
-      - name: event_operation_type
-        description: '{{ doc("event_type") }}'
+      - name: event_type
+        description: '{{ doc("event_operation_type") }}'
 
       - name: is_soroban
         description: '{{ doc("is_soroban") }}'
