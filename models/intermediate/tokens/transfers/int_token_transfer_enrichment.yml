@@ -1,73 +1,75 @@
-# version: 2
+version: 2
 
-# models:
-#   - name: int_token_transfer_enrichment
-#     description: "This table joins token_transfers_raw with history_operations to add operation type and soroban flag."
-#     columns:
-#       - name: transaction_hash
-#         description: '{{ doc("transaction_hash") }}'
-#         tests:
-#           - stellar_dbt_public.incremental_not_null:
-#               date_column_name: "closed_at"
-#               greater_than_equal_to: "1 day"
+models:
+  - name: int_token_transfer_enrichment
+    description: "This table joins token_transfers_raw with history_operations to add operation type and soroban flag."
+    columns:
+      - name: transaction_hash
+        description: '{{ doc("transaction_hash") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "1 day"
 
-#       - name: transaction_id
-#         description: '{{ doc("transaction_id") }}'
+      - name: transaction_id
+        description: '{{ doc("transaction_id") }}'
 
-#       - name: operation_id
-#         description: '{{ doc("operation_id") }}'
+      - name: operation_id
+        description: '{{ doc("operation_id") }}'
 
-#       - name: contract_id
-#         description: '{{ doc("contract_id") }}'
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
 
-#       - name: closed_at
-#         description: '{{ doc("closed_at") }}'
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
 
-#       - name: ledger_sequence
-#         description: '{{ doc("ledger_sequence") }}'
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
 
-#       - name: to
-#         description: '{{ doc("address") }}'
+      - name: to
+        description: '{{ doc("address") }}'
 
-#       - name: from
-#         description: '{{ doc("address") }}'
+      - name: from
+        description: '{{ doc("address") }}'
 
-#       - name: to_muxed
-#         description: '{{ doc("to_muxed")}}'
+      - name: to_muxed
+        description: '{{ doc("to_muxed")}}'
 
-#       - name: to_muxed_id
-#         description: '{{ doc("to_muxed_id")}}'
+      - name: to_muxed_id
+        description: '{{ doc("to_muxed_id")}}'
 
-#       - name: asset
-#         description: '{{ doc("token_asset") }}'
-#         tests:
-#           - stellar_dbt_public.incremental_not_null:
-#               date_column_name: "closed_at"
-#               greater_than_equal_to: "1 day"
+      - name: asset
+        description: '{{ doc("token_asset") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "1 day"
 
-#       - name: asset_type
-#         description: '{{ doc("asset_type") }}'
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
 
-#       - name: asset_code
-#         description: '{{ doc("asset_code") }}'
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
 
-#       - name: asset_issuer
-#         description: '{{ doc("asset_issuer") }}'
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
 
-#       - name: amount_raw
-#         description: '{{ doc("token_amount_raw") }}'
+      - name: amount_raw
+        description: '{{ doc("token_amount_raw") }}'
 
-#       - name: amount
-#         description: '{{ doc("token_amount") }}'
+      - name: amount
+        description: '{{ doc("token_amount") }}'
 
-#       - name: event_topic
-#         description: '{{ doc("event_topic") }}'
+      - name: event_topic
+        description: '{{ doc("event_topic") }}'
 
-#       - name: event_type
-#         description: '{{ doc("event_type") }}'
+      - name: event_type
+        description: '{{ doc("event_operation_type") }}'
 
-#       - name: is_soroban
-#         description: '{{ doc("is_soroban") }}'
+      - name: is_soroban
+        description: '{{ doc("is_soroban") }}'
 
-#       - name: unique_key
-#         description: '{{ doc("token_unique_key") }}'
+      - name: unique_key
+        description: '{{ doc("token_unique_key") }}'
