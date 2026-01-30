@@ -49,10 +49,6 @@ models:
       +materialized: view # how the intermediate models will be materialized
     marts:
       +materialized: table # how the mart models will be materialized
-      account_balances:
-        +enabled: false
-      asset_balances:
-        +enabled: false
     snapshots:
       +materialized: incremental_snapshot
 
