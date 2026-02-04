@@ -43,6 +43,6 @@ select
     -- Extract Metadata (from the map level)
     , max(if(metadata_key = 'symbol', val_string, null)) as `symbol`
     , max(if(metadata_key = 'name', val_string, null)) as `name`
-    , max(if(metadata_key = 'decimal', val_u32, null)) as `decimal`
+    , max(if(metadata_key in ('decimal', 'decimals'), val_u32, null)) as `decimal`
 from flattened_data
 group by contract_id
