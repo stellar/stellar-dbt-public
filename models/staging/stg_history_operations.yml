@@ -431,6 +431,21 @@ models:
       - name: details.operation_trace_code
         description: '{{ doc("operation_trace_code") }}'
 
+      - name: details.balance_id_strkey
+        description: '{{ doc("details_claimable_balance_id_strkey") }}'
+
+      - name: details.claimable_balance_id_strkey
+        description: '{{ doc("details_claimable_balance_id_strkey") }}'
+
+      - name: details.liquidity_pool_id_strkey
+        description: '{{ doc("details_liquidity_pool_id_strkey") }}'
+
+      - name: details.parameters_json
+        description: '{{ doc("details_parameters_json") }}'
+
+      - name: details.parameters_json_decoded
+        description: '{{ doc("details_parameters_json_decoded") }}'
+
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:
