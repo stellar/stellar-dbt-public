@@ -33,30 +33,31 @@
 with
     agg_stats as (
         select
-            cast(batch_run_date as date) as day_agg
+            cast(batch_run_date as date) as day_agg -- agg by batch run date, daily
+            -- each ceil rounds up
             , ceil(cast(max(
                 fee_charged
                 / case
-                    when new_max_fee is null then txn_operation_count
+                    when new_max_fee is null then txn_operation_count --add 1 to txn op count if fee bump occurs (i.e. new_max_fee not null)
                     else (txn_operation_count + 1)
                 end
-            ) as bigint)) as fee_charged_max
+            ) as bigint)) as fee_charged_max -- grabs max fee charged per op count for the day - what was actually charged
             , ceil(cast(min(
                 fee_charged
                 / case
-                    when new_max_fee is null then txn_operation_count
+                    when new_max_fee is null then txn_operation_count --add 1 to txn op count if fee bump occurs (i.e. new_max_fee not null)
                     else (txn_operation_count + 1)
                 end
-            ) as bigint)) as fee_charged_min
-            , approx_top_count(
+            ) as bigint)) as fee_charged_min -- grabs min fee charged per op count for the day
+            , approx_top_count( -- grab frequent values in this column for the day
                 fee_charged
                 / case
-                    when new_max_fee is null then txn_operation_count
+                    when new_max_fee is null then txn_operation_count --add 1 to txn op count if fee bump occurs (i.e. new_max_fee not null)
                     else (txn_operation_count + 1)
                 end
                 , 1
             )[offset(0)
-            ] as fee_charged_mode
+            ] as fee_charged_mode -- grabs mode fee charger per op count for the day
             , ceil(cast(max(
                 coalesce(new_max_fee, max_fee
                 )
@@ -64,7 +65,7 @@ with
                     when new_max_fee is null then txn_operation_count
                     else (txn_operation_count + 1)
                 end
-            ) as bigint)) as max_fee_max
+            ) as bigint)) as max_fee_max -- grabs max fee per op count for the day - what could have been charged (what they were willing to pay)
             , ceil(cast(min(
                 coalesce(new_max_fee, max_fee
                 )
@@ -72,6 +73,7 @@ with
                     when new_max_fee is null then txn_operation_count
                     else (txn_operation_count + 1)
                 end
+            -- grabs min fee per op count for the day - min of what could have been charged (what they were willing to pay)
             ) as bigint)) as max_fee_min
             , approx_top_count(
                 coalesce(new_max_fee, max_fee)
@@ -81,8 +83,10 @@ with
                 end
                 , 1
             )[offset(0)
-            ] as max_fee_mode
+            ] as max_fee_mode -- grabs mode fee they were willing to pay per op count for the day
             {{ percentile_iteration(percentiles) }}
+            -- grabs fee per op count percentiles for the day - what was actually charged and what could have been charged
+
             , min(ledger_sequence) as min_ledger_sequence
             , max(ledger_sequence) as max_ledger_sequence
         from {{ ref('stg_history_transactions') }}
@@ -100,7 +104,8 @@ with
             , ledger_sequence
             , case
                 when (txn_operation_count + if(fee_account is not null, 1, 0)) * 100 < fee_charged
-                    then 1
+                    then 1 -- checks if the fee they paid is more than the min fee, min fee is 100 stroops per op
+                    -- if it is, then this ledger marked as surge
                 else 0
             end as surge_price_ind
         from {{ ref('stg_history_transactions') }}
@@ -119,7 +124,7 @@ with
         select
             day_agg
             , count(ledger_sequence) as total_ledgers
-            , sum(surge_price_ind) as surge_price_count
+            , sum(surge_price_ind) as surge_price_count --num of ledgers with surge price
         from surge_price_ledgers
         group by day_agg
     )
@@ -127,7 +132,7 @@ with
     , renaming as (
         select
             agg_stats.day_agg
-            , agg_stats.fee_charged_p10
+            , agg_stats.fee_charged_p10 -- percentiles for what was charged
             , agg_stats.fee_charged_p20
             , agg_stats.fee_charged_p30
             , agg_stats.fee_charged_p40
@@ -141,7 +146,7 @@ with
             , agg_stats.fee_charged_max
             , agg_stats.fee_charged_min
             , ceil(agg_stats.fee_charged_mode.value) as fee_charged_mode
-            , agg_stats.max_fee_p10
+            , agg_stats.max_fee_p10 -- percentiles for what could have been charged (what they were willing to pay)
             , agg_stats.max_fee_p20
             , agg_stats.max_fee_p30
             , agg_stats.max_fee_p40
@@ -155,10 +160,10 @@ with
             , agg_stats.max_fee_max
             , agg_stats.max_fee_min
             , ceil(agg_stats.max_fee_mode.value) as max_fee_mode
-            , agg_stats.min_ledger_sequence
-            , agg_stats.max_ledger_sequence
+            , agg_stats.min_ledger_sequence -- min ledger sequence for the day
+            , agg_stats.max_ledger_sequence -- max ledger sequence for the day
             , surge_stats.total_ledgers
-            , 100 * (surge_stats.surge_price_count / surge_stats.total_ledgers) as surge_price_pct
+            , 100 * (surge_stats.surge_price_count / surge_stats.total_ledgers) as surge_price_pct -- percentage of ledgers with surge price
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from agg_stats
         inner join
