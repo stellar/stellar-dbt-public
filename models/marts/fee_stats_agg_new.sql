@@ -40,7 +40,6 @@ with
             , non_refundable_resource_fee_charged
             , refundable_resource_fee_charged
             , rent_fee_charged
-            , refundable_fee
             , coalesce(coalesce(resource_fee, 0) > 0, false) as is_soroban
         from {{ ref('stg_history_transactions') }}
         where
@@ -163,9 +162,6 @@ with
             , sum(refundable_resource_fee_charged) as soroban_sum_refundable_resource_fee_charged
             , avg(refundable_resource_fee_charged) as soroban_avg_refundable_resource_fee_charged
             , max(refundable_resource_fee_charged) as soroban_max_refundable_resource_fee_charged
-            , sum(refundable_fee) as soroban_sum_refundable_fee
-            , avg(refundable_fee) as soroban_avg_refundable_fee
-            , max(refundable_fee) as soroban_max_refundable_fee
             , sum(resource_fee_refund) as soroban_sum_resource_fee_refund
             , avg(resource_fee_refund) as soroban_avg_resource_fee_refund
             , max(resource_fee_refund) as soroban_max_resource_fee_refund
@@ -173,6 +169,8 @@ with
             , avg(rent_fee_charged) as soroban_avg_rent_fee_charged
             , max(rent_fee_charged) as soroban_max_rent_fee_charged
 
+            --   where ((inclusion_fee_charged > 100 and fee_account is null)--ledgers in base pricing
+            --  or (inclusion_fee_charged > 200 and fee_account is not null)) -- fee bump transactions
             -- surge stats (ledger-level via count distinct)
             , count(distinct ledger_sequence) as soroban_total_ledgers
             , count(
@@ -276,9 +274,6 @@ with
             , soroban_agg.soroban_sum_refundable_resource_fee_charged
             , soroban_agg.soroban_avg_refundable_resource_fee_charged
             , soroban_agg.soroban_max_refundable_resource_fee_charged
-            , soroban_agg.soroban_sum_refundable_fee
-            , soroban_agg.soroban_avg_refundable_fee
-            , soroban_agg.soroban_max_refundable_fee
             , soroban_agg.soroban_sum_resource_fee_refund
             , soroban_agg.soroban_avg_resource_fee_refund
             , soroban_agg.soroban_max_resource_fee_refund
