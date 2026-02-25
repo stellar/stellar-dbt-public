@@ -16,9 +16,7 @@
 }}
 
 with
-    -- =====================================================================
     -- BASE: source read + classification + effective_txn_operation_count
-    -- =====================================================================
     base_txns as (
         select
             cast(batch_run_date as date) as day_agg
@@ -29,6 +27,9 @@ with
             , new_max_fee
             , txn_operation_count
             , case
+                -- handling for fee bump transactions:
+                -- If new_max_fee is not null, it's a fee bump txn, add 1 to the op count.
+                -- Will be reflected later when calculating base inclusion fee.
                 when new_max_fee is null then txn_operation_count
                 else (txn_operation_count + 1)
             end as effective_txn_operation_count
@@ -49,9 +50,7 @@ with
             {% endif %}
     )
 
-    -- =====================================================================
     -- GENERAL AGGREGATES (all txns → day grain)
-    -- =====================================================================
     , general_agg as (
         select
             day_agg
@@ -66,11 +65,9 @@ with
         group by day_agg
     )
 
-    -- =====================================================================
     -- CLASSIC AGGREGATES (txns → day grain)
     -- For classic txns, fee_charged IS the inclusion fee (no resource_fee).
     -- Derived inclusion fee per op: fee_charged / effective_txn_operation_count
-    -- =====================================================================
     , classic_agg as (
         select
             day_agg
@@ -121,10 +118,8 @@ with
         group by day_agg
     )
 
-    -- =====================================================================
     -- SOROBAN AGGREGATES (txns → day grain)
     -- For soroban txns: fee_charged = resource_fee + inclusion_fee_charged
-    -- =====================================================================
     , soroban_agg as (
         select
             day_agg
@@ -169,8 +164,6 @@ with
             , avg(rent_fee_charged) as soroban_avg_rent_fee_charged
             , max(rent_fee_charged) as soroban_max_rent_fee_charged
 
-            --   where ((inclusion_fee_charged > 100 and fee_account is null)--ledgers in base pricing
-            --  or (inclusion_fee_charged > 200 and fee_account is not null)) -- fee bump transactions
             -- surge stats (ledger-level via count distinct)
             , count(distinct ledger_sequence) as soroban_total_ledgers
             , count(
@@ -204,15 +197,9 @@ with
         group by day_agg
     )
 
-    -- =====================================================================
-    -- SOROBAN FEES BY OPERATION TYPE (requires join to stg_history_operations)
-    -- =====================================================================
-    -- TODO: implement soroban_fees_by_op_type
+    -- TODO: implement soroban_fees_by_op_type --- do we need this?
     -- , soroban_op_type_agg as ()
 
-    -- =====================================================================
-    -- FINAL: join all day-grain CTEs
-    -- =====================================================================
     , final as (
         select
             general_agg.day_agg
