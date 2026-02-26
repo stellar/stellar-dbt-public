@@ -1,0 +1,135 @@
+{% set meta_config = {
+    "materialized": "incremental",
+    "unique_key": ["day_agg"],
+    "tags": ["fee_stats"],
+    "partition_by": {
+        "field": "day_agg"
+        , "data_type": "date"
+        , "granularity": "month"
+    }
+} %}
+
+{{ config(
+    meta=meta_config,
+    **meta_config,
+    )
+}}
+
+with
+    ledger_stats as (
+        select *
+        from {{ ref('ledger_fee_stats_agg') }}
+        where
+            day_agg < date('{{ var("batch_end_date") }}')
+        {% if is_incremental() %}
+                and day_agg >= date('{{ var("batch_start_date") }}')
+            {% endif %}
+    )
+
+    , final as (
+        select
+            day_agg
+
+            -- General
+            , sum(total_fee_charged) as total_fee_charged
+            , safe_divide(sum(total_fee_charged), sum(txn_count)) as avg_fee_charged
+            , max(max_fee_charged) as max_fee_charged
+            , sum(txn_count) as txn_count
+            , sum(total_txn_operation_count) as total_txn_operation_count
+            , min(ledger_sequence) as min_ledger_sequence
+            , max(ledger_sequence) as max_ledger_sequence
+
+            -- Classic: fee aggregates
+            , sum(classic_txn_count) as classic_txn_count
+            , sum(classic_total_operation_count) as classic_total_operation_count
+            , sum(classic_sum_fee_charged) as classic_sum_fee_charged
+            , safe_divide(sum(classic_sum_fee_charged), sum(classic_txn_count)) as classic_avg_fee_charged
+            , max(classic_max_fee_charged) as classic_max_fee_charged
+            , sum(classic_sum_max_fee) as classic_sum_max_fee
+            , safe_divide(sum(classic_sum_max_fee), sum(classic_txn_count)) as classic_avg_max_fee
+            , max(classic_max_max_fee) as classic_max_max_fee
+            -- derived inclusion fee per op (weighted avg from ledger-level avgs)
+            , max(classic_max_inclusion_fee_per_op) as classic_max_inclusion_fee_per_op
+            , safe_divide(
+                sum(classic_avg_inclusion_fee_per_op * classic_txn_count)
+                , sum(classic_txn_count)
+            ) as classic_avg_inclusion_fee_per_op
+            , min(classic_min_inclusion_fee_per_op) as classic_min_inclusion_fee_per_op
+
+            -- Classic: surge
+            , countif(classic_txn_count is not null) as classic_total_ledgers
+            , countif(classic_is_surge_ledger) as classic_surge_ledger_count
+            , sum(classic_surge_txn_count) as classic_total_surge_txn_count
+            , sum(classic_surge_operation_count) as classic_total_surge_operation_count
+            , safe_divide(
+                100.0 * countif(classic_is_surge_ledger)
+                , countif(classic_txn_count is not null)
+            ) as classic_pct_ledgers_in_surge
+
+            -- Soroban: fee_charged (total)
+            , sum(soroban_txn_count) as soroban_txn_count
+            , sum(soroban_total_operation_count) as soroban_total_operation_count
+            , sum(soroban_sum_fee_charged) as soroban_sum_fee_charged
+            , safe_divide(sum(soroban_sum_fee_charged), sum(soroban_txn_count)) as soroban_avg_fee_charged
+            , max(soroban_max_fee_charged) as soroban_max_fee_charged
+
+            -- Soroban: inclusion fee
+            , sum(soroban_sum_inclusion_fee_charged) as soroban_sum_inclusion_fee_charged
+            , safe_divide(sum(soroban_sum_inclusion_fee_charged), sum(soroban_txn_count)) as soroban_avg_inclusion_fee_charged
+            , max(soroban_max_inclusion_fee_charged) as soroban_max_inclusion_fee_charged
+            , sum(soroban_sum_inclusion_fee_bid) as soroban_sum_inclusion_fee_bid
+            , safe_divide(sum(soroban_sum_inclusion_fee_bid), sum(soroban_txn_count)) as soroban_avg_inclusion_fee_bid
+            , max(soroban_max_inclusion_fee_bid) as soroban_max_inclusion_fee_bid
+            -- derived inclusion fee per op (weighted avg from ledger-level avgs)
+            , max(soroban_max_inclusion_fee_per_op) as soroban_max_inclusion_fee_per_op
+            , safe_divide(
+                sum(soroban_avg_inclusion_fee_per_op * soroban_txn_count)
+                , sum(soroban_txn_count)
+            ) as soroban_avg_inclusion_fee_per_op
+            , min(soroban_min_inclusion_fee_per_op) as soroban_min_inclusion_fee_per_op
+
+            -- Soroban: resource fee (total)
+            , sum(soroban_sum_resource_fee) as soroban_sum_resource_fee
+            , safe_divide(sum(soroban_sum_resource_fee), sum(soroban_txn_count)) as soroban_avg_resource_fee
+            , max(soroban_max_resource_fee) as soroban_max_resource_fee
+
+            -- Soroban: resource fee components
+            , sum(soroban_sum_non_refundable_resource_fee_charged) as soroban_sum_non_refundable_resource_fee_charged
+            , safe_divide(sum(soroban_sum_non_refundable_resource_fee_charged), sum(soroban_txn_count))
+                as soroban_avg_non_refundable_resource_fee_charged
+            , max(soroban_max_non_refundable_resource_fee_charged) as soroban_max_non_refundable_resource_fee_charged
+            , sum(soroban_sum_refundable_resource_fee_charged) as soroban_sum_refundable_resource_fee_charged
+            , safe_divide(sum(soroban_sum_refundable_resource_fee_charged), sum(soroban_txn_count)) as soroban_avg_refundable_resource_fee_charged
+            , max(soroban_max_refundable_resource_fee_charged) as soroban_max_refundable_resource_fee_charged
+            , sum(soroban_sum_resource_fee_refund) as soroban_sum_resource_fee_refund
+            , safe_divide(sum(soroban_sum_resource_fee_refund), sum(soroban_txn_count)) as soroban_avg_resource_fee_refund
+            , max(soroban_max_resource_fee_refund) as soroban_max_resource_fee_refund
+            , sum(soroban_sum_rent_fee_charged) as soroban_sum_rent_fee_charged
+            , safe_divide(sum(soroban_sum_rent_fee_charged), sum(soroban_txn_count)) as soroban_avg_rent_fee_charged
+            , max(soroban_max_rent_fee_charged) as soroban_max_rent_fee_charged
+
+            -- Soroban: surge
+            , countif(soroban_txn_count is not null) as soroban_total_ledgers
+            , countif(soroban_is_surge_ledger) as soroban_surge_ledger_count
+            , sum(soroban_surge_txn_count) as soroban_total_surge_txn_count
+            , sum(soroban_surge_operation_count) as soroban_total_surge_operation_count
+            , safe_divide(
+                100.0 * countif(soroban_is_surge_ledger)
+                , countif(soroban_txn_count is not null)
+            ) as soroban_pct_ledgers_in_surge
+
+            -- Ledger info
+            , max(fee_pool) as fee_pool
+
+            -- Calculated
+            , sum(total_fee_charged) / 10000000.0 as total_fee_charged_xlm
+
+            -- Metadata
+            , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
+
+        from ledger_stats
+        group by day_agg
+    )
+
+select *
+from final

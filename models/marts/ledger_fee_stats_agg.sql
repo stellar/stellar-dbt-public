@@ -1,6 +1,6 @@
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["day_agg"],
+    "unique_key": ["ledger_sequence"],
     "tags": ["fee_stats"],
     "partition_by": {
         "field": "day_agg"
@@ -50,27 +50,27 @@ with
             {% endif %}
     )
 
-    -- GENERAL AGGREGATES (all txns → day grain)
+    -- GENERAL AGGREGATES (all txns → ledger grain)
     , general_agg as (
         select
             day_agg
+            , ledger_sequence
             , sum(fee_charged) as total_fee_charged
             , avg(fee_charged) as avg_fee_charged
             , max(fee_charged) as max_fee_charged
-            , count(*) as txn_count -- TODO: move this to lane specific?
-            , sum(txn_operation_count) as total_txn_operation_count -- TODO: move this to lane specific?
-            , min(ledger_sequence) as min_ledger_sequence
-            , max(ledger_sequence) as max_ledger_sequence
+            , count(*) as txn_count
+            , sum(txn_operation_count) as total_txn_operation_count
         from base_txns
-        group by day_agg
+        group by day_agg, ledger_sequence
     )
 
-    -- CLASSIC AGGREGATES (txns → day grain)
+    -- CLASSIC AGGREGATES (classic txns → ledger grain)
     -- For classic txns, fee_charged IS the inclusion fee (no resource_fee).
     -- Derived inclusion fee per op: fee_charged / effective_txn_operation_count
     , classic_agg as (
         select
             day_agg
+            , ledger_sequence
             -- txn counts
             , count(*) as classic_txn_count
             , sum(txn_operation_count) as classic_total_operation_count
@@ -86,44 +86,30 @@ with
             , max(fee_charged / effective_txn_operation_count) as classic_max_inclusion_fee_per_op
             , avg(fee_charged / effective_txn_operation_count) as classic_avg_inclusion_fee_per_op
             , min(fee_charged / effective_txn_operation_count) as classic_min_inclusion_fee_per_op
-            -- surge stats (ledger-level via count distinct)
-            , count(distinct ledger_sequence) as classic_total_ledgers
-            , count(
-                distinct
-                case
-                    when fee_charged > effective_txn_operation_count * 100
-                        then ledger_sequence
-                end
-            ) as classic_surge_ledger_count
+            -- surge stats (at ledger grain, simplifies to txn-level counts + a flag)
             , countif(
                 fee_charged > effective_txn_operation_count * 100
-            ) as classic_total_surge_txn_count
+            ) as classic_surge_txn_count
             , sum(
                 case
                     when fee_charged > effective_txn_operation_count * 100
                         then txn_operation_count
                 end
-            ) as classic_total_surge_operation_count
-            , safe_divide(
-                100.0 * count(
-                    distinct
-                    case
-                        when fee_charged > effective_txn_operation_count * 100
-                            then ledger_sequence
-                    end
-                )
-                , count(distinct ledger_sequence)
-            ) as classic_pct_ledgers_in_surge
+            ) as classic_surge_operation_count
+            , countif(
+                fee_charged > effective_txn_operation_count * 100
+            ) > 0 as classic_is_surge_ledger
         from base_txns
         where not is_soroban
-        group by day_agg
+        group by day_agg, ledger_sequence
     )
 
-    -- SOROBAN AGGREGATES (txns → day grain)
+    -- SOROBAN AGGREGATES (soroban txns → ledger grain)
     -- For soroban txns: fee_charged = resource_fee + inclusion_fee_charged
     , soroban_agg as (
         select
             day_agg
+            , ledger_sequence
             -- txn counts
             , count(*) as soroban_txn_count
             , sum(txn_operation_count) as soroban_total_operation_count
@@ -166,45 +152,41 @@ with
             , avg(rent_fee_charged) as soroban_avg_rent_fee_charged
             , max(rent_fee_charged) as soroban_max_rent_fee_charged
 
-            -- surge stats (ledger-level via count distinct)
-            , count(distinct ledger_sequence) as soroban_total_ledgers
-            , count(
-                distinct
-                case
-                    when inclusion_fee_charged > effective_txn_operation_count * 100
-                        then ledger_sequence
-                end
-            ) as soroban_surge_ledger_count
+            -- surge stats (at ledger grain, simplifies to txn-level counts + a flag)
             , countif(
                 inclusion_fee_charged > effective_txn_operation_count * 100
-            ) as soroban_total_surge_txn_count
+            ) as soroban_surge_txn_count
             , sum(
                 case
                     when inclusion_fee_charged > effective_txn_operation_count * 100
                         then txn_operation_count
                 end
-            ) as soroban_total_surge_operation_count
-            , safe_divide(
-                100.0 * count(
-                    distinct
-                    case
-                        when inclusion_fee_charged > effective_txn_operation_count * 100
-                            then ledger_sequence
-                    end
-                )
-                , count(distinct ledger_sequence)
-            ) as soroban_pct_ledgers_in_surge
+            ) as soroban_surge_operation_count
+            , countif(
+                inclusion_fee_charged > effective_txn_operation_count * 100
+            ) > 0 as soroban_is_surge_ledger
         from base_txns
         where is_soroban
-        group by day_agg
+        group by day_agg, ledger_sequence
     )
 
-    -- TODO: implement soroban_fees_by_op_type --- do we need this?
-    -- , soroban_op_type_agg as ()
+    -- LEDGER INFO: fee_pool from history_ledgers (already at ledger grain)
+    , ledger_info as (
+        select
+            sequence as ledger_sequence
+            , fee_pool
+        from {{ ref('stg_history_ledgers') }}
+        where
+            batch_run_date < datetime(date('{{ var("batch_end_date") }}'))
+        {% if is_incremental() %}
+                and batch_run_date >= datetime(date('{{ var("batch_start_date") }}'))
+            {% endif %}
+    )
 
     , final as (
         select
             general_agg.day_agg
+            , general_agg.ledger_sequence
 
             -- General
             , general_agg.total_fee_charged
@@ -212,12 +194,10 @@ with
             , general_agg.max_fee_charged
             , general_agg.txn_count
             , general_agg.total_txn_operation_count
-            , general_agg.min_ledger_sequence
-            , general_agg.max_ledger_sequence
 
             -- Classic: fee aggregates
             , classic_agg.classic_txn_count
-            , classig_agg.classic_total_operation_count
+            , classic_agg.classic_total_operation_count
             , classic_agg.classic_sum_fee_charged
             , classic_agg.classic_avg_fee_charged
             , classic_agg.classic_max_fee_charged
@@ -229,11 +209,9 @@ with
             , classic_agg.classic_min_inclusion_fee_per_op
 
             -- Classic: surge
-            , classic_agg.classic_total_ledgers
-            , classic_agg.classic_surge_ledger_count
-            , classic_agg.classic_total_surge_txn_count
-            , classic_agg.classic_total_surge_operation_count
-            , classic_agg.classic_pct_ledgers_in_surge
+            , classic_agg.classic_surge_txn_count
+            , classic_agg.classic_surge_operation_count
+            , classic_agg.classic_is_surge_ledger
 
             -- Soroban: fee_charged (total)
             , soroban_agg.soroban_txn_count
@@ -273,11 +251,12 @@ with
             , soroban_agg.soroban_max_rent_fee_charged
 
             -- Soroban: surge
-            , soroban_agg.soroban_total_ledgers
-            , soroban_agg.soroban_surge_ledger_count
-            , soroban_agg.soroban_total_surge_txn_count
-            , soroban_agg.soroban_total_surge_operation_count
-            , soroban_agg.soroban_pct_ledgers_in_surge
+            , soroban_agg.soroban_surge_txn_count
+            , soroban_agg.soroban_surge_operation_count
+            , soroban_agg.soroban_is_surge_ledger
+
+            -- Ledger info
+            , ledger_info.fee_pool
 
             -- Calculated
             , general_agg.total_fee_charged / 10000000.0 as total_fee_charged_xlm
@@ -288,8 +267,12 @@ with
         from general_agg
         left join classic_agg
             on general_agg.day_agg = classic_agg.day_agg
+            and general_agg.ledger_sequence = classic_agg.ledger_sequence
         left join soroban_agg
             on general_agg.day_agg = soroban_agg.day_agg
+            and general_agg.ledger_sequence = soroban_agg.ledger_sequence
+        left join ledger_info
+            on general_agg.ledger_sequence = ledger_info.ledger_sequence
     )
 
 select *
