@@ -32,7 +32,6 @@ with
 
             -- General
             , sum(total_fee_charged) as total_fee_charged
-            , safe_divide(sum(total_fee_charged), sum(txn_count)) as avg_fee_charged
             , max(max_fee_charged) as max_fee_charged
             , sum(txn_count) as txn_count
             , sum(total_txn_operation_count) as total_txn_operation_count
@@ -43,17 +42,11 @@ with
             , sum(classic_txn_count) as classic_txn_count
             , sum(classic_total_operation_count) as classic_total_operation_count
             , sum(classic_sum_fee_charged) as classic_sum_fee_charged
-            , safe_divide(sum(classic_sum_fee_charged), sum(classic_txn_count)) as classic_avg_fee_charged
             , max(classic_max_fee_charged) as classic_max_fee_charged
             , sum(classic_sum_max_fee) as classic_sum_max_fee
-            , safe_divide(sum(classic_sum_max_fee), sum(classic_txn_count)) as classic_avg_max_fee
             , max(classic_max_max_fee) as classic_max_max_fee
-            -- derived inclusion fee per op (weighted avg from ledger-level avgs)
+            -- derived inclusion fee per op
             , max(classic_max_inclusion_fee_per_op) as classic_max_inclusion_fee_per_op
-            , safe_divide(
-                sum(classic_avg_inclusion_fee_per_op * classic_txn_count)
-                , sum(classic_txn_count)
-            ) as classic_avg_inclusion_fee_per_op
             , min(classic_min_inclusion_fee_per_op) as classic_min_inclusion_fee_per_op
 
             -- Classic: surge
@@ -70,42 +63,32 @@ with
             , sum(soroban_txn_count) as soroban_txn_count
             , sum(soroban_total_operation_count) as soroban_total_operation_count
             , sum(soroban_sum_fee_charged) as soroban_sum_fee_charged
-            , safe_divide(sum(soroban_sum_fee_charged), sum(soroban_txn_count)) as soroban_avg_fee_charged
             , max(soroban_max_fee_charged) as soroban_max_fee_charged
 
             -- Soroban: inclusion fee
             , sum(soroban_sum_inclusion_fee_charged) as soroban_sum_inclusion_fee_charged
-            , safe_divide(sum(soroban_sum_inclusion_fee_charged), sum(soroban_txn_count)) as soroban_avg_inclusion_fee_charged
             , max(soroban_max_inclusion_fee_charged) as soroban_max_inclusion_fee_charged
             , sum(soroban_sum_inclusion_fee_bid) as soroban_sum_inclusion_fee_bid
-            , safe_divide(sum(soroban_sum_inclusion_fee_bid), sum(soroban_txn_count)) as soroban_avg_inclusion_fee_bid
             , max(soroban_max_inclusion_fee_bid) as soroban_max_inclusion_fee_bid
-            -- derived inclusion fee per op (weighted avg from ledger-level avgs)
+            -- derived inclusion fee per op
             , max(soroban_max_inclusion_fee_per_op) as soroban_max_inclusion_fee_per_op
-            , safe_divide(
-                sum(soroban_avg_inclusion_fee_per_op * soroban_txn_count)
-                , sum(soroban_txn_count)
-            ) as soroban_avg_inclusion_fee_per_op
             , min(soroban_min_inclusion_fee_per_op) as soroban_min_inclusion_fee_per_op
 
             -- Soroban: resource fee (total)
             , sum(soroban_sum_resource_fee) as soroban_sum_resource_fee
-            , safe_divide(sum(soroban_sum_resource_fee), sum(soroban_txn_count)) as soroban_avg_resource_fee
             , max(soroban_max_resource_fee) as soroban_max_resource_fee
 
             -- Soroban: resource fee components
             , sum(soroban_sum_non_refundable_resource_fee_charged) as soroban_sum_non_refundable_resource_fee_charged
-            , safe_divide(sum(soroban_sum_non_refundable_resource_fee_charged), sum(soroban_txn_count))
-                as soroban_avg_non_refundable_resource_fee_charged
             , max(soroban_max_non_refundable_resource_fee_charged) as soroban_max_non_refundable_resource_fee_charged
+
             , sum(soroban_sum_refundable_resource_fee_charged) as soroban_sum_refundable_resource_fee_charged
-            , safe_divide(sum(soroban_sum_refundable_resource_fee_charged), sum(soroban_txn_count)) as soroban_avg_refundable_resource_fee_charged
             , max(soroban_max_refundable_resource_fee_charged) as soroban_max_refundable_resource_fee_charged
+
             , sum(soroban_sum_resource_fee_refund) as soroban_sum_resource_fee_refund
-            , safe_divide(sum(soroban_sum_resource_fee_refund), sum(soroban_txn_count)) as soroban_avg_resource_fee_refund
             , max(soroban_max_resource_fee_refund) as soroban_max_resource_fee_refund
+
             , sum(soroban_sum_rent_fee_charged) as soroban_sum_rent_fee_charged
-            , safe_divide(sum(soroban_sum_rent_fee_charged), sum(soroban_txn_count)) as soroban_avg_rent_fee_charged
             , max(soroban_max_rent_fee_charged) as soroban_max_rent_fee_charged
 
             -- Soroban: surge

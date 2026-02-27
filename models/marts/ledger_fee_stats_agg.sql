@@ -56,7 +56,6 @@ with
             day_agg
             , ledger_sequence
             , sum(fee_charged) as total_fee_charged
-            , avg(fee_charged) as avg_fee_charged
             , max(fee_charged) as max_fee_charged
             , count(*) as txn_count
             , sum(txn_operation_count) as total_txn_operation_count
@@ -76,15 +75,12 @@ with
             , sum(txn_operation_count) as classic_total_operation_count
             -- fee_charged (= inclusion fee for classic)
             , sum(fee_charged) as classic_sum_fee_charged
-            , avg(fee_charged) as classic_avg_fee_charged
             , max(fee_charged) as classic_max_fee_charged
             -- max_fee (what submitters were willing to pay)
             , sum(coalesce(new_max_fee, max_fee)) as classic_sum_max_fee
-            , avg(coalesce(new_max_fee, max_fee)) as classic_avg_max_fee
             , max(coalesce(new_max_fee, max_fee)) as classic_max_max_fee
             -- derived inclusion fee per op
             , max(fee_charged / effective_txn_operation_count) as classic_max_inclusion_fee_per_op
-            , avg(fee_charged / effective_txn_operation_count) as classic_avg_inclusion_fee_per_op
             , min(fee_charged / effective_txn_operation_count) as classic_min_inclusion_fee_per_op
             -- surge stats (at ledger grain, simplifies to txn-level counts + a flag)
             , countif(
@@ -116,40 +112,31 @@ with
 
             -- fee_charged (total = resource_fee + inclusion_fee_charged)
             , sum(fee_charged) as soroban_sum_fee_charged
-            , avg(fee_charged) as soroban_avg_fee_charged
             , max(fee_charged) as soroban_max_fee_charged
 
             -- inclusion fee
             , sum(inclusion_fee_charged) as soroban_sum_inclusion_fee_charged
-            , avg(inclusion_fee_charged) as soroban_avg_inclusion_fee_charged
             , max(inclusion_fee_charged) as soroban_max_inclusion_fee_charged
             , sum(inclusion_fee_bid) as soroban_sum_inclusion_fee_bid
-            , avg(inclusion_fee_bid) as soroban_avg_inclusion_fee_bid
             , max(inclusion_fee_bid) as soroban_max_inclusion_fee_bid
             -- derived inclusion fee per op
             , max(inclusion_fee_charged / effective_txn_operation_count) as soroban_max_inclusion_fee_per_op
-            , avg(inclusion_fee_charged / effective_txn_operation_count) as soroban_avg_inclusion_fee_per_op
             , min(inclusion_fee_charged / effective_txn_operation_count) as soroban_min_inclusion_fee_per_op
 
             -- resource fee (total)
             , sum(resource_fee) as soroban_sum_resource_fee
-            , avg(resource_fee) as soroban_avg_resource_fee
             , max(resource_fee) as soroban_max_resource_fee
 
             -- resource fee: non-refundable
             , sum(non_refundable_resource_fee_charged) as soroban_sum_non_refundable_resource_fee_charged
-            , avg(non_refundable_resource_fee_charged) as soroban_avg_non_refundable_resource_fee_charged
             , max(non_refundable_resource_fee_charged) as soroban_max_non_refundable_resource_fee_charged
 
             -- resource fee: refundable
             , sum(refundable_resource_fee_charged) as soroban_sum_refundable_resource_fee_charged
-            , avg(refundable_resource_fee_charged) as soroban_avg_refundable_resource_fee_charged
             , max(refundable_resource_fee_charged) as soroban_max_refundable_resource_fee_charged
             , sum(resource_fee_refund) as soroban_sum_resource_fee_refund
-            , avg(resource_fee_refund) as soroban_avg_resource_fee_refund
             , max(resource_fee_refund) as soroban_max_resource_fee_refund
             , sum(rent_fee_charged) as soroban_sum_rent_fee_charged
-            , avg(rent_fee_charged) as soroban_avg_rent_fee_charged
             , max(rent_fee_charged) as soroban_max_rent_fee_charged
 
             -- surge stats (at ledger grain, simplifies to txn-level counts + a flag)
@@ -190,7 +177,6 @@ with
 
             -- General
             , general_agg.total_fee_charged
-            , general_agg.avg_fee_charged
             , general_agg.max_fee_charged
             , general_agg.txn_count
             , general_agg.total_txn_operation_count
@@ -199,13 +185,10 @@ with
             , classic_agg.classic_txn_count
             , classic_agg.classic_total_operation_count
             , classic_agg.classic_sum_fee_charged
-            , classic_agg.classic_avg_fee_charged
             , classic_agg.classic_max_fee_charged
             , classic_agg.classic_sum_max_fee
-            , classic_agg.classic_avg_max_fee
             , classic_agg.classic_max_max_fee
             , classic_agg.classic_max_inclusion_fee_per_op
-            , classic_agg.classic_avg_inclusion_fee_per_op
             , classic_agg.classic_min_inclusion_fee_per_op
 
             -- Classic: surge
@@ -217,37 +200,28 @@ with
             , soroban_agg.soroban_txn_count
             , soroban_agg.soroban_total_operation_count
             , soroban_agg.soroban_sum_fee_charged
-            , soroban_agg.soroban_avg_fee_charged
             , soroban_agg.soroban_max_fee_charged
 
             -- Soroban: inclusion fee
             , soroban_agg.soroban_sum_inclusion_fee_charged
-            , soroban_agg.soroban_avg_inclusion_fee_charged
             , soroban_agg.soroban_max_inclusion_fee_charged
             , soroban_agg.soroban_sum_inclusion_fee_bid
-            , soroban_agg.soroban_avg_inclusion_fee_bid
             , soroban_agg.soroban_max_inclusion_fee_bid
             , soroban_agg.soroban_max_inclusion_fee_per_op
-            , soroban_agg.soroban_avg_inclusion_fee_per_op
             , soroban_agg.soroban_min_inclusion_fee_per_op
 
             -- Soroban: resource fee (total)
             , soroban_agg.soroban_sum_resource_fee
-            , soroban_agg.soroban_avg_resource_fee
             , soroban_agg.soroban_max_resource_fee
 
             -- Soroban: resource fee components
             , soroban_agg.soroban_sum_non_refundable_resource_fee_charged
-            , soroban_agg.soroban_avg_non_refundable_resource_fee_charged
             , soroban_agg.soroban_max_non_refundable_resource_fee_charged
             , soroban_agg.soroban_sum_refundable_resource_fee_charged
-            , soroban_agg.soroban_avg_refundable_resource_fee_charged
             , soroban_agg.soroban_max_refundable_resource_fee_charged
             , soroban_agg.soroban_sum_resource_fee_refund
-            , soroban_agg.soroban_avg_resource_fee_refund
             , soroban_agg.soroban_max_resource_fee_refund
             , soroban_agg.soroban_sum_rent_fee_charged
-            , soroban_agg.soroban_avg_rent_fee_charged
             , soroban_agg.soroban_max_rent_fee_charged
 
             -- Soroban: surge
