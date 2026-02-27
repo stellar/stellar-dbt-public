@@ -40,7 +40,7 @@ The source account's sequence number that this transaction consumed. Sequence nu
   {% enddocs %}
 
 {% docs max_fee %}
-The maximum fee (in stroops) that the source account is willing to pay for the transaction to be included in a ledger. When the network enters surge pricing, this helps determine if a transaction is included in the set.
+The maximum total fee (in stroops) the inner transaction is willing to pay. For non-fee-bump Soroban transactions, this is the ceiling. For fee-bump transactions, this is superseded by new_max_fee. For Classic transactions, this is the maximum the submitter will pay for inclusion.
 
 - Required Field
 
@@ -103,7 +103,7 @@ A transaction's success does not indicate whether it was included and written to
 {% enddocs %}
 
 {% docs fee_charged %}
-The fee (in stroops) paid by the source account to apply this transaction to the ledger. At minimum, a transaction is charged the total number of operations contained within the transaction, multiplied by the base fee. The minimum base fee is 100 stroops
+The net total fee (in stroops) actually deducted from the account after all refunds. This is what the submitter ultimately pays. For Classic transactions, fee_charged is the inclusion fee. For Soroban transactions, fee_charged = inclusion_fee_charged + non_refundable_resource_fee_charged + refundable_resource_fee_charged.
 
 #### Notes:
 
@@ -120,8 +120,7 @@ These accounts are called fee accounts and incur all transaction costs for the s
 {% enddocs %}
 
 {% docs new_max_fee %}
-If an account has a fee account, the fee account can specify a maximum fee (in stroops) that it is willing to pay for this account's fees.
-When the network is in surge pricing, the validators will consider the new_max_fee instead of the max_fee when determining if the transaction will be included in the transaction set
+The maximum total fee (in stroops) the fee-bump transaction is willing to pay. Only populated on fee-bump transactions. This is the actual ceiling used by the network, superseding max_fee. NULL if not a fee bump.
 {% enddocs %}
 
 {% docs account_muxed %}
@@ -174,7 +173,7 @@ A base-64 encoded XDR blob of the tx fee meta
 {% enddocs %}
 
 {% docs resource_fee %}
-Part of the transaction fee that is refundable for soroban transactions
+The portion of the total fee budget allocated to pay for Soroban resource consumption (CPU, reads, writes, rent, events, etc.). This is a pre-execution budget, not what is actually charged -- the actual cost will be <= this amount. Only populated for Soroban transactions (resource_fee > 0).
 {% enddocs %}
 
 {% docs soroban_resources_instructions %}
@@ -194,15 +193,15 @@ The detailed result code that outlines why a transaction failed. This code is on
 {% enddocs %}
 
 {% docs inclusion_fee_bid %}
-The maximum bid the submitter is willing to pay for inclusion of the transaction. This fee is used to prioritize transactions that are included in the ledger.
+The maximum the submitter is willing to pay to be included in the ledger (i.e., to compete for ledger space). This is the "tip" to get prioritized during surge pricing. Soroban transactions only.
 {% enddocs %}
 
 {% docs inclusion_fee_charged %}
-The fee charged for the transaction to be included in the ledger.
+The inclusion fee actually charged. During normal conditions this is 100 stroops for a transaction and 200 for a fee-bump transaction. In surge pricing, this is the lowest amount needed for the transaction to make it into the ledger (as long as it is within the ceiling of the inclusion fee bid). Soroban transactions only.
 {% enddocs %}
 
 {% docs resource_fee_refund %}
-The amount of the resource fee refunded to the transaction submitter. The refundable fees are calculated from rent, events and return value. Refundable fees are charged from teh source account before the transaction is executed and then refunded based on the actual usage.
+BROKEN -- always 0 in the current table. Should represent the unused portion of resource_fee returned to the account after execution (resource_fee - non_refundable_resource_fee_charged - refundable_resource_fee_charged).
 {% enddocs %}
 
 {% docs tx_signers %}
@@ -210,17 +209,13 @@ The public keys of the signers who authorized the transaction. This field lists 
 {% enddocs %}
 
 {% docs non_refundable_resource_fee_charged %}
-The amount of the resource fee charged for the transaction that is non-refundable. This fee is deducted from the transaction initiator's account and is not returned, regardless of the transaction's success or failure. It covers the cost of network resources consumed.
+The resource fee for non-refundable resources: CPU instructions, read bytes, write bytes, and bandwidth (tx size). Charged based on what was declared in the envelope, regardless of whether the transaction succeeds or fails. From SorobanTransactionMetaExtV1 in tx metadata.
 {% enddocs %}
 
 {% docs refundable_resource_fee_charged %}
-The amount of the resource fee charged for the transaction that is refundable. This fee may be returned to the transaction initiator if certain conditions are met, such as the transaction failing to be included in a ledger.
+The resource fee for refundable resources: rent, events, and return value. Charged based on actual usage after execution. Will be 0 for failed transactions since refundable resources are only consumed on success. From SorobanTransactionMetaExtV1 in tx metadata.
 {% enddocs %}
 
 {% docs rent_fee_charged %}
-The fee charged for renting resources on the network, such as storage space for data. This fee is deducted from the transaction initiator's account and is non-refundable, covering the ongoing cost of maintaining the data on the network. A rent fee wouldn't be charged on failed transactions.
-{% enddocs %}
-
-{% docs refundable_fee %}
-The portion of the transaction fee that is refundable under certain conditions. This field indicates the amount that can be returned to the transaction initiator if the transaction does not fully execute or meets specific refund criteria.
+The portion of refundable_resource_fee_charged that went to ledger entry TTL extensions (rent). The remainder (refundable_resource_fee_charged - rent_fee_charged) covers events and return value fees. From SorobanTransactionMetaExtV1 in tx metadata.
 {% enddocs %}
