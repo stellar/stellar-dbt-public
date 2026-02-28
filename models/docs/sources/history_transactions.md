@@ -220,7 +220,3 @@ The amount of the resource fee charged for the transaction that is refundable. T
 {% docs rent_fee_charged %}
 The fee charged for renting resources on the network, such as storage space for data. This fee is deducted from the transaction initiator's account and is non-refundable, covering the ongoing cost of maintaining the data on the network. A rent fee wouldn't be charged on failed transactions.
 {% enddocs %}
-
-{% docs refundable_fee %}
-The portion of the transaction fee that is refundable under certain conditions. This field indicates the amount that can be returned to the transaction initiator if the transaction does not fully execute or meets specific refund criteria.
-{% enddocs %}
