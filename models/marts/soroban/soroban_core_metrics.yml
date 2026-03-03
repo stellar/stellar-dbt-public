@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: soroban_core_metrics
+    description: '{{ doc("soroban_core_metrics") }}'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - transaction_hash
+            - contract_id
+            - metric_key
+          meta:
+            description: "Tests the uniqueness combination of: transaction_hash, contract_id, and metric_key."
+    columns:
+      - name: transaction_hash
+        description: '{{ doc("transaction_hash") }}'
+        tests:
+          - not_null
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+        tests:
+          - not_null
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+        tests:
+          - not_null
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - not_null
+      - name: metric_key
+        description: '{{ doc("metric_key") }}'
+        tests:
+          - not_null
+      - name: metric_value
+        description: '{{ doc("metric_value") }}'
+        tests:
+          - not_null
