@@ -82,6 +82,8 @@ models:
 
 seeds:
   stellar_dbt_public:
+    config_setting_to_metrics_mapping:
+      +dataset: crypto_stellar_dbt
     dbt_project_evaluator_config:
       +dataset: dbt_project_evaluator
   dbt_project_evaluator:
