@@ -27,7 +27,7 @@ from {{ ref('stg_history_contract_events') }}
 where
     json_value(topics_decoded[0], '$.symbol') = 'core_metrics'
     and type = 2
-    and closed_at < timestamp(date('{{ var("batch_end_date") }}'))
+    and closed_at < timestamp_add(timestamp(date('{{ var("batch_end_date") }}')), interval 1 day)
 {% if is_incremental() %}
-    and closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
+    and closed_at >= timestamp_sub(timestamp(date('{{ var("batch_start_date") }}')), interval 1 day)
 {% endif %}

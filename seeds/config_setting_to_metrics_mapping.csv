@@ -35,7 +35,7 @@ Persistent entry minimal/initial lifetime,min_persistent_ttl,,,FALSE,FALSE,TRUE
 30 days of rent for 1 KB of temporary storage,temp_rent_rate_denominator,,,FALSE,TRUE,TRUE
 ,max_entries_to_archive,,,TRUE,FALSE,FALSE
 ,bucket_list_size_window_sample_size,,,FALSE,FALSE,FALSE
-Eviction Scan Size ,eviction_scan_size,,,FALSE,FALSE,TRUE
+Eviction Scan Size,eviction_scan_size,,,FALSE,FALSE,TRUE
 ,starting_eviction_scan_level,,,FALSE,FALSE,FALSE
 Soroban txn per ledger,ledger_max_tx_count,transaction_hash,ledger,TRUE,FALSE,TRUE
 ,bucket_list_size_window,,,FALSE,FALSE,FALSE
