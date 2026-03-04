@@ -46,7 +46,8 @@ models:
           Soroban network resource utilization ratios.
         tests:
           - accepted_values:
-              values: ['TRUE', 'FALSE']
+              values: [true, false]
+              quote: false
       - name: pretty_config_name
         description: >
           A human-readable display name for the config setting,

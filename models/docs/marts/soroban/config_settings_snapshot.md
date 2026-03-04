@@ -1,4 +1,4 @@
-[comment]: < Configuration Settings Snapshot -
+[comment]: < Configuration Settings Snapshot - >
 
 {% docs config_settings_snapshot %}
 

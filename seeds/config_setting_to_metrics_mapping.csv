@@ -1,4 +1,4 @@
-pretty_config_name,config_setting_description,core_metric,grain,is_resource_utilization_relevent,is_resource_fee_setting,is_public_on_dev_docs
+pretty_config_name,config_setting_description,core_metric,grain,is_resource_utilization_relevant,is_resource_fee_setting,is_public_on_dev_docs
 ,contract_max_size_bytes,,,FALSE,FALSE,FALSE
 ,ledger_max_instructions,cpu_insn,ledger,TRUE,FALSE,FALSE
 Max CPU instructions per txn,tx_max_instructions,cpu_insn,transaction,TRUE,FALSE,TRUE

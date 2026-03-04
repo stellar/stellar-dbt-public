@@ -8,7 +8,7 @@
     )
 }}
 
-{% set columns = adapter.get_columns_in_relation(ref('stg_config_settings')) %}
+{% set columns = adapter.get_columns_in_relation(source('crypto_stellar', 'config_settings')) %}
 
 {% set excluded_cols = [
     'config_setting_id',
@@ -70,7 +70,7 @@ select
     , scd.is_current_setting
     , m.core_metric
     , m.grain
-    , m.is_resource_utilization_relevent
+    , m.is_resource_utilization_relevant
     , m.pretty_config_name
 from scd
 left join {{ ref('config_setting_to_metrics_mapping') }} as m
