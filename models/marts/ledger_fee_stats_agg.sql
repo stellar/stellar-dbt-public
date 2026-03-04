@@ -5,7 +5,7 @@
     "partition_by": {
         "field": "day_agg"
         , "data_type": "date"
-        , "granularity": "month"
+        , "granularity": "day"
     }
 } %}
 
@@ -45,7 +45,7 @@ with
         from {{ ref('stg_history_transactions') }}
         where
             batch_run_date < datetime(date('{{ var("batch_end_date") }}'))
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and batch_run_date >= datetime(date('{{ var("batch_start_date") }}'))
             {% endif %}
     )
@@ -165,7 +165,7 @@ with
         from {{ ref('stg_history_ledgers') }}
         where
             batch_run_date < datetime(date('{{ var("batch_end_date") }}'))
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and batch_run_date >= datetime(date('{{ var("batch_start_date") }}'))
             {% endif %}
     )
