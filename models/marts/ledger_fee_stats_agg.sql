@@ -2,18 +2,13 @@
     "materialized": "incremental",
     "unique_key": ["ledger_sequence"],
     "tags": ["fee_stats"],
-    "partition_by": {
-        "field": "day_agg"
-        , "data_type": "date"
-        , "granularity": "day"
-    }
+    "cluster_by": ["day_agg", "ledger_sequence"]
 } %}
 
 {{ config(
     meta=meta_config,
     **meta_config,
-    )
-}}
+) }}
 
 with
     -- BASE: source read + classification + effective_txn_operation_count
@@ -126,18 +121,23 @@ with
             -- resource fee (total)
             , sum(resource_fee) as soroban_sum_resource_fee
             , max(resource_fee) as soroban_max_resource_fee
+            , min(resource_fee) as soroban_min_resource_fee
 
             -- resource fee: non-refundable
             , sum(non_refundable_resource_fee_charged) as soroban_sum_non_refundable_resource_fee_charged
             , max(non_refundable_resource_fee_charged) as soroban_max_non_refundable_resource_fee_charged
+            , min(non_refundable_resource_fee_charged) as soroban_min_non_refundable_resource_fee_charged
 
             -- resource fee: refundable
             , sum(refundable_resource_fee_charged) as soroban_sum_refundable_resource_fee_charged
             , max(refundable_resource_fee_charged) as soroban_max_refundable_resource_fee_charged
+            , min(refundable_resource_fee_charged) as soroban_min_refundable_resource_fee_charged
             , sum(resource_fee_refund) as soroban_sum_resource_fee_refund
             , max(resource_fee_refund) as soroban_max_resource_fee_refund
+            , min(resource_fee_refund) as soroban_min_resource_fee_refund
             , sum(rent_fee_charged) as soroban_sum_rent_fee_charged
             , max(rent_fee_charged) as soroban_max_rent_fee_charged
+            , min(rent_fee_charged) as soroban_min_rent_fee_charged
 
             -- surge stats (at ledger grain, simplifies to txn-level counts + a flag)
             , countif(
@@ -161,6 +161,7 @@ with
     , ledger_info as (
         select
             sequence as ledger_sequence
+            , closed_at
             , fee_pool
         from {{ ref('stg_history_ledgers') }}
         where
@@ -213,16 +214,21 @@ with
             -- Soroban: resource fee (total)
             , soroban_agg.soroban_sum_resource_fee
             , soroban_agg.soroban_max_resource_fee
+            , soroban_agg.soroban_min_resource_fee
 
             -- Soroban: resource fee components
             , soroban_agg.soroban_sum_non_refundable_resource_fee_charged
             , soroban_agg.soroban_max_non_refundable_resource_fee_charged
+            , soroban_agg.soroban_min_non_refundable_resource_fee_charged
             , soroban_agg.soroban_sum_refundable_resource_fee_charged
             , soroban_agg.soroban_max_refundable_resource_fee_charged
+            , soroban_agg.soroban_min_refundable_resource_fee_charged
             , soroban_agg.soroban_sum_resource_fee_refund
             , soroban_agg.soroban_max_resource_fee_refund
+            , soroban_agg.soroban_min_resource_fee_refund
             , soroban_agg.soroban_sum_rent_fee_charged
             , soroban_agg.soroban_max_rent_fee_charged
+            , soroban_agg.soroban_min_rent_fee_charged
 
             -- Soroban: surge
             , soroban_agg.soroban_surge_txn_count
@@ -230,10 +236,8 @@ with
             , soroban_agg.soroban_is_surge_ledger
 
             -- Ledger info
+            , ledger_info.closed_at
             , ledger_info.fee_pool
-
-            -- Calculated
-            , general_agg.total_fee_charged / 10000000.0 as total_fee_charged_xlm
 
             -- Metadata
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts

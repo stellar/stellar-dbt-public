@@ -180,6 +180,12 @@ Maximum resource_fee across Soroban transactions in the ledger.
 
 {% enddocs %}
 
+{% docs ledger_fee_soroban_min_resource_fee %}
+
+Minimum resource_fee across Soroban transactions in the ledger.
+
+{% enddocs %}
+
 {% docs ledger_fee_soroban_sum_non_refundable_resource_fee_charged %}
 
 Sum of non_refundable_resource_fee_charged across Soroban transactions. Covers CPU instructions, read bytes, write bytes, and bandwidth. Charged based on declared resources regardless of tx success/failure.
@@ -189,6 +195,12 @@ Sum of non_refundable_resource_fee_charged across Soroban transactions. Covers C
 {% docs ledger_fee_soroban_max_non_refundable_resource_fee_charged %}
 
 Maximum non_refundable_resource_fee_charged across Soroban transactions in the ledger.
+
+{% enddocs %}
+
+{% docs ledger_fee_soroban_min_non_refundable_resource_fee_charged %}
+
+Minimum non_refundable_resource_fee_charged across Soroban transactions in the ledger.
 
 {% enddocs %}
 
@@ -204,6 +216,12 @@ Maximum refundable_resource_fee_charged across Soroban transactions in the ledge
 
 {% enddocs %}
 
+{% docs ledger_fee_soroban_min_refundable_resource_fee_charged %}
+
+Minimum refundable_resource_fee_charged across Soroban transactions in the ledger.
+
+{% enddocs %}
+
 {% docs ledger_fee_soroban_sum_resource_fee_refund %}
 
 Sum of resource_fee_refund across Soroban transactions. NOTE: Currently broken -- always 0. Should be: resource_fee - non_refundable_resource_fee_charged - refundable_resource_fee_charged.
@@ -216,6 +234,12 @@ Maximum resource_fee_refund across Soroban transactions. NOTE: Currently broken 
 
 {% enddocs %}
 
+{% docs ledger_fee_soroban_min_resource_fee_refund %}
+
+Minimum resource_fee_refund across Soroban transactions. NOTE: Currently broken -- always 0.
+
+{% enddocs %}
+
 {% docs ledger_fee_soroban_sum_rent_fee_charged %}
 
 Sum of rent_fee_charged across Soroban transactions. This is the portion of refundable_resource_fee_charged that went to ledger entry TTL extensions.
@@ -225,6 +249,12 @@ Sum of rent_fee_charged across Soroban transactions. This is the portion of refu
 {% docs ledger_fee_soroban_max_rent_fee_charged %}
 
 Maximum rent_fee_charged across Soroban transactions in the ledger.
+
+{% enddocs %}
+
+{% docs ledger_fee_soroban_min_rent_fee_charged %}
+
+Minimum rent_fee_charged across Soroban transactions in the ledger. Will be 0 for ledgers where all Soroban transactions failed, as rent is not charged on failed transactions.
 
 {% enddocs %}
 
@@ -246,15 +276,15 @@ Boolean flag: true if any Soroban transaction in the ledger experienced surge pr
 
 {% enddocs %}
 
-{% docs ledger_fee_fee_pool %}
+{% docs ledger_fee_closed_at %}
 
-The total fee pool for the ledger, sourced from history_ledgers.
+Timestamp in UTC when the ledger closed and was committed to the network. Sourced from history_ledgers. Enables sub-daily time filtering (e.g. hourly aggregations) without requiring a join back to history_ledgers.
 
 {% enddocs %}
 
-{% docs ledger_fee_total_fee_charged_xlm %}
+{% docs ledger_fee_fee_pool %}
 
-Total fee_charged across all transactions in the ledger, converted from stroops to XLM (divided by 10,000,000).
+The total fee pool for the ledger, sourced from history_ledgers.
 
 {% enddocs %}
 

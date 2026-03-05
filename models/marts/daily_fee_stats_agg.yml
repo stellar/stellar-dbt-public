@@ -197,14 +197,6 @@ models:
       - name: fee_pool
         description: '{{ doc("ledger_fee_fee_pool") }}'
 
-      # Calculated
-      - name: total_fee_charged_xlm
-        description: '{{ doc("ledger_fee_total_fee_charged_xlm") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
-
       # Metadata
       - name: airflow_start_ts
         description: '{{ doc("ledger_fee_airflow_start_ts") }}'

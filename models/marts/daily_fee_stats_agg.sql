@@ -21,7 +21,7 @@ with
         from {{ ref('ledger_fee_stats_agg') }}
         where
             day_agg < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and day_agg >= date('{{ var("batch_start_date") }}')
             {% endif %}
     )
@@ -103,9 +103,6 @@ with
 
             -- Ledger info
             , max(fee_pool) as fee_pool
-
-            -- Calculated
-            , sum(total_fee_charged) / 10000000.0 as total_fee_charged_xlm
 
             -- Metadata
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
