@@ -6,6 +6,7 @@ on:
       - closed
     branches:
       - master
+      - 'release-*'
 
 permissions:
   contents: read
