@@ -152,6 +152,9 @@ models:
       - name: soroban_max_resource_fee
         description: '{{ doc("ledger_fee_soroban_max_resource_fee") }}'
 
+      - name: soroban_min_resource_fee
+        description: '{{ doc("ledger_fee_soroban_min_resource_fee") }}'
+
       # Soroban: resource fee components
       - name: soroban_sum_non_refundable_resource_fee_charged
         description: '{{ doc("ledger_fee_soroban_sum_non_refundable_resource_fee_charged") }}'
@@ -159,11 +162,17 @@ models:
       - name: soroban_max_non_refundable_resource_fee_charged
         description: '{{ doc("ledger_fee_soroban_max_non_refundable_resource_fee_charged") }}'
 
+      - name: soroban_min_non_refundable_resource_fee_charged
+        description: '{{ doc("ledger_fee_soroban_min_non_refundable_resource_fee_charged") }}'
+
       - name: soroban_sum_refundable_resource_fee_charged
         description: '{{ doc("ledger_fee_soroban_sum_refundable_resource_fee_charged") }}'
 
       - name: soroban_max_refundable_resource_fee_charged
         description: '{{ doc("ledger_fee_soroban_max_refundable_resource_fee_charged") }}'
+
+      - name: soroban_min_refundable_resource_fee_charged
+        description: '{{ doc("ledger_fee_soroban_min_refundable_resource_fee_charged") }}'
 
       - name: soroban_sum_resource_fee_refund
         description: '{{ doc("ledger_fee_soroban_sum_resource_fee_refund") }}'
@@ -171,11 +180,17 @@ models:
       - name: soroban_max_resource_fee_refund
         description: '{{ doc("ledger_fee_soroban_max_resource_fee_refund") }}'
 
+      - name: soroban_min_resource_fee_refund
+        description: '{{ doc("ledger_fee_soroban_min_resource_fee_refund") }}'
+
       - name: soroban_sum_rent_fee_charged
         description: '{{ doc("ledger_fee_soroban_sum_rent_fee_charged") }}'
 
       - name: soroban_max_rent_fee_charged
         description: '{{ doc("ledger_fee_soroban_max_rent_fee_charged") }}'
+
+      - name: soroban_min_rent_fee_charged
+        description: '{{ doc("ledger_fee_soroban_min_rent_fee_charged") }}'
 
       # Soroban: surge
       - name: soroban_total_ledgers

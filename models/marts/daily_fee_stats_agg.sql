@@ -2,11 +2,7 @@
     "materialized": "incremental",
     "unique_key": ["day_agg"],
     "tags": ["fee_stats"],
-    "partition_by": {
-        "field": "day_agg"
-        , "data_type": "date"
-        , "granularity": "month"
-    }
+    "cluster_by": ["day_agg"]
 } %}
 
 {{ config(
@@ -77,19 +73,24 @@ with
             -- Soroban: resource fee (total)
             , sum(soroban_sum_resource_fee) as soroban_sum_resource_fee
             , max(soroban_max_resource_fee) as soroban_max_resource_fee
+            , min(soroban_min_resource_fee) as soroban_min_resource_fee
 
             -- Soroban: resource fee components
             , sum(soroban_sum_non_refundable_resource_fee_charged) as soroban_sum_non_refundable_resource_fee_charged
             , max(soroban_max_non_refundable_resource_fee_charged) as soroban_max_non_refundable_resource_fee_charged
+            , min(soroban_min_non_refundable_resource_fee_charged) as soroban_min_non_refundable_resource_fee_charged
 
             , sum(soroban_sum_refundable_resource_fee_charged) as soroban_sum_refundable_resource_fee_charged
             , max(soroban_max_refundable_resource_fee_charged) as soroban_max_refundable_resource_fee_charged
+            , min(soroban_min_refundable_resource_fee_charged) as soroban_min_refundable_resource_fee_charged
 
             , sum(soroban_sum_resource_fee_refund) as soroban_sum_resource_fee_refund
             , max(soroban_max_resource_fee_refund) as soroban_max_resource_fee_refund
+            , min(soroban_min_resource_fee_refund) as soroban_min_resource_fee_refund
 
             , sum(soroban_sum_rent_fee_charged) as soroban_sum_rent_fee_charged
             , max(soroban_max_rent_fee_charged) as soroban_max_rent_fee_charged
+            , min(soroban_min_rent_fee_charged) as soroban_min_rent_fee_charged
 
             -- Soroban: surge
             , countif(soroban_txn_count is not null) as soroban_total_ledgers
