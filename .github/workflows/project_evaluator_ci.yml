@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - staging
-      - 'release-*'
+      - "release-*"
 
 env:
   DBT_DEFAULT_PROFILE_TARGET: stellar_dbt_public
