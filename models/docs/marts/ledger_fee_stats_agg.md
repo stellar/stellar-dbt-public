@@ -134,7 +134,7 @@ Maximum fee_charged across Soroban transactions in the ledger.
 
 {% docs ledger_fee_soroban_sum_inclusion_fee_charged %}
 
-Sum of inclusion_fee_charged across Soroban transactions. During normal conditions this is 100 stroops per txn (200 for fee bumps). Higher during surge pricing.
+Sum of inclusion_fee_charged across Soroban transactions. Soroban transactions contain exactly 1 operation (invokeHostFunction). The base inclusion fee is 100 stroops per operation. For fee-bump transactions, the effective operation count increases by 1, so the base inclusion fee becomes (1 + 1) * 100 = 200 stroops per transaction. If inclusion_fee_charged exceeds this base, the ledger experienced inclusion fee surge pricing.
 
 {% enddocs %}
 
