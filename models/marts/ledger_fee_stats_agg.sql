@@ -177,57 +177,57 @@ with
             , general_agg.total_effective_txn_operation_count
 
             -- Classic: fee aggregates
-            , classic_agg.classic_txn_count
-            , classic_agg.classic_total_effective_operation_count
-            , classic_agg.classic_sum_fee_charged
+            , coalesce(classic_agg.classic_txn_count, 0) as classic_txn_count
+            , coalesce(classic_agg.classic_total_effective_operation_count, 0) as classic_total_effective_operation_count
+            , coalesce(classic_agg.classic_sum_fee_charged, 0) as classic_sum_fee_charged
             , classic_agg.classic_max_fee_charged
-            , classic_agg.classic_sum_max_fee
+            , coalesce(classic_agg.classic_sum_max_fee, 0) as classic_sum_max_fee
             , classic_agg.classic_max_max_fee
             , classic_agg.classic_max_inclusion_fee_per_op
             , classic_agg.classic_min_inclusion_fee_per_op
 
             -- Classic: surge
-            , classic_agg.classic_surge_txn_count
-            , classic_agg.classic_surge_operation_count
-            , classic_agg.classic_surge_txn_count > 0 as classic_is_surge_ledger
+            , coalesce(classic_agg.classic_surge_txn_count, 0) as classic_surge_txn_count
+            , coalesce(classic_agg.classic_surge_operation_count, 0) as classic_surge_operation_count
+            , coalesce(classic_agg.classic_surge_txn_count, 0) > 0 as classic_is_surge_ledger
 
             -- Soroban: fee_charged (total)
-            , soroban_agg.soroban_txn_count
-            , soroban_agg.soroban_total_effective_operation_count
-            , soroban_agg.soroban_sum_fee_charged
+            , coalesce(soroban_agg.soroban_txn_count, 0) as soroban_txn_count
+            , coalesce(soroban_agg.soroban_total_effective_operation_count, 0) as soroban_total_effective_operation_count
+            , coalesce(soroban_agg.soroban_sum_fee_charged, 0) as soroban_sum_fee_charged
             , soroban_agg.soroban_max_fee_charged
 
             -- Soroban: inclusion fee
-            , soroban_agg.soroban_sum_inclusion_fee_charged
+            , coalesce(soroban_agg.soroban_sum_inclusion_fee_charged, 0) as soroban_sum_inclusion_fee_charged
             , soroban_agg.soroban_max_inclusion_fee_charged
-            , soroban_agg.soroban_sum_inclusion_fee_bid
+            , coalesce(soroban_agg.soroban_sum_inclusion_fee_bid, 0) as soroban_sum_inclusion_fee_bid
             , soroban_agg.soroban_max_inclusion_fee_bid
             , soroban_agg.soroban_max_inclusion_fee_per_op
             , soroban_agg.soroban_min_inclusion_fee_per_op
 
             -- Soroban: resource fee (total)
-            , soroban_agg.soroban_sum_resource_fee
+            , coalesce(soroban_agg.soroban_sum_resource_fee, 0) as soroban_sum_resource_fee
             , soroban_agg.soroban_max_resource_fee
             , soroban_agg.soroban_min_resource_fee
 
             -- Soroban: resource fee components
-            , soroban_agg.soroban_sum_non_refundable_resource_fee_charged
+            , coalesce(soroban_agg.soroban_sum_non_refundable_resource_fee_charged, 0) as soroban_sum_non_refundable_resource_fee_charged
             , soroban_agg.soroban_max_non_refundable_resource_fee_charged
             , soroban_agg.soroban_min_non_refundable_resource_fee_charged
-            , soroban_agg.soroban_sum_refundable_resource_fee_charged
+            , coalesce(soroban_agg.soroban_sum_refundable_resource_fee_charged, 0) as soroban_sum_refundable_resource_fee_charged
             , soroban_agg.soroban_max_refundable_resource_fee_charged
             , soroban_agg.soroban_min_refundable_resource_fee_charged
-            , soroban_agg.soroban_sum_resource_fee_refund
+            , coalesce(soroban_agg.soroban_sum_resource_fee_refund, 0) as soroban_sum_resource_fee_refund
             , soroban_agg.soroban_max_resource_fee_refund
             , soroban_agg.soroban_min_resource_fee_refund
-            , soroban_agg.soroban_sum_rent_fee_charged
+            , coalesce(soroban_agg.soroban_sum_rent_fee_charged, 0) as soroban_sum_rent_fee_charged
             , soroban_agg.soroban_max_rent_fee_charged
             , soroban_agg.soroban_min_rent_fee_charged
 
             -- Soroban: surge
-            , soroban_agg.soroban_surge_txn_count
-            , soroban_agg.soroban_surge_operation_count
-            , soroban_agg.soroban_surge_txn_count > 0 as soroban_is_surge_ledger
+            , coalesce(soroban_agg.soroban_surge_txn_count, 0) as soroban_surge_txn_count
+            , coalesce(soroban_agg.soroban_surge_operation_count, 0) as soroban_surge_operation_count
+            , coalesce(soroban_agg.soroban_surge_txn_count, 0) > 0 as soroban_is_surge_ledger
 
             -- Ledger info
             , ledger_info.closed_at
