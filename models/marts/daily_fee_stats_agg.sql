@@ -102,6 +102,12 @@ with
                 , countif(soroban_txn_count is not null)
             ) as soroban_pct_ledgers_in_surge
 
+            -- Total surge (classic or soroban)
+            , safe_divide(
+                100.0 * countif(classic_is_surge_ledger or soroban_is_surge_ledger)
+                , count(*)
+            ) as total_pct_ledgers_in_surge
+
             -- Ledger info
             , max(fee_pool) as fee_pool
 
