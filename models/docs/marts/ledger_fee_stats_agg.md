@@ -36,9 +36,9 @@ Total number of transactions (Classic + Soroban) in the ledger.
 
 {% enddocs %}
 
-{% docs ledger_fee_total_txn_operation_count %}
+{% docs ledger_fee_total_effective_txn_operation_count %}
 
-Total number of operations across all transactions in the ledger.
+Total number of effective operations across all transactions (Classic + Soroban) in the ledger. Uses effective_txn_operation_count, which adds 1 to the operation count for fee-bump transactions (where new_max_fee is not null) to account for the extra inner transaction. This is the same denominator used when calculating per-operation fee metrics.
 
 {% enddocs %}
 
@@ -48,9 +48,9 @@ Number of Classic transactions in the ledger. Classic transactions have resource
 
 {% enddocs %}
 
-{% docs ledger_fee_classic_total_operation_count %}
+{% docs ledger_fee_classic_total_effective_operation_count %}
 
-Total number of operations across Classic transactions in the ledger.
+Total number of effective operations across Classic transactions in the ledger. Uses effective_txn_operation_count, which adds 1 for fee-bump transactions. This is the same denominator used in classic_max_inclusion_fee_per_op and classic_min_inclusion_fee_per_op.
 
 {% enddocs %}
 
@@ -114,9 +114,9 @@ Number of Soroban transactions in the ledger. Soroban transactions have resource
 
 {% enddocs %}
 
-{% docs ledger_fee_soroban_total_operation_count %}
+{% docs ledger_fee_soroban_total_effective_operation_count %}
 
-Total number of operations across Soroban transactions in the ledger.
+Total number of effective operations across Soroban transactions in the ledger. Uses effective_txn_operation_count, which adds 1 for fee-bump transactions. This is the same denominator used in soroban_max_inclusion_fee_per_op and soroban_min_inclusion_fee_per_op.
 
 {% enddocs %}
 

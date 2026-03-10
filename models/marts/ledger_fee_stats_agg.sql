@@ -53,7 +53,7 @@ with
             , sum(fee_charged) as total_fee_charged
             , max(fee_charged) as max_fee_charged
             , count(*) as txn_count
-            , sum(txn_operation_count) as total_txn_operation_count
+            , sum(effective_txn_operation_count) as total_effective_txn_operation_count
         from base_txns
         group by day_agg, ledger_sequence
     )
@@ -67,7 +67,7 @@ with
             , ledger_sequence
             -- txn counts
             , count(*) as classic_txn_count
-            , sum(txn_operation_count) as classic_total_operation_count
+            , sum(effective_txn_operation_count) as classic_total_effective_operation_count
             -- fee_charged (= inclusion fee for classic)
             , sum(fee_charged) as classic_sum_fee_charged
             , max(fee_charged) as classic_max_fee_charged
@@ -87,9 +87,6 @@ with
                         then txn_operation_count
                 end
             ) as classic_surge_operation_count
-            , countif(
-                fee_charged > effective_txn_operation_count * 100
-            ) > 0 as classic_is_surge_ledger
         from base_txns
         where not is_soroban
         group by day_agg, ledger_sequence
@@ -103,7 +100,7 @@ with
             , ledger_sequence
             -- txn counts
             , count(*) as soroban_txn_count
-            , sum(txn_operation_count) as soroban_total_operation_count
+            , sum(effective_txn_operation_count) as soroban_total_effective_operation_count
 
             -- fee_charged (total = resource_fee + inclusion_fee_charged)
             , sum(fee_charged) as soroban_sum_fee_charged
@@ -149,9 +146,6 @@ with
                         then txn_operation_count
                 end
             ) as soroban_surge_operation_count
-            , countif(
-                inclusion_fee_charged > effective_txn_operation_count * 100
-            ) > 0 as soroban_is_surge_ledger
         from base_txns
         where is_soroban
         group by day_agg, ledger_sequence
@@ -180,11 +174,11 @@ with
             , general_agg.total_fee_charged
             , general_agg.max_fee_charged
             , general_agg.txn_count
-            , general_agg.total_txn_operation_count
+            , general_agg.total_effective_txn_operation_count
 
             -- Classic: fee aggregates
             , classic_agg.classic_txn_count
-            , classic_agg.classic_total_operation_count
+            , classic_agg.classic_total_effective_operation_count
             , classic_agg.classic_sum_fee_charged
             , classic_agg.classic_max_fee_charged
             , classic_agg.classic_sum_max_fee
@@ -195,11 +189,11 @@ with
             -- Classic: surge
             , classic_agg.classic_surge_txn_count
             , classic_agg.classic_surge_operation_count
-            , classic_agg.classic_is_surge_ledger
+            , classic_agg.classic_surge_txn_count > 0 as classic_is_surge_ledger
 
             -- Soroban: fee_charged (total)
             , soroban_agg.soroban_txn_count
-            , soroban_agg.soroban_total_operation_count
+            , soroban_agg.soroban_total_effective_operation_count
             , soroban_agg.soroban_sum_fee_charged
             , soroban_agg.soroban_max_fee_charged
 
@@ -233,7 +227,7 @@ with
             -- Soroban: surge
             , soroban_agg.soroban_surge_txn_count
             , soroban_agg.soroban_surge_operation_count
-            , soroban_agg.soroban_is_surge_ledger
+            , soroban_agg.soroban_surge_txn_count > 0 as soroban_is_surge_ledger
 
             -- Ledger info
             , ledger_info.closed_at

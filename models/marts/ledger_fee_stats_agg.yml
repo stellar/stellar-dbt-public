@@ -58,8 +58,8 @@ models:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
-      - name: total_txn_operation_count
-        description: '{{ doc("ledger_fee_total_txn_operation_count") }}'
+      - name: total_effective_txn_operation_count
+        description: '{{ doc("ledger_fee_total_effective_txn_operation_count") }}'
         tests:
           - incremental_not_null:
               date_column_name: "day_agg"
@@ -69,8 +69,8 @@ models:
       - name: classic_txn_count
         description: '{{ doc("ledger_fee_classic_txn_count") }}'
 
-      - name: classic_total_operation_count
-        description: '{{ doc("ledger_fee_classic_total_operation_count") }}'
+      - name: classic_total_effective_operation_count
+        description: '{{ doc("ledger_fee_classic_total_effective_operation_count") }}'
 
       - name: classic_sum_fee_charged
         description: '{{ doc("ledger_fee_classic_sum_fee_charged") }}'
@@ -103,8 +103,8 @@ models:
       - name: soroban_txn_count
         description: '{{ doc("ledger_fee_soroban_txn_count") }}'
 
-      - name: soroban_total_operation_count
-        description: '{{ doc("ledger_fee_soroban_total_operation_count") }}'
+      - name: soroban_total_effective_operation_count
+        description: '{{ doc("ledger_fee_soroban_total_effective_operation_count") }}'
 
       - name: soroban_sum_fee_charged
         description: '{{ doc("ledger_fee_soroban_sum_fee_charged") }}'

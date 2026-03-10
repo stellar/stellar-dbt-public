@@ -30,13 +30,13 @@ with
             , sum(total_fee_charged) as total_fee_charged
             , max(max_fee_charged) as max_fee_charged
             , sum(txn_count) as txn_count
-            , sum(total_txn_operation_count) as total_txn_operation_count
+            , sum(total_effective_txn_operation_count) as total_effective_txn_operation_count
             , min(ledger_sequence) as min_ledger_sequence
             , max(ledger_sequence) as max_ledger_sequence
 
             -- Classic: fee aggregates
             , sum(classic_txn_count) as classic_txn_count
-            , sum(classic_total_operation_count) as classic_total_operation_count
+            , sum(classic_total_effective_operation_count) as classic_total_effective_operation_count
             , sum(classic_sum_fee_charged) as classic_sum_fee_charged
             , max(classic_max_fee_charged) as classic_max_fee_charged
             , sum(classic_sum_max_fee) as classic_sum_max_fee
@@ -57,7 +57,7 @@ with
 
             -- Soroban: fee_charged (total)
             , sum(soroban_txn_count) as soroban_txn_count
-            , sum(soroban_total_operation_count) as soroban_total_operation_count
+            , sum(soroban_total_effective_operation_count) as soroban_total_effective_operation_count
             , sum(soroban_sum_fee_charged) as soroban_sum_fee_charged
             , max(soroban_max_fee_charged) as soroban_max_fee_charged
 

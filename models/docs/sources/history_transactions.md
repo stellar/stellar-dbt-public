@@ -103,7 +103,7 @@ A transaction's success does not indicate whether it was included and written to
 {% enddocs %}
 
 {% docs fee_charged %}
-The net total fee (in stroops) actually deducted from the account after all refunds. This is what the submitter ultimately pays. For Classic transactions, fee_charged is the inclusion fee. For Soroban transactions, fee_charged = inclusion_fee_charged + non_refundable_resource_fee_charged + refundable_resource_fee_charged.
+The net total fee (in stroops) actually deducted from the account after all refunds. This is what the submitter ultimately pays. For Classic transactions, fee_charged is the inclusion fee. For Soroban transactions, `fee_charged = inclusion_fee_charged + non_refundable_resource_fee_charged + refundable_resource_fee_charged -  resource_fee_refund`.
 
 #### Notes:
 
