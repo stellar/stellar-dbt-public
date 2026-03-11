@@ -48,6 +48,12 @@ Total number of effective operations across all transactions (Classic + Soroban)
 
 {% enddocs %}
 
+{% docs ledger_fee_total_raw_txn_operation_count %}
+
+Total number of raw operations (txn_operation_count) across all transactions (Classic + Soroban) in the ledger. Unlike effective operation count, this does NOT include fee-bump transactions. Useful for reconciling with network-level operation counts reported elsewhere.
+
+{% enddocs %}
+
 {% docs ledger_fee_classic_txn_count %}
 
 Number of Classic transactions in the ledger. Classic transactions have resource_fee = 0.
@@ -63,6 +69,12 @@ Number of failed Classic transactions in the ledger.
 {% docs ledger_fee_classic_total_effective_operation_count %}
 
 Total number of effective operations across Classic transactions in the ledger. Uses effective_txn_operation_count, which adds 1 for fee-bump transactions. This is the same denominator used in classic_max_inclusion_fee_per_op and classic_min_inclusion_fee_per_op.
+
+{% enddocs %}
+
+{% docs ledger_fee_classic_total_raw_operation_count %}
+
+Total number of raw operations (txn_operation_count) across Classic transactions in the ledger. Unlike effective operation count, this does NOT include fee-bump transactions. Useful for reconciling with network-level operation counts.
 
 {% enddocs %}
 
@@ -135,6 +147,12 @@ Number of failed Soroban transactions in the ledger. Even failed Soroban transac
 {% docs ledger_fee_soroban_total_effective_operation_count %}
 
 Total number of effective operations across Soroban transactions in the ledger. Uses effective_txn_operation_count, which adds 1 for fee-bump transactions. This is the same denominator used in soroban_max_inclusion_fee_per_op and soroban_min_inclusion_fee_per_op.
+
+{% enddocs %}
+
+{% docs ledger_fee_soroban_total_raw_operation_count %}
+
+Total number of raw operations (txn_operation_count) across Soroban transactions in the ledger. Unlike effective operation count, this does NOT include fee-bump transactions. Useful for reconciling with network-level operation counts.
 
 {% enddocs %}
 

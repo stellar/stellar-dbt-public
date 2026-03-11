@@ -56,6 +56,7 @@ with
             , count(*) as txn_count
             , countif(not successful) as failed_txn_count
             , sum(effective_txn_operation_count) as total_effective_txn_operation_count
+            , sum(txn_operation_count) as total_raw_txn_operation_count
         from base_txns
         group by day_agg, ledger_sequence
     )
@@ -71,6 +72,7 @@ with
             , count(*) as classic_txn_count
             , countif(not successful) as classic_failed_txn_count
             , sum(effective_txn_operation_count) as classic_total_effective_operation_count
+            , sum(txn_operation_count) as classic_total_raw_operation_count
             -- fee_charged (= inclusion fee for classic)
             , sum(fee_charged) as classic_sum_fee_charged
             , max(fee_charged) as classic_max_fee_charged
@@ -105,6 +107,7 @@ with
             , count(*) as soroban_txn_count
             , countif(not successful) as soroban_failed_txn_count
             , sum(effective_txn_operation_count) as soroban_total_effective_operation_count
+            , sum(txn_operation_count) as soroban_total_raw_operation_count
 
             -- fee_charged (total = resource_fee + inclusion_fee_charged)
             , sum(fee_charged) as soroban_sum_fee_charged
@@ -180,11 +183,13 @@ with
             , general_agg.txn_count
             , general_agg.failed_txn_count
             , general_agg.total_effective_txn_operation_count
+            , general_agg.total_raw_txn_operation_count
 
             -- Classic: fee aggregates
             , coalesce(classic_agg.classic_txn_count, 0) as classic_txn_count
             , coalesce(classic_agg.classic_failed_txn_count, 0) as classic_failed_txn_count
             , coalesce(classic_agg.classic_total_effective_operation_count, 0) as classic_total_effective_operation_count
+            , coalesce(classic_agg.classic_total_raw_operation_count, 0) as classic_total_raw_operation_count
             , coalesce(classic_agg.classic_sum_fee_charged, 0) as classic_sum_fee_charged
             , classic_agg.classic_max_fee_charged
             , coalesce(classic_agg.classic_sum_max_fee, 0) as classic_sum_max_fee
@@ -201,6 +206,7 @@ with
             , coalesce(soroban_agg.soroban_txn_count, 0) as soroban_txn_count
             , coalesce(soroban_agg.soroban_failed_txn_count, 0) as soroban_failed_txn_count
             , coalesce(soroban_agg.soroban_total_effective_operation_count, 0) as soroban_total_effective_operation_count
+            , coalesce(soroban_agg.soroban_total_raw_operation_count, 0) as soroban_total_raw_operation_count
             , coalesce(soroban_agg.soroban_sum_fee_charged, 0) as soroban_sum_fee_charged
             , soroban_agg.soroban_max_fee_charged
 
