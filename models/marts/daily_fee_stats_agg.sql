@@ -33,6 +33,7 @@ with
             , sum(total_effective_txn_operation_count) as total_effective_txn_operation_count
             , min(ledger_sequence) as min_ledger_sequence
             , max(ledger_sequence) as max_ledger_sequence
+            , count(*) as total_ledgers
 
             -- Classic: fee aggregates
             , sum(classic_txn_count) as classic_txn_count
@@ -46,13 +47,13 @@ with
             , min(classic_min_inclusion_fee_per_op) as classic_min_inclusion_fee_per_op
 
             -- Classic: surge
-            , countif(classic_txn_count is not null) as classic_total_ledgers
+            , countif(classic_txn_count > 0) as classic_total_ledgers
             , countif(classic_is_surge_ledger) as classic_surge_ledger_count
             , sum(classic_surge_txn_count) as classic_total_surge_txn_count
             , sum(classic_surge_operation_count) as classic_total_surge_operation_count
             , safe_divide(
                 100.0 * countif(classic_is_surge_ledger)
-                , countif(classic_txn_count is not null)
+                , countif(classic_txn_count > 0)
             ) as classic_pct_ledgers_in_surge
 
             -- Soroban: fee_charged (total)
@@ -93,13 +94,13 @@ with
             , min(soroban_min_rent_fee_charged) as soroban_min_rent_fee_charged
 
             -- Soroban: surge
-            , countif(soroban_txn_count is not null) as soroban_total_ledgers
+            , countif(soroban_txn_count > 0) as soroban_total_ledgers
             , countif(soroban_is_surge_ledger) as soroban_surge_ledger_count
             , sum(soroban_surge_txn_count) as soroban_total_surge_txn_count
             , sum(soroban_surge_operation_count) as soroban_total_surge_operation_count
             , safe_divide(
                 100.0 * countif(soroban_is_surge_ledger)
-                , countif(soroban_txn_count is not null)
+                , countif(soroban_txn_count > 0)
             ) as soroban_pct_ledgers_in_surge
 
             -- Total surge (classic or soroban)

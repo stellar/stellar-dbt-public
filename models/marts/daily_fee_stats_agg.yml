@@ -72,6 +72,13 @@ models:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
+      - name: total_ledgers
+        description: '{{ doc("daily_fee_total_ledgers") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
       # Classic: fee aggregates
       - name: classic_txn_count
         description: '{{ doc("ledger_fee_classic_txn_count") }}'

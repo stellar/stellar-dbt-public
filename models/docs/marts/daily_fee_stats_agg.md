@@ -18,6 +18,12 @@ Last (maximum) ledger sequence number for the day.
 
 {% enddocs %}
 
+{% docs daily_fee_total_ledgers %}
+
+Total number of ledgers processed for the day, regardless of whether they contain Classic or Soroban transactions. Used as the denominator for `total_pct_ledgers_in_surge`.
+
+{% enddocs %}
+
 {% docs daily_fee_classic_total_ledgers %}
 
 Total number of ledgers containing at least one Classic transaction for the day.

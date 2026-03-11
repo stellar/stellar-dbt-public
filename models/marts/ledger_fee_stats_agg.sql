@@ -84,7 +84,7 @@ with
             , sum(
                 case
                     when fee_charged > effective_txn_operation_count * 100
-                        then txn_operation_count
+                        then effective_txn_operation_count
                 end
             ) as classic_surge_operation_count
         from base_txns
@@ -143,7 +143,7 @@ with
             , sum(
                 case
                     when inclusion_fee_charged > effective_txn_operation_count * 100
-                        then txn_operation_count
+                        then effective_txn_operation_count
                 end
             ) as soroban_surge_operation_count
         from base_txns
