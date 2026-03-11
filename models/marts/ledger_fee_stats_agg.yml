@@ -58,6 +58,9 @@ models:
               date_column_name: "day_agg"
               greater_than_equal_to: "2 day"
 
+      - name: failed_txn_count
+        description: '{{ doc("ledger_fee_failed_txn_count") }}'
+
       - name: total_effective_txn_operation_count
         description: '{{ doc("ledger_fee_total_effective_txn_operation_count") }}'
         tests:
@@ -68,6 +71,9 @@ models:
       # Classic aggregates
       - name: classic_txn_count
         description: '{{ doc("ledger_fee_classic_txn_count") }}'
+
+      - name: classic_failed_txn_count
+        description: '{{ doc("ledger_fee_classic_failed_txn_count") }}'
 
       - name: classic_total_effective_operation_count
         description: '{{ doc("ledger_fee_classic_total_effective_operation_count") }}'
@@ -102,6 +108,9 @@ models:
       # Soroban: fee_charged (total)
       - name: soroban_txn_count
         description: '{{ doc("ledger_fee_soroban_txn_count") }}'
+
+      - name: soroban_failed_txn_count
+        description: '{{ doc("ledger_fee_soroban_failed_txn_count") }}'
 
       - name: soroban_total_effective_operation_count
         description: '{{ doc("ledger_fee_soroban_total_effective_operation_count") }}'

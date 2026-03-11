@@ -36,6 +36,12 @@ Total number of transactions (Classic + Soroban) in the ledger.
 
 {% enddocs %}
 
+{% docs ledger_fee_failed_txn_count %}
+
+Number of failed transactions (Classic + Soroban) in the ledger. Failed transactions are still included in all fee aggregates because inclusion_fee_charged and non_refundable_resource_fee_charged are charged regardless of transaction success.
+
+{% enddocs %}
+
 {% docs ledger_fee_total_effective_txn_operation_count %}
 
 Total number of effective operations across all transactions (Classic + Soroban) in the ledger. Uses effective_txn_operation_count, which adds 1 to the operation count for fee-bump transactions (where new_max_fee is not null) to account for the extra inner transaction. This is the same denominator used when calculating per-operation fee metrics.
@@ -45,6 +51,12 @@ Total number of effective operations across all transactions (Classic + Soroban)
 {% docs ledger_fee_classic_txn_count %}
 
 Number of Classic transactions in the ledger. Classic transactions have resource_fee = 0.
+
+{% enddocs %}
+
+{% docs ledger_fee_classic_failed_txn_count %}
+
+Number of failed Classic transactions in the ledger.
 
 {% enddocs %}
 
@@ -111,6 +123,12 @@ Boolean flag: true if any Classic transaction in the ledger experienced surge pr
 {% docs ledger_fee_soroban_txn_count %}
 
 Number of Soroban transactions in the ledger. Soroban transactions have resource_fee > 0.
+
+{% enddocs %}
+
+{% docs ledger_fee_soroban_failed_txn_count %}
+
+Number of failed Soroban transactions in the ledger. Even failed Soroban transactions are charged inclusion_fee_charged and non_refundable_resource_fee_charged, so they are included in all fee aggregates.
 
 {% enddocs %}
 
