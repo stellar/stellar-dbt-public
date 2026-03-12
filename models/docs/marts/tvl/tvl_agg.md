@@ -4,8 +4,8 @@
 The date for the aggregation result.
 {% enddocs %}
 
-{% docs accounts_tvl_usd %}
-The total value locked (TVL) denominated in USD for a given date. Aggregated across accounts selling liabilities
+{% docs accounts_tvl %}
+The total value locked (TVL) denominated in raw asset value (token amounts) for a given date. Aggregated across accounts selling liabilities
 {% enddocs %}
 
 {% docs trustlines_tvl %}
