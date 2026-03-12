@@ -89,3 +89,9 @@ Percentage of Soroban-containing ledgers that experienced surge pricing for the 
 Percentage of all ledgers for the day where at least one transaction (Classic or Soroban) experienced surge pricing. Calculated as 100 * count(ledgers where classic_is_surge_ledger or soroban_is_surge_ledger) / total ledgers.
 
 {% enddocs %}
+
+{% docs daily_fee_fee_pool %}
+
+Sum of fee_pool across all ledgers for the day. Each ledger's fee_pool is the sum of all transaction fees in that ledger, so this daily total represents all fees collected across the network for the day.
+
+{% enddocs %}

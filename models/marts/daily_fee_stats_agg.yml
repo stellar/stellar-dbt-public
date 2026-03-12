@@ -243,7 +243,7 @@ models:
 
       # Ledger info
       - name: fee_pool
-        description: '{{ doc("ledger_fee_fee_pool") }}'
+        description: '{{ doc("daily_fee_fee_pool") }}'
 
       # Metadata
       - name: airflow_start_ts

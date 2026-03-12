@@ -116,7 +116,7 @@ with
             ) as total_pct_ledgers_in_surge
 
             -- Ledger info
-            , max(fee_pool) as fee_pool
+            , sum(fee_pool) as fee_pool
 
             -- Metadata
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
