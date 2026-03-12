@@ -23,7 +23,7 @@ with
             and valid_to is null -- fetch only latest entry
     )
 
-    , price_data as (
+    , price_data_old_format as (
         select
             closed_at
             , cast(right(json_extract_scalar(key_decoded, '$.u128'), 2) as int) as asset_index
@@ -32,10 +32,36 @@ with
         where
             contract_id = 'CBKGPWGKSKZF52CFHMTRR23TBWTPMRDIYZ4O2P5VS65BMHYH4DXMCJZC'
             and contract_durability != 'ContractDataDurabilityPersistent'
+            and json_extract_scalar(key_decoded, '$.u128') is not null
+    )
+
+    , price_data_new_format as (
+        select
+            closed_at
+            , cast(price_offset as int) as asset_index
+            , cast(json_extract_scalar(price_element, '$.i128') as float64) as price
+        from {{ ref('contract_data_snapshot') }}
+            , unnest(json_extract_array(
+                json_extract(
+                    json_extract_array(val_decoded, '$.map')[safe_offset(1)]
+                    , '$.val.vec'
+                )
+            )) as price_element
+                with offset as price_offset
+        where
+            contract_id = 'CBKGPWGKSKZF52CFHMTRR23TBWTPMRDIYZ4O2P5VS65BMHYH4DXMCJZC'
+            and contract_durability != 'ContractDataDurabilityPersistent'
+            and json_extract_scalar(key_decoded, '$.u64') is not null
+    )
+
+    , price_data as (
+        select * from price_data_old_format
+        union all
+        select * from price_data_new_format
     )
 
     , joined as (
-        select
+        select distinct
             asset_coding.asset_code
             , price_data.closed_at as updated_at
             , price_data.price * power(10, -14) as price
