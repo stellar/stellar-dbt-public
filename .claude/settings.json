@@ -1,0 +1,35 @@
+{
+  "includeCoAuthoredBy": false,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "git-secrets --scan $CLAUDE_FILE_PATHS 2>/dev/null || exit 1" }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "echo $CLAUDE_TOOL_INPUT | grep -qE 'rm -rf|force-push' && exit 1 || exit 0" },
+          { "type": "command", "command": "if [ \"${DBT_TARGET}\" = 'prod' ]; then echo 'ERROR: DBT_TARGET is set to prod. This is not allowed.' >&2; exit 2; fi; if [ \"${DBT_PROJECT}\" = 'DBT_PROJECT' ]; then echo 'ERROR: DBT_PROJECT is set to the placeholder value DBT_PROJECT. Check your .env configuration.' >&2; exit 2; fi" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "for f in $CLAUDE_FILE_PATHS; do [[ \"$f\" == *.sql ]] && sqlfluff lint \"$f\" 2>&1 | tail -20; done; true"
+          },
+          {
+            "type": "command",
+            "command": "for f in $CLAUDE_FILE_PATHS; do [[ \"$f\" == */models/*.sql ]] && dbt compile --select \"$(basename \"${f%.sql}\")\" 2>&1 | tail -20; done; true"
+          }
+        ]
+      }
+    ]
+  }
+}
