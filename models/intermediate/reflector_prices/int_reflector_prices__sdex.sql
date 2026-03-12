@@ -38,7 +38,7 @@ with
     , new_format_raw as (
         select
             closed_at
-            , key_decoded
+            , json_extract_scalar(key_decoded, '$.u64') as key_value
             , json_extract_scalar(
                 json_extract_array(val_decoded, '$.map')[safe_offset(0)]
                 , '$.val.bytes'
@@ -60,7 +60,7 @@ with
     , new_format_mask_bits as (
         select
             closed_at
-            , key_decoded
+            , key_value
             , prices_array
             , bit_pos as asset_index
         from new_format_raw
@@ -68,13 +68,17 @@ with
         where
             bit_pos < length(mask_hex) * 4
             and ((
-                case substr(mask_hex, cast(floor(bit_pos / 4) as int64) + 1, 1)
+                case substr(
+                    mask_hex
+                    , cast(floor(bit_pos / 8) as int64) * 2 + (case when mod(bit_pos, 8) < 4 then 2 else 1 end)
+                    , 1
+                )
                     when '0' then 0 when '1' then 1 when '2' then 2 when '3' then 3
                     when '4' then 4 when '5' then 5 when '6' then 6 when '7' then 7
                     when '8' then 8 when '9' then 9 when 'a' then 10 when 'b' then 11
                     when 'c' then 12 when 'd' then 13 when 'e' then 14 when 'f' then 15
                 end
-            ) >> (3 - mod(bit_pos, 4))) & 1 = 1
+            ) >> mod(bit_pos, 4)) & 1 = 1
     )
 
     -- map each set bit to its position in the prices vec
@@ -83,7 +87,7 @@ with
             closed_at
             , asset_index
             , prices_array
-            , row_number() over (partition by closed_at, key_decoded order by asset_index) - 1 as vec_index
+            , row_number() over (partition by closed_at, key_value order by asset_index) - 1 as vec_index
         from new_format_mask_bits
     )
 
