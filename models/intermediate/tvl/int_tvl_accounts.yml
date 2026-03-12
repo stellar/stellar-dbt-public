@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: int_tvl_accounts
+    description: "This table aggregates XLM selling liabilities from accounts to calculate TVL"
+    columns:
+      - name: day
+        description: '{{ doc("day") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: account_id
+        description: '{{ doc("account_id") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: total_tvl
+        description: '{{ doc("total_tvl") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
