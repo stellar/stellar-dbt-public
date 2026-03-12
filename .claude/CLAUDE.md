@@ -102,7 +102,14 @@ When adding or modifying models, update both the co-located YAML and any relevan
 
 ## Pre-commit Hooks
 
-Pre-commit runs automatically on commit:
+Pre-commit runs automatically on commit. Run it manually before finishing any task:
+
+```bash
+pre-commit run --all-files        # Run all hooks on all files
+pre-commit run --files path/to/file.sql   # Run on specific files
+```
+
+Hooks:
 1. **SQLFluff** — lints and auto-fixes SQL style
 2. **dbt-checkpoint** — enforces:
    - All model columns in `marts/` must have descriptions in `.yml`
@@ -114,7 +121,7 @@ Pre-commit runs automatically on commit:
 ## Rules
 
 - Never run any dbt commands that would write or modify datasets in the GCP projects `crypto-stellar` or `hubble-261722`
-- Run sqlfluff and tests before considering a task complete
+- Run `pre-commit run --all-files` before considering a task complete
 - Prefer small and focused changes over large rewrites
 - Keep PRs scoped to only the request
 - Never commit secrets, API keys, or credentials
