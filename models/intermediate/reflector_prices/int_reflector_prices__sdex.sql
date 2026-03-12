@@ -35,23 +35,64 @@ with
             and json_extract_scalar(key_decoded, '$.u128') is not null
     )
 
-    , price_data_new_format as (
+    , new_format_raw as (
         select
             closed_at
-            , cast(price_offset as int) as asset_index
-            , cast(json_extract_scalar(price_element, '$.i128') as float64) as price
-        from {{ ref('contract_data_snapshot') }}
-            , unnest(json_extract_array(
+            , key_decoded
+            , json_extract_scalar(
+                json_extract_array(val_decoded, '$.map')[safe_offset(0)]
+                , '$.val.bytes'
+            ) as mask_hex
+            , json_extract_array(
                 json_extract(
                     json_extract_array(val_decoded, '$.map')[safe_offset(1)]
                     , '$.val.vec'
                 )
-            )) as price_element
-                with offset as price_offset
+            ) as prices_array
+        from {{ ref('contract_data_snapshot') }}
         where
             contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
             and contract_durability != 'ContractDataDurabilityPersistent'
             and json_extract_scalar(key_decoded, '$.u64') is not null
+    )
+
+    -- expand mask hex into set bit positions (each set bit = an asset_index with a price)
+    , new_format_mask_bits as (
+        select
+            closed_at
+            , key_decoded
+            , prices_array
+            , bit_pos as asset_index
+        from new_format_raw
+        cross join unnest(generate_array(0, 255)) as bit_pos
+        where
+            bit_pos < length(mask_hex) * 4
+            and ((
+                case substr(mask_hex, cast(floor(bit_pos / 4) as int64) + 1, 1)
+                    when '0' then 0 when '1' then 1 when '2' then 2 when '3' then 3
+                    when '4' then 4 when '5' then 5 when '6' then 6 when '7' then 7
+                    when '8' then 8 when '9' then 9 when 'a' then 10 when 'b' then 11
+                    when 'c' then 12 when 'd' then 13 when 'e' then 14 when 'f' then 15
+                end
+            ) >> (3 - mod(bit_pos, 4))) & 1 = 1
+    )
+
+    -- map each set bit to its position in the prices vec
+    , new_format_indexed as (
+        select
+            closed_at
+            , asset_index
+            , prices_array
+            , row_number() over (partition by closed_at, key_decoded order by asset_index) - 1 as vec_index
+        from new_format_mask_bits
+    )
+
+    , price_data_new_format as (
+        select
+            closed_at
+            , asset_index
+            , cast(json_extract_scalar(prices_array[safe_offset(vec_index)], '$.i128') as float64) as price
+        from new_format_indexed
     )
 
     , price_data as (
