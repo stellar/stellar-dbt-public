@@ -59,7 +59,6 @@ with
     , new_format_raw as (
         select
             closed_at
-            , json_extract_scalar(key_decoded, '$.u64') as key_value
             , json_extract_scalar(
                 json_extract_array(val_decoded, '$.map')[safe_offset(0)]
                 , '$.val.bytes'
@@ -77,54 +76,14 @@ with
             and json_extract_scalar(key_decoded, '$.u64') is not null
     )
 
-    -- lookup table: hex character → integer value
-    , hex_lookup as (
-        select hex_char, int_val
-        from unnest(['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']) as hex_char with offset as int_val
-    )
-
-    /*
-        For each bit position (0–255), determine which hex nibble to read:
-        - Bits 0-3 of a byte are in the LOW nibble (2nd hex char)
-        - Bits 4-7 of a byte are in the HIGH nibble (1st hex char)
-        Then shift right by (bit_pos % 4) and check if the lowest bit is set.
-    */
-    , new_format_mask_bits as (
-        select
-            r.closed_at
-            , r.key_value
-            , r.prices_array
-            , bit_pos as asset_index
-        from new_format_raw as r
-        cross join unnest(generate_array(0, 255)) as bit_pos
-        inner join hex_lookup as h
-            on h.hex_char = substr(
-                r.mask_hex
-                -- byte position * 2, then pick low nibble (+2) for bits 0-3 or high nibble (+1) for bits 4-7
-                , cast(floor(bit_pos / 8) as int64) * 2 + (case when mod(bit_pos, 8) < 4 then 2 else 1 end)
-                , 1
-            )
-        where
-            bit_pos < length(r.mask_hex) * 4
-            and (h.int_val >> mod(bit_pos, 4)) & 1 = 1
-    )
-
-    -- the prices vec only has values for set bits, so map each asset_index to its vec position
-    , new_format_indexed as (
-        select
-            closed_at
-            , asset_index
-            , prices_array
-            , row_number() over (partition by closed_at, key_value order by asset_index) - 1 as vec_index
-        from new_format_mask_bits
-    )
-
+    -- use mask to map each price in the vec to its actual asset_index
     , price_data_new_format as (
         select
             closed_at
             , asset_index
             , cast(json_extract_scalar(prices_array[safe_offset(vec_index)], '$.i128') as float64) as price
-        from new_format_indexed
+        from new_format_raw
+            , unnest({{ find_changed_asset_indexes('mask_hex') }}) as asset_index with offset as vec_index
     )
 
     , price_data as (
