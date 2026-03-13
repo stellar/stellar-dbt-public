@@ -1,6 +1,6 @@
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["day", "account_id", "asset_code", "asset_issuer"],
+    "unique_key": ["day", "account_id", "asset_code", "asset_issuer", "asset_type"],
     "tags": ["tvl"]
 } %}
 
@@ -34,6 +34,7 @@ with
     , filter_trustlines as (
         select
             t.account_id
+            , t.asset_type
             , t.asset_code
             , t.asset_issuer
             , t.selling_liabilities
@@ -49,6 +50,7 @@ with
         select
             d.day
             , t.account_id
+            , t.asset_type
             , t.asset_code
             , t.asset_issuer
             , array_agg(t.selling_liabilities order by t.closed_at desc)[offset(0)] as tvl
@@ -56,21 +58,22 @@ with
         from date_range as d
         inner join filter_trustlines as t
             on t.closed_at < timestamp(date_add(d.day, interval 1 day))
-        where
-            true
-            and deleted = false
-        group by 1, 2, 3, 4
+        group by 1, 2, 3, 4, 5
     )
 
     , daily_trustline_tvl as (
         select
             day
             , account_id
+            , asset_type
             , asset_code
             , asset_issuer
             , sum(tvl) as trustlines_tvl
         from trustline_tvl_per_day
-        group by 1, 2, 3, 4
+        where
+            true
+            and deleted = false
+        group by 1, 2, 3, 4, 5
     )
 
 select *

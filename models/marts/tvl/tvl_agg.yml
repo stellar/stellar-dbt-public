@@ -11,6 +11,23 @@ models:
               date_column_name: "day"
               greater_than_equal_to: "2 day"
 
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
       - name: accounts_tvl
         description: '{{ doc("accounts_tvl") }}'
         tests:
