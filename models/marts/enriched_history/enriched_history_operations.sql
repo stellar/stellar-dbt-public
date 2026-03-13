@@ -97,7 +97,6 @@ with
             , refundable_resource_fee_charged
             , rent_fee_charged
             , tx_signers
-            , refundable_fee
         from {{ ref('stg_history_transactions') }}
         where
             batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
@@ -417,7 +416,6 @@ with
             , hist_trans.refundable_resource_fee_charged
             , hist_trans.rent_fee_charged
             , hist_trans.tx_signers
-            , hist_trans.refundable_fee
         from history_operations as hist_ops
         join history_transactions as hist_trans
             on hist_ops.transaction_id = hist_trans.transaction_id
