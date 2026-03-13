@@ -1,0 +1,250 @@
+version: 2
+
+models:
+  - name: daily_fee_stats_agg
+    description: '{{ doc("daily_fee_stats") }}'
+    tests:
+      - dbt_utils.recency:
+          tags: [recency]
+          datepart: day
+          field: cast(day_agg as timestamp)
+          interval: 2
+          config:
+            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
+    columns:
+      - name: day_agg
+        description: '{{ doc("ledger_fee_day_agg") }}'
+        tests:
+          - incremental_unique:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      # General
+      - name: total_fee_charged
+        description: '{{ doc("ledger_fee_total_fee_charged") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: max_fee_charged
+        description: '{{ doc("ledger_fee_max_fee_charged") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: txn_count
+        description: '{{ doc("ledger_fee_txn_count") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: failed_txn_count
+        description: '{{ doc("ledger_fee_failed_txn_count") }}'
+
+      - name: total_effective_txn_operation_count
+        description: '{{ doc("ledger_fee_total_effective_txn_operation_count") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: total_raw_txn_operation_count
+        description: '{{ doc("ledger_fee_total_raw_txn_operation_count") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: min_ledger_sequence
+        description: '{{ doc("daily_fee_min_ledger_sequence") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: max_ledger_sequence
+        description: '{{ doc("daily_fee_max_ledger_sequence") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: total_ledgers
+        description: '{{ doc("daily_fee_total_ledgers") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "day_agg"
+              greater_than_equal_to: "2 day"
+
+      # Classic: fee aggregates
+      - name: classic_txn_count
+        description: '{{ doc("ledger_fee_classic_txn_count") }}'
+
+      - name: classic_failed_txn_count
+        description: '{{ doc("ledger_fee_classic_failed_txn_count") }}'
+
+      - name: classic_total_effective_operation_count
+        description: '{{ doc("ledger_fee_classic_total_effective_operation_count") }}'
+
+      - name: classic_total_raw_operation_count
+        description: '{{ doc("ledger_fee_classic_total_raw_operation_count") }}'
+
+      - name: classic_sum_fee_charged
+        description: '{{ doc("ledger_fee_classic_sum_fee_charged") }}'
+
+      - name: classic_max_fee_charged
+        description: '{{ doc("ledger_fee_classic_max_fee_charged") }}'
+
+      - name: classic_sum_max_fee
+        description: '{{ doc("ledger_fee_classic_sum_max_fee") }}'
+
+      - name: classic_max_max_fee
+        description: '{{ doc("ledger_fee_classic_max_max_fee") }}'
+
+      - name: classic_max_inclusion_fee_per_op
+        description: '{{ doc("ledger_fee_classic_max_inclusion_fee_per_op") }}'
+
+      - name: classic_min_inclusion_fee_per_op
+        description: '{{ doc("ledger_fee_classic_min_inclusion_fee_per_op") }}'
+
+      # Classic: surge
+      - name: classic_total_ledgers
+        description: '{{ doc("daily_fee_classic_total_ledgers") }}'
+
+      - name: classic_surge_ledger_count
+        description: '{{ doc("daily_fee_classic_surge_ledger_count") }}'
+
+      - name: classic_total_surge_txn_count
+        description: '{{ doc("daily_fee_classic_total_surge_txn_count") }}'
+
+      - name: classic_total_surge_operation_count
+        description: '{{ doc("daily_fee_classic_total_surge_operation_count") }}'
+
+      - name: classic_pct_ledgers_in_surge
+        description: '{{ doc("daily_fee_classic_pct_ledgers_in_surge") }}'
+
+      # Soroban: fee_charged (total)
+      - name: soroban_txn_count
+        description: '{{ doc("ledger_fee_soroban_txn_count") }}'
+
+      - name: soroban_failed_txn_count
+        description: '{{ doc("ledger_fee_soroban_failed_txn_count") }}'
+
+      - name: soroban_total_effective_operation_count
+        description: '{{ doc("ledger_fee_soroban_total_effective_operation_count") }}'
+
+      - name: soroban_total_raw_operation_count
+        description: '{{ doc("ledger_fee_soroban_total_raw_operation_count") }}'
+
+      - name: soroban_sum_fee_charged
+        description: '{{ doc("ledger_fee_soroban_sum_fee_charged") }}'
+
+      - name: soroban_max_fee_charged
+        description: '{{ doc("ledger_fee_soroban_max_fee_charged") }}'
+
+      # Soroban: inclusion fee
+      - name: soroban_sum_inclusion_fee_charged
+        description: '{{ doc("ledger_fee_soroban_sum_inclusion_fee_charged") }}'
+
+      - name: soroban_max_inclusion_fee_charged
+        description: '{{ doc("ledger_fee_soroban_max_inclusion_fee_charged") }}'
+
+      - name: soroban_sum_inclusion_fee_bid
+        description: '{{ doc("ledger_fee_soroban_sum_inclusion_fee_bid") }}'
+
+      - name: soroban_max_inclusion_fee_bid
+        description: '{{ doc("ledger_fee_soroban_max_inclusion_fee_bid") }}'
+
+      - name: soroban_max_inclusion_fee_per_op
+        description: '{{ doc("ledger_fee_soroban_max_inclusion_fee_per_op") }}'
+
+      - name: soroban_min_inclusion_fee_per_op
+        description: '{{ doc("ledger_fee_soroban_min_inclusion_fee_per_op") }}'
+
+      # Soroban: resource fee (total)
+      - name: soroban_sum_resource_fee
+        description: '{{ doc("ledger_fee_soroban_sum_resource_fee") }}'
+
+      - name: soroban_max_resource_fee
+        description: '{{ doc("ledger_fee_soroban_max_resource_fee") }}'
+
+      - name: soroban_min_resource_fee
+        description: '{{ doc("ledger_fee_soroban_min_resource_fee") }}'
+
+      # Soroban: resource fee components
+      - name: soroban_sum_non_refundable_resource_fee_charged
+        description: '{{ doc("ledger_fee_soroban_sum_non_refundable_resource_fee_charged") }}'
+
+      - name: soroban_max_non_refundable_resource_fee_charged
+        description: '{{ doc("ledger_fee_soroban_max_non_refundable_resource_fee_charged") }}'
+
+      - name: soroban_min_non_refundable_resource_fee_charged
+        description: '{{ doc("ledger_fee_soroban_min_non_refundable_resource_fee_charged") }}'
+
+      - name: soroban_sum_refundable_resource_fee_charged
+        description: '{{ doc("ledger_fee_soroban_sum_refundable_resource_fee_charged") }}'
+
+      - name: soroban_max_refundable_resource_fee_charged
+        description: '{{ doc("ledger_fee_soroban_max_refundable_resource_fee_charged") }}'
+
+      - name: soroban_min_refundable_resource_fee_charged
+        description: '{{ doc("ledger_fee_soroban_min_refundable_resource_fee_charged") }}'
+
+      - name: soroban_sum_resource_fee_refund
+        description: '{{ doc("ledger_fee_soroban_sum_resource_fee_refund") }}'
+
+      - name: soroban_max_resource_fee_refund
+        description: '{{ doc("ledger_fee_soroban_max_resource_fee_refund") }}'
+
+      - name: soroban_min_resource_fee_refund
+        description: '{{ doc("ledger_fee_soroban_min_resource_fee_refund") }}'
+
+      - name: soroban_sum_rent_fee_charged
+        description: '{{ doc("ledger_fee_soroban_sum_rent_fee_charged") }}'
+
+      - name: soroban_max_rent_fee_charged
+        description: '{{ doc("ledger_fee_soroban_max_rent_fee_charged") }}'
+
+      - name: soroban_min_rent_fee_charged
+        description: '{{ doc("ledger_fee_soroban_min_rent_fee_charged") }}'
+
+      # Soroban: surge
+      - name: soroban_total_ledgers
+        description: '{{ doc("daily_fee_soroban_total_ledgers") }}'
+
+      - name: soroban_surge_ledger_count
+        description: '{{ doc("daily_fee_soroban_surge_ledger_count") }}'
+
+      - name: soroban_total_surge_txn_count
+        description: '{{ doc("daily_fee_soroban_total_surge_txn_count") }}'
+
+      - name: soroban_total_surge_operation_count
+        description: '{{ doc("daily_fee_soroban_total_surge_operation_count") }}'
+
+      - name: soroban_pct_ledgers_in_surge
+        description: '{{ doc("daily_fee_soroban_pct_ledgers_in_surge") }}'
+
+      # Total surge
+      - name: total_pct_ledgers_in_surge
+        description: '{{ doc("daily_fee_total_pct_ledgers_in_surge") }}'
+
+      # Ledger info
+      - name: fee_pool
+        description: '{{ doc("daily_fee_fee_pool") }}'
+
+      # Metadata
+      - name: airflow_start_ts
+        description: '{{ doc("ledger_fee_airflow_start_ts") }}'
