@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: int_tvl_trustlines
+    description: "This table aggregates asset selling liabilities from trustlines to calculate TVL"
+    columns:
+      - name: day
+        description: '{{ doc("day") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: account_id
+        description: "The account id for the tvl"
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_code
+        description: "The asset code of the TVL, this table only has non XLM tvl."
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: asset_issuer
+        description: "The asset issuer of the TVL, this table only has non XLM tvl."
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: trustlines_tvl
+        description: '{{ doc("trustlines_tvl") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"

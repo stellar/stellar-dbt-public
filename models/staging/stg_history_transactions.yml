@@ -197,7 +197,7 @@ models:
         description: '{{ doc("soroban_resources_read_bytes") }}'
 
       - name: soroban_resources_write_bytes
-        description: '{{ doc("soroban_resources_read_bytes") }}'
+        description: '{{ doc("soroban_resources_write_bytes") }}'
 
       - name: transaction_result_code
         description: '{{ doc("transaction_result_code") }}'
