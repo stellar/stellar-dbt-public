@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: config_settings_snapshot
+    description: '{{ doc("config_settings_snapshot") }}'
+    tests:
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - config_setting_name
+            - valid_from
+          meta:
+            description: "Tests the uniqueness combination of: config_setting_name and valid_from."
+    columns:
+      - name: config_setting_name
+        description: '{{ doc("config_setting_name") }}'
+        tests:
+          - not_null
+      - name: setting_value
+        description: '{{ doc("setting_value") }}'
+        tests:
+          - not_null
+      - name: valid_from
+        description: '{{ doc("valid_from") }}'
+        tests:
+          - not_null
+      - name: valid_to
+        description: '{{ doc("valid_to") }}'
+      - name: is_current_setting
+        description: '{{ doc("is_current_setting") }}'
+      - name: core_metric
+        description: >
+          The core metric name that this config setting maps to
+          (e.g., cpu_insn, mem_byte, read_entry). Null if the setting
+          does not map to a core metric.
+      - name: grain
+        description: >
+          The granularity level of the config setting limit,
+          either 'ledger' or 'transaction'.
+      - name: is_resource_utilization_relevent
+        description: >
+          Whether this config setting is relevant for calculating
+          Soroban network resource utilization ratios.
+        tests:
+          - accepted_values:
+              values: [true, false]
+              quote: false
+      - name: pretty_config_name
+        description: >
+          A human-readable display name for the config setting,
+          suitable for dashboards and reporting.

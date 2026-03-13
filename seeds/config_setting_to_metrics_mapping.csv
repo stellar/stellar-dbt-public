@@ -1,0 +1,41 @@
+pretty_config_name,config_setting_description,core_metric,grain,is_resource_utilization_relevant,is_resource_fee_setting,is_public_on_dev_docs
+,contract_max_size_bytes,,,FALSE,FALSE,FALSE
+,ledger_max_instructions,cpu_insn,ledger,TRUE,FALSE,FALSE
+Max CPU instructions per txn,tx_max_instructions,cpu_insn,transaction,TRUE,FALSE,TRUE
+"10,000 instructions",fee_rate_per_instructions_increment,,,FALSE,TRUE,TRUE
+Memory limit per txn,tx_memory_limit,mem_byte,transaction,TRUE,FALSE,TRUE
+,ledger_max_read_ledger_entries,read_entry,ledger,TRUE,FALSE,FALSE
+,ledger_max_read_bytes,ledger_read_byte,ledger,TRUE,FALSE,FALSE
+,ledger_max_write_ledger_entries,write_entry,ledger,TRUE,FALSE,FALSE
+Max write bytes per ledger,ledger_max_write_bytes,ledger_write_byte,ledger,TRUE,FALSE,TRUE
+Read ledger entries per txn,tx_max_read_ledger_entries,read_entry,transaction,TRUE,FALSE,TRUE
+Read bytes per txn,tx_max_read_bytes,ledger_read_byte,transaction,TRUE,FALSE,TRUE
+Write ledger entries per txn,tx_max_write_ledger_entries,write_entry,transaction,TRUE,FALSE,TRUE
+Write bytes per txn,tx_max_write_bytes,ledger_write_byte,transaction,TRUE,FALSE,TRUE
+Read 1 ledger entry,fee_read_ledger_entry,,,FALSE,TRUE,TRUE
+Write 1 ledger entry,fee_write_ledger_entry,,,FALSE,TRUE,TRUE
+Read 1KB from ledger,fee_read_1kb,,,FALSE,TRUE,TRUE
+,bucket_list_target_size_bytes,,,FALSE,FALSE,FALSE
+Write 1KB to ledger,write_fee_1kb_bucket_list_low,,,FALSE,TRUE,TRUE
+Write 1KB to ledger,write_fee_1kb_bucket_list_high,,,FALSE,TRUE,TRUE
+,bucket_list_write_fee_growth_factor,,,FALSE,FALSE,FALSE
+1KB of transaction size (history),fee_historical_1kb,,,FALSE,TRUE,TRUE
+Events+return value size bytes,tx_max_contract_events_size_bytes,emit_event_byte,transaction,TRUE,FALSE,TRUE
+1KB of Events/return value,fee_contract_events_1kb,,,FALSE,TRUE,TRUE
+Max txs size in bytes per ledger,ledger_max_txs_size_bytes,,,TRUE,FALSE,TRUE
+Transaction size,tx_max_size_bytes,,,TRUE,FALSE,TRUE
+1KB of transaction size (bandwidth),fee_tx_size_1kb,,,TRUE,TRUE,TRUE
+Individual ledger key size (contract storage key),contract_data_key_size_bytes,,,TRUE,FALSE,TRUE
+Individual ledger entry size (including Wasm entries),contract_data_entry_size_bytes,,,TRUE,FALSE,TRUE
+Max ledger entry expiration bump,max_entry_ttl,,,FALSE,FALSE,TRUE
+Temporary entry minimal/initial lifetime,min_temporary_ttl,,,FALSE,FALSE,TRUE
+Persistent entry minimal/initial lifetime,min_persistent_ttl,,,FALSE,FALSE,TRUE
+,auto_bump_ledgers,,,FALSE,FALSE,FALSE
+30 days of rent for 1 KB of persistent storage,persistent_rent_rate_denominator,,,FALSE,TRUE,TRUE
+30 days of rent for 1 KB of temporary storage,temp_rent_rate_denominator,,,FALSE,TRUE,TRUE
+,max_entries_to_archive,,,TRUE,FALSE,FALSE
+,bucket_list_size_window_sample_size,,,FALSE,FALSE,FALSE
+Eviction Scan Size,eviction_scan_size,,,FALSE,FALSE,TRUE
+,starting_eviction_scan_level,,,FALSE,FALSE,FALSE
+Soroban txn per ledger,ledger_max_tx_count,transaction_hash,ledger,TRUE,FALSE,TRUE
+,bucket_list_size_window,,,FALSE,FALSE,FALSE
