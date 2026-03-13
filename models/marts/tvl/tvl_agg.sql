@@ -16,7 +16,7 @@ with
             day
             , 'native' as asset_type
             , 'XLM' as asset_code
-            , '' as asset_issuer
+            , 'XLM' as asset_issuer
             , sum(accounts_tvl) as accounts_tvl
         from {{ ref('int_tvl_accounts') }}
         group by 1, 2, 3, 4
