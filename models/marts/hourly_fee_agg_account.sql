@@ -1,8 +1,8 @@
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["hour_agg", "fee_account"],
+    "unique_key": ["hour_agg", "fee_source_account"],
     "tags": ["fee_stats"],
-    "cluster_by": ["hour_agg", "fee_account"]
+    "cluster_by": ["hour_agg", "fee_source_account"]
 } %}
 
 {{ config(
@@ -15,7 +15,12 @@ with
         select
             timestamp_trunc(closed_at, hour) as hour_agg
             , transaction_id
-            , fee_account
+            -- fee_account is only populated on fee bump transactions (where a separate
+            -- account sponsors the fees). For regular transactions, the originating
+            -- account (txn_account) pays the fees. Coalesce to get the actual fee payer.
+            -- TODO: Review whether we should preserve the raw fee_account column separately
+            -- to distinguish fee bump sponsors from accounts paying their own fees.
+            , coalesce(fee_account, txn_account) as fee_source_account
             , fee_charged
             , max_fee
             , new_max_fee
@@ -35,7 +40,7 @@ with
         from {{ ref('stg_history_transactions') }}
         where
             closed_at < timestamp(date('{{ var("batch_end_date") }}'))
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
     )
@@ -50,7 +55,7 @@ with
     , final as (
         select
             hour_agg
-            , fee_account
+            , fee_source_account
 
             -- General
             , count(*) as txn_count
@@ -85,8 +90,13 @@ with
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 
         from classified
-        group by hour_agg, fee_account
+        group by hour_agg, fee_source_account
     )
 
+-- NOTE: This model cannot directly link a fee_source_account to a specific contract_id.
+-- To answer "which contracts is this account invoking?", join to stg_history_transactions
+-- and enriched_history_operations_soroban on transaction_id for the relevant time window.
+-- The hourly_soroban_fee_agg_contract model provides the contract-level view but does not
+-- include fee_source_account attribution.
 select *
 from final

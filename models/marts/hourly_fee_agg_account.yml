@@ -26,8 +26,8 @@ models:
               date_column_name: "hour_agg"
               greater_than_equal_to: "2 day"
 
-      - name: fee_account
-        description: '{{ doc("hourly_fee_agg_fee_account") }}'
+      - name: fee_source_account
+        description: '{{ doc("hourly_fee_agg_fee_source_account") }}'
         tests:
           - incremental_not_null:
               date_column_name: "hour_agg"
