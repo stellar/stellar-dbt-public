@@ -1,4 +1,4 @@
-[comment]: < Hourly Fee Agg Account -
+[comment]: # (Hourly Fee Agg Account)
 
 {% docs hourly_fee_agg_account %}
 
@@ -76,19 +76,19 @@ Number of failed Classic transactions for this fee_source_account in the hour.
 
 {% docs hourly_fee_agg_classic_total_fee_charged %}
 
-Sum of fee_charged across Classic transactions for this fee_source_account. For Classic txns, fee_charged is the inclusion fee (no resource_fee component).
+Sum of fee_charged across Classic transactions for this fee_source_account. For Classic txns, fee_charged is the inclusion fee (no resource_fee component). NULL if the account had no Classic transactions in this hour; downstream consumers should handle NULLs when summing.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_classic_total_max_fee %}
 
-Sum of the effective fee ceiling — `coalesce(new_max_fee, max_fee)` — across Classic transactions for this fee_source_account. For fee-bump transactions, `new_max_fee` is the actual ceiling. Represents Classic willingness-to-pay.
+Sum of the effective fee ceiling — `coalesce(new_max_fee, max_fee)` — across Classic transactions for this fee_source_account. For fee-bump transactions, `new_max_fee` is the actual ceiling. Represents Classic willingness-to-pay. NULL if the account had no Classic transactions in this hour.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_classic_total_effective_operation_count %}
 
-Total effective operations across Classic transactions for this fee_source_account. Adds 1 for fee-bump transactions.
+Total effective operations across Classic transactions for this fee_source_account. Adds 1 for fee-bump transactions. NULL if the account had no Classic transactions in this hour.
 
 {% enddocs %}
 
@@ -112,49 +112,49 @@ Number of failed Soroban transactions for this fee_source_account in the hour. E
 
 {% docs hourly_fee_agg_soroban_total_fee_charged %}
 
-Sum of fee_charged across Soroban transactions for this fee_source_account. fee_charged = inclusion_fee_charged + non_refundable_resource_fee_charged + refundable_resource_fee_charged - resource_fee_refund.
+Sum of fee_charged across Soroban transactions for this fee_source_account. fee_charged = inclusion_fee_charged + non_refundable_resource_fee_charged + refundable_resource_fee_charged - resource_fee_refund. NULL if the account had no Soroban transactions in this hour; downstream consumers should handle NULLs when summing.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_soroban_total_inclusion_fee_charged %}
 
-Sum of inclusion_fee_charged across Soroban transactions for this fee_source_account.
+Sum of inclusion_fee_charged across Soroban transactions for this fee_source_account. NULL if the account had no Soroban transactions in this hour.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_soroban_total_inclusion_fee_bid %}
 
-Sum of inclusion_fee_bid across Soroban transactions for this fee_source_account. Represents total willingness-to-pay for inclusion.
+Sum of inclusion_fee_bid across Soroban transactions for this fee_source_account. Represents total willingness-to-pay for inclusion. NULL if the account had no Soroban transactions in this hour.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_soroban_total_resource_fee %}
 
-Sum of resource_fee (pre-execution budget) across Soroban transactions for this fee_source_account.
+Sum of resource_fee (pre-execution budget) across Soroban transactions for this fee_source_account. NULL if the account had no Soroban transactions in this hour.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_soroban_total_non_refundable_resource_fee %}
 
-Sum of non_refundable_resource_fee_charged across Soroban transactions. Covers CPU instructions, read bytes, write bytes, and bandwidth. Charged regardless of tx success/failure.
+Sum of non_refundable_resource_fee_charged across Soroban transactions. Covers CPU instructions, read bytes, write bytes, and bandwidth. Charged regardless of tx success/failure. NULL if the account had no Soroban transactions in this hour.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_soroban_total_refundable_resource_fee %}
 
-Sum of refundable_resource_fee_charged across Soroban transactions. Covers rent, events, and return value. Based on actual usage; 0 for failed transactions.
+Sum of refundable_resource_fee_charged across Soroban transactions. Covers rent, events, and return value. Based on actual usage; 0 for failed transactions. NULL if the account had no Soroban transactions in this hour.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_soroban_total_rent_fee %}
 
-Sum of rent_fee_charged across Soroban transactions. The portion of refundable_resource_fee_charged that went to ledger entry TTL extensions.
+Sum of rent_fee_charged across Soroban transactions. The portion of refundable_resource_fee_charged that went to ledger entry TTL extensions. NULL if the account had no Soroban transactions in this hour.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_soroban_total_resource_fee_refund %}
 
-Sum of resource_fee_refund across Soroban transactions. NOTE: Currently broken upstream -- always 0.
+Sum of resource_fee_refund across Soroban transactions. Represents the unused portion of resource_fee returned to the account after execution. NULL if the account had no Soroban transactions in this hour.
 
 {% enddocs %}
 
@@ -166,6 +166,6 @@ Number of Soroban transactions for this fee_source_account where inclusion_fee_c
 
 {% docs hourly_fee_agg_soroban_total_effective_operation_count %}
 
-Total effective operations across Soroban transactions for this fee_source_account. Adds 1 for fee-bump transactions.
+Total effective operations across Soroban transactions for this fee_source_account. Adds 1 for fee-bump transactions. NULL if the account had no Soroban transactions in this hour.
 
 {% enddocs %}

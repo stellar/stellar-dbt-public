@@ -1,4 +1,4 @@
-[comment]: < Hourly Soroban Fee Agg Contract -
+[comment]: # (Hourly Soroban Fee Agg Contract)
 
 {% docs hourly_soroban_fee_agg_contract %}
 
@@ -126,6 +126,6 @@ Number of Soroban transactions for this contract where inclusion_fee_charged exc
 
 {% docs hourly_soroban_fee_agg_total_resource_fee_refund %}
 
-Sum of resource_fee_refund across transactions. NOTE: Currently broken upstream -- always 0.
+Sum of resource_fee_refund across transactions. Represents the unused portion of resource_fee returned to the account after execution.
 
 {% enddocs %}
