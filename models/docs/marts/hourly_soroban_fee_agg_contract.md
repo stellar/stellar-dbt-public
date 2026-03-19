@@ -118,6 +118,12 @@ Sum of rent_fee_charged across transactions. The portion of refundable_resource_
 
 {% enddocs %}
 
+{% docs hourly_soroban_fee_agg_surge_txn_count %}
+
+Number of Soroban transactions for this contract where inclusion_fee_charged exceeded the base fee (effective_operation_count * 100 stroops). During normal conditions the network charges exactly the base fee regardless of bid, so a higher charge indicates the transaction was included in a surge-priced ledger.
+
+{% enddocs %}
+
 {% docs hourly_soroban_fee_agg_total_resource_fee_refund %}
 
 Sum of resource_fee_refund across transactions. NOTE: Currently broken upstream -- always 0.

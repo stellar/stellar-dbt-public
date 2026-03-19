@@ -78,14 +78,18 @@ with
             , sum(txn_operation_count) as total_raw_operation_count
 
             -- Classic
+            , countif(not is_soroban) as classic_txn_count
+            , countif(not is_soroban and not successful) as classic_failed_txn_count
             -- Lane-specific SUMs intentionally return NULL (not 0) when an account
             -- has no activity in a lane. NULL means "no rows in this lane" while 0
             -- would be ambiguous with "had rows but fees summed to zero".
-            , countif(not is_soroban) as classic_txn_count
-            , countif(not is_soroban and not successful) as classic_failed_txn_count
             , sum(case when not is_soroban then fee_charged end) as classic_total_fee_charged
             , sum(case when not is_soroban then coalesce(new_max_fee, max_fee) end) as classic_total_max_fee
             , sum(case when not is_soroban then effective_operation_count end) as classic_total_effective_operation_count
+            , countif(
+                not is_soroban
+                and fee_charged > effective_operation_count * 100
+            ) as classic_surge_txn_count
 
             -- Soroban
             , countif(is_soroban) as soroban_txn_count
@@ -99,6 +103,10 @@ with
             , sum(case when is_soroban then rent_fee_charged end) as soroban_total_rent_fee
             , sum(case when is_soroban then resource_fee_refund end) as soroban_total_resource_fee_refund
             , sum(case when is_soroban then effective_operation_count end) as soroban_total_effective_operation_count
+            , countif(
+                is_soroban
+                and inclusion_fee_charged > effective_operation_count * 100
+            ) as soroban_surge_txn_count
 
             -- Metadata
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts

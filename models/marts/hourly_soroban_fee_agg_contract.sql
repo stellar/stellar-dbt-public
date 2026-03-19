@@ -91,6 +91,9 @@ with
             , sum(refundable_resource_fee_charged) as total_refundable_resource_fee
             , sum(rent_fee_charged) as total_rent_fee
             , sum(resource_fee_refund) as total_resource_fee_refund
+            , countif(
+                inclusion_fee_charged > effective_operation_count * 100
+            ) as surge_txn_count
 
             -- Metadata
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts

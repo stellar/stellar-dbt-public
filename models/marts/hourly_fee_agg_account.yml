@@ -97,6 +97,9 @@ models:
       - name: classic_total_effective_operation_count
         description: '{{ doc("hourly_fee_agg_classic_total_effective_operation_count") }}'
 
+      - name: classic_surge_txn_count
+        description: '{{ doc("hourly_fee_agg_classic_surge_txn_count") }}'
+
       # Soroban
       - name: soroban_txn_count
         description: '{{ doc("hourly_fee_agg_soroban_txn_count") }}'
@@ -130,6 +133,9 @@ models:
 
       - name: soroban_total_effective_operation_count
         description: '{{ doc("hourly_fee_agg_soroban_total_effective_operation_count") }}'
+
+      - name: soroban_surge_txn_count
+        description: '{{ doc("hourly_fee_agg_soroban_surge_txn_count") }}'
 
       # Metadata
       - name: airflow_start_ts

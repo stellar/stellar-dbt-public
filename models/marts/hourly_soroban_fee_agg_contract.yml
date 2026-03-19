@@ -106,6 +106,9 @@ models:
       - name: total_resource_fee_refund
         description: '{{ doc("hourly_soroban_fee_agg_total_resource_fee_refund") }}'
 
+      - name: surge_txn_count
+        description: '{{ doc("hourly_soroban_fee_agg_surge_txn_count") }}'
+
       # Metadata
       - name: airflow_start_ts
         description: '{{ doc("ledger_fee_airflow_start_ts") }}'
