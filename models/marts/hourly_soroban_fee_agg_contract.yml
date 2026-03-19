@@ -18,6 +18,12 @@ models:
           tags: [schema_changes]
           config:
             severity: warn
+      - incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - hour_agg
+            - contract_id
+          date_column_name: "hour_agg"
+          greater_than_equal_to: "2 day"
     columns:
       - name: hour_agg
         description: '{{ doc("hourly_soroban_fee_agg_hour_agg") }}'
@@ -44,8 +50,8 @@ models:
       - name: failed_txn_count
         description: '{{ doc("hourly_soroban_fee_agg_failed_txn_count") }}'
 
-      - name: unique_callers
-        description: '{{ doc("hourly_soroban_fee_agg_unique_callers") }}'
+      - name: unique_fee_source_accounts
+        description: '{{ doc("hourly_soroban_fee_agg_unique_fee_source_accounts") }}'
         tests:
           - incremental_not_null:
               date_column_name: "hour_agg"

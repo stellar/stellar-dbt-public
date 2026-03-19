@@ -59,7 +59,7 @@ with
             -- Volume
             , count(*) as txn_count
             , countif(not successful) as failed_txn_count
-            , count(distinct fee_source_account) as unique_callers
+            , count(distinct fee_source_account) as unique_fee_source_accounts
 
             -- Fees (total)
             , sum(fee_charged) as total_fee_charged

@@ -34,9 +34,9 @@ Number of failed Soroban transactions for this contract in the hour. Failed tran
 
 {% enddocs %}
 
-{% docs hourly_soroban_fee_agg_unique_callers %}
+{% docs hourly_soroban_fee_agg_unique_fee_source_accounts %}
 
-Count of distinct accounts invoking this contract in the hour, derived as `coalesce(fee_account, txn_account)`. For fee-bump transactions this is the fee sponsor; for regular transactions this is the transaction originator. Useful for distinguishing between a single account hammering a contract vs. broad usage.
+Count of distinct fee-paying accounts for this contract in the hour, derived as `count(distinct coalesce(fee_account, txn_account))`. For fee-bump transactions this is the fee sponsor; for regular transactions this is the transaction originator. Useful for distinguishing between a single account driving a contract's fee volume vs. broad usage.
 
 {% enddocs %}
 

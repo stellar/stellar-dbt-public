@@ -70,6 +70,9 @@ with
             , sum(txn_operation_count) as total_raw_operation_count
 
             -- Classic
+            -- Lane-specific SUMs intentionally return NULL (not 0) when an account
+            -- has no activity in a lane. NULL means "no rows in this lane" while 0
+            -- would be ambiguous with "had rows but fees summed to zero".
             , countif(not is_soroban) as classic_txn_count
             , countif(not is_soroban and not successful) as classic_failed_txn_count
             , sum(case when not is_soroban then fee_charged end) as classic_total_fee_charged

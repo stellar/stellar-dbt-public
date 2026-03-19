@@ -18,6 +18,12 @@ models:
           tags: [schema_changes]
           config:
             severity: warn
+      - incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - hour_agg
+            - fee_source_account
+          date_column_name: "hour_agg"
+          greater_than_equal_to: "2 day"
     columns:
       - name: hour_agg
         description: '{{ doc("hourly_fee_agg_hour_agg") }}'
