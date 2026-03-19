@@ -2,7 +2,15 @@
     "materialized": "incremental",
     "unique_key": ["hour_agg", "contract_id"],
     "tags": ["fee_stats"],
-    "cluster_by": ["hour_agg", "contract_id"]
+    "cluster_by": ["hour_agg", "contract_id"],
+    "partition_by": {
+        "field": "hour_agg",
+        "data_type": "timestamp",
+        "granularity": "day"
+    },
+    "incremental_predicates": [
+        "DBT_INTERNAL_DEST.hour_agg >= timestamp(date_sub(date('" ~ var("batch_start_date") ~ "'), interval 1 day))"
+    ]
 } %}
 
 {{ config(
