@@ -36,7 +36,7 @@ Number of failed Soroban transactions for this contract in the hour. Failed tran
 
 {% docs hourly_soroban_fee_agg_unique_callers %}
 
-Count of distinct fee_account values invoking this contract in the hour. Useful for distinguishing between a single account hammering a contract vs. broad usage.
+Count of distinct accounts invoking this contract in the hour, derived as `coalesce(fee_account, txn_account)`. For fee-bump transactions this is the fee sponsor; for regular transactions this is the transaction originator. Useful for distinguishing between a single account hammering a contract vs. broad usage.
 
 {% enddocs %}
 
@@ -60,13 +60,13 @@ Maximum fee_charged across transactions invoking this contract in the hour.
 
 {% docs hourly_soroban_fee_agg_total_max_fee %}
 
-Sum of max_fee across transactions invoking this contract. Represents total willingness-to-pay.
+Sum of the effective fee ceiling — `coalesce(new_max_fee, max_fee)` — across transactions invoking this contract. For fee-bump transactions, `new_max_fee` is the actual ceiling used by the network; `max_fee` is the inner transaction's original max and is not the binding constraint. Represents total willingness-to-pay.
 
 {% enddocs %}
 
 {% docs hourly_soroban_fee_agg_fee_efficiency %}
 
-Ratio of total_fee_charged to total_max_fee. Values closer to 1.0 indicate callers are bidding close to what they actually pay; lower values indicate overbidding.
+Ratio of total_fee_charged to total_max_fee (where total_max_fee uses the effective ceiling via `coalesce(new_max_fee, max_fee)`). Bounded (0, 1]. Values closer to 1.0 indicate callers are bidding close to what they actually pay; lower values indicate overbidding.
 
 {% enddocs %}
 

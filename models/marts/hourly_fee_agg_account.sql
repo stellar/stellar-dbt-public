@@ -61,8 +61,11 @@ with
             , count(*) as txn_count
             , countif(not successful) as failed_txn_count
             , sum(fee_charged) as total_fee_charged
-            , sum(max_fee) as total_max_fee
-            , safe_divide(sum(fee_charged), sum(max_fee)) as fee_efficiency
+            -- Use coalesce(new_max_fee, max_fee) to get the effective fee ceiling.
+            -- For fee bump txns, new_max_fee is the actual ceiling (fee_charged never
+            -- exceeds it); max_fee is just the inner txn's original max and is misleading.
+            , sum(coalesce(new_max_fee, max_fee)) as total_max_fee
+            , safe_divide(sum(fee_charged), sum(coalesce(new_max_fee, max_fee))) as fee_efficiency
             , sum(effective_operation_count) as total_effective_operation_count
             , sum(txn_operation_count) as total_raw_operation_count
 
@@ -70,7 +73,7 @@ with
             , countif(not is_soroban) as classic_txn_count
             , countif(not is_soroban and not successful) as classic_failed_txn_count
             , sum(case when not is_soroban then fee_charged end) as classic_total_fee_charged
-            , sum(case when not is_soroban then max_fee end) as classic_total_max_fee
+            , sum(case when not is_soroban then coalesce(new_max_fee, max_fee) end) as classic_total_max_fee
             , sum(case when not is_soroban then effective_operation_count end) as classic_total_effective_operation_count
 
             -- Soroban

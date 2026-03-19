@@ -16,7 +16,10 @@ with
             timestamp_trunc(closed_at, hour) as hour_agg
             , contract_id
             , transaction_id
-            , fee_account
+            -- fee_account is only populated on fee bump transactions.
+            -- Coalesce with txn_account to capture the actual caller for
+            -- regular Soroban transactions (the vast majority of calls).
+            , coalesce(fee_account, txn_account) as fee_source_account
             , successful
             , fee_charged
             , max_fee
@@ -39,7 +42,7 @@ with
             -- (e.g. WASM uploads via invoke_host_function have no contract_id)
             contract_id is not null
             and closed_at < timestamp(date('{{ var("batch_end_date") }}'))
-        {% if is_incremental() %}
+            {% if is_incremental() %}
                 and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
         -- Deduplicate to transaction grain. Soroban txns currently have
@@ -56,14 +59,17 @@ with
             -- Volume
             , count(*) as txn_count
             , countif(not successful) as failed_txn_count
-            , count(distinct fee_account) as unique_callers
+            , count(distinct fee_source_account) as unique_callers
 
             -- Fees (total)
             , sum(fee_charged) as total_fee_charged
             , avg(fee_charged) as avg_fee_charged
             , max(fee_charged) as max_fee_charged
-            , sum(max_fee) as total_max_fee
-            , safe_divide(sum(fee_charged), sum(max_fee)) as fee_efficiency
+            -- Use coalesce(new_max_fee, max_fee) to get the effective fee ceiling.
+            -- For fee bump txns, new_max_fee is the actual ceiling (fee_charged never
+            -- exceeds it); max_fee is just the inner txn's original max and is misleading.
+            , sum(coalesce(new_max_fee, max_fee)) as total_max_fee
+            , safe_divide(sum(fee_charged), sum(coalesce(new_max_fee, max_fee))) as fee_efficiency
 
             -- Inclusion fee
             , sum(inclusion_fee_charged) as total_inclusion_fee_charged

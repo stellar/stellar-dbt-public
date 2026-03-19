@@ -40,13 +40,13 @@ Sum of fee_charged across all transactions (Classic + Soroban) for this fee_sour
 
 {% docs hourly_fee_agg_total_max_fee %}
 
-Sum of max_fee across all transactions for this fee_source_account in the hour. Represents total willingness-to-pay.
+Sum of the effective fee ceiling — `coalesce(new_max_fee, max_fee)` — across all transactions for this fee_source_account in the hour. For fee-bump transactions, `new_max_fee` is the actual ceiling used by the network; `max_fee` is the inner transaction's original max and is not the binding constraint. Represents total willingness-to-pay.
 
 {% enddocs %}
 
 {% docs hourly_fee_agg_fee_efficiency %}
 
-Ratio of total_fee_charged to total_max_fee. Values closer to 1.0 indicate the account is bidding close to what it actually pays; lower values indicate overbidding.
+Ratio of total_fee_charged to total_max_fee (where total_max_fee uses the effective ceiling via `coalesce(new_max_fee, max_fee)`). Bounded (0, 1]. Values closer to 1.0 indicate the account is bidding close to what it actually pays; lower values indicate overbidding.
 
 {% enddocs %}
 
@@ -82,7 +82,7 @@ Sum of fee_charged across Classic transactions for this fee_source_account. For 
 
 {% docs hourly_fee_agg_classic_total_max_fee %}
 
-Sum of max_fee across Classic transactions for this fee_source_account. Represents Classic willingness-to-pay.
+Sum of the effective fee ceiling — `coalesce(new_max_fee, max_fee)` — across Classic transactions for this fee_source_account. For fee-bump transactions, `new_max_fee` is the actual ceiling. Represents Classic willingness-to-pay.
 
 {% enddocs %}
 
