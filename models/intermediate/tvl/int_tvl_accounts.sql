@@ -62,7 +62,6 @@ with
             , sum(tvl) as accounts_tvl
         from daily_account_xlm_tvl
         group by 1, 2
-        order by 1
     )
 
 select *
