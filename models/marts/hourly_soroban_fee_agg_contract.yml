@@ -1,0 +1,114 @@
+version: 2
+
+models:
+  - name: hourly_soroban_fee_agg_contract
+    description: '{{ doc("hourly_soroban_fee_agg_contract") }}'
+    tests:
+      - dbt_utils.recency:
+          tags: [recency]
+          datepart: hour
+          field: hour_agg
+          interval: 6
+          config:
+            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
+      - incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - hour_agg
+            - contract_id
+          date_column_name: "hour_agg"
+          greater_than_equal_to: "2 day"
+    columns:
+      - name: hour_agg
+        description: '{{ doc("hourly_soroban_fee_agg_hour_agg") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: contract_id
+        description: '{{ doc("hourly_soroban_fee_agg_contract_id") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      # Volume
+      - name: txn_count
+        description: '{{ doc("hourly_soroban_fee_agg_txn_count") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: failed_txn_count
+        description: '{{ doc("hourly_soroban_fee_agg_failed_txn_count") }}'
+
+      - name: unique_fee_source_accounts
+        description: '{{ doc("hourly_soroban_fee_agg_unique_fee_source_accounts") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      # Fees (total)
+      - name: total_fee_charged
+        description: '{{ doc("hourly_soroban_fee_agg_total_fee_charged") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: avg_fee_charged
+        description: '{{ doc("hourly_soroban_fee_agg_avg_fee_charged") }}'
+
+      - name: max_fee_charged
+        description: '{{ doc("hourly_soroban_fee_agg_max_fee_charged") }}'
+
+      - name: total_max_fee
+        description: '{{ doc("hourly_soroban_fee_agg_total_max_fee") }}'
+
+      - name: fee_efficiency
+        description: '{{ doc("hourly_soroban_fee_agg_fee_efficiency") }}'
+
+      # Inclusion fee
+      - name: total_inclusion_fee_charged
+        description: '{{ doc("hourly_soroban_fee_agg_total_inclusion_fee_charged") }}'
+
+      - name: avg_inclusion_fee_charged
+        description: '{{ doc("hourly_soroban_fee_agg_avg_inclusion_fee_charged") }}'
+
+      - name: total_inclusion_fee_bid
+        description: '{{ doc("hourly_soroban_fee_agg_total_inclusion_fee_bid") }}'
+
+      # Resource fee
+      - name: total_resource_fee
+        description: '{{ doc("hourly_soroban_fee_agg_total_resource_fee") }}'
+
+      - name: avg_resource_fee
+        description: '{{ doc("hourly_soroban_fee_agg_avg_resource_fee") }}'
+
+      - name: total_non_refundable_resource_fee
+        description: '{{ doc("hourly_soroban_fee_agg_total_non_refundable_resource_fee") }}'
+
+      - name: total_refundable_resource_fee
+        description: '{{ doc("hourly_soroban_fee_agg_total_refundable_resource_fee") }}'
+
+      - name: total_rent_fee
+        description: '{{ doc("hourly_soroban_fee_agg_total_rent_fee") }}'
+
+      - name: total_resource_fee_refund
+        description: '{{ doc("hourly_soroban_fee_agg_total_resource_fee_refund") }}'
+
+      - name: surge_txn_count
+        description: '{{ doc("hourly_soroban_fee_agg_surge_txn_count") }}'
+
+      # Metadata
+      - name: airflow_start_ts
+        description: '{{ doc("ledger_fee_airflow_start_ts") }}'

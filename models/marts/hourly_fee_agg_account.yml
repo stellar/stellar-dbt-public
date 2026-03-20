@@ -1,0 +1,142 @@
+version: 2
+
+models:
+  - name: hourly_fee_agg_account
+    description: '{{ doc("hourly_fee_agg_account") }}'
+    tests:
+      - dbt_utils.recency:
+          tags: [recency]
+          datepart: hour
+          field: hour_agg
+          interval: 6
+          config:
+            enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
+          meta:
+            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - elementary.schema_changes:
+          tags: [schema_changes]
+          config:
+            severity: warn
+      - incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - hour_agg
+            - fee_source_account
+          date_column_name: "hour_agg"
+          greater_than_equal_to: "2 day"
+    columns:
+      - name: hour_agg
+        description: '{{ doc("hourly_fee_agg_hour_agg") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: fee_source_account
+        description: '{{ doc("hourly_fee_agg_fee_source_account") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      # General
+      - name: txn_count
+        description: '{{ doc("hourly_fee_agg_txn_count") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: failed_txn_count
+        description: '{{ doc("hourly_fee_agg_failed_txn_count") }}'
+
+      - name: total_fee_charged
+        description: '{{ doc("hourly_fee_agg_total_fee_charged") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: total_max_fee
+        description: '{{ doc("hourly_fee_agg_total_max_fee") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: fee_efficiency
+        description: '{{ doc("hourly_fee_agg_fee_efficiency") }}'
+
+      - name: total_effective_operation_count
+        description: '{{ doc("hourly_fee_agg_total_effective_operation_count") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      - name: total_raw_operation_count
+        description: '{{ doc("hourly_fee_agg_total_raw_operation_count") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "hour_agg"
+              greater_than_equal_to: "2 day"
+
+      # Classic
+      - name: classic_txn_count
+        description: '{{ doc("hourly_fee_agg_classic_txn_count") }}'
+
+      - name: classic_failed_txn_count
+        description: '{{ doc("hourly_fee_agg_classic_failed_txn_count") }}'
+
+      - name: classic_total_fee_charged
+        description: '{{ doc("hourly_fee_agg_classic_total_fee_charged") }}'
+
+      - name: classic_total_max_fee
+        description: '{{ doc("hourly_fee_agg_classic_total_max_fee") }}'
+
+      - name: classic_total_effective_operation_count
+        description: '{{ doc("hourly_fee_agg_classic_total_effective_operation_count") }}'
+
+      - name: classic_surge_txn_count
+        description: '{{ doc("hourly_fee_agg_classic_surge_txn_count") }}'
+
+      # Soroban
+      - name: soroban_txn_count
+        description: '{{ doc("hourly_fee_agg_soroban_txn_count") }}'
+
+      - name: soroban_failed_txn_count
+        description: '{{ doc("hourly_fee_agg_soroban_failed_txn_count") }}'
+
+      - name: soroban_total_fee_charged
+        description: '{{ doc("hourly_fee_agg_soroban_total_fee_charged") }}'
+
+      - name: soroban_total_inclusion_fee_charged
+        description: '{{ doc("hourly_fee_agg_soroban_total_inclusion_fee_charged") }}'
+
+      - name: soroban_total_inclusion_fee_bid
+        description: '{{ doc("hourly_fee_agg_soroban_total_inclusion_fee_bid") }}'
+
+      - name: soroban_total_resource_fee
+        description: '{{ doc("hourly_fee_agg_soroban_total_resource_fee") }}'
+
+      - name: soroban_total_non_refundable_resource_fee
+        description: '{{ doc("hourly_fee_agg_soroban_total_non_refundable_resource_fee") }}'
+
+      - name: soroban_total_refundable_resource_fee
+        description: '{{ doc("hourly_fee_agg_soroban_total_refundable_resource_fee") }}'
+
+      - name: soroban_total_rent_fee
+        description: '{{ doc("hourly_fee_agg_soroban_total_rent_fee") }}'
+
+      - name: soroban_total_resource_fee_refund
+        description: '{{ doc("hourly_fee_agg_soroban_total_resource_fee_refund") }}'
+
+      - name: soroban_total_effective_operation_count
+        description: '{{ doc("hourly_fee_agg_soroban_total_effective_operation_count") }}'
+
+      - name: soroban_surge_txn_count
+        description: '{{ doc("hourly_fee_agg_soroban_surge_txn_count") }}'
+
+      # Metadata
+      - name: airflow_start_ts
+        description: '{{ doc("ledger_fee_airflow_start_ts") }}'
