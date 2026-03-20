@@ -46,7 +46,7 @@ models:
     staging:
       +materialized: view # how the staging models will be materialized
     intermediate:
-      +materialized: view # how the intermediate models will be materialized
+      +materialized: table # how the intermediate models will be materialized
     marts:
       +materialized: table # how the mart models will be materialized
     snapshots:
