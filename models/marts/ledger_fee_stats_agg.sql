@@ -1,7 +1,7 @@
 {% set meta_config = {
     "materialized": "incremental",
     "unique_key": ["ledger_sequence"],
-    "tags": ["fee_stats"],
+    "tags": ["hourly_fee_stats"],
     "cluster_by": ["day_agg", "ledger_sequence"]
 } %}
 
