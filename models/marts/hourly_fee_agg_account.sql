@@ -1,7 +1,7 @@
 {% set meta_config = {
     "materialized": "incremental",
     "unique_key": ["hour_agg", "fee_source_account"],
-    "tags": ["fee_stats"],
+    "tags": ["hourly_fee_stats"],
     "cluster_by": ["hour_agg", "fee_source_account"],
     "partition_by": {
         "field": "hour_agg",
