@@ -320,7 +320,7 @@ Timestamp in UTC when the ledger closed and was committed to the network. Source
 
 {% docs ledger_fee_fee_pool %}
 
-The cumulative fee pool balance (in stroops) as of this ledger's close, sourced from history_ledgers. This is a running total of all transaction fees ever collected by the network, not the fees for this individual ledger. Since inflation was disabled in Protocol 12 (October 2019), this value is monotonically increasing.
+The cumulative fee pool balance (in stroops) as of this ledger's close, sourced from history_ledgers. This is a running total of all transaction fees ever collected by the network, not the fees for this individual ledger.
 
 {% enddocs %}
 
