@@ -115,8 +115,8 @@ with
                 , count(*)
             ) as total_pct_ledgers_in_surge
 
-            -- Ledger info
-            , sum(fee_pool) as fee_pool
+            -- Ledger info (fee_pool is a cumulative balance, not a per-ledger amount)
+            , max_by(fee_pool, ledger_sequence) as fee_pool
 
             -- Metadata
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
