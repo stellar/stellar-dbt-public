@@ -56,7 +56,7 @@ Total number of lumens in circulation
   {% enddocs %}
 
 {% docs fee_pool %}
-The sum of all transaction fees
+The cumulative sum of all transaction fees (in stroops) ever collected by the network as of this ledger's close. This is a running balance stored in the ledger header, not the fees for a single ledger.
 
 - Required Field
   {% enddocs %}
