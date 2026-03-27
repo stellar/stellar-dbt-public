@@ -92,6 +92,6 @@ Percentage of all ledgers for the day where at least one transaction (Classic or
 
 {% docs daily_fee_fee_pool %}
 
-Sum of fee_pool across all ledgers for the day. Each ledger's fee_pool is the sum of all transaction fees in that ledger, so this daily total represents all fees collected across the network for the day.
+The cumulative fee pool balance (in stroops) at the end of the day, taken from the last ledger that closed on that day. The fee pool is a protocol-level accumulator in the ledger header that tracks all transaction fees ever collected by the network. Since inflation was disabled in Protocol 12 (October 2019), no mechanism exists to withdraw from the fee pool, so this value is monotonically increasing. To see daily fees collected, use total_fee_charged instead.
 
 {% enddocs %}
