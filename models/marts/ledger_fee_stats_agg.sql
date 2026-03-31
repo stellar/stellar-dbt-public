@@ -40,9 +40,9 @@ with
             , coalesce(resource_fee, 0) > 0 as is_soroban
         from {{ ref('stg_history_transactions') }}
         where
-            batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
+            batch_run_date < datetime('{{ var("batch_end_date") }}') + interval 1 day
             {% if is_incremental() %}
-                and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
+                and batch_run_date >= datetime('{{ var("batch_start_date") }}') - interval 1 day
             {% endif %}
     )
 
@@ -166,9 +166,9 @@ with
             , fee_pool
         from {{ ref('stg_history_ledgers') }}
         where
-            batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
+            batch_run_date < datetime('{{ var("batch_end_date") }}') + interval 1 day
             {% if is_incremental() %}
-                and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
+                and batch_run_date >= datetime('{{ var("batch_start_date") }}') - interval 1 day
             {% endif %}
     )
 
