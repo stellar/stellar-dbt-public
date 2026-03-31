@@ -4,11 +4,12 @@ models:
   - name: int_reflector_prices__fex
     description: '{{ doc("int_reflector_prices__fex") }}'
     tests:
-      - dbt_utils.recency:
+      - recency:
           tags: [recency]
           datepart: day
           field: day
           interval: 2
+          timestamp_val: '{{ var("batch_end_date") }}'
           ignore_time_component: true
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
