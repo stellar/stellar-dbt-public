@@ -47,7 +47,7 @@ with
             , rent_fee_charged
         from {{ ref('stg_history_transactions') }}
         where
-            closed_at < timestamp(date('{{ var("batch_end_date") }}'))
+            closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
             {% if is_incremental() %}
                 and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}

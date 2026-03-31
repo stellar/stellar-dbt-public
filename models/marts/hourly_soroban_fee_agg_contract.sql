@@ -49,7 +49,7 @@ with
             -- Exclude Soroban operations not tied to a specific contract
             -- (e.g. WASM uploads via invoke_host_function have no contract_id)
             contract_id is not null
-            and closed_at < timestamp(date('{{ var("batch_end_date") }}'))
+            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
             {% if is_incremental() %}
                 and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
