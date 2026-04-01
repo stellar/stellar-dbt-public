@@ -4,11 +4,12 @@ models:
   - name: token_transfers
     description: "Curated and enriched token transfer events across the entire Stellar network"
     tests:
-      - dbt_utils.recency:
+      - recency:
           tags: [recency]
           datepart: day
           field: closed_at
           interval: 1
+          timestamp_val: '{{ var("batch_end_date") }}'
           ignore_time_component: true
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'

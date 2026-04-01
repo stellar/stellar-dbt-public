@@ -4,11 +4,12 @@ models:
   - name: account_balances__daily_agg
     description: '{{ doc("account_balances__daily_agg") }}'
     tests:
-      - dbt_utils.recency:
+      - recency:
           tags: [recency]
           datepart: day
           field: day
           interval: 2
+          timestamp_val: '{{ var("batch_end_date") }}'
           config:
             # enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
             enabled: false

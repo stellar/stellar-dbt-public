@@ -3,10 +3,11 @@ version: 2
 models:
   - name: stg_token_transfers_raw
     tests:
-      - dbt_utils.recency:
+      - recency:
           datepart: hour
           field: cast(closed_at as timestamp)
           interval: '{{ 1 if target.name == "prod" else 24 }}'
+          timestamp_val: '{{ var("batch_end_date") }}'
           config:
             enabled: '{{ target.name != "jenkins" }}'
           meta:

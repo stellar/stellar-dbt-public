@@ -3,10 +3,11 @@ version: 2
 models:
   - name: stg_restored_key
     tests:
-      - dbt_utils.recency:
+      - recency:
           datepart: day
           field: cast(closed_at as timestamp)
           interval: 2
+          timestamp_val: '{{ var("batch_end_date") }}'
           config:
             enabled: '{{ target.name != "jenkins" }}'
           meta:
