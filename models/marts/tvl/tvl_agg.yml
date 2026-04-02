@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: tvl_agg
-    description: "This table aggregates TVL from accounts and trustlines to calculate total TVL"
+    description: "This table aggregates TVL from accounts, trustlines, and liquidity pools to calculate total TVL"
     tests:
       - elementary.schema_changes:
           tags: [schema_changes]
@@ -54,6 +54,13 @@ models:
 
       - name: trustlines_tvl
         description: '{{ doc("trustlines_tvl") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: liquidity_pools_tvl
+        description: '{{ doc("liquidity_pools_tvl") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "day"

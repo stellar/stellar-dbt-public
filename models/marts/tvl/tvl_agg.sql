@@ -33,21 +33,40 @@ with
         group by 1, 2, 3, 4
     )
 
+    , liquidity_pools_tvl as (
+        select
+            day
+            , asset_type
+            , asset_code
+            , asset_issuer
+            , sum(liquidity_pool_balance) as liquidity_pools_tvl
+        from {{ ref('asset_balances__daily_agg') }}
+        group by 1, 2, 3, 4
+    )
+
     , combined as (
         select
-            coalesce(a.day, t.day) as day
-            , coalesce(a.asset_type, t.asset_type) as asset_type
-            , coalesce(a.asset_code, t.asset_code) as asset_code
-            , coalesce(a.asset_issuer, t.asset_issuer) as asset_issuer
+            coalesce(a.day, t.day, l.day) as day
+            , coalesce(a.asset_type, t.asset_type, l.asset_type) as asset_type
+            , coalesce(a.asset_code, t.asset_code, l.asset_code) as asset_code
+            , coalesce(a.asset_issuer, t.asset_issuer, l.asset_issuer) as asset_issuer
             , coalesce(a.accounts_tvl, 0) as accounts_tvl
             , coalesce(t.trustlines_tvl, 0) as trustlines_tvl
-            , coalesce(a.accounts_tvl, 0) + coalesce(t.trustlines_tvl, 0) as total_tvl
+            , coalesce(l.liquidity_pools_tvl, 0) as liquidity_pools_tvl
+            , coalesce(a.accounts_tvl, 0)
+            + coalesce(t.trustlines_tvl, 0)
+            + coalesce(l.liquidity_pools_tvl, 0) as total_tvl
         from accounts_tvl as a
         full outer join trustlines_tvl as t
             on a.day = t.day
             and a.asset_type = t.asset_type
             and a.asset_code = t.asset_code
             and a.asset_issuer = t.asset_issuer
+        full outer join liquidity_pools_tvl as l
+            on coalesce(a.day, t.day) = l.day
+            and coalesce(a.asset_type, t.asset_type) = l.asset_type
+            and coalesce(a.asset_code, t.asset_code) = l.asset_code
+            and coalesce(a.asset_issuer, t.asset_issuer) = l.asset_issuer
     )
 
 select *
