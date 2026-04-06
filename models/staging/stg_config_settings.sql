@@ -49,6 +49,19 @@ with
             , starting_eviction_scan_level
             , ledger_max_tx_count
             , bucket_list_size_window
+            -- P23 config settings
+            , ledger_max_dependent_tx_clusters
+            , tx_max_footprint_entries
+            , ledger_target_close_time_milliseconds
+            , nomination_timeout_initial_milliseconds
+            , nomination_timeout_increment_milliseconds
+            , ballot_timeout_initial_milliseconds
+            , ballot_timeout_increment_milliseconds
+            -- P26 CAP-77 frozen ledger keys
+            , frozen_ledger_keys
+            , frozen_ledger_keys_delta
+            , freeze_bypass_txs
+            , freeze_bypass_txs_delta
             , last_modified_ledger
             , ledger_entry_change
             , ledger_sequence

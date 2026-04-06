@@ -146,6 +146,39 @@ models:
       - name: bucket_list_size_window
         description: '{{ doc("bucket_list_size_window") }}'
 
+      - name: ledger_max_dependent_tx_clusters
+        description: '{{ doc("ledger_max_dependent_tx_clusters") }}'
+
+      - name: tx_max_footprint_entries
+        description: '{{ doc("tx_max_footprint_entries") }}'
+
+      - name: ledger_target_close_time_milliseconds
+        description: '{{ doc("ledger_target_close_time_milliseconds") }}'
+
+      - name: nomination_timeout_initial_milliseconds
+        description: '{{ doc("nomination_timeout_initial_milliseconds") }}'
+
+      - name: nomination_timeout_increment_milliseconds
+        description: '{{ doc("nomination_timeout_increment_milliseconds") }}'
+
+      - name: ballot_timeout_initial_milliseconds
+        description: '{{ doc("ballot_timeout_initial_milliseconds") }}'
+
+      - name: ballot_timeout_increment_milliseconds
+        description: '{{ doc("ballot_timeout_increment_milliseconds") }}'
+
+      - name: frozen_ledger_keys
+        description: '{{ doc("frozen_ledger_keys") }}'
+
+      - name: frozen_ledger_keys_delta
+        description: '{{ doc("frozen_ledger_keys_delta") }}'
+
+      - name: freeze_bypass_txs
+        description: '{{ doc("freeze_bypass_txs") }}'
+
+      - name: freeze_bypass_txs_delta
+        description: '{{ doc("freeze_bypass_txs_delta") }}'
+
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
         tests:

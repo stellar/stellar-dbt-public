@@ -26,6 +26,13 @@ Config setting id types
 | 11 |ConfigSettingIdConfigSettingContractExecutionLanes|
 | 12 |ConfigSettingIdConfigSettingBucketlistSizeWindow|
 | 13 |ConfigSettingIdConfigSettingEvictionIterator|
+| 14 |ConfigSettingIdConfigSettingContractParallelCompute|
+| 15 |ConfigSettingIdConfigSettingContractLedgerCostExt|
+| 16 |ConfigSettingIdConfigSettingContractScpTiming|
+| 17 |ConfigSettingIdConfigSettingFrozenLedgerKeys|
+| 18 |ConfigSettingIdConfigSettingFrozenLedgerKeysDelta|
+| 19 |ConfigSettingIdConfigSettingFreezeBypassTxs|
+| 20 |ConfigSettingIdConfigSettingFreezeBypassTxsDelta|
 
 {% enddocs %}
 
@@ -207,4 +214,48 @@ The minimum number of entries for which a persisted entry can live on the ledger
 
 {% docs max_entries_to_archive %}
 Maximum number of entries that emit archival meta in a single ledger
+{% enddocs %}
+
+{% docs ledger_max_dependent_tx_clusters %}
+Maximum number of dependent transaction clusters per ledger (P23 parallel compute setting)
+{% enddocs %}
+
+{% docs tx_max_footprint_entries %}
+Maximum number of footprint entries per transaction (P23 ledger cost extension)
+{% enddocs %}
+
+{% docs ledger_target_close_time_milliseconds %}
+Target ledger close time in milliseconds (P23 SCP timing setting)
+{% enddocs %}
+
+{% docs nomination_timeout_initial_milliseconds %}
+Initial SCP nomination timeout in milliseconds (P23 SCP timing setting)
+{% enddocs %}
+
+{% docs nomination_timeout_increment_milliseconds %}
+SCP nomination timeout increment in milliseconds (P23 SCP timing setting)
+{% enddocs %}
+
+{% docs ballot_timeout_initial_milliseconds %}
+Initial SCP ballot timeout in milliseconds (P23 SCP timing setting)
+{% enddocs %}
+
+{% docs ballot_timeout_increment_milliseconds %}
+SCP ballot timeout increment in milliseconds (P23 SCP timing setting)
+{% enddocs %}
+
+{% docs frozen_ledger_keys %}
+JSON array of base64-encoded ledger keys frozen by validator governance (P26 CAP-77)
+{% enddocs %}
+
+{% docs frozen_ledger_keys_delta %}
+JSON object with keys_to_freeze and keys_to_unfreeze arrays of base64-encoded ledger keys (P26 CAP-77)
+{% enddocs %}
+
+{% docs freeze_bypass_txs %}
+JSON array of hex-encoded transaction hashes that bypass frozen key restrictions (P26 CAP-77)
+{% enddocs %}
+
+{% docs freeze_bypass_txs_delta %}
+JSON object with add_txs and remove_txs arrays of hex-encoded transaction hashes (P26 CAP-77)
 {% enddocs %}
