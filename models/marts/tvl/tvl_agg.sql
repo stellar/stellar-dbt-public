@@ -75,7 +75,7 @@ with
             , combined.asset_type
             , combined.asset_code
             , combined.asset_issuer
-            , a.contract_id
+            , a.asset_contract_id as contract_id
             , combined.accounts_tvl
             , combined.trustlines_tvl
             , combined.liquidity_pools_tvl
