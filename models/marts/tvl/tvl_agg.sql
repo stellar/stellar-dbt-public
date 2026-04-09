@@ -69,5 +69,23 @@ with
             and coalesce(a.asset_issuer, t.asset_issuer) = l.asset_issuer
     )
 
+    , final as (
+        select
+            combined.day
+            , combined.asset_type
+            , combined.asset_code
+            , combined.asset_issuer
+            , a.contract_id
+            , combined.accounts_tvl
+            , combined.trustlines_tvl
+            , combined.liquidity_pools_tvl
+            , combined.total_tvl
+        from combined
+        left join {{ ref('stg_assets') }} as a
+            on combined.asset_type = a.asset_type
+            and combined.asset_code = a.asset_code
+            and combined.asset_issuer = a.asset_issuer
+    )
+
 select *
-from combined
+from final
