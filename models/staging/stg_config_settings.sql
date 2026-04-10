@@ -59,9 +59,11 @@ with
             , ballot_timeout_increment_milliseconds
             -- P26 CAP-77 frozen ledger keys
             , frozen_ledger_keys
-            , frozen_ledger_keys_delta
+            , frozen_ledger_keys_to_freeze
+            , frozen_ledger_keys_to_unfreeze
             , freeze_bypass_txs
-            , freeze_bypass_txs_delta
+            , freeze_bypass_txs_to_add
+            , freeze_bypass_txs_to_remove
             , last_modified_ledger
             , ledger_entry_change
             , ledger_sequence
