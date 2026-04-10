@@ -245,17 +245,25 @@ SCP ballot timeout increment in milliseconds (P23 SCP timing setting)
 {% enddocs %}
 
 {% docs frozen_ledger_keys %}
-JSON array of base64-encoded ledger keys frozen by validator governance (P26 CAP-77)
+Array of base64-encoded ledger keys frozen by validator governance (P26 CAP-77)
 {% enddocs %}
 
-{% docs frozen_ledger_keys_delta %}
-JSON object with keys_to_freeze and keys_to_unfreeze arrays of base64-encoded ledger keys (P26 CAP-77)
+{% docs frozen_ledger_keys_to_freeze %}
+Array of base64-encoded ledger keys to freeze in this delta update (P26 CAP-77)
+{% enddocs %}
+
+{% docs frozen_ledger_keys_to_unfreeze %}
+Array of base64-encoded ledger keys to unfreeze in this delta update (P26 CAP-77)
 {% enddocs %}
 
 {% docs freeze_bypass_txs %}
-JSON array of hex-encoded transaction hashes that bypass frozen key restrictions (P26 CAP-77)
+Array of hex-encoded transaction hashes that bypass frozen key restrictions (P26 CAP-77)
 {% enddocs %}
 
-{% docs freeze_bypass_txs_delta %}
-JSON object with add_txs and remove_txs arrays of hex-encoded transaction hashes (P26 CAP-77)
+{% docs freeze_bypass_txs_to_add %}
+Array of hex-encoded transaction hashes to add to the freeze bypass list (P26 CAP-77)
+{% enddocs %}
+
+{% docs freeze_bypass_txs_to_remove %}
+Array of hex-encoded transaction hashes to remove from the freeze bypass list (P26 CAP-77)
 {% enddocs %}

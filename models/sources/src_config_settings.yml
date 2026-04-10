@@ -174,14 +174,20 @@ sources:
           - name: frozen_ledger_keys
             description: '{{ doc("frozen_ledger_keys") }}'
 
-          - name: frozen_ledger_keys_delta
-            description: '{{ doc("frozen_ledger_keys_delta") }}'
+          - name: frozen_ledger_keys_to_freeze
+            description: '{{ doc("frozen_ledger_keys_to_freeze") }}'
+
+          - name: frozen_ledger_keys_to_unfreeze
+            description: '{{ doc("frozen_ledger_keys_to_unfreeze") }}'
 
           - name: freeze_bypass_txs
             description: '{{ doc("freeze_bypass_txs") }}'
 
-          - name: freeze_bypass_txs_delta
-            description: '{{ doc("freeze_bypass_txs_delta") }}'
+          - name: freeze_bypass_txs_to_add
+            description: '{{ doc("freeze_bypass_txs_to_add") }}'
+
+          - name: freeze_bypass_txs_to_remove
+            description: '{{ doc("freeze_bypass_txs_to_remove") }}'
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
