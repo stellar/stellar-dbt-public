@@ -41,6 +41,9 @@ with
             , asset_issuer
             , sum(liquidity_pool_balance) as liquidity_pools_tvl
         from {{ ref('asset_balances__daily_agg') }}
+        where
+            asset_code is not null
+            and asset_issuer is not null
         group by 1, 2, 3, 4
     )
 
