@@ -12,6 +12,10 @@ The total value locked (TVL) denominated in raw asset value (token amounts) for 
 The total value locked (TVL) denominated in raw asset value (token amounts) for a given date. Aggregated across trustlines selling liabilities
 {% enddocs %}
 
+{% docs liquidity_pools_tvl %}
+The total value locked (TVL) denominated in raw asset value (token amounts) for a given date. Aggregated across liquidity pool balances (AMM).
+{% enddocs %}
+
 {% docs total_tvl %}
-The total value locked (TVL) denominated in raw asset value (token amounts) for a given date. Aggregated across relevant ledger entries (e.g., accounts, trustlines).
+The total value locked (TVL) denominated in raw asset value (token amounts) for a given date. Aggregated across relevant ledger entries (e.g., accounts, trustlines, liquidity pools).
 {% enddocs %}

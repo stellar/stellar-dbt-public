@@ -2,17 +2,18 @@ version: 2
 
 models:
   - name: tvl_agg
-    description: "This table aggregates TVL from accounts and trustlines to calculate total TVL"
+    description: "This table aggregates TVL from accounts, trustlines, and liquidity pools to calculate total TVL"
     tests:
       - elementary.schema_changes:
           tags: [schema_changes]
           config:
             severity: warn
-      - dbt_utils.recency:
+      - recency:
           tags: [recency]
           datepart: day
           field: day
           interval: 2
+          timestamp_val: '{{ var("batch_end_date") }}'
           ignore_time_component: true
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
@@ -53,6 +54,13 @@ models:
 
       - name: trustlines_tvl
         description: '{{ doc("trustlines_tvl") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
+
+      - name: liquidity_pools_tvl
+        description: '{{ doc("liquidity_pools_tvl") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "day"
