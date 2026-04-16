@@ -10,30 +10,6 @@ These settings are set at the network level and requires a validator vote to upd
 {% docs config_setting_id %}
 Config setting id types
 
-| id | Type|
-|-|-|
-| 0  |ConfigSettingIdConfigSettingContractMaxSizeBytes|
-| 1  |ConfigSettingIdConfigSettingContractComputeV0|
-| 2  |ConfigSettingIdConfigSettingContractLedgerCostV0|
-| 3  |ConfigSettingIdConfigSettingContractHistoricalDataV0|
-| 4  |ConfigSettingIdConfigSettingContractEventsV0|
-| 5  |ConfigSettingIdConfigSettingContractBandwidthV0|
-| 6  |ConfigSettingIdConfigSettingContractCostParamsCpuInstructions|
-| 7  |ConfigSettingIdConfigSettingContractCostParamsMemoryBytes|
-| 8  |ConfigSettingIdConfigSettingContractDataKeySizeBytes|
-| 9  |ConfigSettingIdConfigSettingContractDataEntrySizeBytes|
-| 10 |ConfigSettingIdConfigSettingStateTtl|
-| 11 |ConfigSettingIdConfigSettingContractExecutionLanes|
-| 12 |ConfigSettingIdConfigSettingBucketlistSizeWindow|
-| 13 |ConfigSettingIdConfigSettingEvictionIterator|
-| 14 |ConfigSettingIdConfigSettingContractParallelCompute|
-| 15 |ConfigSettingIdConfigSettingContractLedgerCostExt|
-| 16 |ConfigSettingIdConfigSettingContractScpTiming|
-| 17 |ConfigSettingIdConfigSettingFrozenLedgerKeys|
-| 18 |ConfigSettingIdConfigSettingFrozenLedgerKeysDelta|
-| 19 |ConfigSettingIdConfigSettingFreezeBypassTxs|
-| 20 |ConfigSettingIdConfigSettingFreezeBypassTxsDelta|
-
 {% enddocs %}
 
 {% docs contract_max_size_bytes %}
