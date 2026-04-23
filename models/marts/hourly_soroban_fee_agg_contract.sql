@@ -46,9 +46,15 @@ with
             , rent_fee_charged
         from {{ ref('enriched_history_operations_soroban') }}
         where
-            -- Exclude Soroban operations not tied to a specific contract
-            -- (e.g. WASM uploads via invoke_host_function have no contract_id)
+            -- Exclude Soroban operations not tied to a specific contract:
+            --   * invoke_host_function / upload_wasm — contract_id is NULL
+            --     (no contract exists yet; the artifact is a ContractCode entry)
+            --   * extend_footprint_ttl / restore_footprint whose footprint
+            --     contains only ContractCode / TTL entries (no ContractData) —
+            --     stellar-etl emits contract_id as '' for these. Both NULL and
+            --     '' must be filtered to keep this mart strictly per-contract.
             contract_id is not null
+            and contract_id != ''
             and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
             {% if is_incremental() %}
                 and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
