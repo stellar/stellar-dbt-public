@@ -8,7 +8,7 @@ Strictly per-contract: Soroban operations without a resolvable contract_id are e
 * `invoke_host_function` / `upload_wasm` — no contract exists yet; the uploaded artifact is a `ContractCode` entry identified by its Wasm hash, not a contract address. stellar-etl emits `contract_id = NULL` for these.
 * `extend_footprint_ttl` and `restore_footprint` whose footprint touches only `ContractCode` / TTL entries (no `ContractData`) — stellar-etl emits `contract_id = ''` because there is no contract to resolve against. Instances of the same op types whose footprint *does* touch `ContractData` populate `contract_id` normally and are included.
 
-Because these rows are excluded, totals here do not represent total network-wide Soroban fees; use the network-level Soroban fee aggregation for that.
+Because these rows are excluded, totals here do not represent total network-wide Soroban fees; use the `daily_fee_stats_agg` or `ledger_fee_stats_agg` for full fee agg.
 
 Deduplicated to transaction grain to prevent double-counting fees if Soroban transactions support multiple operations in the future.
 
