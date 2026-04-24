@@ -67,6 +67,19 @@ with
             , cfg.batch_id
             , cfg.batch_run_date
             , cfg.ledger_sequence
+            , cfg.ledger_max_dependent_tx_clusters
+            , cfg.tx_max_footprint_entries
+            , cfg.ledger_target_close_time_milliseconds
+            , cfg.nomination_timeout_initial_milliseconds
+            , cfg.nomination_timeout_increment_milliseconds
+            , cfg.ballot_timeout_initial_milliseconds
+            , cfg.ballot_timeout_increment_milliseconds
+            , cfg.frozen_ledger_keys
+            , cfg.frozen_ledger_keys_to_freeze
+            , cfg.frozen_ledger_keys_to_unfreeze
+            , cfg.freeze_bypass_txs
+            , cfg.freeze_bypass_txs_to_add
+            , cfg.freeze_bypass_txs_to_remove
         from {{ ref('stg_config_settings') }} as cfg
         where
             true
@@ -141,5 +154,18 @@ select
     , deleted
     , batch_id
     , batch_run_date
+    , ledger_max_dependent_tx_clusters
+    , tx_max_footprint_entries
+    , ledger_target_close_time_milliseconds
+    , nomination_timeout_initial_milliseconds
+    , nomination_timeout_increment_milliseconds
+    , ballot_timeout_initial_milliseconds
+    , ballot_timeout_increment_milliseconds
+    , frozen_ledger_keys
+    , frozen_ledger_keys_to_freeze
+    , frozen_ledger_keys_to_unfreeze
+    , freeze_bypass_txs
+    , freeze_bypass_txs_to_add
+    , freeze_bypass_txs_to_remove
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
 from current_settings
