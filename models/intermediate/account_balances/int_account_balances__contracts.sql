@@ -130,10 +130,12 @@ select
     agg.day
     , agg.account_id
     , agg.contract_id
-    , a.asset_type
+    , coalesce(nullif(a.asset_type, ''), 'contract') as asset_type
     , a.asset_issuer
-    , a.asset_code
+    , coalesce(nullif(a.asset_code, ''), metadata.symbol) as asset_code
     , agg.balance
 from agg
 left join {{ ref('stg_assets') }} as a
     on agg.contract_id = a.asset_contract_id
+left join {{ ref('int_asset_metadata') }} as metadata
+    on agg.contract_id = metadata.contract_id
