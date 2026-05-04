@@ -26,7 +26,6 @@ vars:
   dbt_project_evaluator:
     documentation_coverage_target: 50
     test_coverage_target: 50
-    exclude_packages: ["elementary"]
 
   airflow_start_timestamp: "{{ env_var('AIRFLOW_START_TIMESTAMP', '2000-01-01') }}"
   # overridden in specific Airflow tasks
@@ -51,11 +50,6 @@ models:
       +materialized: table # how the mart models will be materialized
     snapshots:
       +materialized: incremental_snapshot
-
-  elementary:
-    +schema: elementary
-    +docs:
-      show: false
 
   dbt_project_evaluator:
     +dataset: dbt_project_evaluator
