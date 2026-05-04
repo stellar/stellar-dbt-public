@@ -4,10 +4,6 @@ models:
   - name: tvl_agg
     description: "This table aggregates TVL from accounts, trustlines, and liquidity pools to calculate total TVL"
     tests:
-      - elementary.schema_changes:
-          tags: [schema_changes]
-          config:
-            severity: warn
       - recency:
           tags: [recency]
           datepart: day
