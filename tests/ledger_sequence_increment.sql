@@ -1,8 +1,8 @@
 -- Strictly use enabled condition to restrict singular tests from running in dbt build tasks.
 -- https://github.com/stellar/stellar-dbt-public/pull/95
 {{ config(
-    severity="warn"
-    , tags=["singular_test"]
+    severity="error"
+    , tags=["validate_history_tables"]
     , enabled=var("is_singular_airflow_task") == "true"
     )
 }}
@@ -15,7 +15,8 @@ with
             , closed_at
             , max(sequence) as max_sequence
         from {{ ref('stg_history_ledgers') }}
-        where closed_at > TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 DAY )
+        where closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
+            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
         group by ledger_id, batch_id, closed_at
     )
 
