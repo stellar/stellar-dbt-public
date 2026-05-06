@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: int_contract_asset_codes
+    description: "Maps each known contract_id to a non-null asset_code by coalescing the SAC asset_code from stg_assets, the SEP-41 symbol from int_asset_metadata, and the contract_id itself as a final fallback. Provides a single source of truth for contract-token asset_code lookups so downstream models do not need to bucket custom contract tokens under null."
+    columns:
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+        tests:
+          - not_null
+          - unique
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+        tests:
+          - not_null
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+
+      - name: symbol
+        description: '{{ doc("contract_symbol") }}'
+
+      - name: name
+        description: '{{ doc("contract_name") }}'
+
+      - name: decimal
+        description: '{{ doc("decimal_precision") }}'
+
+      - name: asset_code_source
+        description: "Indicates which source the asset_code came from: 'sac' = asset_code from a Stellar Asset Contract token transfer event, 'metadata' = SEP-41 symbol read from contract storage, 'contract_id' = neither was available, asset_code falls back to the contract_id itself."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["sac", "metadata", "contract_id"]

@@ -135,5 +135,5 @@ select
     , a.asset_code
     , agg.balance
 from agg
-left join {{ ref('stg_assets') }} as a
-    on agg.contract_id = a.asset_contract_id
+left join {{ ref('int_contract_asset_codes') }} as a
+    on agg.contract_id = a.contract_id

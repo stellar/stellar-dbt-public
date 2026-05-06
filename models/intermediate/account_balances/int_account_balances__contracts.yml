@@ -26,6 +26,10 @@ models:
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
+        tests:
+          - stellar_dbt_public.incremental_not_null:
+              date_column_name: "day"
+              greater_than_equal_to: "2 day"
 
       - name: contract_id
         description: '{{ doc("contract_id") }}'
@@ -33,6 +37,12 @@ models:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "day"
               greater_than_equal_to: "2 day"
+          # Regression test for stellar/stellar-dbt#677: every contract_id present here
+          # must resolve via int_contract_asset_codes (which guarantees non-null asset_code).
+          # Validates the join logic, not just stale data.
+          - relationships:
+              to: ref('int_contract_asset_codes')
+              field: contract_id
 
       - name: balance
         description: '{{ doc("balance") }}'

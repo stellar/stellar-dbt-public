@@ -28,7 +28,9 @@ with
             -- Original token transfers only built asset_code:asset_issuer, it dropped asset_type for all assets less XLM
             , replace(tt.asset, substr(tt.asset, 1, instr(tt.asset, ':')), '') as asset
             , tt.asset_type
-            , tt.asset_code
+            -- For contract tokens that don't expose asset_code on transfer events, fall back to
+            -- int_contract_asset_codes which coalesces SEP-41 symbol metadata then contract_id.
+            , coalesce(nullif(tt.asset_code, ''), ac.asset_code) as asset_code
             , tt.asset_issuer
             , safe_cast(sum(safe_cast(tt.amount_raw as numeric)) as string) as amount_raw
             -- should we be safe_casting decimal as int64 or something else here?
@@ -41,9 +43,11 @@ with
         from {{ ref('stg_token_transfers_raw') }} as tt
         left join {{ ref('int_asset_metadata') }} as metadata
             on tt.contract_id = metadata.contract_id
+        left join {{ ref('int_contract_asset_codes') }} as ac
+            on tt.contract_id = ac.contract_id
         where
             tt.closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-            {% if is_incremental() %}
+        {% if is_incremental() %}
                 and tt.closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
         group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17
@@ -57,7 +61,7 @@ with
         from {{ ref('stg_history_operations') }}
         where
             batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-            {% if is_incremental() %}
+        {% if is_incremental() %}
                 and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
     )
