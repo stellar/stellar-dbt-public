@@ -24,7 +24,9 @@ The 4 or 12 character code representation of the asset on the network.
 
 #### Notes:
 
-Asset codes have no guarantees of uniqueness. The combination of asset code, issuer and type represents a distinct asset
+Asset codes have no guarantees of uniqueness. The combination of asset code, issuer and type represents a distinct asset.
+
+For contract tokens, models that expose a non-null `asset_code` resolve it via `int_contract_asset_codes`, which coalesces the asset_code from SAC transfer events, the SEP-41 `symbol` from contract storage metadata, and finally the `contract_id` itself. As a result, contract tokens that publish neither asset_code nor symbol metadata will surface their `contract_id` in the `asset_code` column rather than null.
 {% enddocs %}
 
 {% docs asset_issuer %}
