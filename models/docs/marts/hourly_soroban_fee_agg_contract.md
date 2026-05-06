@@ -4,7 +4,13 @@
 
 Hourly fee aggregation by contract, sourced from `enriched_history_operations_soroban`. Soroban-only by nature since contract_id only exists on Soroban operations. Provides attribution of fee activity to individual smart contracts, enabling identification of which contracts are driving fee volume or surge pricing.
 
-Soroban operations without a contract_id (e.g. WASM uploads) are excluded. Deduplicated to transaction grain to prevent double-counting fees if Soroban transactions support multiple operations in the future.
+Strictly per-contract: Soroban operations without a resolvable contract_id are excluded. This covers:
+* `invoke_host_function` / `upload_wasm` — no contract exists yet; the uploaded artifact is a `ContractCode` entry identified by its Wasm hash, not a contract address. stellar-etl emits `contract_id = NULL` for these.
+* `extend_footprint_ttl` and `restore_footprint` whose footprint touches only `ContractCode` / TTL entries (no `ContractData`) — stellar-etl emits `contract_id = ''` because there is no contract to resolve against. Instances of the same op types whose footprint *does* touch `ContractData` populate `contract_id` normally and are included.
+
+Because these rows are excluded, totals here do not represent total network-wide Soroban fees; use the `daily_fee_stats_agg` or `ledger_fee_stats_agg` for full fee agg.
+
+Deduplicated to transaction grain to prevent double-counting fees if Soroban transactions support multiple operations in the future.
 
 One row per (hour, contract_id).
 
@@ -18,7 +24,7 @@ Hour-truncated UTC timestamp of the aggregation window. Derived from `timestamp_
 
 {% docs hourly_soroban_fee_agg_contract_id %}
 
-The Soroban smart contract address invoked by the transaction.
+The Soroban smart contract address (strkey `C...`) targeted by the transaction — either invoked directly (`invoke_host_function` / `invoke_contract`), deployed (`create_contract` / `create_contract_v2`), or touched via the transaction's Soroban footprint (`extend_footprint_ttl` / `restore_footprint` on `ContractData` entries). Never NULL or empty in this mart: rows without a resolvable contract_id are filtered out upstream.
 
 {% enddocs %}
 
