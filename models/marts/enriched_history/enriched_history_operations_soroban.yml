@@ -305,6 +305,3 @@ models:
 
       - name: tx_signers
         description: '{{ doc("tx_signers") }}'
-
-      - name: refundable_fee
-        description: '{{ doc("refundable_fee") }}'

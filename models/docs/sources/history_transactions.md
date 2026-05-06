@@ -219,7 +219,3 @@ The resource fee for refundable resources: rent, events, and return value. Charg
 {% docs rent_fee_charged %}
 The portion of refundable_resource_fee_charged that went to ledger entry TTL extensions (rent). The remainder (refundable_resource_fee_charged - rent_fee_charged) covers events and return value fees. From SorobanTransactionMetaExtV1 in tx metadata.
 {% enddocs %}
-
-{% docs refundable_fee %}
-The portion of the transaction fee that is refundable under certain conditions. This field indicates the amount that can be returned to the transaction initiator if the transaction does not fully execute or meets specific refund criteria.
-{% enddocs %}
