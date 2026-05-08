@@ -20,7 +20,7 @@ WITH find_missing AS (
   FROM {{ ref('stg_history_operations') }} op
   LEFT OUTER JOIN {{ ref('enriched_history_operations') }} eho
     ON op.op_id = eho.op_id
-    AND eho.closed_at >= TIMESTAMP('{{ var("batch_start_date") }}')
+    AND eho.closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY)
   WHERE eho.op_id IS NULL
     -- Scan only the last 24 hours of data. Alert runs intraday so failures
     -- are caught and resolved quickly.
