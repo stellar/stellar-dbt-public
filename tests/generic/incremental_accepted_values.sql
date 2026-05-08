@@ -1,10 +1,9 @@
-{% test incremental_accepted_values(model, column_name, date_column_name, greater_than_equal_to, less_than_equal_to, condition, quote, values=[]) %}
+{% test incremental_accepted_values(model, column_name, date_column_name, greater_than_equal_to, condition, quote, values=[]) %}
 
     {{ config(severity = 'error') }}
     {% set condition = condition | default('') %}
     {% set date_column_name = date_column_name | default('closed_at') %}
-    {% set greater_than_equal_to = greater_than_equal_to | default('2 day') %}
-    {% set less_than_equal_to = less_than_equal_to | default('') %}
+    {% set greater_than_equal_to = greater_than_equal_to | default('') %}
     {% set quote = quote | default(false) %}
     {% set values_string = [] %}
     {% for value in values %}
@@ -27,15 +26,17 @@
         {% endif %}
 
         {% if flags.FULL_REFRESH %}
-            -- Full refresh mode: no date filter, just check for null values
+            -- Full refresh mode: no date filter
             -- do nothing
         {% else %}
-            -- Incremental mode: filter records based on greater_than_equal_to
-            and TIMESTAMP({{ date_column_name }}) >= TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL {{ greater_than_equal_to }} )
-
-            {% if less_than_equal_to != '' %}
-                and TIMESTAMP({{ date_column_name }}) <= TIMESTAMP_ADD('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL {{ less_than_equal_to }} )
+            -- Incremental mode: filter to batch window [batch_start_date, batch_end_date)
+            {% if greater_than_equal_to != '' %}
+                -- Deprecated: greater_than_equal_to widens the lower bound
+                and TIMESTAMP({{ date_column_name }}) >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL {{ greater_than_equal_to }} )
+            {% else %}
+                and TIMESTAMP({{ date_column_name }}) >= TIMESTAMP('{{ var("batch_start_date") }}')
             {% endif %}
+            and TIMESTAMP({{ date_column_name }}) < TIMESTAMP('{{ var("batch_end_date") }}')
 
         {% endif %}
 
