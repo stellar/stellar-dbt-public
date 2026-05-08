@@ -34,15 +34,13 @@ with
             , tt.asset_issuer
             , safe_cast(sum(safe_cast(tt.amount_raw as numeric)) as string) as amount_raw
             -- should we be safe_casting decimal as int64 or something else here?
-            , sum(safe_cast(tt.amount_raw as numeric) * pow(10, coalesce(-safe_cast(metadata.decimal as int64), -7))) as amount
+            , sum(safe_cast(tt.amount_raw as numeric) * pow(10, coalesce(-safe_cast(ac.decimal as int64), -7))) as amount
             , tt.contract_id
             , tt.ledger_sequence
             , tt.closed_at
             , tt.to_muxed
             , tt.to_muxed_id
         from {{ ref('stg_token_transfers_raw') }} as tt
-        left join {{ ref('int_asset_metadata') }} as metadata
-            on tt.contract_id = metadata.contract_id
         left join {{ ref('int_contract_asset_codes') }} as ac
             on tt.contract_id = ac.contract_id
         where
