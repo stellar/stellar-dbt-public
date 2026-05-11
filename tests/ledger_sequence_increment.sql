@@ -7,11 +7,59 @@
     )
 }}
 
-{% set history_tables = [] %}
-{% set state_tables = [] %}
-{% set snapshot_tables = [] %}
-{% set current_tables = [] %}
-{% set fee_stats_tables = [] %}
+{% set history_tables = [
+    'stg_history_ledgers',
+    'stg_history_transactions',
+    'stg_history_operations',
+    'stg_history_effects',
+    'stg_history_contract_events',
+    'stg_token_transfers_raw',
+] %}
+
+{% set state_tables = [
+    'stg_accounts',
+    'stg_account_signers',
+    'stg_trust_lines',
+    'stg_offers',
+    'stg_liquidity_pools',
+    'stg_claimable_balances',
+    'stg_contract_data',
+    'stg_contract_code',
+    'stg_config_settings',
+    'stg_ttl',
+    'stg_restored_key',
+] %}
+
+{% set snapshot_tables = [
+    'accounts_snapshot',
+    'contract_data_snapshot',
+    'evicted_keys_snapshot',
+    'liquidity_pools_snapshot',
+    'reflector_prices_data_cex_snapshot',
+    'reflector_prices_data_fex_snapshot',
+    'reflector_prices_data_sdex_snapshot',
+    'trustlines_snapshot',
+    'asset_prices_coingecko_snapshot',
+    'recognized_asset_prices_snapshot',
+    'wisdom_tree_asset_prices_data',
+] %}
+
+{% set current_tables = [
+    'accounts_current',
+    'account_signers_current',
+    'trust_lines_current',
+    'offers_current',
+    'liquidity_pools_current',
+    'claimable_balances_current',
+    'contract_data_current',
+    'contract_code_current',
+    'config_settings_current',
+    'ttl_current',
+] %}
+
+{% set fee_stats_tables = [
+    'ledger_fee_stats_agg',
+] %}
 
 {% set table_groups = {
     'history_tables': history_tables,
