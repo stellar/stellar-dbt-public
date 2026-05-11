@@ -12,7 +12,6 @@
     'stg_history_transactions',
     'stg_history_operations',
     'stg_history_effects',
-    'stg_history_contract_events',
     'stg_token_transfers_raw',
 ] %}
 
