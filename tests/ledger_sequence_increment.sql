@@ -11,7 +11,6 @@
     'stg_history_ledgers',
     'stg_history_transactions',
     'stg_history_operations',
-    'stg_history_effects',
     'stg_token_transfers_raw',
 ] %}
 
