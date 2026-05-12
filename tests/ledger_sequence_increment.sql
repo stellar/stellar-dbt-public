@@ -15,7 +15,7 @@ with
             , closed_at
             , max(sequence) as max_sequence
         from {{ ref('stg_history_ledgers') }}
-        where closed_at > TIMESTAMP_SUB('{{ dbt_airflow_macros.ts(timezone=none) }}', INTERVAL 7 DAY )
+        where closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 7 DAY )
         group by ledger_id, batch_id, closed_at
     )
 
