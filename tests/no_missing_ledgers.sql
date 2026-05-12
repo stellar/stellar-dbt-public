@@ -115,7 +115,7 @@ with all_gaps as (
     where prev_sequence >= max_sequence
         or (
             (max_sequence != prev_sequence + 1)
-            and (max_sequence - prev_sequence) > 50
+            and ((max_sequence - prev_sequence) > 50)
         )
     {% if not loop.last %}union all{% endif %}
     {% endfor %}
