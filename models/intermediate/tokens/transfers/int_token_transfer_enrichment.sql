@@ -29,7 +29,7 @@ with
             , replace(tt.asset, substr(tt.asset, 1, instr(tt.asset, ':')), '') as asset
             , tt.asset_type
             -- For contract tokens that don't expose asset_code on transfer events, fall back to
-            -- int_contract_asset_codes which coalesces SEP-41 symbol metadata then contract_id.
+            -- int_asset_metadata which coalesces SEP-41 symbol metadata then contract_id.
             , coalesce(nullif(tt.asset_code, ''), ac.asset_code) as asset_code
             , tt.asset_issuer
             , safe_cast(sum(safe_cast(tt.amount_raw as numeric)) as string) as amount_raw
@@ -41,7 +41,7 @@ with
             , tt.to_muxed
             , tt.to_muxed_id
         from {{ ref('stg_token_transfers_raw') }} as tt
-        left join {{ ref('int_contract_asset_codes') }} as ac
+        left join {{ ref('int_asset_metadata') }} as ac
             on tt.contract_id = ac.contract_id
         where
             tt.closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))

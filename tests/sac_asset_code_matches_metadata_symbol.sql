@@ -12,7 +12,7 @@ select
     contract_id
     , asset_code
     , symbol
-from {{ ref('int_contract_asset_codes') }}
+from {{ ref('int_asset_metadata') }}
 where asset_code_source = 'sac'
     and symbol is not null
     and asset_code != symbol

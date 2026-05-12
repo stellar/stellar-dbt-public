@@ -4,7 +4,7 @@
 
 Table containing the daily aggregate of asset balances.
 
-For contract tokens, `asset_code` is resolved via `int_contract_asset_codes`: it coalesces the asset_code from SAC token transfer events, then the SEP-41 `symbol` from contract storage metadata, then falls back to the `contract_id` itself so contract-token rows are never grouped under a null asset_code.
+For contract tokens, `asset_code` is resolved via `int_asset_metadata`: it coalesces the asset_code from SAC token transfer events with the SEP-41 `symbol` from contract storage metadata. The value is null when a contract publishes neither.
 
 {% enddocs %}
 

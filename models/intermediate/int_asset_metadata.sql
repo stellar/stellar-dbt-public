@@ -74,7 +74,10 @@ with
 
 select
     c.contract_id
-    , coalesce(a.asset_code, m.symbol, c.contract_id) as asset_code
+    -- Resolves to the SAC asset_code from token-transfer events, falling back to the SEP-41
+    -- symbol read from contract storage. Returns null when neither is available — downstream
+    -- consumers must handle null asset_code for contract tokens that publish no metadata.
+    , coalesce(a.asset_code, m.symbol) as asset_code
     , a.asset_issuer
     , a.asset_type
     , m.symbol
@@ -84,7 +87,6 @@ select
     , case
         when a.asset_code is not null then 'sac'
         when m.symbol is not null then 'metadata'
-        else 'contract_id'
     end as asset_code_source
 from all_contracts as c
 left join asset_per_contract as a
