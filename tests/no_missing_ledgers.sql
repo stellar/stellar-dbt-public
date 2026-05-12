@@ -27,15 +27,8 @@
 {% set snapshot_tables = [
     'accounts_snapshot',
     'contract_data_snapshot',
-    'evicted_keys_snapshot',
     'liquidity_pools_snapshot',
-    'reflector_prices_data_cex_snapshot',
-    'reflector_prices_data_fex_snapshot',
-    'reflector_prices_data_sdex_snapshot',
     'trustlines_snapshot',
-    'asset_prices_coingecko_snapshot',
-    'recognized_asset_prices_snapshot',
-    'wisdom_tree_asset_prices_data',
 ] %}
 
 {% set current_tables = [
