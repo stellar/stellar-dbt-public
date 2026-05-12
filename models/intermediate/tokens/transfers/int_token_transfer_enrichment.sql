@@ -29,7 +29,8 @@ with
             , replace(tt.asset, substr(tt.asset, 1, instr(tt.asset, ':')), '') as asset
             , tt.asset_type
             -- For contract tokens that don't expose asset_code on transfer events, fall back to
-            -- int_asset_metadata which coalesces SEP-41 symbol metadata then contract_id.
+            -- int_asset_metadata which coalesces with SEP-41 symbol metadata (null when neither
+            -- a SAC asset_code nor a SEP-41 symbol is available).
             , coalesce(nullif(tt.asset_code, ''), ac.asset_code) as asset_code
             , tt.asset_issuer
             , safe_cast(sum(safe_cast(tt.amount_raw as numeric)) as string) as amount_raw
