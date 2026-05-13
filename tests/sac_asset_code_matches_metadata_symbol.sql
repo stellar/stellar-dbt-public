@@ -6,7 +6,17 @@
 -- Known exception: the XLM SAC contract publishes "native" as its symbol while
 -- our staging layer rewrites the asset_code to "XLM" for ergonomics.
 -- This was confirmed against production data on 2026-05-06; no other mismatches existed.
-{{ config(severity='warn') }}
+
+-- Strictly use enabled condition to restrict singular tests from running in dbt build tasks.
+-- https://github.com/stellar/stellar-dbt-public/pull/95
+{{ config(
+    severity="error"
+    , tags=["singular_test"]
+    , meta={"alert_suppression_interval": 24}
+    , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
+    , alert_suppression_interval=24
+    )
+}}
 
 select
     contract_id
