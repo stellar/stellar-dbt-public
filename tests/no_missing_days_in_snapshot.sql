@@ -1,6 +1,6 @@
 {{ config(
     severity="error"
-    , tags=["no_missing_days_in_snapshot"]
+    , tags=["validate_no_missing_days_in_snapshot"]
     , enabled=var("is_singular_airflow_task") == "true"
     )
 }}
