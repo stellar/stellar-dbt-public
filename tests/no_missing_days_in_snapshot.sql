@@ -26,7 +26,7 @@ WITH all_dates AS (
   FROM UNNEST(
     GENERATE_DATE_ARRAY(
       DATE_SUB(DATE('{{ var("batch_start_date") }}'), INTERVAL 6 MONTH),
-      DATE_SUB(DATE('{{ var("batch_end_date") }}'), INTERVAL 1 DAY),
+      DATE_SUB(DATE('{{ var("batch_end_date") }}'), INTERVAL 1 DAY)
     )
   ) AS dates
 )
