@@ -24,13 +24,6 @@
     'stg_ttl',
 ] %}
 
-{% set snapshot_tables = [
-    'accounts_snapshot',
-    'contract_data_snapshot',
-    'liquidity_pools_snapshot',
-    'trustlines_snapshot',
-] %}
-
 {% set current_tables = [
     'accounts_current',
     'account_signers_current',
@@ -51,7 +44,6 @@
 {% set table_groups = {
     'history_tables': history_tables,
     'state_tables': state_tables,
-    'snapshot_tables': snapshot_tables,
     'current_tables': current_tables,
     'fee_stats_tables': fee_stats_tables,
 } %}
