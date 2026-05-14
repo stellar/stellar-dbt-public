@@ -107,5 +107,43 @@ with all_gaps as (
     {% endif %}
 )
 
+, stale_latest as (
+    {% if tables_to_check | length == 0 %}
+    select
+        cast(null as string) as table_name
+        , cast(null as timestamp) as latest_closed_at
+    where false
+    {% else %}
+    {% for tbl in tables_to_check %}
+    select
+        '{{ tbl }}' as table_name
+        , max(closed_at) as latest_closed_at
+    from {{ ref(tbl) }}
+    where closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 7 DAY)
+    having max(closed_at) is null
+        or max(closed_at) < TIMESTAMP('{{ var("batch_end_date") }}')
+    {% if not loop.last %}union all{% endif %}
+    {% endfor %}
+    {% endif %}
+)
+
+, failures as (
+    select
+        table_name
+        , closed_at
+        , max_sequence
+        , prev_sequence
+        , 'gap' as failure_reason
+    from all_gaps
+    union all
+    select
+        table_name
+        , latest_closed_at as closed_at
+        , cast(null as int64) as max_sequence
+        , cast(null as int64) as prev_sequence
+        , 'stale_latest' as failure_reason
+    from stale_latest
+)
+
 select *
-from all_gaps
+from failures
