@@ -121,7 +121,7 @@ with all_gaps as (
     from {{ ref(tbl) }}
     where closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 7 DAY)
     having max(closed_at) is null
-        or max(closed_at) < TIMESTAMP('{{ var("batch_end_date") }}')
+        or max(closed_at) < TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_end_date") }}'), INTERVAL 5 MINUTE)
     {% if not loop.last %}union all{% endif %}
     {% endfor %}
     {% endif %}
