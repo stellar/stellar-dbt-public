@@ -24,20 +24,6 @@
     'stg_ttl',
 ] %}
 
-{% set current_tables = [
-    'accounts_current',
-    'account_signers_current',
-    'trust_lines_current',
-    'offers_current',
-    'liquidity_pools_current',
-    'claimable_balances_current',
-    'contract_data_current',
-    'contract_code_current',
-    'config_settings_current',
-    'ttl_current',
-] %}
-
-
 {% set dbt_hourly_tables = [
     'token_transfers',
     'enriched_history_operations',
@@ -47,7 +33,6 @@
 {% set table_groups = {
     'history_tables': history_tables,
     'state_tables': state_tables,
-    'current_tables': current_tables,
     'dbt_hourly': dbt_hourly_tables,
 } %}
 
