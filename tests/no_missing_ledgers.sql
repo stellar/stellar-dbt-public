@@ -37,7 +37,10 @@
     'ttl_current',
 ] %}
 
-{% set fee_stats_tables = [
+
+{% set dbt_hourly_tables = [
+    'token_transfers',
+    'enriched_history_operations',
     'ledger_fee_stats_agg',
 ] %}
 
@@ -45,7 +48,7 @@
     'history_tables': history_tables,
     'state_tables': state_tables,
     'current_tables': current_tables,
-    'fee_stats_tables': fee_stats_tables,
+    'dbt_hourly': dbt_hourly_tables,
 } %}
 
 -- Tables whose sequence column is named `sequence` instead of `ledger_sequence`.
