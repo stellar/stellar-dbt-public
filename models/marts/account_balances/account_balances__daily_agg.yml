@@ -25,10 +25,6 @@ models:
           greater_than_equal_to: "2 day"
           meta:
             description: "Tests the uniqueness combination of: day, account_id, and contract_id."
-      - elementary.schema_changes:
-          tags: [schema_changes]
-          config:
-            severity: warn
       - stellar_dbt_public.incremental_unique_combination_of_columns:
           combination_of_columns:
             - day

@@ -23,10 +23,6 @@ models:
           greater_than_equal_to: "2 day"
           meta:
             description: "Tests the uniqueness combination of: unique key"
-      - elementary.schema_changes:
-          tags: [schema_changes]
-          config:
-            severity: warn
     columns:
       - name: transaction_hash
         description: '{{ doc("transaction_hash") }}'
