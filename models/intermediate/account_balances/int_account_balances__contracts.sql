@@ -21,15 +21,17 @@
 -- re-aggregating from the start of smart contracts (2024-02-20) to current is very quick and not compute intensive.
 -- TODO: account_ids should really be named addresses; This can be refactored in the future if needed
 with
-    -- Amounts should be added when assets are sent to the account.
-    -- `amount` arrives pre-scaled (10^-decimal applied) from int_token_transfer_enrichment.
+    -- Amounts should be added when assets are sent to the account
     token_transfers_to as (
         select
             date(tt.closed_at) as day
             , tt.to as account_id
             , tt.contract_id
-            , sum(tt.amount) as balance
-        from {{ ref('int_token_transfer_enrichment') }} as tt
+            -- Note that 10^-7 is the default precision for Stellar assets. Recognized assets with default precision will have null token_precision.
+            , sum(safe_cast(tt.amount_raw as numeric) * pow(10, coalesce(-safe_cast(metadata.decimal as int64), -7))) as balance
+        from {{ ref('stg_token_transfers_raw') }} as tt
+        left join {{ ref('int_asset_metadata') }} as metadata
+            on tt.contract_id = metadata.contract_id
         where
             true
             and tt.to is not null
@@ -39,14 +41,17 @@ with
         group by 1, 2, 3
     )
 
-    -- Amounts should be subtracted when assets are sent from the account.
+    -- Amounts should be subtracted when assets are sent from the account
     , token_transfers_from as (
         select
             date(tt.closed_at) as day
             , tt.`from` as account_id
             , tt.contract_id
-            , -sum(tt.amount) as balance
-        from {{ ref('int_token_transfer_enrichment') }} as tt
+            -- Note that 10^-7 is the default precision for Stellar assets. Recognized assets with default precision will have null token_precision.
+            , -sum(safe_cast(tt.amount_raw as numeric) * pow(10, coalesce(-safe_cast(metadata.decimal as int64), -7))) as balance
+        from {{ ref('stg_token_transfers_raw') }} as tt
+        left join {{ ref('int_asset_metadata') }} as metadata
+            on tt.contract_id = metadata.contract_id
         where
             true
             and tt.`from` is not null
@@ -130,5 +135,5 @@ select
     , a.asset_code
     , agg.balance
 from agg
-left join {{ ref('int_asset_metadata') }} as a
-    on agg.contract_id = a.contract_id
+left join {{ ref('stg_assets') }} as a
+    on agg.contract_id = a.asset_contract_id
