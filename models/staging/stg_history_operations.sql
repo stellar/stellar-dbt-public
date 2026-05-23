@@ -130,6 +130,11 @@ with
             , details.contract_code_hash
             , details.ledger_key_hash
             , details.ledgers_to_expire
+            , details.balance_id_strkey
+            , details.claimable_balance_id_strkey
+            , details.liquidity_pool_id_strkey
+            , details.parameters_json
+            , details.parameters_json_decoded
             , details_json
             , operation_result_code
             , operation_trace_code

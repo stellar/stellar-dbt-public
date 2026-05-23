@@ -1483,3 +1483,19 @@ The identifier of the second reserve asset in a liquidity pool or similar constr
 {% docs details_ledgers_to_expire %}
 The number of ledgers after which the operation will expire if its not executed.
 {% enddocs %}
+
+{% docs details_claimable_balance_id_strkey %}
+Strkey of the balance id
+{% enddocs %}
+
+{% docs details_liquidity_pool_id_strkey %}
+Strkey of the liquidity_pool_id
+{% enddocs %}
+
+{% docs details_parameters_json %}
+JSON formatted output of parameters from contract call
+{% enddocs %}
+
+{% docs details_parameters_json_decoded %}
+JSON formatted output of xdr decoded parameters from contract call
+{% enddocs %}

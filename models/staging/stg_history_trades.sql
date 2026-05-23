@@ -26,6 +26,7 @@ with
             , selling_offer_id
             , buying_offer_id
             , selling_liquidity_pool_id
+            , selling_liquidity_pool_id_strkey
             , liquidity_pool_fee
             , trade_type
             , rounding_slippage

@@ -20,6 +20,7 @@ with
     current_lps as (
         select
             lp.liquidity_pool_id
+            , lp.liquidity_pool_id_strkey
             , lp.fee
             , lp.trustline_count
             , lp.pool_share_count
@@ -65,6 +66,7 @@ with
     )
 select
     liquidity_pool_id
+    , liquidity_pool_id_strkey
     , fee
     , trustline_count
     , pool_share_count
