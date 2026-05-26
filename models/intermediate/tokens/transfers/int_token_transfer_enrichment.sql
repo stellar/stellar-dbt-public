@@ -43,7 +43,7 @@ with
             on tt.contract_id = metadata.contract_id
         where
             tt.closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-            {% if is_incremental() %}
+        {% if is_incremental() %}
                 and tt.closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
         group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17
@@ -57,7 +57,7 @@ with
         from {{ ref('stg_history_operations') }}
         where
             batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-            {% if is_incremental() %}
+        {% if is_incremental() %}
                 and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
             {% endif %}
     )
