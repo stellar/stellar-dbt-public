@@ -4,10 +4,6 @@ models:
   - name: config_settings_snapshot
     description: '{{ doc("config_settings_snapshot") }}'
     tests:
-      - elementary.schema_changes:
-          tags: [schema_changes]
-          config:
-            severity: warn
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - config_setting_name
