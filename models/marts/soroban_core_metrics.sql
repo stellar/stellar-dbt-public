@@ -61,7 +61,7 @@ with
             , events.metric_key
             , events.metric_value
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
-        from events 
+        from events
         left join invocations
             on events.transaction_hash = invocations.transaction_hash
     )
