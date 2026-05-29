@@ -10,7 +10,7 @@ with
             , ledger_sequence
             , transaction_hash
             , json_value(topics_decoded, '$[1].symbol') as metric_key
-            , safe_cast(json_value(data_decoded, '$.u64') as int64) as metric_value                                                                                                             
+            , cast(json_value(data_decoded, '$.u64') as int64) as metric_value
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from raw_table
         where type_string = 'ContractEventTypeDiagnostic'
