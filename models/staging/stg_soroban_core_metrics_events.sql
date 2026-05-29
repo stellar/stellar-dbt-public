@@ -16,6 +16,5 @@ with
         where type_string = 'ContractEventTypeDiagnostic'
           and json_value(topics_decoded, '$[0].symbol') = 'core_metrics'
     )
-  
 select *
 from soroban_core_metrics_events
