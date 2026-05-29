@@ -7,7 +7,7 @@
         "field": "closed_at",
         "data_type": "timestamp",
         "granularity": "day"
-    },    
+    },
     "incremental_predicates": [
         "DBT_INTERNAL_DEST.closed_at >= timestamp(date_sub(date('" ~ var("batch_start_date") ~ "'), interval 1 day))"
     ]
@@ -36,7 +36,7 @@ with
             {% endif %}
     )
 
-    , invocations as ( 
+    , invocations as (
         select
             transaction_hash
             , contract_id
@@ -65,7 +65,7 @@ with
             , events.metric_value
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from events
-        left join invocations 
+        left join invocations
             on events.transaction_hash = invocations.transaction_hash
     )
 
