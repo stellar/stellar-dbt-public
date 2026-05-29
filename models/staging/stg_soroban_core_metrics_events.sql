@@ -1,5 +1,5 @@
 with
-    raw_table as (  
+    raw_table as (
         select *
         from {{ source('crypto_stellar', 'history_contract_events') }}
     )
