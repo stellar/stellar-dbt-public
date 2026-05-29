@@ -3,8 +3,8 @@
 Denormalized Soroban host-emitted `core_metrics` diagnostic events extracted from `history_contract_events` and joined to the root contract from each transaction's `invoke_host_function` operation. One row per
 `(transaction_hash, metric_key)`.
 
-The Soroban host emits 19 core_metrics events at the end of every transaction summarizing the resources consumed by the invocation: CPU instructions, memory bytes, ledger entries read/written, event emission, 
-invocation time, and per-category read/write/key/code byte counters. These events live inside JSON columns (`topics_decoded`, `data_decoded`) on `history_contract_events`, which makes them expensive to query at 
+The Soroban host emits 19 core_metrics events at the end of every transaction summarizing the resources consumed by the invocation: CPU instructions, memory bytes, ledger entries read/written, event emission,
+invocation time, and per-category read/write/key/code byte counters. These events live inside JSON columns (`topics_decoded`, `data_decoded`) on `history_contract_events`, which makes them expensive to query at
 scale — dashboards that previously parsed JSON for every query now read pre-extracted INT64 columns from this mart.
 
 `contract_id` is sourced via LEFT JOIN to `enriched_history_operations_soroban` filtered to `invoke_host_function` ops (`op_type = 24`) with a populated, non-empty `contract_id`. Rows where the join misses 
