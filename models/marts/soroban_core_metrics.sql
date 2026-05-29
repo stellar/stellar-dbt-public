@@ -7,7 +7,7 @@
         "field": "closed_at",
         "data_type": "timestamp",
         "granularity": "day"
-    },
+    },    
     "incremental_predicates": [
         "DBT_INTERNAL_DEST.closed_at >= timestamp(date_sub(date('" ~ var("batch_start_date") ~ "'), interval 1 day))"
     ]
@@ -24,16 +24,19 @@ with
             closed_at
             , ledger_sequence
             , transaction_hash
-            , metric_key
-            , metric_value
-        from {{ ref('stg_soroban_core_metrics_events') }}
-        where closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-            and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-        {% endif %}
+            , json_value(topics_decoded, '$[1].symbol') as metric_key
+            , safe_cast(json_value(data_decoded, '$.u64') as int64) as metric_value
+        from {{ ref('stg_history_contract_events') }}
+        where
+            type_string = 'ContractEventTypeDiagnostic'
+            and json_value(topics_decoded, '$[0].symbol') = 'core_metrics'
+            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
+            {% if is_incremental() %}
+                and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
+            {% endif %}
     )
 
-    , invocations as (
+    , invocations as ( 
         select
             transaction_hash
             , contract_id
@@ -62,8 +65,9 @@ with
             , events.metric_value
             , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
         from events
-        left join invocations
+        left join invocations 
             on events.transaction_hash = invocations.transaction_hash
     )
+
 select *
 from final
