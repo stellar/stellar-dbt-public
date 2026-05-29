@@ -65,6 +65,5 @@ with
         left join invocations
             on events.transaction_hash = invocations.transaction_hash
     )
-  
 select *
 from final
