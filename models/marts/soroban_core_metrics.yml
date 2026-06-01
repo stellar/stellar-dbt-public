@@ -44,11 +44,11 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-        # Contract attribution
+      # Contract attribution
       - name: contract_id
         description: '{{ doc("soroban_core_metrics_contract_id") }}'
 
-        # Metrics
+      # Metrics
       - name: metric_key
         description: '{{ doc("soroban_core_metrics_metric_key") }}'
         tests:
