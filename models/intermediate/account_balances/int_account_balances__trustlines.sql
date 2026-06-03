@@ -6,36 +6,36 @@
          "field": "day"
         , "data_type": "date"
         , "granularity": "day"
+        , "copy_partitions": true
     },
-    cluster_by=["asset_type", "asset_code", "asset_issuer"],
-    incremental_predicates=["DBT_INTERNAL_DEST.day >= DATE('" ~ var('batch_start_date') ~ "')"]
+    cluster_by=["asset_type", "asset_code", "asset_issuer"]
 ) }}
 
-with
-    dt as (
-        select dates as day
-        {% if is_incremental() %}
-            from unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
-        {% else %}
-            from unnest(generate_date_array('2023-01-01', date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
-        {% endif %}
-    )
+{# Inline the batch window as date literals (instead of subqueries on a date
+   spine) so BigQuery can prune the valid_to month partitions on the snapshot
+   tables. #}
+{% if is_incremental() %}
+    {% set min_day = var('batch_start_date') %}
+{% else %}
+    {% set min_day = '2023-01-01' %}
+{% endif %}
 
-    , filtered_tl as (
+with
+    filtered_tl as (
         select
             tl.account_id
             , tl.asset_type
             , tl.asset_issuer
             , tl.asset_code
             , tl.balance
-            , tl.valid_from
-            , tl.valid_to
+            , date(tl.valid_from) as valid_from_day
+            , date(tl.valid_to) as valid_to_day
         from {{ ref('trustlines_snapshot') }} as tl
         where
             tl.liquidity_pool_id = ''
             and tl.deleted is false
-            and tl.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
-            and (tl.valid_to is null or tl.valid_to >= timestamp((select min(day) from dt)))
+            and tl.valid_from < timestamp(date('{{ var("batch_end_date") }}'))
+            and (tl.valid_to is null or tl.valid_to >= timestamp(date('{{ min_day }}')))
     )
 
     , filtered_acc as (
@@ -45,43 +45,57 @@ with
             , 'XLM' as asset_issuer
             , 'XLM' as asset_code
             , acc.balance
-            , acc.valid_from
-            , acc.valid_to
+            , date(acc.valid_from) as valid_from_day
+            , date(acc.valid_to) as valid_to_day
         from {{ ref('accounts_snapshot') }} as acc
         where
             acc.deleted is false
-            and acc.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
-            and (acc.valid_to is null or acc.valid_to >= timestamp((select min(day) from dt)))
+            and acc.valid_from < timestamp(date('{{ var("batch_end_date") }}'))
+            and (acc.valid_to is null or acc.valid_to >= timestamp(date('{{ min_day }}')))
     )
 
-    , aggregate as (
+    -- explode each validity interval into the days it covers within the batch
+    -- window. a row is counted for a day only if it was valid for the entire
+    -- day: from its valid_from date through the day before its valid_to date.
+    , daily_balances as (
         select
-            dt.day
+            day
             , tl.account_id
             , tl.asset_type
             , tl.asset_issuer
             , tl.asset_code
             , tl.balance
-        from dt
-        inner join filtered_tl as tl
-            on
-            timestamp(dt.day) >= timestamp_trunc(tl.valid_from, day)
-            and (timestamp(date_add(dt.day, interval 1 day)) <= timestamp_trunc(tl.valid_to, day) or tl.valid_to is null)
+        from filtered_tl as tl
+        cross join
+            unnest(
+                generate_date_array(
+                    greatest(tl.valid_from_day, date('{{ min_day }}'))
+                    , least(
+                        coalesce(date_sub(tl.valid_to_day, interval 1 day), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))
+                        , date_sub(date('{{ var("batch_end_date") }}'), interval 1 day)
+                    )
+                )
+            ) as day
 
         union all
 
         select
-            dt.day
+            day
             , acc.account_id
             , acc.asset_type
             , acc.asset_issuer
             , acc.asset_code
             , acc.balance
-        from dt
-        inner join filtered_acc as acc
-            on
-            timestamp(dt.day) >= timestamp_trunc(acc.valid_from, day)
-            and (timestamp(date_add(dt.day, interval 1 day)) <= timestamp_trunc(acc.valid_to, day) or acc.valid_to is null)
+        from filtered_acc as acc
+        cross join unnest(
+            generate_date_array(
+                greatest(acc.valid_from_day, date('{{ min_day }}'))
+                , least(
+                    coalesce(date_sub(acc.valid_to_day, interval 1 day), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))
+                    , date_sub(date('{{ var("batch_end_date") }}'), interval 1 day)
+                )
+            )
+        ) as day
     )
 
 select
@@ -98,7 +112,7 @@ select
     -- This will be fixed in the future when stellar-etl adds contract_ids for assets.
     , a.asset_contract_id as contract_id
     , agg.balance
-from aggregate as agg
+from daily_balances as agg
 left join {{ ref('stg_assets') }} as a
     on agg.asset_type = a.asset_type
     and agg.asset_code = a.asset_code
