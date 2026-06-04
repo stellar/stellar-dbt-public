@@ -1,12 +1,17 @@
+{# batch_size can be overridden (e.g. MICROBATCH_SIZE=month for backfills) without
+   changing the table's day partitioning — see macros/bq_validate_microbatch_config.sql #}
+{% set batch_size = var('microbatch_size', 'day') %}
+
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": "unique_key",
-    "incremental_strategy": "merge",
+    "incremental_strategy": "microbatch",
+    "event_time": "closed_at",
+    "batch_size": batch_size,
+    "begin": "2015-09-30",
     "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
-        , "granularity": "day"},
-    "incremental_predicates": ["DBT_INTERNAL_DEST.closed_at >= timestamp_sub(timestamp(date('" ~ var('batch_start_date') ~ "')), interval 1 day)"]
+        , "granularity": "day"}
 } %}
 
 {{ config(
@@ -38,14 +43,10 @@ with
             , tt.closed_at
             , tt.to_muxed
             , tt.to_muxed_id
+        -- microbatch auto-filters this ref to the batch window via event_time
         from {{ ref('stg_token_transfers_raw') }} as tt
         left join {{ ref('int_asset_metadata') }} as metadata
             on tt.contract_id = metadata.contract_id
-        where
-            tt.closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-                and tt.closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
         group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17
     )
     , operations as (
@@ -56,9 +57,14 @@ with
             , coalesce(`type` in (24, 25, 26), false) as is_soroban
         from {{ ref('stg_history_operations') }}
         where
-            batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-                and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
+            -- join-side read only: batch_run_date (ETL ingestion date) can differ slightly
+            -- from closed_at, so pad the batch window by a day on each side. Output rows
+            -- are still bounded by the auto-filter on stg_token_transfers_raw.closed_at.
+            {% if model.batch %}
+                batch_run_date < datetime_add(datetime(timestamp('{{ model.batch.event_time_end }}')), interval 1 day)
+                and batch_run_date >= datetime_sub(datetime(timestamp('{{ model.batch.event_time_start }}')), interval 1 day)
+            {% else %}
+                true
             {% endif %}
     )
 

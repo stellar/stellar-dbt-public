@@ -1,3 +1,8 @@
+{{ config(
+    event_time='closed_at'
+    )
+}}
+
 with
     raw_table as (
         select *
