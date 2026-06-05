@@ -2,18 +2,37 @@ version: 2
 
 models:
   - name: int_asset_metadata
-    description: "This model captures metadata about Stellar assets associated with contracts involved in token transfers."
+    description: "One row per contract_id with the contract's asset_code (coalesced from stg_assets SAC asset_code, then SEP-41 symbol read from contract storage) plus the SEP-41 metadata fields (symbol, name, decimal, admin) read directly from contract instance storage. asset_code is null when neither a SAC asset_code nor a SEP-41 symbol is available — recognized assets are enriched upstream in stg_assets, so a null here means the contract publishes no metadata."
     columns:
       - name: contract_id
         description: '{{ doc("contract_id") }}'
         tests:
           - not_null
           - unique
-      - name: admin
-        description: '{{ doc("contract_admin") }}'
+
+      - name: asset_code
+        description: '{{ doc("asset_code") }}'
+
+      - name: asset_issuer
+        description: '{{ doc("asset_issuer") }}'
+
+      - name: asset_type
+        description: '{{ doc("asset_type") }}'
+
       - name: symbol
         description: '{{ doc("contract_symbol") }}'
+
       - name: name
         description: '{{ doc("contract_name") }}'
+
       - name: decimal
         description: '{{ doc("decimal_precision") }}'
+
+      - name: admin
+        description: '{{ doc("contract_admin") }}'
+
+      - name: asset_code_source
+        description: "Indicates which source the asset_code came from: 'sac' = asset_code from a Stellar Asset Contract token transfer event, 'metadata' = SEP-41 symbol read from contract storage. Null when no asset_code could be resolved (asset_code is also null in that case)."
+        tests:
+          - accepted_values:
+              values: ["sac", "metadata"]
