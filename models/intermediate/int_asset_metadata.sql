@@ -72,6 +72,28 @@ with
         select contract_id from metadata
     )
 
+    -- SAC rows carry no contract-storage metadata of their own, so `decimal` is null on
+    -- the SAC row. When a SAC and a SEP-41 contract share the same asset_code AND the
+    -- SAC's asset_issuer matches the SEP-41's admin, we treat the SEP-41 as the SAC's
+    -- sibling and let the SAC inherit the SEP-41's decimals. This avoids the failure
+    -- mode where a SAC of an 18-decimal SEP-41 token gets scaled at the default 10^-7
+    -- in downstream amount calculations. The issuer/admin guard prevents cross-linking
+    -- unrelated tokens that happen to share an asset_code.
+    , sac_sibling_decimals as (
+        select
+            a.contract_id as sac_contract_id
+            , m.`decimal` as sibling_decimal
+        from asset_per_contract as a
+        inner join metadata as m
+            on a.asset_code = m.symbol
+            and a.asset_issuer = m.admin
+        where m.`decimal` is not null
+        qualify row_number() over (
+            partition by a.contract_id
+            order by m.`decimal` desc
+        ) = 1
+    )
+
 select
     c.contract_id
     -- Resolves to the SAC asset_code from token-transfer events, falling back to the SEP-41
@@ -82,7 +104,7 @@ select
     , a.asset_type
     , m.symbol
     , m.`name`
-    , m.`decimal`
+    , coalesce(m.`decimal`, s.sibling_decimal) as `decimal`
     , m.admin
     , case
         when a.asset_code is not null then 'sac'
@@ -93,3 +115,5 @@ left join asset_per_contract as a
     on c.contract_id = a.contract_id
 left join metadata as m
     on c.contract_id = m.contract_id
+left join sac_sibling_decimals as s
+    on c.contract_id = s.sac_contract_id
