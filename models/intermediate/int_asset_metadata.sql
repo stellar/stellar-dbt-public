@@ -90,7 +90,7 @@ with
         where m.`decimal` is not null
         qualify row_number() over (
             partition by a.contract_id
-            order by m.`decimal` desc
+            order by safe_cast(m.`decimal` as int64) desc
         ) = 1
     )
 
