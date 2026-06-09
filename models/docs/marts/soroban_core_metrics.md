@@ -54,13 +54,13 @@ Symbol from `topics_decoded[1].symbol` on the host-emitted `core_metrics` diagno
 
 * `cpu_insn` — CPU instructions consumed.
 * `mem_byte` — Memory bytes allocated during invocation.
-* `invoke_time_nsecs` — Wall-clock invocation time in nanoseconds.
+* `invoke_time_nsecs` — Invocation time in nanoseconds.
 * `read_entry` / `write_entry` — Count of ledger entries read or written.
-* `ledger_read_byte` / `ledger_write_byte` — Total bytes read/written to the ledger.
+* `ledger_read_byte` / `ledger_write_byte` — Total bytes read/written to ledger.
 * `read_data_byte` / `write_data_byte` — Bytes read/written specifically to `ContractData` entries.
 * `read_code_byte` / `write_code_byte` — Bytes read/written to `ContractCode` entries.
 * `read_key_byte` / `write_key_byte` — Bytes read/written for ledger entry keys.
-* `max_rw_data_byte` / `max_rw_code_byte` / `max_rw_key_byte` — Resource limit caps for each byte counter at the time of execution.
+* `max_rw_data_byte` / `max_rw_code_byte` / `max_rw_key_byte` — Resource limit caps per byte counter at execution.
 * `emit_event` — Count of contract-emitted events.
 * `emit_event_byte` — Total bytes of contract-emitted events.
 * `max_emit_event_byte` — Resource limit cap for event byte size.
