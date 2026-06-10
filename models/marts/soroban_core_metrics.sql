@@ -1,16 +1,13 @@
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["transaction_hash", "metric_key"],
+    "incremental_strategy": "insert_overwrite",
     "tags": ["soroban_core_metrics"],
     "cluster_by": ["contract_id"],
     "partition_by": {
         "field": "closed_at",
         "data_type": "timestamp",
         "granularity": "day"
-    },
-    "incremental_predicates": [
-        "DBT_INTERNAL_DEST.closed_at >= timestamp(date_sub(date('" ~ var("batch_start_date") ~ "'), interval 1 day))"
-    ]
+    }
 } %}
 
 {{ config(
