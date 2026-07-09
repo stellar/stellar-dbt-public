@@ -1,11 +1,20 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
+{# `begin` is 2022-08-08: the earliest asset pricing data from stellar.expert. #}
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["day", "account_id", "asset_code", "asset_issuer", "asset_type"],
+    "incremental_strategy": "microbatch",
+    "event_time": "day",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2022-08-08",
+    "partition_by": {
+        "field": "day"
+        , "data_type": "date"
+        , "granularity": "day"
+        , "copy_partitions": flags.FULL_REFRESH},
     "tags": ["tvl"]
 } %}
-
--- The earliest asset pricing data is at 2022-08-08 from stellar.expert.
-{% set full_refresh_date = '2022-08-08' %}
 
 {{ config(
     meta=meta_config,
@@ -14,65 +23,52 @@
 }}
 
 -- To find the asset TVL for a given day
---  * Get all trustline entries <= day
---  * Get the current value of selling liabilities of the trustline for that day
+--  * Get each trustline's state as of that day from the SCD-2 trustlines_snapshot
+--    (valid_from/valid_to), rather than reconstructing it from the raw change log
+--  * Take the selling liabilities of the trustline for that day
 --  * Sum all the values for that day for all assets
 
--- Dates that asset to TVL amount should be calculated for
 with
-    date_range as (
-        select day
-        {% if is_incremental() %}
-            from
-                unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day)))
-                    as day
+    -- Microbatch supplies the batch window via model.batch; the else branch
+    -- is only a compile-time placeholder (model.batch is unset outside a run).
+    dt as (
+        select dates as day
+        {% if model.batch %}
+            from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(date(timestamp('{{ model.batch.event_time_end }}')), interval 1 day))) as dates
         {% else %}
-            from unnest(generate_date_array(date('{{ full_refresh_date }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as day
+            from unnest(generate_date_array('2022-08-08', '2022-08-08')) as dates
         {% endif %}
     )
 
-    , filter_trustlines as (
+    , filtered_tl as (
         select
-            t.account_id
-            , t.asset_type
-            , t.asset_code
-            , t.asset_issuer
-            , t.selling_liabilities
-            , t.deleted
-            , t.closed_at
-        from {{ ref('stg_trust_lines') }} as t
+            tl.account_id
+            , tl.asset_type
+            , tl.asset_code
+            , tl.asset_issuer
+            , tl.selling_liabilities
+            , tl.valid_from
+            , tl.valid_to
+        from {{ ref('trustlines_snapshot') }} as tl
         where
-            true
-            and t.closed_at < timestamp(date('{{ var("batch_end_date") }}'))
-    )
-
-    , trustline_tvl_per_day as (
-        select
-            d.day
-            , t.account_id
-            , t.asset_type
-            , t.asset_code
-            , t.asset_issuer
-            , array_agg(t.selling_liabilities order by t.closed_at desc)[offset(0)] as tvl
-            , array_agg(t.deleted order by t.closed_at desc)[offset(0)] as deleted
-        from date_range as d
-        inner join filter_trustlines as t
-            on t.closed_at < timestamp(date_add(d.day, interval 1 day))
-        group by 1, 2, 3, 4, 5
+            tl.deleted is false
+            and tl.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
+            and (tl.valid_to is null or tl.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , daily_trustline_tvl as (
         select
-            day
-            , account_id
-            , asset_type
-            , asset_code
-            , asset_issuer
-            , sum(tvl) as trustlines_tvl
-        from trustline_tvl_per_day
-        where
-            true
-            and deleted = false
+            dt.day
+            , tl.account_id
+            , tl.asset_type
+            , tl.asset_code
+            , tl.asset_issuer
+            , sum(tl.selling_liabilities) as trustlines_tvl
+        from dt
+        inner join filtered_tl as tl
+            on
+            timestamp(dt.day) >= timestamp_trunc(tl.valid_from, day)
+            and (timestamp(date_add(dt.day, interval 1 day)) <= timestamp_trunc(tl.valid_to, day) or tl.valid_to is null)
         group by 1, 2, 3, 4, 5
     )
 
