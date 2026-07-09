@@ -1,12 +1,17 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": "unique_key",
-    "incremental_strategy": "merge",
+    "incremental_strategy": "microbatch",
+    "event_time": "closed_at",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2015-09-30",
     "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
-        , "granularity": "day"},
-    "incremental_predicates": ["DBT_INTERNAL_DEST.closed_at >= timestamp_sub(timestamp(date('" ~ var('batch_start_date') ~ "')), interval 1 day)"]
+        , "granularity": "day"
+        , "copy_partitions": flags.FULL_REFRESH},
 } %}
 
 {{ config(
@@ -44,11 +49,6 @@ with
         from {{ ref('stg_token_transfers_raw') }} as tt
         left join {{ ref('int_asset_metadata') }} as ac
             on tt.contract_id = ac.contract_id
-        where
-            tt.closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-                and tt.closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
         group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17
     )
     , operations as (
@@ -58,11 +58,6 @@ with
             , type_string as event_type
             , coalesce(`type` in (24, 25, 26), false) as is_soroban
         from {{ ref('stg_history_operations') }}
-        where
-            batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-                and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
     )
 
 select
