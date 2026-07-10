@@ -22,7 +22,7 @@ with
         -- Microbatch supplies the batch window via model.batch; the else branch
         -- is only a compile-time placeholder (model.batch is unset outside a run).
         {% if model.batch %}
-            from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(date(timestamp('{{ model.batch.event_time_end }}')), interval 1 day))) as dates
+            from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(least(date(timestamp('{{ model.batch.event_time_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
         {% else %}
             from unnest(generate_date_array('2023-01-01', '2023-01-01')) as dates
         {% endif %}
