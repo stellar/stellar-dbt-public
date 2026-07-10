@@ -1,6 +1,5 @@
 {% set meta_config = {
-    "materialized": "incremental",
-    "unique_key": ["day", "asset_code", "asset_issuer", "asset_type"],
+    "materialized": "table",
     "tags": ["tvl"]
 } %}
 
