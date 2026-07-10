@@ -1,15 +1,20 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
 {% set meta_config = {
     "materialized": "incremental",
-    "incremental_strategy": "insert_overwrite",
-    "unique_key": ["day", "account_id", "contract_id"],
+    "incremental_strategy": "microbatch",
+    "event_time": "day",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2023-01-01",
     "partition_by": {
          "field": "day"
         , "data_type": "date"
         , "granularity": "day"
+        , "copy_partitions": flags.FULL_REFRESH
     },
     "cluster_by": ["account_id", "contract_id"],
     "tags": ["asset_balance_agg", "account_balance_agg"],
-    "incremental_predicates": ["DBT_INTERNAL_DEST.day >= DATE_SUB(DATE('" ~ var('batch_start_date') ~ "'), INTERVAL 1 DAY)"]
 } %}
 
 {{ config(
@@ -36,10 +41,6 @@ with
             -- TODO: Remove nulls for now until contract_ids are added to stellar-etl.
             -- These accounts would always have zero balance anyways so they have little impact
             and iabt.contract_id is not null
-            and iabt.day < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
-            and iabt.day >= date('{{ var("batch_start_date") }}')
-        {% endif %}
     )
 
     , liquidity_pools_balance_changes as (
@@ -52,12 +53,6 @@ with
             , iablp.contract_id
             , iablp.balance as total_balance
         from {{ ref('int_account_balances__liquidity_pools') }} as iablp
-        where
-            true
-            and iablp.day < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
-            and iablp.day >= date('{{ var("batch_start_date") }}')
-        {% endif %}
     )
 
     , offer_balance_changes as (
@@ -70,12 +65,6 @@ with
             , iabo.contract_id
             , iabo.balance as total_balance
         from {{ ref('int_account_balances__offers') }} as iabo
-        where
-            true
-            and iabo.day < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
-            and iabo.day >= date('{{ var("batch_start_date") }}')
-        {% endif %}
     )
 
     , contract_balance_changes as (
@@ -88,12 +77,6 @@ with
             , iabc.contract_id
             , iabc.balance as total_balance
         from {{ ref('int_account_balances__contracts') }} as iabc
-        where
-            true
-            and iabc.day < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
-            and iabc.day >= date('{{ var("batch_start_date") }}')
-        {% endif %}
     )
 
     , day_account_asset_pairs_all as (
