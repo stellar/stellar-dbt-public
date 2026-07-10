@@ -1,6 +1,17 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["ledger_sequence"],
+    "incremental_strategy": "microbatch",
+    "event_time": "day_agg",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2015-09-30",
+    "partition_by": {
+        "field": "day_agg"
+        , "data_type": "date"
+        , "granularity": "day"
+        , "copy_partitions": flags.FULL_REFRESH},
     "tags": ["hourly_fee_stats"],
     "cluster_by": ["day_agg", "ledger_sequence"]
 } %}
@@ -14,7 +25,7 @@ with
     -- BASE: source read + classification + effective_txn_operation_count
     base_txns as (
         select
-            cast(batch_run_date as date) as day_agg
+            date(closed_at) as day_agg
             , ledger_sequence
             , transaction_id
             , fee_charged
@@ -39,11 +50,6 @@ with
             , successful
             , coalesce(resource_fee, 0) > 0 as is_soroban
         from {{ ref('stg_history_transactions') }}
-        where
-            batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-            {% if is_incremental() %}
-                and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
     )
 
     -- GENERAL AGGREGATES (all txns → ledger grain)
@@ -165,11 +171,6 @@ with
             , closed_at
             , fee_pool
         from {{ ref('stg_history_ledgers') }}
-        where
-            batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-            {% if is_incremental() %}
-                and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
     )
 
     , final as (

@@ -1,13 +1,19 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'month' %}
+
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["op_id"],
+    "incremental_strategy": "microbatch",
+    "event_time": "closed_at",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2015-09-30",
     "cluster_by": ["ledger_sequence", "transaction_id", "op_type"],
     "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
-        , "granularity": "month"},
+        , "granularity": "month"
+        , "copy_partitions": flags.FULL_REFRESH},
     "tags": ["enriched_history_operations"],
-    "incremental_predicates":["DBT_INTERNAL_DEST.closed_at >= timestamp_sub(timestamp(date('" ~ var('batch_start_date') ~ "')), interval 1 day)"]
 } %}
 
 {{ config(
@@ -103,18 +109,6 @@ with
         from {{ ref('enriched_history_operations') }} as enriched
         where
             enriched.type in (24, 25, 26)
-            -- Need to add/subtract one day to the window boundaries
-            -- because this model runs at 30 min increments.
-            -- Without the additional date buffering the following would occur
-            -- * batch_start_date == '2025-01-01 01:00:00' --> '2025-01-01'
-            -- * batch_end_date == '2025-01-01 01:30:00' --> '2025-01-01'
-            -- * '2025-01-01 <= closed_at < '2025-01-01' would never have any data to processes
-            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-                -- The extra day date_sub is useful in the case the first scheduled run for a day is skipped
-                -- because the DAG is configured with catchup=false
-                and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
     )
 
 select
