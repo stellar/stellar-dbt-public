@@ -1,4 +1,4 @@
-{% set batch_size = 'year' if flags.FULL_REFRESH else 'month' %}
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
 
 {% set meta_config = {
     "materialized": "incremental",
@@ -11,7 +11,7 @@
     "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
-        , "granularity": "month"
+        , "granularity": "day"
         , "copy_partitions": flags.FULL_REFRESH}
 } %}
 

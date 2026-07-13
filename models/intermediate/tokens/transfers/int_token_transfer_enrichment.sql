@@ -58,6 +58,15 @@ with
             , type_string as event_type
             , coalesce(`type` in (24, 25, 26), false) as is_soroban
         from {{ ref('stg_history_operations') }}
+        {% if model.batch %}
+            -- history_operations is partitioned on batch_run_date, so the microbatch
+            -- closed_at filter alone cannot prune it. batch_run_date always falls within
+            -- a day of closed_at, so this buffered range restores partition pruning
+            -- without changing which rows qualify.
+            where
+                batch_run_date >= datetime_sub(datetime(timestamp('{{ model.batch.event_time_start }}')), interval 1 day)
+                and batch_run_date < datetime_add(datetime(timestamp('{{ model.batch.event_time_end }}')), interval 1 day)
+        {% endif %}
     )
 
 select

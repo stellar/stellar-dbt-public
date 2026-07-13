@@ -1,4 +1,4 @@
-{% set batch_size = 'year' if flags.FULL_REFRESH else 'month' %}
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
 
 {% set meta_config = {
     "materialized": "incremental",
@@ -11,7 +11,7 @@
     "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
-        , "granularity": "month"
+        , "granularity": "day"
         , "copy_partitions": flags.FULL_REFRESH},
     "tags": ["enriched_history_operations"],
 } %}
@@ -92,6 +92,15 @@ with
             , tx_signers
             , refundable_fee
         from {{ ref('stg_history_transactions') }}
+        {% if model.batch %}
+            -- history_transactions is partitioned on batch_run_date, so the microbatch
+            -- closed_at filter alone cannot prune it. batch_run_date always falls within
+            -- a day of closed_at, so this buffered range restores partition pruning
+            -- without changing which rows qualify.
+            where
+                batch_run_date >= datetime_sub(datetime(timestamp('{{ model.batch.event_time_start }}')), interval 1 day)
+                and batch_run_date < datetime_add(datetime(timestamp('{{ model.batch.event_time_end }}')), interval 1 day)
+        {% endif %}
     )
 
     , history_operations as (
@@ -216,6 +225,15 @@ with
             , operation_trace_code
             , details_json
         from {{ ref('stg_history_operations') }}
+        {% if model.batch %}
+            -- history_operations is partitioned on batch_run_date, so the microbatch
+            -- closed_at filter alone cannot prune it. batch_run_date always falls within
+            -- a day of closed_at, so this buffered range restores partition pruning
+            -- without changing which rows qualify.
+            where
+                batch_run_date >= datetime_sub(datetime(timestamp('{{ model.batch.event_time_start }}')), interval 1 day)
+                and batch_run_date < datetime_add(datetime(timestamp('{{ model.batch.event_time_end }}')), interval 1 day)
+        {% endif %}
     )
 
     , enriched_operations as (
