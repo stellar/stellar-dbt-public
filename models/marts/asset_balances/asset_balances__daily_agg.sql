@@ -6,7 +6,7 @@
     "event_time": "day",
     "batch_size": batch_size,
     "concurrent_batches": flags.FULL_REFRESH,
-    "begin": "2023-01-01",
+    "begin": "2021-01-01",
     "partition_by": {
          "field": "day"
         , "data_type": "date"

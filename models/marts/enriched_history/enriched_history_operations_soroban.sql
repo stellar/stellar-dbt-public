@@ -6,7 +6,7 @@
     "event_time": "closed_at",
     "batch_size": batch_size,
     "concurrent_batches": flags.FULL_REFRESH,
-    "begin": "2015-09-30",
+    "begin": "2024-01-01",
     "cluster_by": ["ledger_sequence", "transaction_id", "op_type"],
     "partition_by": {
         "field": "closed_at"

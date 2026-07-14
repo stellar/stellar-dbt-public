@@ -6,7 +6,7 @@
     "event_time": "hour_agg",
     "batch_size": batch_size,
     "concurrent_batches": flags.FULL_REFRESH,
-    "begin": "2015-09-30",
+    "begin": "2024-01-01",
     "tags": ["hourly_fee_stats"],
     "cluster_by": ["hour_agg", "contract_id"],
     "partition_by": {

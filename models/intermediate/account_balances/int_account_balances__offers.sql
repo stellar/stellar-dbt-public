@@ -6,7 +6,7 @@
     event_time='day',
     batch_size=batch_size,
     concurrent_batches=flags.FULL_REFRESH,
-    begin='2023-01-01',
+    begin='2021-01-01',
     partition_by={
          "field": "day"
         , "data_type": "date"
@@ -25,7 +25,7 @@ with
         {% if model.batch %}
             from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(least(date(timestamp('{{ model.batch.event_time_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
         {% else %}
-            from unnest(generate_date_array('2023-01-01', '2023-01-01')) as dates
+            from unnest(generate_date_array('2021-01-01', '2021-01-01')) as dates
         {% endif %}
     )
 
