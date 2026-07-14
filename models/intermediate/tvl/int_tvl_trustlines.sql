@@ -32,9 +32,7 @@ with
     -- Microbatch supplies the batch window via model.batch (set at run time).
     dt as (
         select dates as day
-        {% if model.batch %}
-            from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(least(date(timestamp('{{ model.batch.event_time_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
-        {% endif %}
+        from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(least(date(timestamp('{{ model.batch.event_time_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
     )
 
     , filtered_tl as (
