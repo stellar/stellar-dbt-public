@@ -309,3 +309,7 @@ In order to apply git tagging properly, the last commit message from a repo must
 # Futher Development
 
 TODO
+
+---
+
+> **Note:** This repository is not in scope for the Stellar Development Foundation bug bounty program. Vulnerabilities found in this repo are not eligible for rewards.
