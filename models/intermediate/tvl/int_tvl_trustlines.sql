@@ -29,14 +29,11 @@
 --  * Sum all the values for that day for all assets
 
 with
-    -- Microbatch supplies the batch window via model.batch; the else branch
-    -- is only a compile-time placeholder (model.batch is unset outside a run).
+    -- Microbatch supplies the batch window via model.batch (set at run time).
     dt as (
         select dates as day
         {% if model.batch %}
             from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(least(date(timestamp('{{ model.batch.event_time_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
-        {% else %}
-            from unnest(generate_date_array('2022-08-08', '2022-08-08')) as dates
         {% endif %}
     )
 
