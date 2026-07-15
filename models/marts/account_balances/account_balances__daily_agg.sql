@@ -1,6 +1,12 @@
 {% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
 
 {% set meta_config = {
+    "datadiff": {
+        "unique_key": ["day", "account_id", "contract_id"],
+        "exclude_columns": [],
+        "min_match_percent": 98,
+        "filters": {"column": "day", "default_start": "2021-01-01"},
+    },
     "materialized": "incremental",
     "incremental_strategy": "microbatch",
     "event_time": "day",

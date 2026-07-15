@@ -1,4 +1,10 @@
 {% set meta_config = {
+    "datadiff": {
+        "unique_key": ["day_agg", "asset_a", "asset_b"],
+        "exclude_columns": ["airflow_start_ts"],
+        "min_match_percent": 98,
+        "filters": {"column": "day_agg", "default_start": "2015-09-30"},
+    },
     "materialized": "incremental",
     "unique_key": ["day_agg", "asset_a", "asset_b"],
     "cluster_by": ["asset_a", "asset_b"],

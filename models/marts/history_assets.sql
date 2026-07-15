@@ -1,4 +1,9 @@
 {% set meta_config = {
+    "datadiff": {
+        "unique_key": ["asset_id"],
+        "exclude_columns": ["batch_id", "batch_run_date", "airflow_start_ts"],
+        "min_match_percent": 98,
+    },
     "materialized": "incremental",
     "unique_key": ["asset_id"],
     "cluster_by": ["asset_id"],

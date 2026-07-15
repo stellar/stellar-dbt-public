@@ -1,4 +1,10 @@
 {% set meta_config = {
+    "datadiff": {
+        "unique_key": ["day", "asset_code", "asset_issuer", "asset_type"],
+        "exclude_columns": [],
+        "min_match_percent": 98,
+        "filters": {"column": "day", "default_start": "2021-01-01"},
+    },
     "materialized": "table",
     "tags": ["tvl"]
 } %}
