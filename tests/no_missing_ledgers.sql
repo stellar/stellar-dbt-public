@@ -30,7 +30,6 @@
     'trust_lines_current',
     'offers_current',
     'liquidity_pools_current',
-    'claimable_balances_current',
     'contract_data_current',
     'contract_code_current',
     'config_settings_current',
