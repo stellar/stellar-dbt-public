@@ -3,7 +3,7 @@
         "unique_key": ["ledger_key_hash", "closed_at"],
         "exclude_columns": [],
         "min_match_percent": 98,
-        "filters": {"column": "closed_at", "default_start": "2015-09-30"},
+        "filters": {"column": "closed_at"},
     },
     "materialized": "incremental",
     "incremental_strategy": "merge",

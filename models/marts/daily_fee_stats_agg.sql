@@ -3,7 +3,7 @@
         "unique_key": ["day_agg"],
         "exclude_columns": ["airflow_start_ts"],
         "min_match_percent": 98,
-        "filters": {"column": "day_agg", "default_start": "2015-09-30"},
+        "filters": {"column": "day_agg"},
     },
     "materialized": "incremental",
     "unique_key": ["day_agg"],

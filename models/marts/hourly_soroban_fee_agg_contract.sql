@@ -5,7 +5,7 @@
         "unique_key": ["hour_agg", "contract_id"],
         "exclude_columns": ["airflow_start_ts"],
         "min_match_percent": 98,
-        "filters": {"column": "hour_agg", "default_start": "2024-01-01"},
+        "filters": {"column": "hour_agg"},
     },
     "materialized": "incremental",
     "incremental_strategy": "microbatch",

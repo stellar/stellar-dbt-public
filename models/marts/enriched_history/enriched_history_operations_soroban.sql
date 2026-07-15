@@ -5,7 +5,7 @@
         "unique_key": ["op_id"],
         "exclude_columns": ["batch_id", "batch_run_date", "airflow_start_ts"],
         "min_match_percent": 98,
-        "filters": {"column": "closed_at", "default_start": "2024-01-01"},
+        "filters": {"column": "closed_at"},
     },
     "materialized": "incremental",
     "incremental_strategy": "microbatch",

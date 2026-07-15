@@ -5,7 +5,7 @@
         "unique_key": ["day", "account_id", "contract_id"],
         "exclude_columns": [],
         "min_match_percent": 98,
-        "filters": {"column": "day", "default_start": "2021-01-01"},
+        "filters": {"column": "day"},
     },
     "materialized": "incremental",
     "incremental_strategy": "microbatch",

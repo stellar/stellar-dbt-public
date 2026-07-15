@@ -5,7 +5,7 @@
         "unique_key": ["hour_agg", "fee_source_account"],
         "exclude_columns": ["airflow_start_ts"],
         "min_match_percent": 98,
-        "filters": {"column": "hour_agg", "default_start": "2015-09-30"},
+        "filters": {"column": "hour_agg"},
     },
     "materialized": "incremental",
     "incremental_strategy": "microbatch",
