@@ -48,6 +48,9 @@ models:
       +materialized: table # how the intermediate models will be materialized
     marts:
       +materialized: table # how the mart models will be materialized
+      ledger_current_state:
+        claimable_balances_current:
+          +enabled: false
     snapshots:
       +materialized: incremental_snapshot
 
