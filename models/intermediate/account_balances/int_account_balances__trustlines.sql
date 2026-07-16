@@ -1,24 +1,26 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
 {{ config(
     materialized='incremental',
-    incremental_strategy="insert_overwrite",
-    unique_key=["day", "account_id", "asset_code", "asset_issuer", "asset_type"],
+    incremental_strategy='microbatch',
+    event_time='day',
+    batch_size=batch_size,
+    concurrent_batches=flags.FULL_REFRESH,
+    begin='2021-01-01',
     partition_by={
          "field": "day"
         , "data_type": "date"
         , "granularity": "day"
+        , "copy_partitions": flags.FULL_REFRESH
     },
     cluster_by=["asset_type", "asset_code", "asset_issuer"],
-    incremental_predicates=["DBT_INTERNAL_DEST.day >= DATE('" ~ var('batch_start_date') ~ "')"]
 ) }}
 
 with
     dt as (
         select dates as day
-        {% if is_incremental() %}
-            from unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
-        {% else %}
-            from unnest(generate_date_array('2023-01-01', date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as dates
-        {% endif %}
+        -- Microbatch supplies the batch window via model.batch (set at run time).
+        from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(least(date(timestamp('{{ model.batch.event_time_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
     )
 
     , filtered_tl as (

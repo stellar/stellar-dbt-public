@@ -1,14 +1,19 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
 {% set meta_config = {
     "materialized": "incremental",
-    "incremental_strategy": "insert_overwrite",
-    "unique_key": ["day", "contract_id"],
+    "incremental_strategy": "microbatch",
+    "event_time": "day",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2021-01-01",
     "partition_by": {
          "field": "day"
         , "data_type": "date"
         , "granularity": "day"
+        , "copy_partitions": flags.FULL_REFRESH
     },
     "tags": ["asset_balance_agg"],
-    "incremental_predicates": ["DBT_INTERNAL_DEST.day >= DATE_SUB(DATE('" ~ var('batch_start_date') ~ "'), INTERVAL 1 DAY)"]
 } %}
 
 {{ config(
@@ -36,10 +41,6 @@ with
             and iabt.contract_id is not null
             -- Exclude XLM burn address
             and iabt.account_id != 'GALAXYVOIDAOPZTDLHILAJQKCVVFMD4IKLXLSZV5YHO7VY74IWZILUTO'
-            and iabt.day < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
-            and iabt.day >= date('{{ var("batch_start_date") }}')
-        {% endif %}
         group by 1, 2, 3, 4, 5
     )
 
@@ -58,10 +59,6 @@ with
             -- Exclude XLM burn address
             -- In theory there wouldn't be any XLM burn address LP but we can filter just in case
             and iablp.account_id != 'GALAXYVOIDAOPZTDLHILAJQKCVVFMD4IKLXLSZV5YHO7VY74IWZILUTO'
-            and iablp.day < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
-            and iablp.day >= date('{{ var("batch_start_date") }}')
-        {% endif %}
         group by 1, 2, 3, 4, 5
     )
 
@@ -79,10 +76,6 @@ with
             true
             -- Exclude XLM burn address
             and iabo.account_id != 'GALAXYVOIDAOPZTDLHILAJQKCVVFMD4IKLXLSZV5YHO7VY74IWZILUTO'
-            and iabo.day < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
-            and iabo.day >= date('{{ var("batch_start_date") }}')
-        {% endif %}
         group by 1, 2, 3, 4, 5
     )
 
@@ -96,12 +89,6 @@ with
             , sum(iabc.balance) as total_balance
             , count(case when iabc.balance > 0 then 1 end) as total_accounts_with_balance
         from {{ ref('int_account_balances__contracts') }} as iabc
-        where
-            true
-            and iabc.day < date('{{ var("batch_end_date") }}')
-        {% if is_incremental() %}
-            and iabc.day >= date('{{ var("batch_start_date") }}')
-        {% endif %}
         group by 1, 2, 3, 4, 5
     )
 

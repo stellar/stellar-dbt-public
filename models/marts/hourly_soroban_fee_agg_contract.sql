@@ -1,16 +1,20 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["hour_agg", "contract_id"],
+    "incremental_strategy": "microbatch",
+    "event_time": "hour_agg",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2024-01-01",
     "tags": ["hourly_fee_stats"],
     "cluster_by": ["hour_agg", "contract_id"],
     "partition_by": {
         "field": "hour_agg",
         "data_type": "timestamp",
-        "granularity": "day"
+        "granularity": "day",
+        "copy_partitions": flags.FULL_REFRESH
     },
-    "incremental_predicates": [
-        "DBT_INTERNAL_DEST.hour_agg >= timestamp(date_sub(date('" ~ var("batch_start_date") ~ "'), interval 1 day))"
-    ]
 } %}
 
 {{ config(
@@ -55,10 +59,6 @@ with
             --     '' must be filtered to keep this mart strictly per-contract.
             contract_id is not null
             and contract_id != ''
-            and closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-            {% if is_incremental() %}
-                and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
         -- Deduplicate to transaction grain. Soroban txns currently have
         -- 1 operation, but this handles (potential) future multi-op Soroban transactions
         -- so fees are not double-counted.

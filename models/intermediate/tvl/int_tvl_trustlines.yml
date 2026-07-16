@@ -3,6 +3,18 @@ version: 2
 models:
   - name: int_tvl_trustlines
     description: "This table aggregates asset selling liabilities from trustlines to calculate TVL"
+    tests:
+      - stellar_dbt_public.incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - day
+            - account_id
+            - asset_code
+            - asset_issuer
+            - asset_type
+          date_column_name: "day"
+          greater_than_equal_to: "2 day"
+          meta:
+            description: "Tests the uniqueness combination of: day, account_id, asset_code, asset_issuer, asset_type."
     columns:
       - name: day
         description: '{{ doc("day") }}'

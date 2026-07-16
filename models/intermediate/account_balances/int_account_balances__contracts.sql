@@ -1,5 +1,6 @@
 {% set meta_config = {
     "unique_key": ["day", "account_id", "contract_id"],
+    "event_time": "day",
     "partition_by": {
          "field": "day"
         , "data_type": "date"
