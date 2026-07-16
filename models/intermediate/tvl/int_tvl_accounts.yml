@@ -3,6 +3,15 @@ version: 2
 models:
   - name: int_tvl_accounts
     description: "This table aggregates XLM selling liabilities from accounts to calculate TVL"
+    tests:
+      - stellar_dbt_public.incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - day
+            - account_id
+          date_column_name: "day"
+          greater_than_equal_to: "2 day"
+          meta:
+            description: "Tests the uniqueness combination of: day, account_id."
     columns:
       - name: day
         description: '{{ doc("day") }}'

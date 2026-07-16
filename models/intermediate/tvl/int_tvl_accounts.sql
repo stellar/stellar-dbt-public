@@ -1,11 +1,20 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
+{# `begin` is 2022-08-08: the earliest asset pricing data from stellar.expert. #}
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["day", "account_id"],
+    "incremental_strategy": "microbatch",
+    "event_time": "day",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2022-08-08",
+    "partition_by": {
+        "field": "day"
+        , "data_type": "date"
+        , "granularity": "day"
+        , "copy_partitions": flags.FULL_REFRESH},
     "tags": ["tvl"]
 } %}
-
--- The earliest pricing data is at 2022-08-08 from stellar.expert for assets.
-{% set full_refresh_date = '2022-08-08' %}
 
 {{ config(
     meta=meta_config,
@@ -14,53 +23,41 @@
 }}
 
 -- To find the XLM TVL for a given day
---  * Get all account entries <= day
---  * Get the current value of the account_id for that day
+--  * Get each account's state as of that day from the SCD-2 accounts_snapshot
+--    (valid_from/valid_to), rather than reconstructing it from the raw change log
+--  * Take the XLM selling liabilities of the account for that day
 --  * Sum all the values for that day for all accounts
 
--- Dates that XLM TVL amount should be calculated for
 with
-    date_range as (
-        select day
-        {% if is_incremental() %}
-            from
-                unnest(generate_date_array(date('{{ var("batch_start_date") }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day)))
-                    as day
-        {% else %}
-            from unnest(generate_date_array(date('{{ full_refresh_date }}'), date_sub(date('{{ var("batch_end_date") }}'), interval 1 day))) as day
-        {% endif %}
+    -- Microbatch supplies the batch window via model.batch (set at run time).
+    dt as (
+        select dates as day
+        from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(least(date(timestamp('{{ model.batch.event_time_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
     )
 
-    , xlm_tvl_per_day as (
+    , filtered_acc as (
         select
-            d.day
-            , a.account_id
-            , array_agg(a.selling_liabilities order by a.closed_at desc)[offset(0)] as tvl
-            , array_agg(a.deleted order by a.closed_at desc)[offset(0)] as deleted
-        from date_range as d
-        inner join {{ ref('stg_accounts') }} as a
-            on a.closed_at < timestamp(date_add(d.day, interval 1 day))
-            and a.closed_at < timestamp(date('{{ var("batch_end_date") }}'))
-        group by 1, 2
-    )
-
-    , daily_account_xlm_tvl as (
-        select
-            day
-            , account_id
-            , tvl
-        from xlm_tvl_per_day
+            acc.account_id
+            , acc.selling_liabilities
+            , acc.valid_from
+            , acc.valid_to
+        from {{ ref('accounts_snapshot') }} as acc
         where
-            true
-            and deleted = false
+            acc.deleted is false
+            and acc.valid_from < timestamp(date_add((select max(day) from dt), interval 1 day))
+            and (acc.valid_to is null or acc.valid_to >= timestamp((select min(day) from dt)))
     )
 
     , daily_xlm_tvl as (
         select
-            day
-            , account_id
-            , sum(tvl) as accounts_tvl
-        from daily_account_xlm_tvl
+            dt.day
+            , acc.account_id
+            , sum(acc.selling_liabilities) as accounts_tvl
+        from dt
+        inner join filtered_acc as acc
+            on
+            timestamp(dt.day) >= timestamp_trunc(acc.valid_from, day)
+            and (timestamp(date_add(dt.day, interval 1 day)) <= timestamp_trunc(acc.valid_to, day) or acc.valid_to is null)
         group by 1, 2
     )
 

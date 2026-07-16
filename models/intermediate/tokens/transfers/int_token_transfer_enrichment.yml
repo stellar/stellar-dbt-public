@@ -3,6 +3,14 @@ version: 2
 models:
   - name: int_token_transfer_enrichment
     description: "This table joins token_transfers_raw with history_operations to add operation type and soroban flag."
+    tests:
+      - stellar_dbt_public.incremental_unique_combination_of_columns:
+          combination_of_columns:
+            - unique_key
+          date_column_name: "closed_at"
+          greater_than_equal_to: "1 day"
+          meta:
+            description: "Tests the uniqueness combination of: unique_key"
     columns:
       - name: transaction_hash
         description: '{{ doc("transaction_hash") }}'

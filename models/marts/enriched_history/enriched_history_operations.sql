@@ -1,13 +1,19 @@
+{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+
 {% set meta_config = {
     "materialized": "incremental",
-    "unique_key": ["op_id"],
+    "incremental_strategy": "microbatch",
+    "event_time": "closed_at",
+    "batch_size": batch_size,
+    "concurrent_batches": flags.FULL_REFRESH,
+    "begin": "2015-09-30",
     "cluster_by": ["ledger_sequence","transaction_id","op_account_id","type"],
     "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
-        , "granularity": "month"},
+        , "granularity": "day"
+        , "copy_partitions": flags.FULL_REFRESH},
     "tags": ["enriched_history_operations"],
-    "incremental_predicates":["DBT_INTERNAL_DEST.closed_at >= timestamp_sub(timestamp(date('" ~ var('batch_start_date') ~ "')), interval 1 day)"]
 } %}
 
 {{ config(
@@ -44,19 +50,6 @@ with
             , batch_id
             , batch_run_date
         from {{ ref('stg_history_ledgers') }}
-        where
-            -- Need to add/subtract one day to the window boundaries
-            -- because this model runs at 30 min increments.
-            -- Without the additional date buffering the following would occur
-            -- * batch_start_date == '2025-01-01 01:00:00' --> '2025-01-01'
-            -- * batch_end_date == '2025-01-01 01:30:00' --> '2025-01-01'
-            -- * '2025-01-01 <= closed_at < '2025-01-01' would never have any data to processes
-            closed_at < timestamp(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-                -- The extra day date_sub is useful in the case the first scheduled run for a day is skipped
-                -- because the DAG is configured with catchup=false
-                and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
     )
 
     , history_transactions as (
@@ -99,11 +92,15 @@ with
             , tx_signers
             , refundable_fee
         from {{ ref('stg_history_transactions') }}
-        where
-            batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-                and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
+        {% if model.batch %}
+            -- history_transactions is partitioned on batch_run_date, so the microbatch
+            -- closed_at filter alone cannot prune it. batch_run_date always falls within
+            -- a day of closed_at, so this buffered range restores partition pruning
+            -- without changing which rows qualify.
+            where
+                batch_run_date >= datetime_sub(datetime(timestamp('{{ model.batch.event_time_start }}')), interval 1 day)
+                and batch_run_date < datetime_add(datetime(timestamp('{{ model.batch.event_time_end }}')), interval 1 day)
+        {% endif %}
     )
 
     , history_operations as (
@@ -228,12 +225,15 @@ with
             , operation_trace_code
             , details_json
         from {{ ref('stg_history_operations') }}
-        where
-            batch_run_date < datetime(date_add(date('{{ var("batch_end_date") }}'), interval 1 day))
-        {% if is_incremental() %}
-                and batch_run_date >= datetime(date_sub(date('{{ var("batch_start_date") }}'), interval 1 day))
-            {% endif %}
-
+        {% if model.batch %}
+            -- history_operations is partitioned on batch_run_date, so the microbatch
+            -- closed_at filter alone cannot prune it. batch_run_date always falls within
+            -- a day of closed_at, so this buffered range restores partition pruning
+            -- without changing which rows qualify.
+            where
+                batch_run_date >= datetime_sub(datetime(timestamp('{{ model.batch.event_time_start }}')), interval 1 day)
+                and batch_run_date < datetime_add(datetime(timestamp('{{ model.batch.event_time_end }}')), interval 1 day)
+        {% endif %}
     )
 
     , enriched_operations as (
