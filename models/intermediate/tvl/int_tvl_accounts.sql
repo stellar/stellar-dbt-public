@@ -28,11 +28,17 @@
 --  * Take the XLM selling liabilities of the account for that day
 --  * Sum all the values for that day for all accounts
 
+{# model.batch is only set at microbatch run time; fall back to the batch
+   vars so parse/compile (e.g. `dbt compile` in CI) renders without a batch
+   context. #}
+{% set window_start = model.batch.event_time_start if model.batch else var("batch_start_date") %}
+{% set window_end = model.batch.event_time_end if model.batch else var("batch_end_date") %}
+
 with
     -- Microbatch supplies the batch window via model.batch (set at run time).
     dt as (
         select dates as day
-        from unnest(generate_date_array(date(timestamp('{{ model.batch.event_time_start }}')), date_sub(least(date(timestamp('{{ model.batch.event_time_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
+        from unnest(generate_date_array(date(timestamp('{{ window_start }}')), date_sub(least(date(timestamp('{{ window_end }}')), date('{{ var("batch_end_date") }}')), interval 1 day))) as dates
     )
 
     , filtered_acc as (
