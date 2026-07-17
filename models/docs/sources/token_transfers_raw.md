@@ -29,7 +29,7 @@ The destination address for the token transfer event amount
 {% enddocs %}
 
 {% docs amount_float %}
-The normalized float amount of the asset. Raw amount of asset * 0.0000001
+**DEPRECATED, prefer `amount_raw`.** This column applies a fixed scale of 7 decimals (raw amount of asset * 0.0000001) to every event, but token contracts declare their own decimal precision. As a result this value is incorrect for any token that does not use 7 decimals (off by a factor of 10^(7 - real_decimals)). Use `amount_raw` (always correct) and scale by the token's declared decimals. Correctly scaled amounts are already recomputed downstream in the dbt `token_transfers` model.
 {% enddocs %}
 
 {% docs amount_raw %}
