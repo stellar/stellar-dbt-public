@@ -1,4 +1,10 @@
 {% set meta_config = {
+    "datadiff": {
+        "unique_key": ["day_agg"],
+        "exclude_columns": ["airflow_start_ts"],
+        "min_match_percent": 98,
+        "filters": {"column": "day_agg"},
+    },
     "materialized": "incremental",
     "unique_key": ["day_agg"],
     "tags": ["daily_fee_stats"],

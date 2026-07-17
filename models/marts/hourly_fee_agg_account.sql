@@ -1,6 +1,12 @@
 {% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
 
 {% set meta_config = {
+    "datadiff": {
+        "unique_key": ["hour_agg", "fee_source_account"],
+        "exclude_columns": ["airflow_start_ts"],
+        "min_match_percent": 98,
+        "filters": {"column": "hour_agg"},
+    },
     "materialized": "incremental",
     "incremental_strategy": "microbatch",
     "event_time": "hour_agg",
