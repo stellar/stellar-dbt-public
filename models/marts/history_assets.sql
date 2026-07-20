@@ -4,8 +4,7 @@
         "exclude_columns": ["batch_id", "batch_run_date", "batch_insert_ts", "airflow_start_ts"],
         "min_match_percent": 98,
     },
-    "materialized": "incremental",
-    "unique_key": ["asset_id"],
+    "materialized": "table",
     "cluster_by": ["asset_id"],
     "tags": ["history_assets"]
 } %}

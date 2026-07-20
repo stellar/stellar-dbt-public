@@ -1,5 +1,6 @@
 {% set meta_config = {
     "materialized": "incremental",
+    "incremental_strategy": "merge",
     "unique_key": "offer_id",
     "cluster_by": ["selling_asset_code", "selling_asset_issuer", "buying_asset_code", "buying_asset_issuer"],
     "tags": ["current_state"]
