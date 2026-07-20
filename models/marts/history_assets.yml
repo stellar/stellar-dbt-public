@@ -15,13 +15,11 @@ models:
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
-      - incremental_unique_combination_of_columns:
+      - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - asset_type
             - asset_code
             - asset_issuer
-          date_column_name: "batch_run_date"
-          greater_than_equal_to: "2 day"
     columns:
       - name: asset_id
         description: '{{ doc("assets_id") }}'
@@ -32,38 +30,30 @@ models:
       - name: asset_type
         description: '{{ doc("asset_type") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+          - not_null
           - accepted_values:
               values: ["credit_alphanum12", "credit_alphanum4", "native"]
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
-              condition: 'asset_type != "native"'
+          - not_null:
+              config:
+                where: 'asset_type != "native"'
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
-              condition: 'asset_type != "native"'
+          - not_null:
+              config:
+                where: 'asset_type != "native"'
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+          - not_null
