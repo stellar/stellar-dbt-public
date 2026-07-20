@@ -1,4 +1,4 @@
-{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+{% set batch_size = env_var('DBT_MICROBATCH_BATCH_SIZE', '') or ('year' if flags.FULL_REFRESH else 'day') %}
 
 {# `begin` is 2022-08-08: the earliest asset pricing data from stellar.expert. #}
 {% set meta_config = {
