@@ -20,11 +20,6 @@ with
     ledger_stats as (
         select *
         from {{ ref('ledger_fee_stats_agg') }}
-        where
-            day_agg < date('{{ var("batch_end_date") }}')
-            {% if is_incremental() %}
-                and day_agg >= date('{{ var("batch_start_date") }}')
-            {% endif %}
     )
 
     , final as (
