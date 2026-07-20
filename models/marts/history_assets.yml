@@ -26,12 +26,8 @@ models:
       - name: asset_id
         description: '{{ doc("assets_id") }}'
         tests:
-          - incremental_unique:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
-          - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+          - unique
+          - not_null
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
