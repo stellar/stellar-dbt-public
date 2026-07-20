@@ -5,8 +5,7 @@
         "min_match_percent": 98,
         "filters": {"column": "day_agg"},
     },
-    "materialized": "incremental",
-    "unique_key": ["day_agg", "asset_a", "asset_b"],
+    "materialized": "table",
     "cluster_by": ["asset_a", "asset_b"],
     "partition_by": {
         "field": "day_agg"
