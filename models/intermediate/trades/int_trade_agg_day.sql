@@ -3,15 +3,16 @@
     )
 }}
 
--- TODO: The int_trade_agg tables need to be refactored to handle incremental
--- builds correctly. Currently it only builds a single day even if the model
--- is full-refreshed.
+-- This model is materialized as a table and fully rebuilt on every run: it
+-- reads all trade history (up to batch_end_date) and emits one row per
+-- (day_agg, asset pair). day_agg is the real trade date so every historical
+-- day is preserved, which is what the downstream trade_agg table depends on.
 
 /* select columns from the history_trades table and generates unique trade key*/
 with
     base_trades as (
         select
-            date('{{ var("batch_start_date") }}') as day_agg
+            cast(ledger_closed_at as date) as day_agg
             , ledger_closed_at
             , selling_asset_id
             , selling_asset_code
@@ -28,9 +29,7 @@ with
             , buying_amount
         from {{ ref('stg_history_trades') }}
         where
-            -- TODO: Add incremental logic here
             ledger_closed_at < timestamp(date('{{ var("batch_end_date") }}'))
-            and ledger_closed_at >= timestamp(date('{{ var("batch_start_date") }}'))
     )
 
     /* duplicates trades in order to obtain all trades between an asset pair, regardless
