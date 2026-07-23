@@ -3,12 +3,9 @@
     )
 }}
 
--- This model is materialized as a table and fully rebuilt on every run. It
--- reads all trade history (up to batch_end_date) and, for every day a pair
--- traded, emits the trailing 7-day (D-7 .. D inclusive) rolling metrics as of
--- that day. Grain: (day_agg, asset pair). The rolling windows are computed with
--- window functions over a per-day base so complete history is produced in a
--- single pass rather than one reference day per run.
+-- TODO: The int_trade_agg tables need to be refactored to handle incremental
+-- builds correctly. Currently it only builds a single day even if the model
+-- is full-refreshed.
 
 /* select columns from the history_trades table and generates unique trade key*/
 with
@@ -31,7 +28,9 @@ with
             , buying_amount
         from {{ ref('stg_history_trades') }}
         where
+            -- TODO: Add incremental logic here
             ledger_closed_at < timestamp(date('{{ var("batch_end_date") }}'))
+            and ledger_closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 8 day))
     )
 
     /* duplicates trades in order to obtain all trades between an asset pair, regardless
@@ -122,11 +121,10 @@ with
         where pair_dedup = 1
     )
 
-    /* carry each day's open/close price (first/last trade of the day per pair)
-    so the rolling open/close can be derived from the per-day base */
-    , daily_trades as (
+    /* obtain aggregate function metrics for the asset pair */
+    , trade_day_agg_group as (
         select
-            day_agg
+            date('{{ var("batch_start_date") }}') as day_agg
             , asset_a
             , asset_a_code
             , asset_a_issuer
@@ -135,52 +133,16 @@ with
             , asset_b_code
             , asset_b_issuer
             , asset_b_type
-            , trade_key
-            , price_n
-            , price_d
-            , asset_a_amount
-            , asset_b_amount
-            , first_value(price_n) over pair_day_asc as day_open_n
-            , first_value(price_d) over pair_day_asc as day_open_d
-            , first_value(price_n) over pair_day_desc as day_close_n
-            , first_value(price_d) over pair_day_desc as day_close_d
+            , count(trade_key) as trade_count_weekly
+            , sum(asset_a_amount) as asset_a_volume_weekly
+            , sum(asset_b_amount) as asset_b_volume_weekly
+            , sum(asset_b_amount) / sum(asset_a_amount) as avg_price_weekly
+            , max(price_n / price_d) as high_price_weekly
+            , min(price_n / price_d) as low_price_weekly
         from dedup_asset_pair
-        window
-            pair_day_asc as (
-                partition by day_agg, asset_a, asset_b
-                order by ledger_closed_at asc
-            )
-            , pair_day_desc as (
-                partition by day_agg, asset_a, asset_b
-                order by ledger_closed_at desc
-            )
-    )
-
-    /* one row per (day, asset pair) with that day's aggregate metrics */
-    , daily_metrics as (
-        select
-            day_agg
-            , asset_a
-            , asset_a_code
-            , asset_a_issuer
-            , asset_a_type
-            , asset_b
-            , asset_b_code
-            , asset_b_issuer
-            , asset_b_type
-            , count(trade_key) as daily_trade_count
-            , sum(asset_a_amount) as daily_asset_a_volume
-            , sum(asset_b_amount) as daily_asset_b_volume
-            , max(price_n / price_d) as daily_high_price
-            , min(price_n / price_d) as daily_low_price
-            , any_value(day_open_n) as day_open_n
-            , any_value(day_open_d) as day_open_d
-            , any_value(day_close_n) as day_close_n
-            , any_value(day_close_d) as day_close_d
-        from daily_trades
+        where ledger_closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 7 day))
         group by
-            day_agg
-            , asset_a
+            asset_a
             , asset_a_code
             , asset_a_issuer
             , asset_a_type
@@ -190,8 +152,8 @@ with
             , asset_b_type
     )
 
-    /* trailing 7-day rolling window (D-7 .. D inclusive) per asset pair */
-    , rolling_weekly as (
+    /* obtain window function metrics for the asset pair */
+    , trade_day_agg_window as (
         select
             day_agg
             , asset_a
@@ -202,28 +164,80 @@ with
             , asset_b_code
             , asset_b_issuer
             , asset_b_type
-            , sum(daily_trade_count) over w as trade_count_weekly
-            , sum(daily_asset_a_volume) over w as asset_a_volume_weekly
-            , sum(daily_asset_b_volume) over w as asset_b_volume_weekly
-            , sum(daily_asset_b_volume) over w
-                / sum(daily_asset_a_volume) over w as avg_price_weekly
-            , max(daily_high_price) over w as high_price_weekly
-            , min(daily_low_price) over w as low_price_weekly
-            , first_value(day_open_n) over w as open_n_weekly
-            , first_value(day_open_d) over w as open_d_weekly
-            , day_close_n as close_n_weekly
-            , day_close_d as close_d_weekly
-        from daily_metrics
-        window
-            w as (
-                partition by asset_a, asset_b
-                order by unix_date(day_agg)
-                range between 7 preceding and current row
-            )
+            , ledger_closed_at
+            , first_value(price_n) over (
+                partition by
+                    day_agg
+                    , asset_a
+                    , asset_b
+                order by ledger_closed_at asc
+            ) as open_n_weekly
+            , first_value(price_d) over (
+                partition by
+                    day_agg
+                    , asset_a
+                    , asset_b
+                order by ledger_closed_at asc
+            ) as open_d_weekly
+            , last_value(price_n) over (
+                partition by
+                    day_agg
+                    , asset_a
+                    , asset_b
+                order by ledger_closed_at asc
+            ) as close_n_weekly
+            , last_value(price_d) over (
+                partition by
+                    day_agg
+                    , asset_a
+                    , asset_b
+                order by ledger_closed_at asc
+            ) as close_d_weekly
+            , row_number() over (
+                partition by
+                    day_agg
+                    , asset_a
+                    , asset_b
+                order by ledger_closed_at desc
+            ) as dedup_rows
+        from dedup_asset_pair
+        where ledger_closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 7 day))
+    )
+
+    /* joins all metrics related to the asset pair while deduplicating the window functions */
+    , join_table_weekly as (
+        select
+            trade_day_agg_group.day_agg
+            , trade_day_agg_group.asset_a
+            , trade_day_agg_group.asset_a_code
+            , trade_day_agg_group.asset_a_issuer
+            , trade_day_agg_group.asset_a_type
+            , trade_day_agg_group.asset_b
+            , trade_day_agg_group.asset_b_code
+            , trade_day_agg_group.asset_b_issuer
+            , trade_day_agg_group.asset_b_type
+            , trade_day_agg_group.trade_count_weekly
+            , trade_day_agg_group.asset_a_volume_weekly
+            , trade_day_agg_group.asset_b_volume_weekly
+            , trade_day_agg_group.avg_price_weekly
+            , trade_day_agg_group.high_price_weekly
+            , trade_day_agg_group.low_price_weekly
+            , trade_day_agg_window.open_n_weekly
+            , trade_day_agg_window.open_d_weekly
+            , trade_day_agg_window.close_n_weekly
+            , trade_day_agg_window.close_d_weekly
+        from trade_day_agg_group
+        left join
+            trade_day_agg_window
+            on
+            trade_day_agg_group.day_agg = trade_day_agg_window.day_agg
+            and trade_day_agg_group.asset_a = trade_day_agg_window.asset_a
+            and trade_day_agg_group.asset_b = trade_day_agg_window.asset_b
+        where trade_day_agg_window.dedup_rows = 1
     )
 
 
 select
     *
     , '{{ var("airflow_start_timestamp") }}' as airflow_start_ts
-from rolling_weekly
+from join_table_weekly
