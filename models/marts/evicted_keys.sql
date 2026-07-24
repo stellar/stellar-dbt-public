@@ -20,8 +20,8 @@ with
         select
             kh as ledger_key_hash
             , shl.closed_at
-            , shl.sequence as ledger_sequence
             , true as is_evicted
+            , shl.sequence as ledger_sequence
         from {{ ref('stg_history_ledgers') }} as shl
         cross join unnest(shl.evicted_ledger_keys_hash) as kh
     )
@@ -30,8 +30,8 @@ with
         select
             ledger_key_hash
             , closed_at
-            , ledger_sequence
             , false as is_evicted
+            , ledger_sequence
         from {{ ref('stg_restored_key') }}
     )
 
