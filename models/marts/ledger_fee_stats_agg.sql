@@ -11,13 +11,13 @@
     "incremental_strategy": "microbatch",
     "event_time": "day_agg",
     "batch_size": batch_size,
-    "concurrent_batches": flags.FULL_REFRESH,
+    "concurrent_batches": true,
     "begin": "2015-09-30",
     "partition_by": {
         "field": "day_agg"
         , "data_type": "date"
         , "granularity": "day"
-        , "copy_partitions": flags.FULL_REFRESH},
+        , "copy_partitions": true},
     "tags": ["hourly_fee_stats"],
     "cluster_by": ["day_agg", "ledger_sequence"]
 } %}

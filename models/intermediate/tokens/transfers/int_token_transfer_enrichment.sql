@@ -5,13 +5,13 @@
     "incremental_strategy": "microbatch",
     "event_time": "closed_at",
     "batch_size": batch_size,
-    "concurrent_batches": flags.FULL_REFRESH,
+    "concurrent_batches": true,
     "begin": "2015-09-30",
     "partition_by": {
         "field": "closed_at"
         , "data_type": "timestamp"
         , "granularity": "day"
-        , "copy_partitions": flags.FULL_REFRESH},
+        , "copy_partitions": true},
 } %}
 
 {{ config(

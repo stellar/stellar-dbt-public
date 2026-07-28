@@ -6,13 +6,13 @@
     "incremental_strategy": "microbatch",
     "event_time": "day",
     "batch_size": batch_size,
-    "concurrent_batches": flags.FULL_REFRESH,
+    "concurrent_batches": true,
     "begin": "2022-08-08",
     "partition_by": {
         "field": "day"
         , "data_type": "date"
         , "granularity": "day"
-        , "copy_partitions": flags.FULL_REFRESH},
+        , "copy_partitions": true},
     "tags": ["tvl"]
 } %}
 
