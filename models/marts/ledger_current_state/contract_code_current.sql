@@ -1,5 +1,6 @@
 {% set meta_config = {
     "materialized": "incremental",
+    "incremental_strategy": "merge",
     "unique_key": ["contract_code_hash"],
     "cluster_by": ["contract_code_hash"],
     "tags": ["current_state"]

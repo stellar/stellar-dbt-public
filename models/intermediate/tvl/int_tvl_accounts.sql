@@ -1,4 +1,4 @@
-{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+{% set batch_size = microbatch_batch_size() %}
 
 {# `begin` is 2022-08-08: the earliest asset pricing data from stellar.expert. #}
 {% set meta_config = {
@@ -6,13 +6,13 @@
     "incremental_strategy": "microbatch",
     "event_time": "day",
     "batch_size": batch_size,
-    "concurrent_batches": flags.FULL_REFRESH,
+    "concurrent_batches": true,
     "begin": "2022-08-08",
     "partition_by": {
         "field": "day"
         , "data_type": "date"
         , "granularity": "day"
-        , "copy_partitions": flags.FULL_REFRESH},
+        , "copy_partitions": true},
     "tags": ["tvl"]
 } %}
 

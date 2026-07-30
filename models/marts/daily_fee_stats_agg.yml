@@ -19,34 +19,24 @@ models:
       - name: day_agg
         description: '{{ doc("ledger_fee_day_agg") }}'
         tests:
-          - incremental_unique:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - unique
+          - not_null
 
       # General
       - name: total_fee_charged
         description: '{{ doc("ledger_fee_total_fee_charged") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: max_fee_charged
         description: '{{ doc("ledger_fee_max_fee_charged") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: txn_count
         description: '{{ doc("ledger_fee_txn_count") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: failed_txn_count
         description: '{{ doc("ledger_fee_failed_txn_count") }}'
@@ -54,37 +44,27 @@ models:
       - name: total_effective_txn_operation_count
         description: '{{ doc("ledger_fee_total_effective_txn_operation_count") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: total_raw_txn_operation_count
         description: '{{ doc("ledger_fee_total_raw_txn_operation_count") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: min_ledger_sequence
         description: '{{ doc("daily_fee_min_ledger_sequence") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: max_ledger_sequence
         description: '{{ doc("daily_fee_max_ledger_sequence") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: total_ledgers
         description: '{{ doc("daily_fee_total_ledgers") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "day_agg"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       # Classic: fee aggregates
       - name: classic_txn_count

@@ -1,4 +1,4 @@
-{% set batch_size = 'year' if flags.FULL_REFRESH else 'day' %}
+{% set batch_size = microbatch_batch_size() %}
 
 {% set meta_config = {
     "datadiff": {
@@ -11,7 +11,7 @@
     "incremental_strategy": "microbatch",
     "event_time": "hour_agg",
     "batch_size": batch_size,
-    "concurrent_batches": flags.FULL_REFRESH,
+    "concurrent_batches": true,
     "begin": "2024-01-01",
     "tags": ["hourly_fee_stats"],
     "cluster_by": ["hour_agg", "contract_id"],
@@ -19,7 +19,7 @@
         "field": "hour_agg",
         "data_type": "timestamp",
         "granularity": "day",
-        "copy_partitions": flags.FULL_REFRESH
+        "copy_partitions": true
     },
 } %}
 
