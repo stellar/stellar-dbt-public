@@ -1,5 +1,6 @@
 {% set meta_config = {
     "materialized": "incremental",
+    "incremental_strategy": "merge",
     "unique_key": "liquidity_pool_id",
     "cluster_by": ["asset_a_code", "asset_a_issuer", "asset_b_code", "asset_b_issuer"],
     "tags": ["current_state"]

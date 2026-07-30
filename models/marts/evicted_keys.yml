@@ -15,32 +15,28 @@ models:
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
           meta:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ledger_key_hash
+            - closed_at
 
     columns:
       - name: ledger_key_hash
         description: '{{ doc("ledger_key_hash") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+          - not_null
 
       - name: is_evicted
         description: '{{ doc("is_evicted") }}'
         tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+          - not_null
