@@ -1,4 +1,5 @@
 {% set batch_size = microbatch_batch_size() %}
+{% set begin = microbatch_begin('2021-01-01') %}
 
 {% set meta_config = {
     "datadiff": {
@@ -12,7 +13,7 @@
     "event_time": "day",
     "batch_size": batch_size,
     "concurrent_batches": true,
-    "begin": "2021-01-01",
+    "begin": begin,
     "partition_by": {
          "field": "day"
         , "data_type": "date"
