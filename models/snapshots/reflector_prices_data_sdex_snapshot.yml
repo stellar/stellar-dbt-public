@@ -28,6 +28,8 @@ models:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "valid_from"
               greater_than_equal_to: "2 day"
+              config:
+                severity: '{{ "error" if target.name == "prod" else "warn" }}'
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
@@ -35,6 +37,8 @@ models:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "valid_from"
               greater_than_equal_to: "2 day"
+              config:
+                severity: '{{ "error" if target.name == "prod" else "warn" }}'
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
@@ -42,6 +46,8 @@ models:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "valid_from"
               greater_than_equal_to: "2 day"
+              config:
+                severity: '{{ "error" if target.name == "prod" else "warn" }}'
 
       - name: asset_contract_id
         description: '{{ doc("asset_contract_id") }}'
