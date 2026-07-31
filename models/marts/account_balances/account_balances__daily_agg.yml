@@ -23,6 +23,8 @@ models:
             - contract_id
           date_column_name: "day"
           greater_than_equal_to: "2 day"
+          config:
+            severity: '{{ "error" if target.name == "prod" else "warn" }}'
           meta:
             description: "Tests the uniqueness combination of: day, account_id, and contract_id."
     columns:
