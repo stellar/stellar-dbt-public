@@ -1,4 +1,5 @@
 {% set batch_size = microbatch_batch_size() %}
+{% set begin = microbatch_begin('2024-01-01') %}
 
 {% set meta_config = {
     "datadiff": {
@@ -12,7 +13,7 @@
     "event_time": "hour_agg",
     "batch_size": batch_size,
     "concurrent_batches": true,
-    "begin": "2024-01-01",
+    "begin": begin,
     "tags": ["hourly_fee_stats"],
     "cluster_by": ["hour_agg", "contract_id"],
     "partition_by": {
