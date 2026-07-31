@@ -1,4 +1,5 @@
 {% set batch_size = microbatch_batch_size() %}
+{% set begin = microbatch_begin('2022-08-08') %}
 
 {# `begin` is 2022-08-08: the earliest asset pricing data from stellar.expert. #}
 {% set meta_config = {
@@ -7,7 +8,7 @@
     "event_time": "day",
     "batch_size": batch_size,
     "concurrent_batches": true,
-    "begin": "2022-08-08",
+    "begin": begin,
     "partition_by": {
         "field": "day"
         , "data_type": "date"

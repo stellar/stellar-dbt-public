@@ -2,7 +2,8 @@ version: 2
 
 sources:
   - name: crypto_stellar
-    database: "crypto-stellar"
+    database: "{{ env_var('PUBLIC_SOURCE_DB', 'test-hubble-319619' if target.name in ('ci', 'test') else 'crypto-stellar') }}"
+    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') }}"
     tables:
       - name: token_transfers_raw
         description: '{{ doc("token_transfers_raw") }}'
