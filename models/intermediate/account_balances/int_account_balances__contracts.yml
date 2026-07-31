@@ -33,6 +33,8 @@ models:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "day"
               greater_than_equal_to: "2 day"
+              config:
+                severity: '{{ "error" if target.name == "prod" else "warn" }}'
           - relationships:
               to: ref('int_asset_metadata')
               field: contract_id
