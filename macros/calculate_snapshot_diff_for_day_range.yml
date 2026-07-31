@@ -2,7 +2,12 @@ version: 2
 
 macros:
   - name: calculate_snapshot_diff_for_day_range
-    description: A function to calculate snapshot for a given source table, for a range of days. The result is stored in temp_target_table.
+    description: >
+      A function to calculate snapshot for a given source table, for a range of days. The result is stored in temp_target_table.
+      The range is computed in a single set-based pass rather than one iteration per day: SCD Type-2 valid_to is always the valid_from
+      of the entity's next version, so the range chains with one window function. Each entity's version that was already open when the
+      range started is read from the target positionally (its latest version with valid_from before snapshot_start_date) so that
+      re-running a historical range reproduces it.
     docs:
       show: true
     arguments:
@@ -14,7 +19,7 @@ macros:
         description: Name of the model where snapshot records are stored
       - name: temp_source_table
         type: string
-        description: Name of the temporary table which stores snaphot diff for a day
+        description: Name of the temporary table which stores one row per entity per day in the range, with valid_from set
       - name: temp_target_table
         type: string
         description: Name of the temporary table which stores snaphot diff for a day range. This contains the final output from macro

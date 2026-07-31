@@ -130,20 +130,17 @@ This works perfect if we were to support running only 1 day worth of backfill at
 In a single airflow task, we can essentially create multiple statements:
 
 ```
--- DAY 1
-CREATE ....;
-UPDATE ....;
-MERGE INTO ... target_temp_table;
--- DAY 2
-CREATE ....;
-UPDATE ....;
-MERGE INTO ... target_temp_table;
-.
-.
-.
+-- every version the source implies inside the requested range
+CREATE ... source_temp_table;
+-- those versions, chained, plus the versions that were already open at the range start
+CREATE ... target_temp_table;
 ```
 
-So how custom materialization works is that it pre-executes all of the above statements to calculate the diff. All that the actual model needs to do is read from `target_temp_table`. This contains the final diff for entire backfill duration requested.
+So how custom materialization works is that it pre-executes both of the above statements to calculate the diff. All that the actual model needs to do is read from `target_temp_table`. This contains the final diff for entire backfill duration requested.
+
+The whole range is computed in one pass rather than one iteration per day. This is possible because SCD Type-2 `valid_to` is always the `valid_from` of the entity's next version, which makes it `LEAD(valid_from)` over that entity's ordered versions -- so no day in the range depends on the previous day's output. The statement count is therefore fixed at two, whether the range is one day or several years.
+
+The one value the source cannot supply is each entity's version that was already open when the range started. That row is read from the target positionally (the entity's latest version with `valid_from` before `snapshot_start_date`) rather than by selecting `valid_to IS NULL`, which would return the state as of *now* instead of as of the start of the range.
 
 **Important Note:**: DBT incremental materialization supports pre-hook and post-hook config where you can execute a group of statement before actually running the model. However, jinja variables do not populate as expected in prehool/sql header and this is a [known issue/limitation](https://github.com/dbt-labs/docs.getdbt.com/issues/4890) in DBT.
 
@@ -205,8 +202,8 @@ For repairing a hole, kick off Airflow DAG manually with appropriate `snapshot_s
 
 
 ### Limitations
-- To not lose any history, it is expected that backfill runs sequentially.
-- If a day worth of backfill is missed by any chance and is attempted to be repaired later, there is slight chance of missing history. This happens when a new version of record is already present.
+- A repair only inserts new versions and updates existing ones. If a source row has since disappeared, the version it produced is not removed from the snapshot. Removing it requires a rollback of the requested range before recomputing it.
+- Re-running a range recomputes the versions the source implies for that range, but any target row inside the range that the source no longer produces is left in place (see above). Until rollback support lands, a re-run repairs missing and changed versions but not extra ones.
 - It is expected from user that they do not run parallel snapshot jobs for same table, as it can cause unexpected output.
 
 But nonetheless, full-refresh will help to gain back full snapshot history anytime. \o/
