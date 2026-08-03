@@ -201,9 +201,22 @@ For repairing a hole, kick off Airflow DAG manually with appropriate `snapshot_s
 - Ability to kick off job manually with custom snapshot_start_date and snapshot_end_date.
 
 
+### Repairing extra versions
+
+By default a repair only inserts new versions and updates existing ones, so a target version whose source row has since disappeared -- or moved to a different timestamp on the same day -- is left in place. It stays correctly linked into the chain, but it is still there.
+
+Set `snapshot_rollback` to make the source authoritative for the requested range:
+
+```
+dbt run --select trustlines_snapshot --vars '{"snapshot_rollback": true, "snapshot_start_date": "2025-01-01", "snapshot_end_date": "2025-02-01"}'
+```
+
+Target versions whose `valid_from` falls inside the range are then deleted and rebuilt from the source. Versions at or after `snapshot_end_date` are outside the recomputed range and are preserved, so a bounded range does not disturb later history. Entities whose in-range versions are deleted are rebuilt even when the source has nothing for them, so the version before the range does not keep a `valid_until` pointing at a deleted row.
+
+Because this deletes rows, it refuses to run against the `prod` target, and scheduled runs never set it. Run it against a clone in a backfill dataset and publish by swapping the table, rather than in place.
+
 ### Limitations
-- A repair only inserts new versions and updates existing ones. If a source row has since disappeared, the version it produced is not removed from the snapshot. Removing it requires a rollback of the requested range before recomputing it.
-- Re-running a range recomputes the versions the source implies for that range, but any target row inside the range that the source no longer produces is left in place (see above). Until rollback support lands, a re-run repairs missing and changed versions but not extra ones.
+- `snapshot_rollback` trusts the source for the whole range. If an upstream model is itself incomplete for that range, versions will be deleted and not recreated. Validate before publishing.
 - It is expected from user that they do not run parallel snapshot jobs for same table, as it can cause unexpected output.
 
 But nonetheless, full-refresh will help to gain back full snapshot history anytime. \o/

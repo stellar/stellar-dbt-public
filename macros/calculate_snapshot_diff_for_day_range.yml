@@ -7,7 +7,9 @@ macros:
       The range is computed in a single set-based pass rather than one iteration per day: SCD Type-2 valid_to is always the valid_from
       of the entity's next version, so the range chains with one window function. Each entity's version that was already open when the
       range started is read from the target positionally (its latest version with valid_from before snapshot_start_date) so that
-      re-running a historical range reproduces it.
+      re-running a historical range reproduces it. By default the diff only inserts and updates; set the snapshot_rollback var
+      (or model config) to make the source authoritative for the range and delete target versions inside it that the source no
+      longer produces. snapshot_rollback refuses to run against the prod target.
     docs:
       show: true
     arguments:

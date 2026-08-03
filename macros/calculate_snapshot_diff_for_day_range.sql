@@ -41,12 +41,13 @@
 --      rebuilt chain from the version before the range forward. This is the diff the
 --      materialization merges into the target on (source_unique_key, valid_from).
 --
--- Entities with no source activity in the range contribute nothing to the diff.
+-- Entities with no source activity in the range contribute nothing to the diff, unless
+-- rollback mode has to rebuild them.
 --
--- Known limitation carried over from the day-by-day implementation: the diff only
--- inserts and updates, so a target version whose source row has since disappeared is not
--- removed -- it stays in the chain, correctly linked, rather than being dropped.
--- Removing it requires the rollback step tracked separately.
+-- Without snapshot_rollback the diff only inserts and updates, so a target version whose
+-- source row has since disappeared survives -- correctly chained, but present. Set
+-- snapshot_rollback to make the source authoritative for the range and delete those
+-- versions; see the rollback_mode block below.
 #}
 
 {%- set source_relation = ref(source_name) -%}
@@ -70,6 +71,33 @@
 {%- set range_start_date = "date('" ~ start_date ~ "')" -%}
 {%- set range_end_date = "date('" ~ end_date ~ "')" -%}
 {%- set range_start_ts = "timestamp(" ~ range_start_date ~ ")" -%}
+{%- set range_end_ts = "timestamp(" ~ range_end_date ~ ")" -%}
+
+{#--
+-- Rollback mode. Off by default, so scheduled runs never execute it.
+--
+-- Off: the diff only inserts and updates, so a target version the source no longer
+-- produces survives (correctly chained, but present).
+--
+-- On: the source is authoritative for [snapshot_start_date, snapshot_end_date). Target
+-- versions inside that range are left out of the rebuilt chain and deleted, so versions
+-- whose source row has disappeared, or moved to a different timestamp on the same day,
+-- are removed rather than kept. Versions at or after snapshot_end_date are outside the
+-- recomputed range and are preserved.
+--
+-- Read from config first so fixtures can set it per model, then from a var so a backfill
+-- can pass it at runtime without touching any model.
+--#}
+{%- set rollback_mode = config.get('snapshot_rollback', var('snapshot_rollback', false)) -%}
+{%- if rollback_mode is string -%}
+    {%- set rollback_mode = rollback_mode | lower == 'true' -%}
+{%- endif -%}
+
+{%- if rollback_mode and target.name == 'prod' -%}
+    {%- do exceptions.raise_compiler_error(
+        "snapshot_rollback deletes rows from the target and must not run against the prod target"
+    ) -%}
+{%- endif -%}
 
 {%- set full_refresh_mode = (should_full_refresh()) -%}
 {%- set existing_relation = load_relation(this) -%}
@@ -197,6 +225,7 @@
             {{ source_cols_csv }}
             , {{ valid_from_col_name }}
             , case
+                when {{ valid_from_col_name }} >= {{ range_end_ts }} then 'target_after_range'
                 when {{ valid_from_col_name }} >= {{ range_start_ts }} then 'target_in_range'
                 else 'target_before_range'
             end as row_origin
@@ -225,6 +254,9 @@
             , countif(row_origin = 'source') over (
                 partition by {{ unique_key_csv }}, {{ valid_from_col_name }}
             ) as source_versions_at_valid_from
+            , countif(row_origin = 'target_in_range') over (
+                partition by {{ unique_key_csv }}
+            ) as in_range_target_versions_for_entity
         from all_versions
     )
 
@@ -233,10 +265,25 @@
             {{ source_cols_csv }}
             , {{ valid_from_col_name }}
         from flagged_versions
-        {#-- leave entities the source did not change inside the range untouched --#}
-        where source_versions_for_entity > 0
+        {#--
+        -- Leave entities the source did not change inside the range untouched. In rollback
+        -- mode an entity whose in-range versions are about to be deleted also has to be
+        -- rebuilt, otherwise the version before the range keeps a valid_to pointing at a
+        -- row that no longer exists.
+        --#}
+        where (
+                source_versions_for_entity > 0
+                {%- if rollback_mode %}
+                or in_range_target_versions_for_entity > 0
+                {%- endif %}
+            )
+        {%- if rollback_mode %}
+            {#-- the source is authoritative inside the range, so target versions there are dropped --#}
+            and row_origin != 'target_in_range'
+        {%- else %}
             {#-- the source payload wins over the target copy of the same version --#}
             and not (row_origin = 'target_in_range' and source_versions_at_valid_from > 0)
+        {%- endif %}
     )
 
     select
@@ -250,5 +297,26 @@
 {%- endset %}
 
 {{ stellar_dbt_public.create_temp_table_with_data(temp_target_table, snapshot_diff_sql, partition_by_key, cluster_by_key) }}
+
+{#--
+-- Statement 3, rollback mode only: drop the target versions the rebuilt chain replaces.
+--
+-- Ordering matters. This runs after the diff is built, because the diff reads these rows
+-- to work out which entities need rebuilding, and before the merge, so the rows the merge
+-- inserts are not deleted again.
+--
+-- valid_from carries the correctness. The valid_to predicate is implied by it -- a version
+-- starting inside the range is either open or closed after the range starts -- and is
+-- there so the delete can prune the valid_to-partitioned target.
+--#}
+{%- if has_open_versions and rollback_mode %}
+    delete from {{ target_name }}
+    where {{ valid_from_col_name }} >= {{ range_start_ts }}
+        and {{ valid_from_col_name }} < {{ range_end_ts }}
+        and (
+            {{ valid_to_col_name }} is null
+            or {{ valid_to_col_name }} >= {{ range_start_ts }}
+        );
+{%- endif %}
 
 {%- endmacro %}

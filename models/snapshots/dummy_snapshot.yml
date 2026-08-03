@@ -186,67 +186,70 @@ models:
       - dbt_utils.equality:
           compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_rerun_expected"
 
-  # A composite source_unique_key whose columns contain nulls, as trustlines_snapshot has:
-  # a trustline carries liquidity_pool_id or asset_code/asset_issuer, never both. Matching
-  # such keys with = fails on the null column, which would insert a second open version
-  # instead of closing the existing one.
-  - name: dummy_snapshot_null_unique_key
+  # snapshot_rollback makes the source authoritative for the range, so target versions
+  # inside it are deleted rather than kept. Covers the two cases the additive diff cannot
+  # repair: a source row that has disappeared, and a source row that moved to a different
+  # timestamp on the same day. Account 2 has no source activity at all and still has to be
+  # rebuilt, otherwise its version before the range keeps a valid_until pointing at a
+  # deleted row.
+  - name: dummy_snapshot_rollback
     description: "placeholder"
     config:
       materialized: "incremental_snapshot"
       enabled: '{{ target.name == "ci" }}'
-      unique_key: ["account_id", "pool_id", "valid_from"]
+      unique_key: ["account_id", "valid_from"]
       source_name: "stg_dummy"
-      temp_source_table: "dummy_snapshot_null_key_source"
-      temp_target_table: "dummy_snapshot_null_key_target"
-      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_null_key_expected"
+      temp_source_table: "dummy_snapshot_rollback_source"
+      temp_target_table: "dummy_snapshot_rollback_target"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_rollback_expected"
       snapshot_start_date: "2025-01-01"
       snapshot_end_date: "2025-01-03"
+      snapshot_rollback: true
       full_refresh: false
       updated_at_col_name: "closed_at"
       valid_from_col_name: "valid_from"
       valid_to_col_name: "valid_until"
-      source_unique_key: ["account_id", "pool_id"]
+      source_unique_key: "account_id"
       source_data_sql: |
         select
           row.test_case_description,
           row.account_id,
-          row.pool_id,
           row.balance,
           row.closed_at
         from unnest([
-          struct('new version of an entity whose pool_id is null' as test_case_description, '1' as account_id, cast(null as string) as pool_id, 150 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
-          struct('new version of an entity whose pool_id is set' as test_case_description, '2' as account_id, 'P1' as pool_id, 300 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at)
+          struct('source version for an entity that also holds a stale target version' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
+          struct('source version moved to a later timestamp on the same day' as test_case_description, '3' as account_id, 300 as balance, timestamp('2025-01-02 19:00:00 UTC') as closed_at)
         ]) as row
       target_data_sql: |
         select
           row.test_case_description,
           row.account_id,
-          row.pool_id,
           row.balance,
           row.closed_at,
           row.valid_from,
           row.valid_until
         from unnest([
-          struct('version to be closed, pool_id is null' as test_case_description, '1' as account_id, cast(null as string) as pool_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
-          struct('version to be closed, pool_id is set' as test_case_description, '2' as account_id, 'P1' as pool_id, 250 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+          struct('version before the range' as test_case_description, '1' as account_id, 100 as balance, timestamp('2024-12-31 00:00:00 UTC') as closed_at, timestamp('2024-12-31 00:00:00 UTC') as valid_from, timestamp('2025-01-01 00:00:00 UTC') as valid_until),
+          struct('stale version to be deleted, source row is gone' as test_case_description, '1' as account_id, 999 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('version before the range' as test_case_description, '2' as account_id, 50 as balance, timestamp('2024-12-30 00:00:00 UTC') as closed_at, timestamp('2024-12-30 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
+          struct('stale version to be deleted, entity has no source activity' as test_case_description, '2' as account_id, 777 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('version to be deleted, source moved to a later timestamp' as test_case_description, '3' as account_id, 300 as balance, timestamp('2025-01-02 08:00:00 UTC') as closed_at, timestamp('2025-01-02 08:00:00 UTC') as valid_from, timestamp(null) as valid_until)
         ]) as row
       expected_target_data_sql: |
         select
           row.test_case_description,
           row.account_id,
-          row.pool_id,
           row.balance,
           row.closed_at,
           row.valid_from,
           row.valid_until
         from unnest([
-          struct('version to be closed, pool_id is null' as test_case_description, '1' as account_id, cast(null as string) as pool_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('new version of an entity whose pool_id is null' as test_case_description, '1' as account_id, cast(null as string) as pool_id, 150 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
-          struct('version to be closed, pool_id is set' as test_case_description, '2' as account_id, 'P1' as pool_id, 250 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('new version of an entity whose pool_id is set' as test_case_description, '2' as account_id, 'P1' as pool_id, 300 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+          struct('version before the range' as test_case_description, '1' as account_id, 100 as balance, timestamp('2024-12-31 00:00:00 UTC') as closed_at, timestamp('2024-12-31 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
+          struct('source version for an entity that also holds a stale target version' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('version before the range' as test_case_description, '2' as account_id, 50 as balance, timestamp('2024-12-30 00:00:00 UTC') as closed_at, timestamp('2024-12-30 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('source version moved to a later timestamp on the same day' as test_case_description, '3' as account_id, 300 as balance, timestamp('2025-01-02 19:00:00 UTC') as closed_at, timestamp('2025-01-02 19:00:00 UTC') as valid_from, timestamp(null) as valid_until)
         ]) as row
 
     tests:
       - dbt_utils.equality:
-          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_null_key_expected"
+          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_rollback_expected"
