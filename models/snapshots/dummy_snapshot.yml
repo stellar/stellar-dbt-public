@@ -63,6 +63,12 @@ models:
       - dbt_utils.equality:
           compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_expected"
 
+  # Incremental rebuild from a start date. Covers the four things step 1 and the chunk have to
+  # get right together: the version current at start_date is reopened then reclosed against the
+  # first rebuilt version (account 1); a version after start_date that the source no longer
+  # produces is deleted and not recreated (account 3); an entity with no source activity in the
+  # window is left completely alone (account 2); and the version already closed before
+  # start_date is never touched.
   - name: dummy_snapshot_incremental
     description: "placeholder"
     config:
@@ -70,11 +76,11 @@ models:
       enabled: '{{ target.name == "ci" }}'
       unique_key: ["account_id", "valid_from"]
       source_name: "stg_dummy"
-      temp_source_table: "dummy_snapshot_source"
-      temp_target_table: "dummy_snapshot_target"
-      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_expected"
-      snapshot_start_date: "2025-01-01"
-      snapshot_end_date: "2025-01-03"
+      temp_source_table: "dummy_snapshot_incremental_source"
+      temp_target_table: "dummy_snapshot_incremental_target"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_incremental_expected"
+      snapshot_start_date: "2025-02-01"
+      snapshot_end_date: "2025-02-03"
       full_refresh: false
       updated_at_col_name: "closed_at"
       valid_from_col_name: "valid_from"
@@ -87,12 +93,8 @@ models:
           row.balance,
           row.closed_at
         from unnest([
-          struct('record to be ignored as it is out of backfill date range' as test_case_description, '1' as account_id, 100 as balance, timestamp('2024-01-01 00:00:00 UTC') as closed_at),
-          struct('record to be ignore as it is updated later in same day' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at),
-          struct('record to be inserted' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at),
-          struct('record to be inserted, as new version of existing source record' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
-          struct('record to be inserted as new version of existing record' as test_case_description, '2' as account_id, 500 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
-          struct('record to be inserted as an earlier version, since target holds a newer one' as test_case_description, '3' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at)
+          struct('rebuilt version, closes the version current at start_date' as test_case_description, '1' as account_id, 160 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at),
+          struct('rebuilt version, now the open one' as test_case_description, '1' as account_id, 170 as balance, timestamp('2025-02-02 00:00:00 UTC') as closed_at)
         ]) as row
       target_data_sql: |
         select
@@ -103,8 +105,10 @@ models:
           row.valid_from,
           row.valid_until
         from unnest([
-          struct('records valid_until will bet set' as test_case_description, '2' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
-          struct('record will remain as is' as test_case_description, '3' as account_id, 50 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+          struct('version current at start_date, reopened then reclosed' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-10 00:00:00 UTC') as closed_at, timestamp('2025-01-10 00:00:00 UTC') as valid_from, timestamp('2025-02-01 00:00:00 UTC') as valid_until),
+          struct('deleted by step 1, then rebuilt from source' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at, timestamp('2025-02-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('no source activity in the window, left alone' as test_case_description, '2' as account_id, 900 as balance, timestamp('2025-01-05 00:00:00 UTC') as closed_at, timestamp('2025-01-05 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('deleted by step 1, source row is gone so it does not come back' as test_case_description, '3' as account_id, 777 as balance, timestamp('2025-02-02 00:00:00 UTC') as closed_at, timestamp('2025-02-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
         ]) as row
       expected_target_data_sql: |
         select
@@ -115,21 +119,19 @@ models:
           row.valid_from,
           row.valid_until
         from unnest([
-          struct('record to be inserted' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at, timestamp('2025-01-01 01:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('record to be inserted, as new version of existing source record' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
-          struct('records valid_until will bet set' as test_case_description, '2' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('record to be inserted as new version of existing record' as test_case_description, '2' as account_id, 500 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
-          struct('record to be inserted as an earlier version, since target holds a newer one' as test_case_description, '3' as account_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('record will remain as is' as test_case_description, '3' as account_id, 50 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+          struct('version current at start_date, reopened then reclosed' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-10 00:00:00 UTC') as closed_at, timestamp('2025-01-10 00:00:00 UTC') as valid_from, timestamp('2025-02-01 00:00:00 UTC') as valid_until),
+          struct('rebuilt version, closes the version current at start_date' as test_case_description, '1' as account_id, 160 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at, timestamp('2025-02-01 00:00:00 UTC') as valid_from, timestamp('2025-02-02 00:00:00 UTC') as valid_until),
+          struct('rebuilt version, now the open one' as test_case_description, '1' as account_id, 170 as balance, timestamp('2025-02-02 00:00:00 UTC') as closed_at, timestamp('2025-02-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('no source activity in the window, left alone' as test_case_description, '2' as account_id, 900 as balance, timestamp('2025-01-05 00:00:00 UTC') as closed_at, timestamp('2025-01-05 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
         ]) as row
 
     tests:
       - dbt_utils.equality:
-          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_expected"
+          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_incremental_expected"
 
-  # Re-running a range the snapshot already covers must leave the target untouched.
-  # The day-by-day implementation seeded from valid_to IS NULL, so a re-run either did
-  # nothing or duplicated versions depending on where the range sat relative to the head.
+  # Rebuilding a window the snapshot already covers must leave the target byte identical.
+  # Step 1 always returns the target to its state at start_date, so every run of a given
+  # start_date begins from the same place regardless of what the previous run left behind.
   - name: dummy_snapshot_rerun
     description: "placeholder"
     config:
@@ -140,8 +142,8 @@ models:
       temp_source_table: "dummy_snapshot_rerun_source"
       temp_target_table: "dummy_snapshot_rerun_target"
       expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_rerun_expected"
-      snapshot_start_date: "2025-01-01"
-      snapshot_end_date: "2025-01-03"
+      snapshot_start_date: "2025-02-01"
+      snapshot_end_date: "2025-02-03"
       full_refresh: false
       updated_at_col_name: "closed_at"
       valid_from_col_name: "valid_from"
@@ -154,8 +156,8 @@ models:
           row.balance,
           row.closed_at
         from unnest([
-          struct('source version the target already holds' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at),
-          struct('source version the target already holds' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at)
+          struct('version the target already holds' as test_case_description, '1' as account_id, 160 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at),
+          struct('version the target already holds, still open' as test_case_description, '1' as account_id, 170 as balance, timestamp('2025-02-02 00:00:00 UTC') as closed_at)
         ]) as row
       target_data_sql: |
         select
@@ -166,8 +168,10 @@ models:
           row.valid_from,
           row.valid_until
         from unnest([
-          struct('source version the target already holds' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at, timestamp('2025-01-01 01:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('source version the target already holds' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+          struct('version current at start_date' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-10 00:00:00 UTC') as closed_at, timestamp('2025-01-10 00:00:00 UTC') as valid_from, timestamp('2025-02-01 00:00:00 UTC') as valid_until),
+          struct('version the target already holds' as test_case_description, '1' as account_id, 160 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at, timestamp('2025-02-01 00:00:00 UTC') as valid_from, timestamp('2025-02-02 00:00:00 UTC') as valid_until),
+          struct('version the target already holds, still open' as test_case_description, '1' as account_id, 170 as balance, timestamp('2025-02-02 00:00:00 UTC') as closed_at, timestamp('2025-02-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('no source activity in the window, left alone' as test_case_description, '2' as account_id, 900 as balance, timestamp('2025-01-05 00:00:00 UTC') as closed_at, timestamp('2025-01-05 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
         ]) as row
       expected_target_data_sql: |
         select
@@ -178,75 +182,136 @@ models:
           row.valid_from,
           row.valid_until
         from unnest([
-          struct('source version the target already holds' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-01-01 01:00:00 UTC') as closed_at, timestamp('2025-01-01 01:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('source version the target already holds' as test_case_description, '1' as account_id, 200 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+          struct('version current at start_date' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-10 00:00:00 UTC') as closed_at, timestamp('2025-01-10 00:00:00 UTC') as valid_from, timestamp('2025-02-01 00:00:00 UTC') as valid_until),
+          struct('version the target already holds' as test_case_description, '1' as account_id, 160 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at, timestamp('2025-02-01 00:00:00 UTC') as valid_from, timestamp('2025-02-02 00:00:00 UTC') as valid_until),
+          struct('version the target already holds, still open' as test_case_description, '1' as account_id, 170 as balance, timestamp('2025-02-02 00:00:00 UTC') as closed_at, timestamp('2025-02-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('no source activity in the window, left alone' as test_case_description, '2' as account_id, 900 as balance, timestamp('2025-01-05 00:00:00 UTC') as closed_at, timestamp('2025-01-05 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
         ]) as row
 
     tests:
       - dbt_utils.equality:
           compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_rerun_expected"
 
-  # A composite source_unique_key whose columns contain nulls, as trustlines_snapshot has:
-  # a trustline carries liquidity_pool_id or asset_code/asset_issuer, never both. Matching
-  # such keys with = fails on the null column, which would insert a second open version
-  # instead of closing the existing one.
-  - name: dummy_snapshot_null_unique_key
+  # A window long enough to span three chunks, with one source version landing in each. Each
+  # chunk merges before the next begins, so chunk 2's boundary is chunk 1's output and chunk 3's
+  # is chunk 2's. If a chunk read a stale boundary the chain would gap or overlap here.
+  - name: dummy_snapshot_chunked
     description: "placeholder"
     config:
       materialized: "incremental_snapshot"
       enabled: '{{ target.name == "ci" }}'
-      unique_key: ["account_id", "pool_id", "valid_from"]
+      unique_key: ["account_id", "valid_from"]
       source_name: "stg_dummy"
-      temp_source_table: "dummy_snapshot_null_key_source"
-      temp_target_table: "dummy_snapshot_null_key_target"
-      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_null_key_expected"
+      temp_source_table: "dummy_snapshot_chunked_source"
+      temp_target_table: "dummy_snapshot_chunked_target"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_chunked_expected"
       snapshot_start_date: "2025-01-01"
-      snapshot_end_date: "2025-01-03"
+      snapshot_end_date: "2025-08-01"
+      snapshot_chunk_months: 3
       full_refresh: false
       updated_at_col_name: "closed_at"
       valid_from_col_name: "valid_from"
       valid_to_col_name: "valid_until"
-      source_unique_key: ["account_id", "pool_id"]
+      source_unique_key: "account_id"
       source_data_sql: |
         select
           row.test_case_description,
           row.account_id,
-          row.pool_id,
           row.balance,
           row.closed_at
         from unnest([
-          struct('new version of an entity whose pool_id is null' as test_case_description, '1' as account_id, cast(null as string) as pool_id, 150 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at),
-          struct('new version of an entity whose pool_id is set' as test_case_description, '2' as account_id, 'P1' as pool_id, 300 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at)
+          struct('chunk 1 of [2025-01-01, 2025-04-01)' as test_case_description, '1' as account_id, 60 as balance, timestamp('2025-02-15 00:00:00 UTC') as closed_at),
+          struct('chunk 2 of [2025-04-01, 2025-07-01)' as test_case_description, '1' as account_id, 70 as balance, timestamp('2025-05-20 00:00:00 UTC') as closed_at),
+          struct('chunk 3 of [2025-07-01, 2025-08-01)' as test_case_description, '1' as account_id, 80 as balance, timestamp('2025-07-10 00:00:00 UTC') as closed_at)
         ]) as row
       target_data_sql: |
         select
           row.test_case_description,
           row.account_id,
-          row.pool_id,
           row.balance,
           row.closed_at,
           row.valid_from,
           row.valid_until
         from unnest([
-          struct('version to be closed, pool_id is null' as test_case_description, '1' as account_id, cast(null as string) as pool_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
-          struct('version to be closed, pool_id is set' as test_case_description, '2' as account_id, 'P1' as pool_id, 250 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+          struct('version current at start_date, closed by chunk 1' as test_case_description, '1' as account_id, 50 as balance, timestamp('2024-12-01 00:00:00 UTC') as closed_at, timestamp('2024-12-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
         ]) as row
       expected_target_data_sql: |
         select
           row.test_case_description,
           row.account_id,
-          row.pool_id,
           row.balance,
           row.closed_at,
           row.valid_from,
           row.valid_until
         from unnest([
-          struct('version to be closed, pool_id is null' as test_case_description, '1' as account_id, cast(null as string) as pool_id, 100 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('new version of an entity whose pool_id is null' as test_case_description, '1' as account_id, cast(null as string) as pool_id, 150 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
-          struct('version to be closed, pool_id is set' as test_case_description, '2' as account_id, 'P1' as pool_id, 250 as balance, timestamp('2025-01-01 00:00:00 UTC') as closed_at, timestamp('2025-01-01 00:00:00 UTC') as valid_from, timestamp('2025-01-02 00:00:00 UTC') as valid_until),
-          struct('new version of an entity whose pool_id is set' as test_case_description, '2' as account_id, 'P1' as pool_id, 300 as balance, timestamp('2025-01-02 00:00:00 UTC') as closed_at, timestamp('2025-01-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+          struct('version current at start_date, closed by chunk 1' as test_case_description, '1' as account_id, 50 as balance, timestamp('2024-12-01 00:00:00 UTC') as closed_at, timestamp('2024-12-01 00:00:00 UTC') as valid_from, timestamp('2025-02-15 00:00:00 UTC') as valid_until),
+          struct('chunk 1 of [2025-01-01, 2025-04-01)' as test_case_description, '1' as account_id, 60 as balance, timestamp('2025-02-15 00:00:00 UTC') as closed_at, timestamp('2025-02-15 00:00:00 UTC') as valid_from, timestamp('2025-05-20 00:00:00 UTC') as valid_until),
+          struct('chunk 2 of [2025-04-01, 2025-07-01)' as test_case_description, '1' as account_id, 70 as balance, timestamp('2025-05-20 00:00:00 UTC') as closed_at, timestamp('2025-05-20 00:00:00 UTC') as valid_from, timestamp('2025-07-10 00:00:00 UTC') as valid_until),
+          struct('chunk 3 of [2025-07-01, 2025-08-01)' as test_case_description, '1' as account_id, 80 as balance, timestamp('2025-07-10 00:00:00 UTC') as closed_at, timestamp('2025-07-10 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
         ]) as row
 
     tests:
       - dbt_utils.equality:
-          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_null_key_expected"
+          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_chunked_expected"
+
+  # A rebuild scoped to one entity. Account 2 has a version after start_date that would be
+  # deleted by an unscoped run, so its survival is the assertion: the filter has to reach the
+  # delete and the reopen, not just the source read. Missing it at any one of those sites
+  # destroys history for entities the caller never named.
+  - name: dummy_snapshot_key_filter
+    description: "placeholder"
+    config:
+      materialized: "incremental_snapshot"
+      enabled: '{{ target.name == "ci" }}'
+      unique_key: ["account_id", "valid_from"]
+      source_name: "stg_dummy"
+      temp_source_table: "dummy_snapshot_key_filter_source"
+      temp_target_table: "dummy_snapshot_key_filter_target"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_key_filter_expected"
+      snapshot_start_date: "2025-02-01"
+      snapshot_end_date: "2025-02-03"
+      snapshot_keys: ["1"]
+      full_refresh: false
+      updated_at_col_name: "closed_at"
+      valid_from_col_name: "valid_from"
+      valid_to_col_name: "valid_until"
+      source_unique_key: "account_id"
+      source_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at
+        from unnest([
+          struct('rebuilt, the only entity in snapshot_keys' as test_case_description, '1' as account_id, 160 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at)
+        ]) as row
+      target_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at,
+          row.valid_from,
+          row.valid_until
+        from unnest([
+          struct('version current at start_date, reopened then reclosed' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-10 00:00:00 UTC') as closed_at, timestamp('2025-01-10 00:00:00 UTC') as valid_from, timestamp('2025-02-01 00:00:00 UTC') as valid_until),
+          struct('deleted by step 1, then rebuilt from source' as test_case_description, '1' as account_id, 150 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at, timestamp('2025-02-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('outside snapshot_keys, must survive untouched' as test_case_description, '2' as account_id, 777 as balance, timestamp('2025-02-02 00:00:00 UTC') as closed_at, timestamp('2025-02-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+        ]) as row
+      expected_target_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at,
+          row.valid_from,
+          row.valid_until
+        from unnest([
+          struct('version current at start_date, reopened then reclosed' as test_case_description, '1' as account_id, 100 as balance, timestamp('2025-01-10 00:00:00 UTC') as closed_at, timestamp('2025-01-10 00:00:00 UTC') as valid_from, timestamp('2025-02-01 00:00:00 UTC') as valid_until),
+          struct('rebuilt, the only entity in snapshot_keys' as test_case_description, '1' as account_id, 160 as balance, timestamp('2025-02-01 00:00:00 UTC') as closed_at, timestamp('2025-02-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until),
+          struct('outside snapshot_keys, must survive untouched' as test_case_description, '2' as account_id, 777 as balance, timestamp('2025-02-02 00:00:00 UTC') as closed_at, timestamp('2025-02-02 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+        ]) as row
+
+    tests:
+      - dbt_utils.equality:
+          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_key_filter_expected"

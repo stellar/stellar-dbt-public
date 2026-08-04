@@ -1,0 +1,59 @@
+version: 2
+
+macros:
+  - name: calculate_snapshot_diff
+    description: >
+      Build the diff for one chunk of a snapshot rebuild. SCD Type-2 valid_to is always the
+      valid_from of the entity's next version, which makes it LEAD(valid_from) over the entity's
+      ordered versions, so a chunk of any length is one window function over its versions rather
+      than one pass per day. Beyond its own source rows a chunk needs a single version per entity:
+      the one current when the chunk began. The caller guarantees the target holds nothing starting
+      at or after chunk_start_date, so that version is simply the entity's latest and boundary
+      versions can never collide with source versions. Only entities the source changed inside the
+      chunk take part; the rest are left exactly as they are. The result is stored in
+      temp_target_table for the caller to merge on (source_unique_key, valid_from).
+    docs:
+      show: true
+    arguments:
+      - name: source_name
+        type: string
+        description: Name of the model for which snapshot is being calculated
+      - name: target_name
+        type: string
+        description: The snapshot table being rebuilt
+      - name: temp_source_table
+        type: string
+        description: Temporary table holding one version per entity per day in the chunk
+      - name: temp_target_table
+        type: string
+        description: Temporary table holding the chunk's diff. This contains the final output from macro
+      - name: chunk_start_date
+        type: string
+        description: First day of this chunk (yyyy-mm-dd), inclusive
+      - name: chunk_end_date
+        type: string
+        description: End of this chunk (yyyy-mm-dd), non-inclusive
+      - name: updated_at_col_name
+        type: string
+        description: A column name in source data that indicates when each record was last updated
+      - name: valid_from_col_name
+        type: string
+        description: A column name in the snapshot table that indicates when the snapshot row became valid
+      - name: valid_to_col_name
+        type: string
+        description: A column name in the snapshot table that indicates when this row is no longer valid
+      - name: source_unique_key
+        type: string
+        description: A column name in source data that indicates the primary key column(s) (string or array)
+      - name: partition_by_key
+        type: json
+        description: BigQuery partition by clause applied to the chunk's diff table
+      - name: cluster_by_key
+        type: string
+        description: A list of column names to co-locate related data in the chunk's diff table
+      - name: key_filter
+        type: string
+        description: Predicate from snapshot_key_filter, scoping the source and boundary reads to named entities
+      - name: read_boundary_from_target
+        type: boolean
+        description: Whether the target exists yet. False for the chunk that creates the table, true afterwards

@@ -1,0 +1,21 @@
+version: 2
+
+macros:
+  - name: snapshot_key_filter
+    description: >
+      Build the optional predicate that scopes a snapshot rebuild to specific entities, so a single
+      asset can be rebuilt without touching the rest of the table. Returns an empty string when no
+      filter is requested, otherwise a fragment beginning with "and " for callers to append to a
+      where clause. Set it with the snapshot_keys var or model config, as a list or a comma
+      separated string. Only single column unique keys are supported. The filter must be built once
+      per run and threaded into every statement that reads or writes the target, since a filter
+      missing from any one of them would delete or corrupt entities the caller never named.
+    docs:
+      show: true
+    arguments:
+      - name: source_unique_key_cols
+        type: list
+        description: The source unique key columns, used to pick the column to filter and to reject composite keys
+      - name: table_alias
+        type: string
+        description: Optional alias to qualify the key column with, when the predicate is used in a join or aliased scan

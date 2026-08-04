@@ -130,17 +130,33 @@ This works perfect if we were to support running only 1 day worth of backfill at
 In a single airflow task, we can essentially create multiple statements:
 
 ```
--- every version the source implies inside the requested range
-CREATE ... source_temp_table;
--- those versions, chained, plus the versions that were already open at the range start
-CREATE ... target_temp_table;
+-- step 1, once: return the target to its state at snapshot_start_date
+DELETE ... WHERE valid_from >= snapshot_start_date;
+UPDATE ... SET valid_to = NULL WHERE valid_to >= snapshot_start_date;
+
+-- step 2, per chunk of snapshot_start_date .. now
+CREATE ... source_temp_table;   -- the chunk's versions
+CREATE ... target_temp_table;   -- those versions chained onto the one current at the chunk start
+MERGE  ... INTO target;         -- applied before the next chunk begins
 ```
 
-So how custom materialization works is that it pre-executes both of the above statements to calculate the diff. All that the actual model needs to do is read from `target_temp_table`. This contains the final diff for entire backfill duration requested.
+There is no end date. A run always rebuilds from `snapshot_start_date` to the present, so there is no window to get wrong and no way to leave the tail of a snapshot inconsistent with its head. A daily run passes yesterday, a partial rebuild passes the point to rebuild from, and a full refresh passes nothing and uses the model's `snapshot_default_start_date`. The same code path serves all three.
 
-The whole range is computed in one pass rather than one iteration per day. This is possible because SCD Type-2 `valid_to` is always the `valid_from` of the entity's next version, which makes it `LEAD(valid_from)` over that entity's ordered versions -- so no day in the range depends on the previous day's output. The statement count is therefore fixed at two, whether the range is one day or several years.
+Each chunk is computed in one pass rather than one iteration per day. SCD Type-2 `valid_to` is always the `valid_from` of the entity's next version, which makes it `LEAD(valid_from)` over that entity's ordered versions, so no day inside a chunk depends on the previous day's output. A chunk costs two statements plus a merge whether it covers one day or three months.
 
-The one value the source cannot supply is each entity's version that was already open when the range started. That row is read from the target positionally (the entity's latest version with `valid_from` before `snapshot_start_date`) rather than by selecting `valid_to IS NULL`, which would return the state as of *now* instead of as of the start of the range.
+The one value the source cannot supply is each entity's version that was current when the chunk began. That row is read from the target positionally -- the entity's latest version with `valid_from` before the chunk start -- rather than by selecting `valid_to IS NULL`, which would return the state as of *now*. Step 1 guarantees the target holds nothing starting at or after `snapshot_start_date`, and each chunk merges before the next begins, so that version is simply the entity's latest one.
+
+Chunks therefore run in ascending order and cannot be parallelised: chunk 2 reads what chunk 1 left open. The upside is that every chunk boundary is a consistent snapshot. A failure part way through leaves the table correct up to the last chunk that finished, and each chunk logs how far it got:
+
+```
+Rebuilding trustlines_snapshot from 2025-01-01 to 2026-08-04 in 8 chunk(s) of 3 month(s)
+Reset trustlines_snapshot to its state at 2025-01-01
+Chunk 1/8 done: trustlines_snapshot rebuilt through 2025-04-01 (chunk covered 2025-01-01 to 2025-04-01)
+```
+
+Restart by rerunning with `snapshot_start_date` set to the last point reached.
+
+Chunk size defaults to three months and is set with the `snapshot_chunk_months` config or var.
 
 **Important Note:**: DBT incremental materialization supports pre-hook and post-hook config where you can execute a group of statement before actually running the model. However, jinja variables do not populate as expected in prehool/sql header and this is a [known issue/limitation](https://github.com/dbt-labs/docs.getdbt.com/issues/4890) in DBT.
 
@@ -188,9 +204,24 @@ However, if a user is not interested in backfill option, they can call `create_s
 
 ### Data Repairs:
 
-Depending on the severity of the option, we can repair only the hole or we can fully refresh a table.
+Pick the earliest point the snapshot is wrong from and rebuild forward from there. Everything from that point on is deleted and rebuilt from the source, so the source is the authority for the whole span:
 
-For repairing a hole, kick off Airflow DAG manually with appropriate `snapshot_start_date` and `snapshot_end_date`. A re-run should run normally as it creates deterministic output.
+```
+dbt run --select trustlines_snapshot --vars '{"snapshot_start_date": "2025-06-01"}'
+```
+
+Re-runs are deterministic: step 1 always returns the target to its state at `snapshot_start_date`, so a given start date begins from the same place no matter what a previous attempt left behind. Rebuilding a span the snapshot already covers leaves it byte identical.
+
+Note that a repair rebuilds to the present rather than patching a window. Fixing one month two years back rebuilds those two years. When that is too expensive and only some entities are affected, scope the rebuild instead of shortening it:
+
+```
+dbt run --select asset_prices_coingecko_snapshot \
+  --vars '{"snapshot_start_date": "2024-01-01", "snapshot_keys": ["CONTRACT_A", "CONTRACT_B"]}'
+```
+
+`snapshot_keys` scopes every statement, including the delete and the reopen, so entities outside it keep their history untouched. It is the usual way to add a newly tracked asset: with no existing rows there is nothing to delete, and the rebuild is a plain insert of that asset's history. Only single column unique keys are supported.
+
+Because a rebuild deletes rows, `snapshot_keys` refuses to run against the `prod` target. Run repairs against a clone in a backfill dataset and publish by swapping the table.
 
 
 ### Airflow orchestration:
@@ -202,8 +233,10 @@ For repairing a hole, kick off Airflow DAG manually with appropriate `snapshot_s
 
 
 ### Limitations
-- A repair only inserts new versions and updates existing ones. If a source row has since disappeared, the version it produced is not removed from the snapshot. Removing it requires a rollback of the requested range before recomputing it.
-- Re-running a range recomputes the versions the source implies for that range, but any target row inside the range that the source no longer produces is left in place (see above). Until rollback support lands, a re-run repairs missing and changed versions but not extra ones.
+- A rebuild trusts the source for everything from `snapshot_start_date` onwards. If an upstream model is itself incomplete for that span, versions are deleted and not recreated. Validate before publishing, and prefer running against a clone.
+- Repairing a single window is not supported: a rebuild always runs to the present. Use `snapshot_keys` to reduce the cost of an old start date rather than trying to bound the end.
+- Chunks are serial by construction, since each one reads the version the previous chunk left open.
+- Intra-day history is not recoverable. A day is compressed to its last source row, so a rebuild cannot recover detail the snapshot never stored.
 - It is expected from user that they do not run parallel snapshot jobs for same table, as it can cause unexpected output.
 
 But nonetheless, full-refresh will help to gain back full snapshot history anytime. \o/
