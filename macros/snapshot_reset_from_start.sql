@@ -11,15 +11,18 @@
 -- reproducible: every run of a given start_date begins from the same place, whatever was
 -- there before.
 --
--- Two statements, and the order is load bearing:
+-- Two statements:
 --
 --   1. Delete every version starting at or after start_date. The rebuild recreates the ones
 --      the source still produces; anything else was never real and does not come back.
---   2. Reopen the versions that were closed by a deleted successor. After statement 1 every
---      surviving version starts before start_date, so at most one version per entity can
---      still carry a valid_to at or after start_date -- the one that was current at
---      start_date. Reopening first would instead open every version after start_date and
---      leave an entity with several open rows.
+--   2. Reopen the version that was closed by a deleted successor, which is the one that was
+--      current at start_date.
+--
+-- Deleting first is a cost choice, not a correctness one. Either order reaches the same
+-- state, because the delete's predicate already covers every row the reopen would have
+-- opened. But after the delete, statement 2 matches at most one version per entity -- run
+-- the other way round it matches every version from start_date onwards, which on a large
+-- snapshot is a far bigger update for the same result.
 --
 -- Neither statement touches a version already closed before start_date, and statement 2
 -- leaves an already open version alone, because `null >= start_date` is null rather than
