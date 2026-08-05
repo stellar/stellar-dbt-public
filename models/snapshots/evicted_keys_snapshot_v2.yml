@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: evicted_keys_snapshot
+  - name: evicted_keys_snapshot_v2
     description: '{{ doc("evicted_keys_snapshot") }}'
     tests:
       - recency:
