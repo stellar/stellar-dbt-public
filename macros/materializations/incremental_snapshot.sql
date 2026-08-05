@@ -68,9 +68,15 @@
   {#--
   -- Resolve the window to rebuild.
   --
-  -- start: the snapshot_start_date var when the caller gives one, otherwise the model's own
-  -- snapshot_default_start_date. A daily run passes yesterday, a partial rebuild passes the
-  -- point to rebuild from, and a full refresh passes nothing and falls back to the model.
+  -- start: the snapshot_start_date var when the caller gives one. A daily run passes yesterday
+  -- and a partial rebuild passes the point to rebuild from.
+  --
+  -- A full refresh passes nothing and falls back to the model's snapshot_default_start_date,
+  -- which is that snapshot's earliest meaningful date. That fallback is deliberately limited to
+  -- a full refresh: it is a genesis date, so applying it to an ordinary run would turn a missing
+  -- var into a silent rebuild of the entire table -- deleting and recomputing years of history
+  -- where one day was intended, and reporting success. An ordinary run with no start date is a
+  -- mistake, so it fails instead.
   --
   -- end: always now. The rebuild runs from start to the present, so there is no window to get
   -- wrong and no way to leave the tail of the snapshot inconsistent with its head. It can be
@@ -78,13 +84,23 @@
   --#}
   {%- set requested_start_date = config.get('snapshot_start_date') or var('snapshot_start_date', none) -%}
   {%- set default_start_date = config.get('snapshot_default_start_date', none) -%}
-  {%- set start_date = requested_start_date or default_start_date -%}
+  {%- set start_date = requested_start_date or (default_start_date if full_refresh_mode else none) -%}
 
   {%- if not start_date -%}
-    {%- do exceptions.raise_compiler_error(
-        "No start date for " ~ this.identifier ~ ". Pass the snapshot_start_date var, or set "
-        ~ "snapshot_default_start_date in the model config for full refreshes to use."
-    ) -%}
+    {%- if full_refresh_mode -%}
+      {%- do exceptions.raise_compiler_error(
+          "No start date for a full refresh of " ~ this.identifier ~ ". Set "
+          ~ "snapshot_default_start_date in the model config to its earliest meaningful date, or "
+          ~ "pass an explicit snapshot_start_date var."
+      ) -%}
+    {%- else -%}
+      {%- do exceptions.raise_compiler_error(
+          "No start date for " ~ this.identifier ~ ". Pass the snapshot_start_date var. Note that "
+          ~ "snapshot_start_date is defined as a project var, so a var(..., 'default') fallback in "
+          ~ "the model is never reached -- put the model's own date in snapshot_default_start_date "
+          ~ "instead, which a full refresh will use."
+      ) -%}
+    {%- endif -%}
   {%- endif -%}
 
   {%- set end_date = config.get('snapshot_end_date')

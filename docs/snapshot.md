@@ -202,6 +202,31 @@ SELECT * from {{ this.project ~ '.' ~ this.schema ~ '.' ~  temp_target_table }}
 
 However, if a user is not interested in backfill option, they can call `create_snapshot` macro directly and use incremental materialization.
 
+### Where the start date comes from
+
+Every run needs a start date. Ordinary runs must be given one:
+
+```
+--vars '{"snapshot_start_date": "2026-08-04"}'      # or the SNAPSHOT_START_DATE env var
+```
+
+A **full refresh** may omit it and fall back to the model's own `snapshot_default_start_date`, which is that snapshot's earliest meaningful date:
+
+```
+    "snapshot_default_start_date": "2021-10-01",
+    "snapshot_start_date": var("snapshot_start_date", none),
+```
+
+That fallback is limited to a full refresh on purpose. It is a genesis date, so letting an ordinary run use it would turn a missing var into a silent rebuild of the whole table — deleting and recomputing years of history where one day was intended, and reporting success. An ordinary run with no start date fails instead.
+
+**A `var(..., 'default')` fallback in the model does not work for these dates.** `snapshot_start_date` and `snapshot_end_date` are declared as project vars in `dbt_project.yml`, and dbt only uses a `var()` default when the name is undefined anywhere. A declared var whose value is empty still counts as defined, so this silently yields an empty string rather than the date written next to it:
+
+```
+    "snapshot_start_date": var("snapshot_start_date", "2021-10-01"),   -- never used
+```
+
+Put the model's date in `snapshot_default_start_date` instead.
+
 ### Data Repairs:
 
 Pick the earliest point the snapshot is wrong from and rebuild forward from there. Everything from that point on is deleted and rebuilt from the source, so the source is the authority for the whole span:
