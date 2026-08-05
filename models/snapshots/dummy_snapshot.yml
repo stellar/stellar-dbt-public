@@ -315,3 +315,65 @@ models:
     tests:
       - dbt_utils.equality:
           compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_key_filter_expected"
+
+  # Full refresh across more than one chunk: chunk 1 creates the table with a CTAS, chunks 2
+  # and 3 merge into it and read their boundary out of what the previous chunk wrote. This is
+  # the path that broke when the boundary read resolved the target through dbt's relation
+  # cache, which is built before chunk 1 exists and never learns about a raw CTAS.
+  - name: dummy_snapshot_full_refresh_chunked
+    description: "placeholder"
+    config:
+      materialized: "incremental_snapshot"
+      enabled: '{{ target.name == "ci" }}'
+      unique_key: ["account_id", "valid_from"]
+      source_name: "stg_dummy"
+      temp_source_table: "dummy_snapshot_fr_chunked_source"
+      temp_target_table: "dummy_snapshot_fr_chunked_target"
+      expected_target_table_name: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_fr_chunked_expected"
+      snapshot_start_date: "2025-01-01"
+      snapshot_end_date: "2025-08-01"
+      snapshot_chunk_months: 3
+      full_refresh: true
+      updated_at_col_name: "closed_at"
+      valid_from_col_name: "valid_from"
+      valid_to_col_name: "valid_until"
+      source_unique_key: "account_id"
+      source_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at
+        from unnest([
+          struct('chunk 1 creates the table' as test_case_description, '1' as account_id, 60 as balance, timestamp('2025-02-15 00:00:00 UTC') as closed_at),
+          struct('chunk 2 merges, boundary is chunk 1 output' as test_case_description, '1' as account_id, 70 as balance, timestamp('2025-05-20 00:00:00 UTC') as closed_at),
+          struct('chunk 3 merges, boundary is chunk 2 output' as test_case_description, '1' as account_id, 80 as balance, timestamp('2025-07-10 00:00:00 UTC') as closed_at)
+        ]) as row
+      target_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at,
+          row.valid_from,
+          row.valid_until
+        from unnest([
+          struct('dropped by full refresh' as test_case_description, '9' as account_id, 1 as balance, timestamp('2024-01-01 00:00:00 UTC') as closed_at, timestamp('2024-01-01 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+        ]) as row
+      expected_target_data_sql: |
+        select
+          row.test_case_description,
+          row.account_id,
+          row.balance,
+          row.closed_at,
+          row.valid_from,
+          row.valid_until
+        from unnest([
+          struct('chunk 1 creates the table' as test_case_description, '1' as account_id, 60 as balance, timestamp('2025-02-15 00:00:00 UTC') as closed_at, timestamp('2025-02-15 00:00:00 UTC') as valid_from, timestamp('2025-05-20 00:00:00 UTC') as valid_until),
+          struct('chunk 2 merges, boundary is chunk 1 output' as test_case_description, '1' as account_id, 70 as balance, timestamp('2025-05-20 00:00:00 UTC') as closed_at, timestamp('2025-05-20 00:00:00 UTC') as valid_from, timestamp('2025-07-10 00:00:00 UTC') as valid_until),
+          struct('chunk 3 merges, boundary is chunk 2 output' as test_case_description, '1' as account_id, 80 as balance, timestamp('2025-07-10 00:00:00 UTC') as closed_at, timestamp('2025-07-10 00:00:00 UTC') as valid_from, timestamp(null) as valid_until)
+        ]) as row
+
+    tests:
+      - dbt_utils.equality:
+          compare_model: "{{target.database}}.{{target.schema}}_snapshots.dummy_snapshot_fr_chunked_expected"

@@ -77,9 +77,21 @@
 -- schema changes, which happens after this SQL is built. Align the boundary rows to the
 -- source column list so they can be unioned with the source versions.
 --#}
+{#--
+-- Introspect the target directly rather than via load_relation(this). dbt's relation cache
+-- is built at the start of the run, and the chunk that creates the table does so with a raw
+-- CTAS inside a statement() block, which the cache never learns about -- so on a first run
+-- load_relation would still report the table as missing for every chunk after the first.
+--#}
 {%- if read_boundary_from_target -%}
-    {%- set target_col_names = adapter.get_columns_in_relation(load_relation(this))
-        | map(attribute="name") | map("lower") | list -%}
+    {%- set target_columns = adapter.get_columns_in_relation(target_name) -%}
+    {%- if target_columns | length == 0 -%}
+        {%- do exceptions.raise_compiler_error(
+            "Cannot read boundary versions: " ~ target_name ~ " reported no columns. Treating that "
+            ~ "as an empty column list would null out every boundary payload instead of failing."
+        ) -%}
+    {%- endif -%}
+    {%- set target_col_names = target_columns | map(attribute="name") | map("lower") | list -%}
 {%- endif -%}
 
 {#-- Statement 1: one version per entity per day in the chunk --#}
