@@ -204,20 +204,35 @@ However, if a user is not interested in backfill option, they can call `create_s
 
 ### Where the start date comes from
 
-Every run needs a start date. Ordinary runs must be given one:
+Which date wins depends on the mode, because the two modes disagree about what a start date means.
+
+| | start date | if missing |
+|---|---|---|
+| ordinary run | the `snapshot_start_date` var | fails |
+| full refresh | the model's `snapshot_default_start_date`, else the var | fails |
+
+An **ordinary run** rebuilds forward from the date it is given, so the var decides it:
 
 ```
 --vars '{"snapshot_start_date": "2026-08-04"}'      # or the SNAPSHOT_START_DATE env var
 ```
 
-A **full refresh** may omit it and fall back to the model's own `snapshot_default_start_date`, which is that snapshot's earliest meaningful date:
+There is no fallback. The model's default is a genesis date, so using it here would turn a missing var into a silent rebuild of the whole table — years of history deleted and recomputed where one day was intended, reported as success.
+
+A **full refresh** replaces the table outright, so its start date decides how much history the snapshot ends up having at all. The model's own date therefore wins over whatever the caller passed:
 
 ```
     "snapshot_default_start_date": "2021-10-01",
     "snapshot_start_date": var("snapshot_start_date", none),
 ```
 
-That fallback is limited to a full refresh on purpose. It is a genesis date, so letting an ordinary run use it would turn a missing var into a silent rebuild of the whole table — deleting and recomputing years of history where one day was intended, and reporting success. An ordinary run with no start date fails instead.
+Otherwise a full refresh triggered from a pipeline that routinely sets `snapshot_start_date` to yesterday would replace the table with a single day and discard everything before it. When a model has no default recorded yet, the requested date is used, so a full refresh is still possible. Whenever the default overrides a requested date, the run says so:
+
+```
+Full refresh of asset_prices_coingecko_snapshot: rebuilding from its snapshot_default_start_date 2021-10-01, not the requested 2026-01-01, so the replaced table keeps its whole history
+```
+
+To rebuild only part of the history on purpose, use an **ordinary run with an early start** rather than a full refresh — the reset deletes from that date forward regardless, so the outcome is the same without the table being replaced.
 
 **A `var(..., 'default')` fallback in the model does not work for these dates.** `snapshot_start_date` and `snapshot_end_date` are declared as project vars in `dbt_project.yml`, and dbt only uses a `var()` default when the name is undefined anywhere. A declared var whose value is empty still counts as defined, so this silently yields an empty string rather than the date written next to it:
 

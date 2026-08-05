@@ -68,15 +68,25 @@
   {#--
   -- Resolve the window to rebuild.
   --
-  -- start: the snapshot_start_date var when the caller gives one. A daily run passes yesterday
-  -- and a partial rebuild passes the point to rebuild from.
+  -- start: which date wins depends on the mode, because the two modes disagree about what a
+  -- start date means.
   --
-  -- A full refresh passes nothing and falls back to the model's snapshot_default_start_date,
-  -- which is that snapshot's earliest meaningful date. That fallback is deliberately limited to
-  -- a full refresh: it is a genesis date, so applying it to an ordinary run would turn a missing
-  -- var into a silent rebuild of the entire table -- deleting and recomputing years of history
-  -- where one day was intended, and reporting success. An ordinary run with no start date is a
-  -- mistake, so it fails instead.
+  -- An ordinary run rebuilds forward from the date it is given, so the snapshot_start_date var
+  -- decides it: a daily run passes yesterday, a partial rebuild passes the point to rebuild from.
+  -- There is no fallback. The model's default is a genesis date, so using it here would turn a
+  -- missing var into a silent rebuild of the whole table -- years of history deleted and
+  -- recomputed where one day was intended, reported as success. A run with no start date is a
+  -- mistake, so it fails.
+  --
+  -- A full refresh replaces the table outright, so its start date decides how much history the
+  -- snapshot ends up having at all. The model's snapshot_default_start_date therefore wins over
+  -- whatever the caller passed: a full refresh triggered from a pipeline that routinely sets
+  -- snapshot_start_date to yesterday would otherwise replace the table with a single day and
+  -- discard everything before it. Falling back to the requested date keeps a full refresh
+  -- possible for a model that has no default recorded yet.
+  --
+  -- To rebuild only part of the history on purpose, use an ordinary run with an early start
+  -- rather than a full refresh -- the reset deletes from that date forward regardless.
   --
   -- end: always now. The rebuild runs from start to the present, so there is no window to get
   -- wrong and no way to leave the tail of the snapshot inconsistent with its head. It can be
@@ -84,7 +94,20 @@
   --#}
   {%- set requested_start_date = config.get('snapshot_start_date') or var('snapshot_start_date', none) -%}
   {%- set default_start_date = config.get('snapshot_default_start_date', none) -%}
-  {%- set start_date = requested_start_date or (default_start_date if full_refresh_mode else none) -%}
+
+  {%- if full_refresh_mode -%}
+    {%- set start_date = default_start_date or requested_start_date -%}
+    {%- if default_start_date and requested_start_date and default_start_date != requested_start_date -%}
+      {%- do log(
+          "Full refresh of " ~ this.identifier ~ ": rebuilding from its snapshot_default_start_date "
+          ~ default_start_date ~ ", not the requested " ~ requested_start_date
+          ~ ", so the replaced table keeps its whole history",
+          info=true
+      ) -%}
+    {%- endif -%}
+  {%- else -%}
+    {%- set start_date = requested_start_date -%}
+  {%- endif -%}
 
   {%- if not start_date -%}
     {%- if full_refresh_mode -%}
