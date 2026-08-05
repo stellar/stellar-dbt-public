@@ -10,7 +10,7 @@
     "source_name": 'int_reflector_prices__fex',
     "temp_source_table": temp_source_table,
     "temp_target_table": temp_target_table,
-    "snapshot_start_date": var("snapshot_start_date", none),
+    "snapshot_start_date": var("snapshot_start_date", "2025-04-01"),
     "snapshot_end_date": var("snapshot_end_date", none),
     "full_refresh": var("snapshot_full_refresh") == 'true',
     "updated_at_col_name": 'day',
