@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: accounts_snapshot_v2
+  - name: accounts_snapshot
     description: '{{ doc("accounts_snapshot") }}'
     tests:
       - recency:
