@@ -12,7 +12,7 @@
     "temp_target_table": temp_target_table,
     "snapshot_start_date": var("snapshot_start_date", "2024-03-01"),
     "snapshot_end_date": var("snapshot_end_date", none),
-    "full_refresh": var("snapshot_full_refresh") == 'true',
+    "full_refresh": true if var("snapshot_full_refresh", "false") == 'true' else none,
     "updated_at_col_name": 'day',
     "valid_from_col_name": 'valid_from',
     "valid_to_col_name": 'valid_to',
