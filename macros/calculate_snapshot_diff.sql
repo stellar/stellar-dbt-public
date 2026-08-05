@@ -179,9 +179,8 @@
             partition by {{ unique_key_csv }}
             order by {{ valid_from_col_name }}
         ) as {{ valid_to_col_name }}
-    from flagged_versions
-    {#-- leave entities the source did not change inside the chunk untouched --#}
-    where source_versions_for_entity > 0
+    from flagged_versions where source_versions_for_entity > 0
+
 {%- endset %}
 
 {{ stellar_dbt_public.create_temp_table_with_data(temp_target_table, snapshot_diff_sql, partition_by_key, cluster_by_key) }}
