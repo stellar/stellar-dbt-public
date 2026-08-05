@@ -58,7 +58,7 @@ with
             , acc.selling_liabilities as balance
             , acc.valid_from
             , acc.valid_to
-        from {{ ref('accounts_snapshot_v2') }} as acc
+        from {{ ref('accounts_snapshot') }} as acc
         where
             acc.deleted is false
             and acc.selling_liabilities > 0
