@@ -15,8 +15,29 @@
 -- A filter missing from any one of those would corrupt or delete entities the caller never
 -- asked to touch, so callers must not re-derive it.
 --
--- Only single column unique keys are supported. trustlines_snapshot is the one snapshot with
--- a composite key, and matching those keys is unsafe until their nulls are handled.
+-- The filter is always on source_unique_key[0]. For a snapshot with a composite key that
+-- means the values name a *group* of entities rather than one:
+--
+--     trustlines_snapshot                (account_id, asset_type, asset_issuer, asset_code,
+--                                         liquidity_pool_id)  -> every trustline of an account
+--     recognized_asset_prices_snapshot   (asset_code, asset_issuer, asset_type)
+--                                                             -> every issuer/type of a code
+--     contract_data_snapshot             (contract_id, ledger_key_hash)
+--                                                             -> every ledger key of a contract
+--
+-- That is a scope reducer, not an entity selector, and it stays correct because the predicate
+-- is entity-constant: a key column has one value for all of an entity's rows, so every row of
+-- a matched entity is matched and every row of an unmatched entity is not. The window
+-- functions in calculate_snapshot_diff all partition by the *full* key, so a matched entity is
+-- grouped and chained exactly as it would be in an unfiltered run.
+--
+-- Filtering on a column outside source_unique_key would break that -- the predicate could
+-- split an entity's rows, and the windows would then compute over a mutilated set -- so the
+-- column is never caller supplied.
+--
+-- A null in the filter column means the entity is not selected: it fails the IN in all four
+-- statements alike, so it is left untouched rather than half rebuilt. Every current
+-- source_unique_key[0] carries a not_null test.
 #}
 
 {%- set keys = config.get('snapshot_keys', var('snapshot_keys', none)) -%}
@@ -25,10 +46,9 @@
     {{ return('') }}
 {%- endif -%}
 
-{%- if source_unique_key_cols | length > 1 -%}
+{%- if source_unique_key_cols | length == 0 -%}
     {%- do exceptions.raise_compiler_error(
-        "snapshot_keys is only supported for a single column source_unique_key, but "
-        ~ source_unique_key_cols | join(', ') ~ " has " ~ source_unique_key_cols | length ~ " columns"
+        "snapshot_keys needs a source_unique_key to filter on, but none is configured"
     ) -%}
 {%- endif -%}
 

@@ -259,7 +259,9 @@ dbt run --select asset_prices_coingecko_snapshot \
   --vars '{"snapshot_start_date": "2024-01-01", "snapshot_keys": ["CONTRACT_A", "CONTRACT_B"]}'
 ```
 
-`snapshot_keys` scopes every statement, including the delete and the reopen, so entities outside it keep their history untouched. It is the usual way to add a newly tracked asset: with no existing rows there is nothing to delete, and the rebuild is a plain insert of that asset's history. Only single column unique keys are supported.
+`snapshot_keys` scopes every statement, including the delete and the reopen, so entities outside it keep their history untouched. It is the usual way to add a newly tracked asset: with no existing rows there is nothing to delete, and the rebuild is a plain insert of that asset's history.
+
+The values are matched against **`source_unique_key[0]`**. For a snapshot with a composite key that means they name a group of entities rather than one — an `account_id` selects every trustline of that account, an `asset_code` every issuer/type of that code — which is a scope reducer, not an entity selector. It stays exact because a key column has one value for every row of an entity, so a matched entity has all its rows matched and an unmatched entity none, while the window functions still partition by the full key. A row whose filter column is `NULL` is not selected at all, so it is left untouched rather than half rebuilt.
 
 Because a rebuild deletes rows, `snapshot_keys` refuses to run against the `prod` target. Run repairs against a clone in a backfill dataset and publish by swapping the table.
 
