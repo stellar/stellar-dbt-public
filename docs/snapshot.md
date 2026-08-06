@@ -209,7 +209,7 @@ Which date wins depends on the mode, because the two modes disagree about what a
 | | start date | if missing |
 |---|---|---|
 | ordinary run | the `snapshot_start_date` var | fails |
-| full refresh | the model's `snapshot_default_start_date`, else the var | fails |
+| full refresh | the model's `snapshot_default_start_date`, else the var | fails (no model in this package relies on the fallback) |
 
 An **ordinary run** rebuilds forward from the date it is given, so the var decides it:
 
@@ -240,7 +240,7 @@ To rebuild only part of the history on purpose, use an **ordinary run with an ea
     "snapshot_start_date": var("snapshot_start_date", "2021-10-01"),   -- never used
 ```
 
-Put the model's date in `snapshot_default_start_date` instead.
+Put the model's date in `snapshot_default_start_date` instead. Every snapshot in this package records one; the values are the dates that used to sit in that dead `var()` default, so a full refresh rebuilds each snapshot from the same genesis its author intended.
 
 ### Data Repairs:
 
