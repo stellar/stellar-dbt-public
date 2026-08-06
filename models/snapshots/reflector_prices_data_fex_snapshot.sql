@@ -3,6 +3,12 @@
 {%- set temp_target_table = this.table ~ '_target' -%}
 
 {% set meta_config = {
+    "datadiff": {
+        "unique_key": ["asset_code", "valid_from"],
+        "exclude_columns": [],
+        "min_match_percent": 98,
+        "filters": {"column": "valid_from"},
+    },
     "materialized": "incremental_snapshot",
     "cluster_by": ["asset_code"],
     "unique_key": ["asset_code", "valid_from"],

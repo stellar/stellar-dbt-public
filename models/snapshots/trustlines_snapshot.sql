@@ -2,7 +2,19 @@
 {%- set temp_source_table = this.table ~ '_source' -%}
 {%- set temp_target_table = this.table ~ '_target' -%}
 
+{#
+-- The datadiff key is ledger_key, not the composite source key below: asset_issuer and
+-- asset_code are null for a pool-share trustline, and Datafold matches rows on pk_columns,
+-- where null never matches null -- the composite key would report every such row as a
+-- mismatch. ledger_key identifies the same trustline entry and carries a not_null test.
+#}
 {% set meta_config = {
+    "datadiff": {
+        "unique_key": ["ledger_key", "valid_from"],
+        "exclude_columns": ["batch_id", "batch_run_date", "batch_insert_ts"],
+        "min_match_percent": 98,
+        "filters": {"column": "valid_from"},
+    },
     "materialized": "incremental_snapshot",
     "partition_by": {
          "field": "valid_to"
