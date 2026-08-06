@@ -11,7 +11,7 @@
 {% set meta_config = {
     "datadiff": {
         "unique_key": ["ledger_key", "valid_from"],
-        "exclude_columns": ["batch_id", "batch_run_date", "batch_insert_ts"],
+        "exclude_columns": ["batch_id", "batch_run_date", "batch_insert_ts", "airflow_start_ts"],
         "min_match_percent": 98,
         "filters": {"column": "valid_from"},
     },
