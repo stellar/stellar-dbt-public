@@ -1,6 +1,7 @@
 -- depends_on: {{ ref('evicted_keys') }}
 {%- set temp_source_table = this.table ~ '_source' -%}
 {%- set temp_target_table = this.table ~ '_target' -%}
+{%- set snapshot_default_start_date = snapshot_begin('2025-09-03') -%}
 
 {% set meta_config = {
     "datadiff": {
@@ -21,7 +22,7 @@
     "source_name": 'evicted_keys',
     "temp_source_table": temp_source_table,
     "temp_target_table": temp_target_table,
-    "snapshot_default_start_date": "2025-09-03",
+    "snapshot_default_start_date": snapshot_default_start_date,
     "snapshot_start_date": var("snapshot_start_date", none),
     "snapshot_end_date": var("snapshot_end_date", none),
     "full_refresh": true if var("snapshot_full_refresh", "false") == 'true' else none,

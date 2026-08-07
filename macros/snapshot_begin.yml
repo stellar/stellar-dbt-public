@@ -1,0 +1,16 @@
+version: 2
+
+macros:
+  - name: snapshot_begin
+    description: >
+      Returns the `snapshot_default_start_date` for an SCD Type-2 snapshot model, the date a full
+      refresh rebuilds the whole table from. Non-ci targets get the model's genesis date; under
+      target=ci it returns today minus `snapshot_ci_window_days` (default 30), so CI walks one
+      short window instead of chunking from 2015. Computed from `run_started_at`, so every model
+      in a run gets the same window. Only the full-refresh path reads this value.
+    docs:
+      show: true
+    arguments:
+      - name: default
+        type: string
+        description: The model's genesis date (yyyy-mm-dd), used on every non-ci target. Required.
