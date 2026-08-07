@@ -52,9 +52,10 @@
 -- To rebuild only part of the history on purpose, use an ordinary run with an early start
 -- rather than a full refresh -- the reset deletes from that date forward regardless.
 --
--- end: always now. The rebuild runs from start to the present, so there is no window to get
--- wrong and no way to leave the tail of the snapshot inconsistent with its head. It can be
--- overridden, which the fixtures rely on for a deterministic end.
+-- end: defaults to now, and callers should leave it that way. snapshot_end_date overrides it,
+-- but the reset below is not bounded by it: step 1 deletes every version from start_date
+-- onward while the chunks only rebuild as far as the end date, so anything between that date
+-- and now is deleted and never recreated.
 --#}
 {%- set requested_start_date = config.get('snapshot_start_date') or var('snapshot_start_date', none) -%}
 {%- set default_start_date = config.get('snapshot_default_start_date', none) -%}

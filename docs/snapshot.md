@@ -140,23 +140,23 @@ CREATE ... target_temp_table;   -- those versions chained onto the one current a
 MERGE  ... INTO target;         -- applied before the next chunk begins
 ```
 
-There is no end date. A run always rebuilds from `snapshot_start_date` to the present, so there is no window to get wrong and no way to leave the tail of a snapshot inconsistent with its head. A daily run passes yesterday, a partial rebuild passes the point to rebuild from, and a full refresh passes nothing and uses the model's `snapshot_default_start_date`. The same code path serves all three.
+A run rebuilds from `snapshot_start_date` to the present. A daily run passes yesterday, a partial rebuild passes the point to rebuild from, a full refresh passes nothing and uses the model's `snapshot_default_start_date`. One code path serves all three.
 
-Each chunk is computed in one pass rather than one iteration per day. SCD Type-2 `valid_to` is always the `valid_from` of the entity's next version, which makes it `LEAD(valid_from)` over that entity's ordered versions, so no day inside a chunk depends on the previous day's output. A chunk costs two statements plus a merge whether it covers one day or three months.
+**Leave `snapshot_end_date` unset.** It defaults to today, and setting it truncates the rebuild without truncating the reset: step 1 deletes every version from `snapshot_start_date` onward with no upper bound, while step 2 only rebuilds as far as the end date. Everything between the end date and now is deleted and never recreated.
 
-The one value the source cannot supply is each entity's version that was current when the chunk began. That row is read from the target positionally -- the entity's latest version with `valid_from` before the chunk start -- rather than by selecting `valid_to IS NULL`, which would return the state as of *now*. Step 1 guarantees the target holds nothing starting at or after `snapshot_start_date`, and each chunk merges before the next begins, so that version is simply the entity's latest one.
+Each chunk is computed in one pass, not one iteration per day: `valid_to` is always the next version's `valid_from`, so it is `LEAD(valid_from)` over the entity's ordered versions and no day depends on the previous day's output. A chunk costs two statements plus a merge whether it covers one day or three months.
 
-Chunks therefore run in ascending order and cannot be parallelised: chunk 2 reads what chunk 1 left open. The upside is that every chunk boundary is a consistent snapshot. A failure part way through leaves the table correct up to the last chunk that finished, and each chunk logs how far it got:
+The source cannot supply one value: the entity's version current when the chunk began. That row is read from the target positionally -- the entity's latest version with `valid_from` before the chunk start -- not by `valid_to IS NULL`, which would give the state as of now. Step 1 leaves nothing starting at or after `snapshot_start_date`, and each chunk merges before the next begins, so the positional read is correct.
+
+Chunks run in ascending order and cannot be parallelised: chunk 2 reads what chunk 1 left open. Every chunk boundary is therefore a consistent snapshot, and a failure part way through leaves the table correct up to the last chunk that finished:
 
 ```
-Rebuilding trustlines_snapshot from 2025-01-01 to 2026-08-04 in 8 chunk(s) of 3 month(s)
+Rebuilding trustlines_snapshot from 2025-01-01 to 2026-08-04 in 7 chunk(s) of 3 month(s)
 Reset trustlines_snapshot to its state at 2025-01-01
-Chunk 1/8 done: trustlines_snapshot rebuilt through 2025-04-01 (chunk covered 2025-01-01 to 2025-04-01)
+Chunk 1/7 done: trustlines_snapshot rebuilt through 2025-04-01 (chunk covered 2025-01-01 to 2025-04-01)
 ```
 
-Restart by rerunning with `snapshot_start_date` set to the last point reached.
-
-Chunk size defaults to three months and is set with the `snapshot_chunk_months` config or var.
+Restart by rerunning with `snapshot_start_date` set to the last point reached. Chunk size defaults to three months, set with the `snapshot_chunk_months` config or var.
 
 **Important Note:**: DBT incremental materialization supports pre-hook and post-hook config where you can execute a group of statement before actually running the model. However, jinja variables do not populate as expected in prehool/sql header and this is a [known issue/limitation](https://github.com/dbt-labs/docs.getdbt.com/issues/4890) in DBT.
 
@@ -204,79 +204,77 @@ However, if a user is not interested in backfill option, they can call `create_s
 
 ### Where the start date comes from
 
-Which date wins depends on the mode, because the two modes disagree about what a start date means.
-
 | | start date | if missing |
 |---|---|---|
 | ordinary run | the `snapshot_start_date` var | fails |
-| full refresh | the model's `snapshot_default_start_date`, else the var | fails (no model in this package relies on the fallback) |
+| full refresh | the model's `snapshot_default_start_date`, else the var | fails (every snapshot here records one) |
 
-An **ordinary run** rebuilds forward from the date it is given, so the var decides it:
+An **ordinary run** takes the var, with no fallback:
 
 ```
 --vars '{"snapshot_start_date": "2026-08-04"}'      # or the SNAPSHOT_START_DATE env var
 ```
 
-There is no fallback. The model's default is a genesis date, so using it here would turn a missing var into a silent rebuild of the whole table — years of history deleted and recomputed where one day was intended, reported as success.
+Falling back to the model's default would turn a missing var into a silent rebuild of the whole table, reported as success.
 
-A **full refresh** replaces the table outright, so its start date decides how much history the snapshot ends up having at all. The model's own date therefore wins over whatever the caller passed:
+A **full refresh** replaces the table, so its start date decides how much history the snapshot keeps. The model's own date wins over the caller's:
 
 ```
-    "snapshot_default_start_date": "2021-10-01",
+    "snapshot_default_start_date": "2021-11-01",
     "snapshot_start_date": var("snapshot_start_date", none),
 ```
 
-Otherwise a full refresh triggered from a pipeline that routinely sets `snapshot_start_date` to yesterday would replace the table with a single day and discard everything before it. When a model has no default recorded yet, the requested date is used, so a full refresh is still possible. Whenever the default overrides a requested date, the run says so:
+Otherwise a full refresh from a pipeline that sets `snapshot_start_date` to yesterday would replace the table with a single day. A model with no default uses the requested date, so a full refresh still works. When the default overrides a requested date, the run says so:
 
 ```
-Full refresh of asset_prices_coingecko_snapshot: rebuilding from its snapshot_default_start_date 2021-10-01, not the requested 2026-01-01, so the replaced table keeps its whole history
+Full refresh of liquidity_pools_snapshot: rebuilding from its snapshot_default_start_date 2021-11-01, not the requested 2026-01-01, so the replaced table keeps its whole history
 ```
 
-To rebuild only part of the history on purpose, use an **ordinary run with an early start** rather than a full refresh — the reset deletes from that date forward regardless, so the outcome is the same without the table being replaced.
+To rebuild part of the history on purpose, use an **ordinary run with an early start** rather than a full refresh — the reset deletes from that date forward either way, without replacing the table.
 
 **A `var(..., 'default')` fallback in the model does not work for these dates.** `snapshot_start_date` and `snapshot_end_date` are declared as project vars in `dbt_project.yml`, and dbt only uses a `var()` default when the name is undefined anywhere. A declared var whose value is empty still counts as defined, so this silently yields an empty string rather than the date written next to it:
 
 ```
-    "snapshot_start_date": var("snapshot_start_date", "2021-10-01"),   -- never used
+    "snapshot_start_date": var("snapshot_start_date", "2021-11-01"),   -- never used
 ```
 
-Put the model's date in `snapshot_default_start_date` instead. Every snapshot in this package records one; the values are the dates that used to sit in that dead `var()` default, so a full refresh rebuilds each snapshot from the same genesis its author intended.
+Put the model's date in `snapshot_default_start_date` instead. Every snapshot here records one.
 
 ### Data Repairs:
 
-Pick the earliest point the snapshot is wrong from and rebuild forward from there. Everything from that point on is deleted and rebuilt from the source, so the source is the authority for the whole span:
+Pick the earliest point the snapshot is wrong from and rebuild forward. Everything from that point on is deleted and rebuilt from the source:
 
 ```
 dbt run --select trustlines_snapshot --vars '{"snapshot_start_date": "2025-06-01"}'
 ```
 
-Re-runs are deterministic: step 1 always returns the target to its state at `snapshot_start_date`, so a given start date begins from the same place no matter what a previous attempt left behind. Rebuilding a span the snapshot already covers leaves it byte identical.
+Re-runs are deterministic: step 1 returns the target to its state at `snapshot_start_date` regardless of what a previous attempt left behind, so rebuilding a span already covered leaves it byte identical.
 
-Note that a repair rebuilds to the present rather than patching a window. Fixing one month two years back rebuilds those two years. When that is too expensive and only some entities are affected, scope the rebuild instead of shortening it:
+A repair rebuilds to the present rather than patching a window — fixing one month two years back rebuilds those two years. When that is too expensive and only some entities are affected, scope the rebuild instead of shortening it:
 
 ```
-dbt run --select asset_prices_coingecko_snapshot \
+dbt run --select contract_data_snapshot \
   --vars '{"snapshot_start_date": "2024-01-01", "snapshot_keys": ["CONTRACT_A", "CONTRACT_B"]}'
 ```
 
-`snapshot_keys` scopes every statement, including the delete and the reopen, so entities outside it keep their history untouched. It is the usual way to add a newly tracked asset: with no existing rows there is nothing to delete, and the rebuild is a plain insert of that asset's history.
+`snapshot_keys` scopes every statement, including the delete and the reopen, so entities outside it keep their history. It is also how a newly tracked entity is added: with no existing rows there is nothing to delete, and the rebuild is a plain insert.
 
-The values are matched against **`source_unique_key[0]`**. For a snapshot with a composite key that means they name a group of entities rather than one — an `account_id` selects every trustline of that account, an `asset_code` every issuer/type of that code — which is a scope reducer, not an entity selector. It stays exact because a key column has one value for every row of an entity, so a matched entity has all its rows matched and an unmatched entity none, while the window functions still partition by the full key. A row whose filter column is `NULL` is not selected at all, so it is left untouched rather than half rebuilt.
+Values match **`source_unique_key[0]`**. On a composite key that names a group rather than one entity — an `account_id` selects every trustline of that account — so it reduces scope, it does not select entities. It stays exact because a key column has one value for all of an entity's rows: a matched entity has every row matched, an unmatched entity none, and the window functions still partition by the full key. A `NULL` in the filter column is never selected, so it is left untouched rather than half rebuilt.
 
-Because a rebuild deletes rows, `snapshot_keys` refuses to run against the `prod` target. Run repairs against a clone in a backfill dataset and publish by swapping the table.
+Because a rebuild deletes rows, `snapshot_keys` refuses to run against the `prod` target. Repair against a clone and publish by swapping the table.
 
 
 ### Airflow orchestration:
 
 - A single [DAG](https://github.com/stellar/stellar-etl-airflow/blob/patch/add-snapshot-dag/dags/dag_snapshot.py) in airflow which runs at 01:00 UTC everyday.
 - DAG consist of multiple tasks - `task_trustline_snapshot`, `task_liquidity_pool_snapshot`, etc
-- snapshot_start_date and snapshot_end_date is provided by airflow i.e. 1 day for incremental run
-- Ability to kick off job manually with custom snapshot_start_date and snapshot_end_date.
+- snapshot_start_date is provided by airflow, i.e. yesterday for the daily run; snapshot_end_date is left unset so the rebuild runs to the present
+- Ability to kick off job manually with a custom snapshot_start_date, and with snapshot_keys to scope it
 
 
 ### Limitations
 - A rebuild trusts the source for everything from `snapshot_start_date` onwards. If an upstream model is itself incomplete for that span, versions are deleted and not recreated. Validate before publishing, and prefer running against a clone.
-- Repairing a single window is not supported: a rebuild always runs to the present. Use `snapshot_keys` to reduce the cost of an old start date rather than trying to bound the end.
+- Repairing a single window is not supported: a rebuild runs to the present. Use `snapshot_keys` to reduce the cost of an old start date. Bounding `snapshot_end_date` does not work — the reset still deletes to the end of the table, leaving a gap.
 - Chunks are serial by construction, since each one reads the version the previous chunk left open.
 - Intra-day history is not recoverable. A day is compressed to its last source row, so a rebuild cannot recover detail the snapshot never stored.
 - It is expected from user that they do not run parallel snapshot jobs for same table, as it can cause unexpected output.
