@@ -95,19 +95,20 @@ This materialization is essentially an overloading for incremental materializati
 
 
 ```sql
-{% materialization incremental_snapshot, adapter='bigquery', supported_languages=['sql', 'python'] -%}
+{% materialization incremental_snapshot, adapter='bigquery', supported_languages=['sql'] -%}
   {% set presql =
-      backfill_snapshot(
+      calculate_snapshot_diff(
               config.get('source_name'),
               this,
-              this.project ~ '.' ~ this.schema ~ '.' ~ config.get('temp_source_table'),
-              this.project ~ '.' ~ this.schema ~ '.' ~ config.get('temp_target_table'),
-              config.get('snapshot_start_date'),
-              config.get('snapshot_end_date'),
+              temp_source_table,
+              temp_target_table,
+              chunk_start_date,
+              chunk_end_date,
               config.get('updated_at_col_name'),
-              config.get('dbt_valid_from_col_name'),
-              config.get('dbt_valid_to_col_name'),
-              config.get('source_unique_key')
+              config.get('valid_from_col_name'),
+              config.get('valid_to_col_name'),
+              source_unique_key_cols,
+              key_filter
           )
   %}
 .
@@ -142,7 +143,7 @@ MERGE  ... INTO target;         -- applied before the next chunk begins
 
 A run rebuilds from `snapshot_start_date` to the present. A daily run passes yesterday, a partial rebuild passes the point to rebuild from, a full refresh passes nothing and uses the model's `snapshot_default_start_date`. One code path serves all three.
 
-**Leave `snapshot_end_date` unset.** It defaults to today, and setting it truncates the rebuild without truncating the reset: step 1 deletes every version from `snapshot_start_date` onward with no upper bound, while step 2 only rebuilds as far as the end date. Everything between the end date and now is deleted and never recreated.
+`snapshot_end_date` bounds what is rebuilt, not what is deleted. It defaults to today. Step 1 deletes every version from `snapshot_start_date` onward with no upper bound, while step 2 rebuilds only as far as the end date — so an end date in the past **truncates** the snapshot there rather than repairing a window. Hole repair is not supported.
 
 Each chunk is computed in one pass, not one iteration per day: `valid_to` is always the next version's `valid_from`, so it is `LEAD(valid_from)` over the entity's ordered versions and no day depends on the previous day's output. A chunk costs two statements plus a merge whether it covers one day or three months.
 
@@ -168,6 +169,7 @@ Generally, a user can specificy model as following, which will work for any mode
 -- depends_on: {{ ref('stg_claimable_balances') }}
 {%- set temp_source_table = this.table ~ '_source' -%}
 {%- set temp_target_table = this.table ~ '_target' -%}
+{%- set snapshot_default_start_date = snapshot_begin('2015-09-30') -%}
 
 {% set meta_config = {
     "materialized": "incremental_snapshot",
@@ -181,9 +183,10 @@ Generally, a user can specificy model as following, which will work for any mode
     "source_name": 'stg_claimable_balances',
     "temp_source_table": temp_source_table,
     "temp_target_table": temp_target_table,
-    "snapshot_start_date": var("snapshot_start_date"),
-    "snapshot_end_date": var("snapshot_end_date"),
-    "full_refresh": var("snapshot_full_refresh") == 'true',
+    "snapshot_default_start_date": snapshot_default_start_date,
+    "snapshot_start_date": var("snapshot_start_date", none),
+    "snapshot_end_date": var("snapshot_end_date", none),
+    "full_refresh": true if var("snapshot_full_refresh", "false") == 'true' else none,
     "updated_at_col_name": 'closed_at',
     "valid_from_col_name": 'valid_from',
     "valid_to_col_name": 'valid_to',
@@ -200,7 +203,7 @@ Generally, a user can specificy model as following, which will work for any mode
 SELECT * from {{ this.project ~ '.' ~ this.schema ~ '.' ~  temp_target_table }}
 ```
 
-However, if a user is not interested in backfill option, they can call `create_snapshot` macro directly and use incremental materialization.
+Every value the materialization needs comes from the model's config, so a new snapshot is added by copying this block and changing the model-specific entries.
 
 ### Where the start date comes from
 
@@ -274,7 +277,7 @@ Because a rebuild deletes rows, `snapshot_keys` refuses to run against the `prod
 
 ### Limitations
 - A rebuild trusts the source for everything from `snapshot_start_date` onwards. If an upstream model is itself incomplete for that span, versions are deleted and not recreated. Validate before publishing, and prefer running against a clone.
-- Repairing a single window is not supported: a rebuild runs to the present. Use `snapshot_keys` to reduce the cost of an old start date. Bounding `snapshot_end_date` does not work — the reset still deletes to the end of the table, leaving a gap.
+- Hole repair is not supported. `snapshot_end_date` bounds the rebuild but not the delete, so a past end date truncates the snapshot at that date instead of patching a window. Use `snapshot_keys` to reduce the cost of an old start date.
 - Chunks are serial by construction, since each one reads the version the previous chunk left open.
 - Intra-day history is not recoverable. A day is compressed to its last source row, so a rebuild cannot recover detail the snapshot never stored.
 - It is expected from user that they do not run parallel snapshot jobs for same table, as it can cause unexpected output.

@@ -52,12 +52,12 @@
 -- To rebuild only part of the history on purpose, use an ordinary run with an early start
 -- rather than a full refresh -- the reset deletes from that date forward regardless.
 --
--- end: defaults to now, and callers should leave it that way. snapshot_end_date overrides it,
--- but the reset below is not bounded by it: step 1 deletes every version from start_date
--- onward while the chunks only rebuild as far as the end date, so anything between that date
--- and now is deleted and never recreated.
+-- end: snapshot_end_date, defaulting to today. It bounds what is rebuilt, not what is deleted:
+-- step 1 deletes every version from start_date onward with no upper bound, while the chunks
+-- rebuild only as far as the end date. So an end date in the past truncates the snapshot at that
+-- date rather than repairing a window -- hole repair is not supported.
 --#}
-{%- set requested_start_date = config.get('snapshot_start_date') or var('snapshot_start_date', none) -%}
+{%- set requested_start_date = config.get('snapshot_start_date') -%}
 {%- set default_start_date = config.get('snapshot_default_start_date', none) -%}
 
 {%- if full_refresh_mode -%}
@@ -91,12 +91,16 @@
   {%- endif -%}
 {%- endif -%}
 
-{%- set end_date = config.get('snapshot_end_date')
-    or var('snapshot_end_date', none)
-    or run_started_at.strftime('%Y-%m-%d') -%}
+{%- set end_date = config.get('snapshot_end_date') or run_started_at.strftime('%Y-%m-%d') -%}
 
-{%- set start_date = start_date | string | replace("'", "") | trim -%}
-{%- set end_date = end_date | string | replace("'", "") | trim -%}
+{#--
+-- Both dates are day-granular here: the chunk boundaries and the reset's predicates are days,
+-- so a caller may pass either a date or a full timestamp ("2026-06-16 13:00:00+00:00") and the
+-- time is dropped. Truncating here rather than at the caller keeps every caller -- Airflow,
+-- a --vars run, a model config -- passing whatever timestamp it already has.
+--#}
+{%- set start_date = (start_date | string | replace("'", "") | trim)[:10] -%}
+{%- set end_date = (end_date | string | replace("'", "") | trim)[:10] -%}
 
 {%- if start_date >= end_date -%}
   {%- do exceptions.raise_compiler_error(
@@ -109,8 +113,9 @@
 {%- set chunk_ranges = stellar_dbt_public.snapshot_chunk_ranges(start_date, end_date, chunk_months) -%}
 
 {#--
--- Built once and threaded into every statement that reads or writes the target. Deriving it
--- again per call site is how an entity nobody asked about gets deleted.
+-- Threaded into every statement that reads or writes the target -- a statement built without it
+-- deletes entities nobody asked about. calculate_snapshot_diff re-derives an aliased variant for
+-- its boundary read, from the same source_unique_key_cols, so the two cannot disagree.
 --#}
 {%- set key_filter = stellar_dbt_public.snapshot_key_filter(source_unique_key_cols) -%}
 

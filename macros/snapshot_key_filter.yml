@@ -3,13 +3,11 @@ version: 2
 macros:
   - name: snapshot_key_filter
     description: >
-      Build the optional predicate that scopes a snapshot rebuild to specific entities, so a single
-      asset can be rebuilt without touching the rest of the table. Returns an empty string when no
-      filter is requested, otherwise a fragment beginning with "and " for callers to append to a
-      where clause. Set it with the snapshot_keys var or model config, as a list or a comma
-      separated string. Only single column unique keys are supported. The filter must be built once
-      per run and threaded into every statement that reads or writes the target, since a filter
-      missing from any one of them would delete or corrupt entities the caller never named.
+      Build the optional predicate that scopes a snapshot rebuild to specific entities, set with
+      the snapshot_keys var as a list or comma separated string. Returns an empty string when no
+      filter is requested, otherwise a fragment beginning with "and ". Values match
+      source_unique_key[0], so on a composite key they name a group of entities. Every statement
+      that reads or writes the target needs it. See the macro header.
     docs:
       show: true
     arguments:

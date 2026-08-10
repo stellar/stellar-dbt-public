@@ -10,10 +10,10 @@
 --     --vars '{"snapshot_keys": "CONTRACT_A,CONTRACT_B"}'
 --
 -- The returned fragment always begins with "and " so callers can append it to an existing
--- where clause. It is built once per run and threaded into every statement that reads or
--- writes the target: the delete, the reopen, the source read and the boundary read.
--- A filter missing from any one of those would corrupt or delete entities the caller never
--- asked to touch, so callers must not re-derive it.
+-- where clause. Every statement that reads or writes the target needs it -- the delete, the
+-- reopen, the source read and the boundary read -- because one missing it would corrupt or
+-- delete entities the caller never asked to touch. Callers that need an aliased variant call
+-- this again with a table_alias rather than hand-rolling the predicate.
 --
 -- The filter is always on source_unique_key[0]. For a snapshot with a composite key that
 -- means the values name a *group* of entities rather than one:

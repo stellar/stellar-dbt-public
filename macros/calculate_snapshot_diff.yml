@@ -3,15 +3,10 @@ version: 2
 macros:
   - name: calculate_snapshot_diff
     description: >
-      Build the diff for one chunk of a snapshot rebuild. SCD Type-2 valid_to is always the
-      valid_from of the entity's next version, which makes it LEAD(valid_from) over the entity's
-      ordered versions, so a chunk of any length is one window function over its versions rather
-      than one pass per day. Beyond its own source rows a chunk needs a single version per entity:
-      the one current when the chunk began. The caller guarantees the target holds nothing starting
-      at or after chunk_start_date, so that version is simply the entity's latest and boundary
-      versions can never collide with source versions. Only entities the source changed inside the
-      chunk take part; the rest are left exactly as they are. The result is stored in
-      temp_target_table for the caller to merge on (source_unique_key, valid_from).
+      Build the diff for one chunk of a snapshot rebuild, in one pass rather than one per day, and
+      store it in temp_target_table for the caller to merge on (source_unique_key, valid_from).
+      Only entities the source changed inside the chunk take part. See the macro header for how
+      the boundary version is read.
     docs:
       show: true
     arguments:

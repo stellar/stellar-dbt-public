@@ -4,11 +4,9 @@ macros:
   - name: snapshot_reset_from_start
     description: >
       Return a snapshot to the state it held at start_date, so the rebuild that follows is
-      reproducible. Emits a delete of every version starting at or after start_date, then reopens
-      the version whose successor was just deleted. The order matters: after the delete, at most
-      one version per entity can still carry a valid_to at or after start_date, whereas reopening
-      first would leave an entity with several open versions. Versions the source no longer produces
-      are not recreated by the rebuild, so this is how a snapshot loses rows that should not exist.
+      reproducible: delete every version starting at or after start_date, then reopen the version
+      whose successor was just deleted. Not bounded above: versions past the rebuild window are
+      deleted and not recreated. See the macro header for why the order matters.
     docs:
       show: true
     arguments:
