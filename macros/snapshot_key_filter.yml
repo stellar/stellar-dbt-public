@@ -1,0 +1,19 @@
+version: 2
+
+macros:
+  - name: snapshot_key_filter
+    description: >
+      Build the optional predicate that scopes a snapshot rebuild to specific entities, set with
+      the snapshot_keys var as a list or comma separated string. Returns an empty string when no
+      filter is requested, otherwise a fragment beginning with "and ". Values match
+      source_unique_key[0], so on a composite key they name a group of entities. Every statement
+      that reads or writes the target needs it. See the macro header.
+    docs:
+      show: true
+    arguments:
+      - name: source_unique_key_cols
+        type: list
+        description: The source unique key columns, used to pick the column to filter and to reject composite keys
+      - name: table_alias
+        type: string
+        description: Optional alias to qualify the key column with, when the predicate is used in a join or aliased scan

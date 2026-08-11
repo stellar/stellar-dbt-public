@@ -1,0 +1,14 @@
+version: 2
+
+macros:
+  - name: snapshot_begin
+    description: >
+      Returns the `snapshot_default_start_date` for a snapshot model, the date a full refresh
+      rebuilds from. The model's genesis on every target except ci, which gets today minus
+      `snapshot_ci_window_days` (default 30) so CI walks one short window. See the macro header.
+    docs:
+      show: true
+    arguments:
+      - name: default
+        type: string
+        description: The model's genesis date (yyyy-mm-dd), used on every non-ci target. Required.

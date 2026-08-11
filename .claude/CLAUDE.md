@@ -66,13 +66,16 @@ Raw BigQuery Sources (crypto-stellar project)
 
 ### Custom Snapshot Materialization
 
-Snapshots use a **custom `incremental_snapshot` materialization** (not native dbt snapshots). Key macros:
-- `backfill_snapshot()` — Rebuilds a date range deterministically
-- `calculate_snapshot_diff_for_day()` — Computes SCD changes for a single day
-- `calculate_snapshot_diff_for_day_range()` — Batch range processing
+Snapshots use a **custom `incremental_snapshot` materialization** (not native dbt snapshots). A run rebuilds from `snapshot_start_date` to `snapshot_end_date`, in chunks. Key macros:
+- `calculate_snapshot_diff()` — Computes one chunk's SCD changes
+- `snapshot_reset_from_start()` — Returns the target to its state at the start date
+- `snapshot_chunk_ranges()` — Splits the window into consecutive chunks
+- `snapshot_key_filter()` — Optionally scopes a rebuild to named entities
+- `snapshot_begin()` — A model's full-refresh start date, windowed under `target=ci`
 
 Variables for snapshot control:
-- `snapshot_start_date`, `snapshot_end_date` — Explicit date range for backfills
+- `snapshot_start_date` — Where a rebuild starts; `snapshot_end_date` bounds the rebuild (defaults to today) but not the delete, so a past end date truncates rather than repairs
+- `snapshot_keys` — Restrict a rebuild to named entities (never on `prod`)
 - `batch_start_date`, `batch_end_date` — Batch processing range
 - `execution_date` — Current execution timestamp (used by Airflow)
 - `is_recency_airflow_task` — Flag for Airflow task type

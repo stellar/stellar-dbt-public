@@ -1,0 +1,20 @@
+version: 2
+
+macros:
+  - name: snapshot_chunk_ranges
+    description: >
+      Split a snapshot rebuild window into consecutive chunks, as a list of
+      [chunk_start, chunk_end] yyyy-mm-dd pairs with non-inclusive ends. Must be built in the
+      order returned: each chunk reads the version the previous one left open.
+    docs:
+      show: true
+    arguments:
+      - name: start_date
+        type: string
+        description: First day of the rebuild window (yyyy-mm-dd), inclusive
+      - name: end_date
+        type: string
+        description: End of the rebuild window (yyyy-mm-dd), non-inclusive
+      - name: chunk_months
+        type: integer
+        description: Number of months each chunk covers
