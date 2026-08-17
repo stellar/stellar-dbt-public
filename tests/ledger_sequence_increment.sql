@@ -37,3 +37,11 @@ where (
     prev_sequence >= max_sequence
     or max_sequence != prev_sequence + 1
 )
+    {{ exclude_test_exceptions(
+        'ledger_sequence_increment'
+        , entity_columns={
+            'ledger_id': 'lead_sequence.ledger_id'
+            , 'batch_id': 'lead_sequence.batch_id'
+        }
+        , day_column='date(lead_sequence.closed_at)'
+    ) }}

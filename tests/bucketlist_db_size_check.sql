@@ -24,4 +24,12 @@ with bucket_max_size as (
     and total_byte_size_of_bucket_list > (select bucket_list_target_size_bytes - 1000000000 from bucket_max_size)
 )
 
-select * from bucketlist_db_size
+select *
+from bucketlist_db_size
+where 1 = 1
+    -- ledger-level threshold breach: no entity to scope by, so an exception is a
+    -- day range (or a whole-test suppression) and nothing finer
+    {{ exclude_test_exceptions(
+        'bucketlist_db_size_check'
+        , day_column='date(bucketlist_db_size.closed_at)'
+    ) }}

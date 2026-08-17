@@ -64,5 +64,11 @@ FROM (
     {% endif %}
   {% endfor %}
 
-)
+) AS gaps
+where 1 = 1
+    {{ exclude_test_exceptions(
+        'no_missing_days_in_snapshot'
+        , entity_columns={'table_name': 'gaps.table_name'}
+        , day_column='gaps.start_date'
+    ) }}
 ORDER BY end_date DESC

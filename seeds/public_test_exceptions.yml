@@ -1,0 +1,87 @@
+version: 2
+
+seeds:
+  - name: public_test_exceptions
+    description: >
+      Known, accepted data-quality test failures, so pipelines stop alerting on
+      situations we have already triaged. One row per exception. Read by
+      `exclude_test_exceptions` (macros/test_exceptions.sql), which the registered
+      singular tests append to their final `where`, and validated by
+      tests/test_exceptions_valid.sql.
+
+      An exception is scoped, not a blanket disable: leaving `entity_key` empty
+      suppresses the whole test, but naming an `entity_key` (and optionally a day
+      range) forgives only those rows, so the same test still alerts on anything
+      new.
+
+      `exception_kind` splits the table in two. A `temporary` row is an accepted
+      failure and needs an `expires_on`; when it passes, the exception stops
+      applying and the underlying test starts failing again, which is the review
+      mechanism. A `structural` row is a permanent carve-out that is correct by
+      design and carries no expiry -- these are the exclusions that used to be
+      hard-coded into the test SQL, where nobody could see them without reading
+      the file.
+    config:
+      column_types:
+        target_kind: string
+        exception_kind: string
+        target_key: string
+        entity_column: string
+        entity_key: string
+        day_from: date
+        day_to: date
+        expires_on: date
+        reason: string
+        owner: string
+        ticket: string
+        created_on: date
+    columns:
+      - name: target_kind
+        description: >
+          What `target_key` names. Only `singular` (a singular test in tests/) is
+          supported; the generic tests in tests/generic/ run once per model, so a
+          row would have to name the model too.
+      - name: exception_kind
+        description: >
+          `temporary` for an accepted failure we expect to fix, which requires
+          `expires_on`; `structural` for a permanent carve-out that is correct by
+          design, which must leave `expires_on` empty.
+      - name: target_key
+        description: >
+          Name of the test the exception applies to, as registered in
+          `test_exception_targets`. Never an auto-generated test node name --
+          those change whenever the test's arguments change.
+      - name: entity_column
+        description: >
+          Which of the target's columns `entity_key` matches, e.g. `contract_id`.
+          Must be a column the target registers. Empty only when `entity_key` is
+          also empty.
+      - name: entity_key
+        description: >
+          The value to except, matched exactly (no wildcards). Empty suppresses
+          every failing row of the target, which is why such rows want a short
+          `expires_on`.
+      - name: day_from
+        description: >
+          First data day the exception covers, inclusive. Empty means all days.
+          Only for targets registered with `allows_day_scope`.
+      - name: day_to
+        description: >
+          Last data day the exception covers, inclusive. Empty means all days.
+          Only for targets registered with `allows_day_scope`.
+      - name: expires_on
+        description: >
+          Last day the exception applies, inclusive. Required for `temporary` and
+          forbidden for `structural`. A null on a temporary row never matches, so
+          a malformed row keeps alerting rather than silently forgiving forever.
+      - name: reason
+        description: >
+          Why this failure is accepted, or why it is correct by design. Required.
+          The pipeline does not care, but whoever reviews the table in three weeks
+          does.
+      - name: owner
+        description: Person or rotation accountable for the exception. Required.
+      - name: ticket
+        description: Issue number tracking the underlying problem, without the `#`. Empty for structural carve-outs.
+      - name: created_on
+        description: Day the exception was added, for review cadence.

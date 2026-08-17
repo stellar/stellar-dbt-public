@@ -40,5 +40,10 @@ FROM find_missing
 -- Account for delay in loading history_operations table prior to
 -- enriched_history_operations table being loaded.
 WHERE batch_run_date != (SELECT max_batch FROM find_max_batch)
+    {{ exclude_test_exceptions(
+        'eho_by_ops'
+        , entity_columns={'batch_id': 'find_missing.batch_id'}
+        , day_column='date(find_missing.batch_run_date)'
+    ) }}
 GROUP BY 1, 2
 ORDER BY 1

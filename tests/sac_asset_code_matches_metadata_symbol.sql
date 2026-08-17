@@ -3,9 +3,11 @@
 -- A mismatch indicates either a misconfigured SAC, a custom contract impersonating
 -- a recognized asset, or a data-quality issue worth investigating.
 --
--- Known exception: the XLM SAC contract publishes "native" as its symbol while
--- our staging layer rewrites the asset_code to "XLM" for ergonomics.
--- This was confirmed against production data on 2026-05-06; no other mismatches existed.
+-- The XLM SAC contract publishes "native" as its symbol while our staging layer
+-- rewrites the asset_code to "XLM" for ergonomics. That carve-out used to be a
+-- hard-coded contract_id in the where clause below; it now lives as a structural
+-- row in seeds/public_test_exceptions.csv, alongside every other accepted failure.
+-- Confirmed against production data on 2026-05-06; no other mismatches existed.
 
 -- Strictly use enabled condition to restrict singular tests from running in dbt build tasks.
 -- https://github.com/stellar/stellar-dbt-public/pull/95
@@ -26,4 +28,7 @@ from {{ ref('int_asset_metadata') }}
 where asset_code_source = 'sac'
     and symbol is not null
     and asset_code != symbol
-    and contract_id != 'CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA'
+    {{ exclude_test_exceptions(
+        'sac_asset_code_matches_metadata_symbol'
+        , entity_columns={'contract_id': 'int_asset_metadata.contract_id'}
+    ) }}

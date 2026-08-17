@@ -64,5 +64,10 @@ FROM raw_values
 --@TODO: figure out a more precise delay for ledgers. Since tables are loaded on a 15-30 min delay,
 -- we do not want a premature alert to row count mismatches when it could be loading latency
 WHERE closed_at < TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_end_date") }}'), INTERVAL 90 MINUTE)
+    {{ exclude_test_exceptions(
+        'num_txns_and_ops'
+        , entity_columns={'batch_id': 'raw_values.batch_id'}
+        , day_column='date(raw_values.closed_at)'
+    ) }}
 GROUP BY batch_id
 ORDER BY batch_id
