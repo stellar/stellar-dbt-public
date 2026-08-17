@@ -39,6 +39,8 @@ where (
 )
     {{ exclude_test_exceptions(
         'ledger_sequence_increment'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , entity_columns={
             'ledger_id': 'lead_sequence.ledger_id'
             , 'batch_id': 'lead_sequence.batch_id'

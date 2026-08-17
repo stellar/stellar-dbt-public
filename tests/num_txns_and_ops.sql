@@ -66,6 +66,8 @@ FROM raw_values
 WHERE closed_at < TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_end_date") }}'), INTERVAL 90 MINUTE)
     {{ exclude_test_exceptions(
         'num_txns_and_ops'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , entity_columns={'batch_id': 'raw_values.batch_id'}
         , day_column='date(raw_values.closed_at)'
     ) }}

@@ -68,13 +68,28 @@ can be appended to a final `where`. To wire one:
 
 1. register it in `test_exception_targets()` in `macros/test_exceptions.sql`, naming
    the columns an exception may be scoped by and whether the test exposes a data day
-2. call `exclude_test_exceptions()` in the test's final `where`, mapping each
-   registered column name to the SQL expression that produces it
+2. call `exclude_test_exceptions()` in the test's final `where`, passing this
+   package's own registry and seed explicitly:
+   ```sql
+   {{ exclude_test_exceptions(
+       'my_test'
+       , test_exception_targets()
+       , ref('public_test_exceptions')
+       , entity_columns={'my_column': 'some_alias.my_column'}
+   ) }}
+   ```
 
-`tests/test_exceptions_valid.sql` validates rows against that registry, so a
+`exclude_test_exceptions` and the validator behind `tests/test_exceptions_valid.sql`
+(`validate_test_exceptions`) both live in `macros/test_exceptions.sql` and are shared
+with any project that installs this package — see the macro file's docstring for why
+they take the registry and the seed relation as explicit arguments rather than
+looking either up by name. `test_exception_targets()` itself is never shared: each
+project's set of wired tests is genuinely different data, so it stays local.
+
+`validate_test_exceptions` checks rows against the registry passed to it, so a
 mistyped `entity_column` fails loudly instead of quietly forgiving nothing. It is
-itself deliberately not wired — excepting the validator would let a malformed row
-silence the check that catches it.
+deliberately not itself wired to `exclude_test_exceptions` — excepting the validator
+would let a malformed row silence the check that catches it.
 
 The generic tests in `tests/generic/` (`recency`, `incremental_not_null`,
 `incremental_unique`, …) are not wired. They run once per model, so a row would have
@@ -85,12 +100,21 @@ a single stale table's `recency` failure without deleting the test.
 ## Relationship to stellar-dbt
 
 `stellar-dbt` installs this package and has its own `test_exceptions` seed for its
-own tests, with the same schema. The two are deliberately separate tables:
+own tests, with the same schema. The two are deliberately separate **tables**, even
+though they share the **mechanism**:
 
 - each repo's validator checks its own registry, so a shared table would make each
   one flag the other's rows as unregistered
 - an exception lives in the same repo as the test it excepts, so they are reviewed
   together
+
+What IS shared is the code: `stellar-dbt` calls this package's
+`exclude_test_exceptions()` and `validate_test_exceptions()` directly
+(`{{ stellar_dbt_public.exclude_test_exceptions(...) }}`) rather than keeping a
+forked copy, passing its own `test_exception_targets()` and its own
+`ref('test_exceptions')` in as arguments. Only one implementation of the actual
+predicate-building and validation logic exists; only the per-project registry and
+seed differ.
 
 Because `stellar-dbt` disables this package's seeds wholesale
 (`seeds: stellar_dbt_public: +enabled: false`), it must re-enable this one seed for

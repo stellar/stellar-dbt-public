@@ -31,5 +31,7 @@ where 1 = 1
     -- day range (or a whole-test suppression) and nothing finer
     {{ exclude_test_exceptions(
         'bucketlist_db_size_check'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , day_column='date(bucketlist_db_size.closed_at)'
     ) }}

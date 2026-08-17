@@ -54,6 +54,8 @@ from daily_compare
 where abs(stored_total - recomputed_total) > 100
     {{ exclude_test_exceptions(
         'int_token_transfer_enrichment_amount_matches_current_metadata'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , entity_columns={'contract_id': 'daily_compare.contract_id'}
         , day_column='daily_compare.day'
     ) }}

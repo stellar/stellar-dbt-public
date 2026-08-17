@@ -43,6 +43,8 @@ where true
     -- balance now lives in seeds/public_test_exceptions.csv rather than inline here
     {{ exclude_test_exceptions(
         'token_transfers_no_negative_circulating_supply'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , entity_columns={'contract_id': 'mints.contract_id'}
     ) }}
 group by 1

@@ -111,6 +111,8 @@ from all_gaps
 where 1 = 1
     {{ exclude_test_exceptions(
         'no_missing_ledgers'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , entity_columns={'table_name': 'all_gaps.table_name'}
         , day_column='date(all_gaps.closed_at)'
     ) }}

@@ -30,5 +30,7 @@ where asset_code_source = 'sac'
     and asset_code != symbol
     {{ exclude_test_exceptions(
         'sac_asset_code_matches_metadata_symbol'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , entity_columns={'contract_id': 'int_asset_metadata.contract_id'}
     ) }}

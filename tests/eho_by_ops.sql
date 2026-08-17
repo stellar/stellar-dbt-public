@@ -42,6 +42,8 @@ FROM find_missing
 WHERE batch_run_date != (SELECT max_batch FROM find_max_batch)
     {{ exclude_test_exceptions(
         'eho_by_ops'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , entity_columns={'batch_id': 'find_missing.batch_id'}
         , day_column='date(find_missing.batch_run_date)'
     ) }}

@@ -68,6 +68,8 @@ FROM (
 where 1 = 1
     {{ exclude_test_exceptions(
         'no_missing_days_in_snapshot'
+        , test_exception_targets()
+        , ref('public_test_exceptions')
         , entity_columns={'table_name': 'gaps.table_name'}
         , day_column='gaps.start_date'
     ) }}
