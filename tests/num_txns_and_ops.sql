@@ -4,6 +4,7 @@
     severity="error"
     , tags=["singular_test"]
     , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
+    , meta={"exception_scope": {"entity_columns": ['batch_id'], "allows_day_scope": true}}
     )
 }}
 
@@ -65,9 +66,7 @@ FROM raw_values
 -- we do not want a premature alert to row count mismatches when it could be loading latency
 WHERE closed_at < TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_end_date") }}'), INTERVAL 90 MINUTE)
     {{ exclude_test_exceptions(
-        'num_txns_and_ops'
-        , test_exception_targets()
-        , ref('public_test_exceptions')
+        ref('public_test_exceptions')
         , entity_columns={'batch_id': 'raw_values.batch_id'}
         , day_column='date(raw_values.closed_at)'
     ) }}

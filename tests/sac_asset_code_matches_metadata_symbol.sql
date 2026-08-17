@@ -14,10 +14,10 @@
 {{ config(
     severity="error"
     , tags=["singular_test"]
-    , meta={"alert_suppression_interval": 24}
+    , meta={"alert_suppression_interval": 24, "exception_scope": {"entity_columns": ['contract_id'], "allows_day_scope": false}}
     , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
     , alert_suppression_interval=24
-    )
+        )
 }}
 
 select
@@ -29,8 +29,6 @@ where asset_code_source = 'sac'
     and symbol is not null
     and asset_code != symbol
     {{ exclude_test_exceptions(
-        'sac_asset_code_matches_metadata_symbol'
-        , test_exception_targets()
-        , ref('public_test_exceptions')
+        ref('public_test_exceptions')
         , entity_columns={'contract_id': 'int_asset_metadata.contract_id'}
     ) }}

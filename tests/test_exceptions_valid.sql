@@ -1,7 +1,7 @@
 -- Guards seeds/public_test_exceptions.csv using the shared validate_test_exceptions
--- macro (macros/test_exceptions.sql) -- see that macro's docstring for what it checks
--- and why it takes the registry and the seed relation as explicit arguments rather
--- than looking either up by name.
+-- macro (see macros/test_exceptions.sql for what it checks, and for why the
+-- registry it validates against is discovered by scanning this project's own test
+-- nodes' meta.exception_scope rather than a hand-maintained dict).
 
 {{ config(
     severity="error"
@@ -10,4 +10,4 @@
     )
 }}
 
-{{ validate_test_exceptions(test_exception_targets(), ref('public_test_exceptions')) }}
+{{ validate_test_exceptions(ref('public_test_exceptions')) }}

@@ -4,6 +4,7 @@
     severity="error"
     , tags=["singular_test"]
     , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
+    , meta={"exception_scope": {"entity_columns": [], "allows_day_scope": true}}
     )
 }}
 
@@ -30,8 +31,6 @@ where 1 = 1
     -- ledger-level threshold breach: no entity to scope by, so an exception is a
     -- day range (or a whole-test suppression) and nothing finer
     {{ exclude_test_exceptions(
-        'bucketlist_db_size_check'
-        , test_exception_targets()
-        , ref('public_test_exceptions')
+        ref('public_test_exceptions')
         , day_column='date(bucketlist_db_size.closed_at)'
     ) }}

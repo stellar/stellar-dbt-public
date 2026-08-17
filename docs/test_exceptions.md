@@ -44,8 +44,10 @@ that it is visible and reviewable in one place, not that it is unchecked.
 
 ## What each test can be scoped by
 
-Every singular test in `tests/` is wired. `entity_column` must be one of the values
-below; the day column is what a `day_from`/`day_to` range is compared against.
+Every singular test in `tests/` is wired. Its own scope lives in its own `config()`
+block, not in a separate registry file — `entity_column` must be one of the names
+declared there; the day column is what a `day_from`/`day_to` range is compared
+against.
 
 | `target_key` | `entity_column` | day scope |
 |---|---|---|
@@ -64,38 +66,52 @@ The entity columns are alternatives, not a composite key: a row names one of the
 ## Wiring a new test
 
 Row-scoped exceptions only work for tests whose SQL we author, and whose predicate
-can be appended to a final `where`. To wire one:
+can be appended to a final `where`. There is no central registry macro to edit — a
+test registers itself. To wire one:
 
-1. register it in `test_exception_targets()` in `macros/test_exceptions.sql`, naming
-   the columns an exception may be scoped by and whether the test exposes a data day
-2. call `exclude_test_exceptions()` in the test's final `where`, passing this
-   package's own registry and seed explicitly:
+1. declare its scope in its own `config()` block:
+   ```sql
+   {{ config(
+       ...
+       , meta={"exception_scope": {"entity_columns": ["my_column"], "allows_day_scope": true}}
+       )
+   }}
+   ```
+2. call `exclude_test_exceptions()` in the test's final `where`:
    ```sql
    {{ exclude_test_exceptions(
-       'my_test'
-       , test_exception_targets()
-       , ref('public_test_exceptions')
+       ref('public_test_exceptions')
        , entity_columns={'my_column': 'some_alias.my_column'}
    ) }}
    ```
+   (from outside this package, qualify: `stellar_dbt_public.exclude_test_exceptions(...)`)
 
-`exclude_test_exceptions` and the validator behind `tests/test_exceptions_valid.sql`
-(`validate_test_exceptions`) both live in `macros/test_exceptions.sql` and are shared
-with any project that installs this package — see the macro file's docstring for why
-they take the registry and the seed relation as explicit arguments rather than
-looking either up by name. `test_exception_targets()` itself is never shared: each
-project's set of wired tests is genuinely different data, so it stays local.
+`target_key` is never passed — it is always the test's own name (`model.name`), and
+its declared scope is always that same test's own `config.meta.exception_scope`.
+`exclude_test_exceptions` cross-checks the `entity_columns`/`day_column` passed at
+the call site against that declaration, so a call site and its own meta cannot
+silently drift apart.
 
-`validate_test_exceptions` checks rows against the registry passed to it, so a
-mistyped `entity_column` fails loudly instead of quietly forgiving nothing. It is
-deliberately not itself wired to `exclude_test_exceptions` — excepting the validator
-would let a malformed row silence the check that catches it.
+`validate_test_exceptions` (the check behind `tests/test_exceptions_valid.sql`)
+builds its registry by scanning every test node in the current project for a
+declared `meta.exception_scope` — there is nothing to keep in sync by hand, and
+nothing to forget to register. It checks rows against that dynamically discovered
+registry, so a mistyped `entity_column` fails loudly instead of quietly forgiving
+nothing. It is deliberately not itself wired to `exclude_test_exceptions` — excepting
+the validator would let a malformed row silence the check that catches it.
+
+Both macros live in `macros/test_exceptions.sql` and are shared with any project
+that installs this package (see that file's docstring for two non-obvious dbt/Jinja
+behaviors it depends on: `config`/`model`/`graph` context is bound to whichever node
+is *currently compiling*, not to whichever package physically defines the macro
+being executed, which is what makes reading `config.meta` and scanning `graph`
+safe here; and why the validation only runs once `execute` is true).
 
 The generic tests in `tests/generic/` (`recency`, `incremental_not_null`,
 `incremental_unique`, …) are not wired. They run once per model, so a row would have
-to name the model as well as the test, which this registry does not model yet. That
-is the natural next step, and it is what would let a consumer of this package except
-a single stale table's `recency` failure without deleting the test.
+to name the model as well as the test, which `exception_scope` does not model yet.
+That is the natural next step, and it is what would let a consumer of this package
+except a single stale table's `recency` failure without deleting the test.
 
 ## Relationship to stellar-dbt
 
@@ -103,18 +119,17 @@ a single stale table's `recency` failure without deleting the test.
 own tests, with the same schema. The two are deliberately separate **tables**, even
 though they share the **mechanism**:
 
-- each repo's validator checks its own registry, so a shared table would make each
-  one flag the other's rows as unregistered
+- each repo's validator scans its own project's test nodes, so a shared table would
+  make each one flag the other's rows as unregistered
 - an exception lives in the same repo as the test it excepts, so they are reviewed
   together
 
 What IS shared is the code: `stellar-dbt` calls this package's
 `exclude_test_exceptions()` and `validate_test_exceptions()` directly
 (`{{ stellar_dbt_public.exclude_test_exceptions(...) }}`) rather than keeping a
-forked copy, passing its own `test_exception_targets()` and its own
-`ref('test_exceptions')` in as arguments. Only one implementation of the actual
-predicate-building and validation logic exists; only the per-project registry and
-seed differ.
+forked copy. Its own tests declare their own `meta.exception_scope` exactly the same
+way this package's do; only one implementation of the predicate-building and
+validation logic exists.
 
 Because `stellar-dbt` disables this package's seeds wholesale
 (`seeds: stellar_dbt_public: +enabled: false`), it must re-enable this one seed for

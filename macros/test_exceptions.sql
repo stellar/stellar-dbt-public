@@ -17,131 +17,103 @@
     that used to live in the test SQL, where they were invisible to anyone not
     reading the file.
 
-    `exclude_test_exceptions` and `validate_test_exceptions` are deliberately
-    parameterized rather than looking up a registry or a `ref()` by a fixed name:
-    dbt's macro-override rule means an unqualified macro call always resolves to the
-    ROOT project's definition of that name, even when the call happens inside this
-    package's own code. If these macros called a no-arg `test_exception_targets()`
-    or hardcoded `ref('public_test_exceptions')` internally, a project that installs
-    this package and defines ITS OWN same-named registry macro would silently
-    override the lookup used by this package's OWN tests when they run as a
-    dependency -- the exact "which repo's registry did this resolve to" bug this
-    mechanism exists to prevent. Passing the registry and the relation in as
-    already-evaluated arguments sidesteps that: nothing inside these macros does an
-    ambient name lookup, so there is nothing left for another project's macro of the
-    same name to shadow.
+    There is no central registry macro. A test registers itself by declaring
+    `meta={"exception_scope": {"entity_columns": [...], "allows_day_scope": bool}}`
+    in its own `config()` block, right next to the test's own SQL -- not in a
+    separate dict that has to be kept in sync by hand. `target_key` is never passed
+    either: it is always `model.name`, i.e. the test's own name.
 
-    Each project (this one, or a downstream installer) keeps its OWN
-    `test_exception_targets()` registry -- the set of wired tests genuinely differs
-    per project, so that part is not shared -- and its own `test_exceptions`-shaped
-    seed. Wiring a new test:
-      1. add it to that project's `test_exception_targets()`, naming the columns an
-         exception may be scoped to and whether the test exposes a data day
-      2. call `exclude_test_exceptions` in the test's final `where`, passing that
-         project's own `test_exception_targets()` and `ref()` explicitly:
-         `{{ exclude_test_exceptions('my_test', test_exception_targets(), ref('test_exceptions'), entity_columns={...}) }}`
-         (from outside this package, qualify both: `stellar_dbt_public.exclude_test_exceptions(...)`)
+    Both `exclude_test_exceptions` and `validate_test_exceptions` read `config`/
+    `model`/`graph` rather than taking a registry argument, and that is safe
+    (unlike an earlier version of this file, which took the registry as an
+    explicit argument specifically to avoid a DIFFERENT dbt gotcha -- see below)
+    because `config` and `model` are bound to whichever NODE is currently
+    compiling, not to whichever package physically defines the macro being
+    executed. Verified empirically: a test in a downstream project, calling this
+    macro qualified as `stellar_dbt_public.exclude_test_exceptions(...)`, sees ITS
+    OWN `config.meta`, not this package's. Likewise `graph["nodes"]` exposes every
+    project's test nodes regardless of which package's code is walking it, so
+    `validate_test_exceptions` scopes its scan to `model.package_name` to build
+    only the calling project's own registry.
+
+    Two unrelated dbt/Jinja gotchas surfaced while building this, both worth
+    knowing before touching this file:
+      - An UNQUALIFIED macro call inside a macro's own body resolves against the
+        package of the ORIGINAL CALLING NODE, not the package where that macro is
+        physically defined. (This is why the previous version of this file took a
+        `registry` argument instead of calling a no-arg `test_exception_targets()`
+        internally, and why there is no private helper macro here even now.)
+      - `config.get("meta", {})` and a `graph["nodes"][id]["meta"]` entry are
+        Mapping-like but are NOT plain Python dicts, and dbt's sandboxed Jinja
+        environment does not consider `.get()` (or `.values()` on `graph["nodes"]`
+        itself) a safe method call on them -- it silently coerces to the object's
+        string form first, so `.get(...)` fails with a wrong-and-confusing
+        "'str object' has no attribute 'get'". Subscript (`d["key"]`) and `in` are
+        both safe and used throughout this file instead. `graph` itself is also
+        only populated when `execute` is true, so every graph scan is guarded with
+        `{% if execute %}`.
+
+    Wiring a new test:
+      1. add `meta={"exception_scope": {"entity_columns": [...], "allows_day_scope": bool}}`
+         to the test's own `config()` block
+      2. call `exclude_test_exceptions` in the test's final `where`:
+         `{{ exclude_test_exceptions(ref('test_exceptions'), entity_columns={...}) }}`
+         (from outside this package, qualify: `stellar_dbt_public.exclude_test_exceptions(...)`)
 -#}
 
-{% macro test_exception_targets() %}
-    {#-
-        Every singular test in tests/, and what an exception for it may be scoped
-        by. `entity_columns` are alternatives, not a composite key: a row names one
-        of them in `entity_column`. `allows_day_scope` is false only where the test
-        has no day to scope by. Which day each test scopes on is listed in
-        docs/test_exceptions.md and visible at the call site.
-
-        tests/test_exceptions_valid.sql is deliberately absent -- excepting the
-        validator would let a malformed row silence the check that catches it. The
-        generic tests in tests/generic/ are absent for a different reason: they run
-        once per model, so a row would have to name the model as well as the test,
-        which this registry does not model yet.
-    -#}
-    {{ return({
-        'bucketlist_db_size_check': {
-            'entity_columns': [],
-            'allows_day_scope': true,
-        },
-        'eho_by_ops': {
-            'entity_columns': ['batch_id'],
-            'allows_day_scope': true,
-        },
-        'int_token_transfer_enrichment_amount_matches_current_metadata': {
-            'entity_columns': ['contract_id'],
-            'allows_day_scope': true,
-        },
-        'ledger_sequence_increment': {
-            'entity_columns': ['ledger_id', 'batch_id'],
-            'allows_day_scope': true,
-        },
-        'no_missing_days_in_snapshot': {
-            'entity_columns': ['table_name'],
-            'allows_day_scope': true,
-        },
-        'no_missing_ledgers': {
-            'entity_columns': ['table_name'],
-            'allows_day_scope': true,
-        },
-        'num_txns_and_ops': {
-            'entity_columns': ['batch_id'],
-            'allows_day_scope': true,
-        },
-        'sac_asset_code_matches_metadata_symbol': {
-            'entity_columns': ['contract_id'],
-            'allows_day_scope': false,
-        },
-        'token_transfers_no_negative_circulating_supply': {
-            'entity_columns': ['contract_id'],
-            'allows_day_scope': false,
-        },
-    }) }}
-{% endmacro %}
-
-
-{% macro exclude_test_exceptions(target_key, registry, exceptions_relation, entity_columns={}, day_column=none) %}
+{% macro exclude_test_exceptions(exceptions_relation, entity_columns={}, day_column=none) %}
     {#-
         Emit an `and not exists (...)` predicate that drops rows covered by a live
         exception. Fragment starts with `and`, so the caller needs a preceding
         condition (`where 1 = 1` when it has none of its own).
 
-        target_key: the row's `target_key` in the seed; must be a key in `registry`
-        registry: the caller's own test_exception_targets(), passed explicitly
         exceptions_relation: the caller's own exceptions seed, e.g. ref('test_exceptions')
-        entity_columns: {registered column name: SQL expression in this test};
+        entity_columns: {declared column name: SQL expression in this test};
             omit for a target with no entity to scope by, where only a day range
             or a whole-test suppression makes sense
         day_column: SQL expression for the row's data day, or none
 
-        The registered-shape validation below is inlined rather than pulled into its
-        own helper macro on purpose: dbt resolves an unqualified macro call inside a
-        macro's body against the ORIGINAL CALLING NODE's package, not the package
-        where that macro is physically defined. A helper macro defined here but
-        called unqualified from inside this macro's body would come back
-        "undefined" the moment a downstream project calls this macro qualified
-        (`stellar_dbt_public.exclude_test_exceptions(...)`), because that downstream
-        project's package has no macro of the helper's name. Keeping everything in
-        one macro body sidesteps that entirely.
+        target_key is always the calling test's own name (model.name); its
+        declared scope is always that test's own config.meta.exception_scope. Both
+        come from context, never from an argument -- see this file's docstring for
+        why that is safe here despite the cross-package macro-resolution gotcha
+        that made the PREVIOUS version of this macro take a registry argument.
+
+        The validation below only runs when execute is true. dbt renders every
+        node's Jinja at least twice -- an early pass (execute=false) used to
+        extract the dependency graph, where a node's OWN config() calls are not
+        yet reflected in config.get(...), and a later pass (execute=true, the one
+        that produces the SQL dbt actually compiles/runs/lints) where they are.
+        Skipping validation on the early pass does not weaken it: the SQL emitted
+        below does not depend on config.meta at all (target_key is model.name,
+        entity_columns/day_column are macro arguments), so it renders identically
+        either way, and the validation still runs on every real compile, test, and
+        build.
     -#}
-    {%- if target_key not in registry -%}
-        {{ exceptions.raise_compiler_error(
-            "exclude_test_exceptions: '" ~ target_key ~ "' is not registered in the caller's test_exception_targets()"
-        ) }}
-    {%- endif -%}
-    {%- set registered = registry[target_key] -%}
-    {%- if entity_columns.keys() | list | sort != registered['entity_columns'] | list | sort -%}
-        {{ exceptions.raise_compiler_error(
-            "exclude_test_exceptions: '" ~ target_key ~ "' passed columns "
-            ~ (entity_columns.keys() | list | sort | join(', '))
-            ~ " but test_exception_targets() registers "
-            ~ (registered['entity_columns'] | list | sort | join(', '))
-        ) }}
-    {%- endif -%}
-    {%- if (day_column is not none) != registered['allows_day_scope'] -%}
-        {{ exceptions.raise_compiler_error(
-            "exclude_test_exceptions: '" ~ target_key ~ "' has allows_day_scope="
-            ~ registered['allows_day_scope'] ~ " so day_column must "
-            ~ ('be passed' if registered['allows_day_scope'] else 'be omitted')
-        ) }}
+    {%- set target_key = model.name -%}
+    {%- if execute -%}
+        {%- set own_meta = config.get('meta', {}) -%}
+        {%- if 'exception_scope' not in own_meta -%}
+            {{ exceptions.raise_compiler_error(
+                "exclude_test_exceptions: test '" ~ target_key ~ "' has no meta.exception_scope in its config()"
+            ) }}
+        {%- endif -%}
+        {%- set scope = own_meta['exception_scope'] -%}
+        {%- if entity_columns.keys() | list | sort != scope['entity_columns'] | list | sort -%}
+            {{ exceptions.raise_compiler_error(
+                "exclude_test_exceptions: '" ~ target_key ~ "' passed columns "
+                ~ (entity_columns.keys() | list | sort | join(', '))
+                ~ " but its own meta.exception_scope declares "
+                ~ (scope['entity_columns'] | list | sort | join(', '))
+            ) }}
+        {%- endif -%}
+        {%- if (day_column is not none) != scope['allows_day_scope'] -%}
+            {{ exceptions.raise_compiler_error(
+                "exclude_test_exceptions: '" ~ target_key ~ "' has allows_day_scope="
+                ~ scope['allows_day_scope'] ~ " so day_column must "
+                ~ ('be passed' if scope['allows_day_scope'] else 'be omitted')
+            ) }}
+        {%- endif -%}
     {%- endif -%}
 and not exists (
         select 1
@@ -171,11 +143,11 @@ and not exists (
 {% endmacro %}
 
 
-{% macro validate_test_exceptions(registry, exceptions_relation) %}
+{% macro validate_test_exceptions(exceptions_relation) %}
     {#-
         Full singular-test body guarding a `test_exceptions`-shaped seed against rows
-        that cannot do what their author intended: a target `registry` doesn't
-        declare, an entity_column the target does not expose, a day scope on a
+        that cannot do what their author intended: a target no test in THIS project
+        declares, an entity_column the target does not expose, a day scope on a
         target with no day column, a half-filled scope, a missing reason/owner, or
         an expiry that contradicts the exception_kind. A silently inert exception
         row is the main failure mode of a table like this -- the alert keeps firing
@@ -186,31 +158,43 @@ and not exists (
         own: the exception stops applying and the underlying test starts failing
         again on its next run, which is exactly the review prompt we want.
 
-        registry: the caller's own test_exception_targets(), passed explicitly
         exceptions_relation: the caller's own exceptions seed, e.g. ref('test_exceptions')
 
-        A caller wraps this in its own test file as:
+        The registry is not passed in -- it is discovered by scanning graph["nodes"]
+        for test nodes in THIS macro's calling project (model.package_name) that
+        declare meta.exception_scope. A caller wraps this in its own test file as:
             {{ config(...) }}
-            {{ validate_test_exceptions(test_exception_targets(), ref('test_exceptions')) }}
+            {{ validate_test_exceptions(ref('test_exceptions')) }}
         (from outside this package, qualify: stellar_dbt_public.validate_test_exceptions(...))
     -#}
     {%- set target_structs = [] -%}
     {%- set column_structs = [] -%}
-    {%- for target_key, spec in registry.items() -%}
-        {%- do target_structs.append(
-            "struct('" ~ target_key ~ "' as target_key, "
-            ~ (spec['allows_day_scope'] | string | lower) ~ " as allows_day_scope)"
-        ) -%}
-        {%- for entity_column in spec['entity_columns'] -%}
-            {%- do column_structs.append(
-                "struct('" ~ target_key ~ "' as target_key, '" ~ entity_column ~ "' as entity_column)"
-            ) -%}
+    {%- if execute -%}
+        {%- for node_id in graph['nodes'] -%}
+            {%- set n = graph['nodes'][node_id] -%}
+            {%- if
+                n['resource_type'] == 'test'
+                and n['package_name'] == model.package_name
+                and 'meta' in n
+                and 'exception_scope' in n['meta']
+            -%}
+                {%- set scope = n['meta']['exception_scope'] -%}
+                {%- do target_structs.append(
+                    "struct('" ~ n['name'] ~ "' as target_key, "
+                    ~ (scope['allows_day_scope'] | string | lower) ~ " as allows_day_scope)"
+                ) -%}
+                {%- for entity_column in scope['entity_columns'] -%}
+                    {%- do column_structs.append(
+                        "struct('" ~ n['name'] ~ "' as target_key, '" ~ entity_column ~ "' as entity_column)"
+                    ) -%}
+                {%- endfor -%}
+            {%- endif -%}
         {%- endfor -%}
-    {%- endfor -%}
+    {%- endif -%}
 
--- Registered targets and their scopable columns come from the caller's registry as
--- two lists, not one: a target with no entity columns still has to be registered,
--- or its rows would look unregistered rather than unscopable.
+-- Registered targets and their scopable columns come from this project's own test
+-- nodes as two lists, not one: a target with no entity columns still has to be
+-- registered, or its rows would look unregistered rather than unscopable.
 with registered_targets as (
     select
         target.target_key
@@ -273,7 +257,7 @@ with registered_targets as (
             when nullif(trim(ewr.exception_kind), '') = 'structural' and ewr.expires_on is not null
                 then 'structural_with_expires_on: a permanent carve-out must not expire'
             when not ewr.is_registered
-                then 'unregistered_target_key: not in test_exception_targets()'
+                then 'unregistered_target_key: no test in this project declares meta.exception_scope for it'
             when nullif(trim(ewr.entity_key), '') is null and nullif(trim(ewr.entity_column), '') is not null
                 then 'entity_column_without_entity_key'
             when

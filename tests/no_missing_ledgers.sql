@@ -4,6 +4,7 @@
     severity="error"
     , tags=["validate_no_missing_ledgers"]
     , enabled=var("is_singular_airflow_task") == "true"
+    , meta={"exception_scope": {"entity_columns": ['table_name'], "allows_day_scope": true}}
     )
 }}
 
@@ -110,9 +111,7 @@ select *
 from all_gaps
 where 1 = 1
     {{ exclude_test_exceptions(
-        'no_missing_ledgers'
-        , test_exception_targets()
-        , ref('public_test_exceptions')
+        ref('public_test_exceptions')
         , entity_columns={'table_name': 'all_gaps.table_name'}
         , day_column='date(all_gaps.closed_at)'
     ) }}

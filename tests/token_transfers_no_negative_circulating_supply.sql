@@ -4,6 +4,7 @@
     severity="error"
     , tags=["validate_token_transfer_tables"]
     , enabled=var("is_singular_airflow_task") == "true"
+    , meta={"exception_scope": {"entity_columns": ['contract_id'], "allows_day_scope": false}}
     )
 }}
 
@@ -42,9 +43,7 @@ where true
     -- the list of non-compliant custom token contracts that carry a negative
     -- balance now lives in seeds/public_test_exceptions.csv rather than inline here
     {{ exclude_test_exceptions(
-        'token_transfers_no_negative_circulating_supply'
-        , test_exception_targets()
-        , ref('public_test_exceptions')
+        ref('public_test_exceptions')
         , entity_columns={'contract_id': 'mints.contract_id'}
     ) }}
 group by 1
