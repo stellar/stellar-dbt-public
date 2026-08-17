@@ -1,97 +1,14 @@
 {#-
-    Known-exception mechanism for data-quality tests, shared by this package and any
-    project that installs it (e.g. stellar-dbt).
-
-    A `test_exceptions`-shaped seed (here: `public_test_exceptions`,
-    seeds/public_test_exceptions.csv) is the one place a project records known,
-    accepted test failures, so a pipeline stops alerting on a situation already
-    triaged. `exclude_test_exceptions` turns those rows into a predicate a singular
-    test appends to its final `where`: an exception forgives *specific rows*, and
-    the test keeps alerting on everything else.
-
-    Rows come in two kinds. A `temporary` exception is an accepted failure with a
-    required `expires_on`; when it passes, the exception stops applying and the test
-    starts failing again, which is the review prompt. A `structural` one is a
-    permanent carve-out that is correct by design (the XLM SAC publishing `native`
-    as its symbol), and carries no expiry -- these are the hard-coded exclusions
-    that used to live in the test SQL, where they were invisible to anyone not
-    reading the file.
-
-    There is no central registry macro. A test registers itself by declaring
-    `meta={"exception_scope": {"entity_columns": [...], "allows_day_scope": bool}}`
-    in its own `config()` block, right next to the test's own SQL -- not in a
-    separate dict that has to be kept in sync by hand. `target_key` is never passed
-    either: it is always `model.name`, i.e. the test's own name.
-
-    Both `exclude_test_exceptions` and `validate_test_exceptions` read `config`/
-    `model`/`graph` rather than taking a registry argument, and that is safe
-    (unlike an earlier version of this file, which took the registry as an
-    explicit argument specifically to avoid a DIFFERENT dbt gotcha -- see below)
-    because `config` and `model` are bound to whichever NODE is currently
-    compiling, not to whichever package physically defines the macro being
-    executed. Verified empirically: a test in a downstream project, calling this
-    macro qualified as `stellar_dbt_public.exclude_test_exceptions(...)`, sees ITS
-    OWN `config.meta`, not this package's. Likewise `graph["nodes"]` exposes every
-    project's test nodes regardless of which package's code is walking it, so
-    `validate_test_exceptions` scopes its scan to `model.package_name` to build
-    only the calling project's own registry.
-
-    Two unrelated dbt/Jinja gotchas surfaced while building this, both worth
-    knowing before touching this file:
-      - An UNQUALIFIED macro call inside a macro's own body resolves against the
-        package of the ORIGINAL CALLING NODE, not the package where that macro is
-        physically defined. (This is why the previous version of this file took a
-        `registry` argument instead of calling a no-arg `test_exception_targets()`
-        internally, and why there is no private helper macro here even now.)
-      - `config.get("meta", {})` and a `graph["nodes"][id]["meta"]` entry are
-        Mapping-like but are NOT plain Python dicts, and dbt's sandboxed Jinja
-        environment does not consider `.get()` (or `.values()` on `graph["nodes"]`
-        itself) a safe method call on them -- it silently coerces to the object's
-        string form first, so `.get(...)` fails with a wrong-and-confusing
-        "'str object' has no attribute 'get'". Subscript (`d["key"]`) and `in` are
-        both safe and used throughout this file instead. `graph` itself is also
-        only populated when `execute` is true, so every graph scan is guarded with
-        `{% if execute %}`.
-
-    Wiring a new test:
-      1. add `meta={"exception_scope": {"entity_columns": [...], "allows_day_scope": bool}}`
-         to the test's own `config()` block
-      2. call `exclude_test_exceptions` in the test's final `where`:
-         `{{ exclude_test_exceptions(ref('test_exceptions'), entity_columns={...}) }}`
-         (from outside this package, qualify: `stellar_dbt_public.exclude_test_exceptions(...)`)
+    Known-exception mechanism, shared with any project that installs this package
+    -- see docs/test_exceptions.md for usage and the dbt/Jinja gotchas below.
 -#}
 
 {% macro exclude_test_exceptions(exceptions_relation, entity_columns={}, day_column=none) %}
-    {#-
-        Emit an `and not exists (...)` predicate that drops rows covered by a live
-        exception. Fragment starts with `and`, so the caller needs a preceding
-        condition (`where 1 = 1` when it has none of its own).
-
-        exceptions_relation: the caller's own exceptions seed, e.g. ref('test_exceptions')
-        entity_columns: {declared column name: SQL expression in this test};
-            omit for a target with no entity to scope by, where only a day range
-            or a whole-test suppression makes sense
-        day_column: SQL expression for the row's data day, or none
-
-        target_key is always the calling test's own name (model.name); its
-        declared scope is always that test's own config.meta.exception_scope. Both
-        come from context, never from an argument -- see this file's docstring for
-        why that is safe here despite the cross-package macro-resolution gotcha
-        that made the PREVIOUS version of this macro take a registry argument.
-
-        The validation below only runs when execute is true. dbt renders every
-        node's Jinja at least twice -- an early pass (execute=false) used to
-        extract the dependency graph, where a node's OWN config() calls are not
-        yet reflected in config.get(...), and a later pass (execute=true, the one
-        that produces the SQL dbt actually compiles/runs/lints) where they are.
-        Skipping validation on the early pass does not weaken it: the SQL emitted
-        below does not depend on config.meta at all (target_key is model.name,
-        entity_columns/day_column are macro arguments), so it renders identically
-        either way, and the validation still runs on every real compile, test, and
-        build.
-    -#}
+    {#- Row-scoped `and not exists` predicate against exceptions_relation; see docs/test_exceptions.md. -#}
     {%- set target_key = model.name -%}
     {%- if execute -%}
+        {#- config.get() only reflects this node's OWN config() once execute is true (dbt renders
+            twice); the predicate below never depends on meta, so validation-only skips this early. -#}
         {%- set own_meta = config.get('meta', {}) -%}
         {%- if 'exception_scope' not in own_meta -%}
             {{ exceptions.raise_compiler_error(
@@ -144,32 +61,12 @@ and not exists (
 
 
 {% macro validate_test_exceptions(exceptions_relation) %}
-    {#-
-        Full singular-test body guarding a `test_exceptions`-shaped seed against rows
-        that cannot do what their author intended: a target no test in THIS project
-        declares, an entity_column the target does not expose, a day scope on a
-        target with no day column, a half-filled scope, a missing reason/owner, or
-        an expiry that contradicts the exception_kind. A silently inert exception
-        row is the main failure mode of a table like this -- the alert keeps firing
-        while the row looks like it should have stopped it, and nobody re-reads a
-        row they believe works.
-
-        Structural checks only. An *expired* temporary row needs no alert of its
-        own: the exception stops applying and the underlying test starts failing
-        again on its next run, which is exactly the review prompt we want.
-
-        exceptions_relation: the caller's own exceptions seed, e.g. ref('test_exceptions')
-
-        The registry is not passed in -- it is discovered by scanning graph["nodes"]
-        for test nodes in THIS macro's calling project (model.package_name) that
-        declare meta.exception_scope. A caller wraps this in its own test file as:
-            {{ config(...) }}
-            {{ validate_test_exceptions(ref('test_exceptions')) }}
-        (from outside this package, qualify: stellar_dbt_public.validate_test_exceptions(...))
-    -#}
+    {#- Flags rows in exceptions_relation that can't do what their author intended; see docs/test_exceptions.md. -#}
     {%- set target_structs = [] -%}
     {%- set column_structs = [] -%}
     {%- if execute -%}
+        {#- graph is only populated once execute is true; scoped to model.package_name so a
+            downstream project's registry never picks up this package's own wired tests. -#}
         {%- for node_id in graph['nodes'] -%}
             {%- set n = graph['nodes'][node_id] -%}
             {%- if

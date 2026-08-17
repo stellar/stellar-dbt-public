@@ -1,7 +1,5 @@
--- Guards seeds/public_test_exceptions.csv using the shared validate_test_exceptions
--- macro (see macros/test_exceptions.sql for what it checks, and for why the
--- registry it validates against is discovered by scanning this project's own test
--- nodes' meta.exception_scope rather than a hand-maintained dict).
+-- Guards seeds/public_test_exceptions.csv -- see macros/test_exceptions.sql and
+-- docs/test_exceptions.md for what it checks and why.
 
 {{ config(
     severity="error"

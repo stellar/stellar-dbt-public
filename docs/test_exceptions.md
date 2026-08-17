@@ -101,11 +101,26 @@ nothing. It is deliberately not itself wired to `exclude_test_exceptions` — ex
 the validator would let a malformed row silence the check that catches it.
 
 Both macros live in `macros/test_exceptions.sql` and are shared with any project
-that installs this package (see that file's docstring for two non-obvious dbt/Jinja
-behaviors it depends on: `config`/`model`/`graph` context is bound to whichever node
-is *currently compiling*, not to whichever package physically defines the macro
-being executed, which is what makes reading `config.meta` and scanning `graph`
-safe here; and why the validation only runs once `execute` is true).
+that installs this package. That's safe because `config`/`model`/`graph` context is
+bound to whichever node is *currently compiling*, not to whichever package
+physically defines the macro being executed — so `config.meta` and `graph` always
+reflect the caller's own test, never this package's, even when called qualified
+from a downstream project. Two dbt/Jinja gotchas fell out of building this:
+
+- **`config.get()` doesn't see a node's own `config()` call until `execute` is
+  true.** dbt renders each node's Jinja at least twice — an early pass used to
+  build the dependency graph, and a later `execute=true` pass that produces the
+  real SQL. Reading `config.meta` before `execute` is true returns stale/empty
+  data, so the meta read and validation in `exclude_test_exceptions` are both
+  guarded with `{% if execute %}`. The emitted predicate never depends on meta
+  (`target_key` is `model.name`; `entity_columns`/`day_column` are arguments), so
+  it renders identically either way and sqlfluff's non-executing lint pass is
+  unaffected.
+- **`.get()`/`.values()` aren't safe method calls on `config`/`graph` dict-likes.**
+  They duck-type as mappings (`is mapping` passes) but dbt's sandboxed Jinja
+  environment silently coerces them to their string form before the call, so
+  `.get(...)` fails with a confusing `'str object' has no attribute 'get'`.
+  Subscript (`d["key"]`) and `in` are safe and used throughout instead.
 
 The generic tests in `tests/generic/` (`recency`, `incremental_not_null`,
 `incremental_unique`, …) are not wired. They run once per model, so a row would have
