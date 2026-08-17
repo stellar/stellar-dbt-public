@@ -98,32 +98,6 @@
 {% endmacro %}
 
 
-{% macro _test_exception_registered(target_key, registry, entity_columns, day_column) %}
-    {#- Shared validation: raises if the call site's args don't match what `registry` declares for `target_key`. -#}
-    {%- if target_key not in registry -%}
-        {{ exceptions.raise_compiler_error(
-            "'" ~ target_key ~ "' is not registered in the caller's test_exception_targets()"
-        ) }}
-    {%- endif -%}
-    {%- set registered = registry[target_key] -%}
-    {%- if entity_columns.keys() | list | sort != registered['entity_columns'] | list | sort -%}
-        {{ exceptions.raise_compiler_error(
-            "'" ~ target_key ~ "' passed columns "
-            ~ (entity_columns.keys() | list | sort | join(', '))
-            ~ " but test_exception_targets() registers "
-            ~ (registered['entity_columns'] | list | sort | join(', '))
-        ) }}
-    {%- endif -%}
-    {%- if (day_column is not none) != registered['allows_day_scope'] -%}
-        {{ exceptions.raise_compiler_error(
-            "'" ~ target_key ~ "' has allows_day_scope="
-            ~ registered['allows_day_scope'] ~ " so day_column must "
-            ~ ('be passed' if registered['allows_day_scope'] else 'be omitted')
-        ) }}
-    {%- endif -%}
-{% endmacro %}
-
-
 {% macro exclude_test_exceptions(target_key, registry, exceptions_relation, entity_columns={}, day_column=none) %}
     {#-
         Emit an `and not exists (...)` predicate that drops rows covered by a live
@@ -137,8 +111,38 @@
             omit for a target with no entity to scope by, where only a day range
             or a whole-test suppression makes sense
         day_column: SQL expression for the row's data day, or none
+
+        The registered-shape validation below is inlined rather than pulled into its
+        own helper macro on purpose: dbt resolves an unqualified macro call inside a
+        macro's body against the ORIGINAL CALLING NODE's package, not the package
+        where that macro is physically defined. A helper macro defined here but
+        called unqualified from inside this macro's body would come back
+        "undefined" the moment a downstream project calls this macro qualified
+        (`stellar_dbt_public.exclude_test_exceptions(...)`), because that downstream
+        project's package has no macro of the helper's name. Keeping everything in
+        one macro body sidesteps that entirely.
     -#}
-    {{ _test_exception_registered(target_key, registry, entity_columns, day_column) }}
+    {%- if target_key not in registry -%}
+        {{ exceptions.raise_compiler_error(
+            "exclude_test_exceptions: '" ~ target_key ~ "' is not registered in the caller's test_exception_targets()"
+        ) }}
+    {%- endif -%}
+    {%- set registered = registry[target_key] -%}
+    {%- if entity_columns.keys() | list | sort != registered['entity_columns'] | list | sort -%}
+        {{ exceptions.raise_compiler_error(
+            "exclude_test_exceptions: '" ~ target_key ~ "' passed columns "
+            ~ (entity_columns.keys() | list | sort | join(', '))
+            ~ " but test_exception_targets() registers "
+            ~ (registered['entity_columns'] | list | sort | join(', '))
+        ) }}
+    {%- endif -%}
+    {%- if (day_column is not none) != registered['allows_day_scope'] -%}
+        {{ exceptions.raise_compiler_error(
+            "exclude_test_exceptions: '" ~ target_key ~ "' has allows_day_scope="
+            ~ registered['allows_day_scope'] ~ " so day_column must "
+            ~ ('be passed' if registered['allows_day_scope'] else 'be omitted')
+        ) }}
+    {%- endif -%}
 and not exists (
         select 1
         from {{ exceptions_relation }} as ex
