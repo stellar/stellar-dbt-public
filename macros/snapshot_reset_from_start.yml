@@ -1,0 +1,27 @@
+version: 2
+
+macros:
+  - name: snapshot_reset_from_start
+    description: >
+      Return a snapshot to the state it held at start_date, so the rebuild that follows is
+      reproducible: delete every version starting at or after start_date, then reopen the version
+      whose successor was just deleted. Not bounded above: versions past the rebuild window are
+      deleted and not recreated. See the macro header for why the order matters.
+    docs:
+      show: true
+    arguments:
+      - name: target_name
+        type: string
+        description: The snapshot table to reset
+      - name: start_date
+        type: string
+        description: Rebuild start date (yyyy-mm-dd); versions from this point forward are removed
+      - name: valid_from_col_name
+        type: string
+        description: Column marking when a snapshot version became valid
+      - name: valid_to_col_name
+        type: string
+        description: Column marking when a snapshot version stopped being valid
+      - name: key_filter
+        type: string
+        description: Predicate from snapshot_key_filter, scoping both statements to named entities
