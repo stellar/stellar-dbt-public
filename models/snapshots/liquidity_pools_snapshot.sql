@@ -1,7 +1,7 @@
 -- depends_on: {{ ref('stg_liquidity_pools') }}
 {%- set temp_source_table = this.table ~ '_source' -%}
 {%- set temp_target_table = this.table ~ '_target' -%}
-{%- set snapshot_default_start_date = snapshot_begin('2021-11-01') -%}
+{%- set snapshot_default_start_date = snapshot_begin('2015-09-30') -%}
 
 {% set meta_config = {
     "datadiff": {

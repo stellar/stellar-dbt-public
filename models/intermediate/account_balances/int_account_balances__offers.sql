@@ -6,7 +6,7 @@
     event_time='day',
     batch_size=batch_size,
     concurrent_batches=true,
-    begin=microbatch_begin('2021-01-01'),
+    begin=microbatch_begin('2015-09-30'),
     partition_by={
          "field": "day"
         , "data_type": "date"
