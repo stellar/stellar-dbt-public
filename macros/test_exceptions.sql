@@ -35,7 +35,7 @@
 and not exists (
         select 1
         from {{ exceptions_relation }} as ex
-        where ex.target_key = '{{ target_key }}'
+        where nullif(trim(ex.target_key), '') = '{{ target_key }}'
             and (
                 -- a structural carve-out never expires; anything else needs a live
                 -- expires_on, and a null never matches, so a malformed row keeps alerting
