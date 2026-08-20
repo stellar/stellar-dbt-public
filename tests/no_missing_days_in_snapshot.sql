@@ -2,6 +2,7 @@
     severity="error"
     , tags=["validate_no_missing_days_in_snapshot"]
     , enabled=var("is_singular_airflow_task") == "true"
+    , meta={"exception_scope": {"entity_columns": ['table_name'], "allows_day_scope": true}}
     )
 }}
 
@@ -64,5 +65,11 @@ FROM (
     {% endif %}
   {% endfor %}
 
-)
+) AS gaps
+where 1 = 1
+    {{ exclude_test_exceptions(
+        ref('public_test_exceptions')
+        , entity_columns={'table_name': 'gaps.table_name'}
+        , day_column='gaps.start_date'
+    ) }}
 ORDER BY end_date DESC

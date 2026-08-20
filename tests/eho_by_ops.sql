@@ -3,10 +3,10 @@
 {{ config(
     severity="error"
     , tags=["singular_test"]
-    , meta={"alert_suppression_interval": 24}
+    , meta={"alert_suppression_interval": 24, "exception_scope": {"entity_columns": ['batch_id'], "allows_day_scope": true}}
     , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
     , alert_suppression_interval=24
-    )
+        )
 }}
 
 -- Enriched_history_operations table is dependent on the
@@ -40,5 +40,10 @@ FROM find_missing
 -- Account for delay in loading history_operations table prior to
 -- enriched_history_operations table being loaded.
 WHERE batch_run_date != (SELECT max_batch FROM find_max_batch)
+    {{ exclude_test_exceptions(
+        ref('public_test_exceptions')
+        , entity_columns={'batch_id': 'find_missing.batch_id'}
+        , day_column='date(find_missing.batch_run_date)'
+    ) }}
 GROUP BY 1, 2
 ORDER BY 1

@@ -4,6 +4,7 @@
     severity="warn"
     , tags=["singular_test"]
     , enabled=var("is_singular_airflow_task") == "true"
+    , meta={"exception_scope": {"entity_columns": ['ledger_id', 'batch_id'], "allows_day_scope": true}}
     )
 }}
 
@@ -37,3 +38,11 @@ where (
     prev_sequence >= max_sequence
     or max_sequence != prev_sequence + 1
 )
+    {{ exclude_test_exceptions(
+        ref('public_test_exceptions')
+        , entity_columns={
+            'ledger_id': 'lead_sequence.ledger_id'
+            , 'batch_id': 'lead_sequence.batch_id'
+        }
+        , day_column='date(lead_sequence.closed_at)'
+    ) }}
