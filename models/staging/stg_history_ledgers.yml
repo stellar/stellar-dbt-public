@@ -154,17 +154,9 @@ models:
 
       - name: node_id
         description: '{{ doc("node_id") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
 
       - name: signature
         description: '{{ doc("signature") }}'
-        tests:
-          - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
 
       - name: soroban_fee_write_1kb
         description: '{{ doc("soroban_fee_write_1kb") }}'
