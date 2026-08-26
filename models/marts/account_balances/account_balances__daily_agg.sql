@@ -1,5 +1,5 @@
 {% set batch_size = microbatch_batch_size() %}
-{% set begin = microbatch_begin('2021-01-01') %}
+{% set begin = microbatch_begin('2015-09-30') %}
 
 {% set meta_config = {
     "datadiff": {

@@ -4,6 +4,7 @@
     severity="error"
     , tags=["validate_token_transfer_tables"]
     , enabled=var("is_singular_airflow_task") == "true"
+    , meta={"exception_scope": {"entity_columns": ['contract_id'], "allows_day_scope": false}}
     )
 }}
 
@@ -39,9 +40,11 @@ from mints
 left join burns
     on mints.contract_id = burns.contract_id
 where true
-    -- filter out list of non-compliant custom token contracts that have a negative balance
-    and mints.contract_id not in (
-        'CB4PO24UJF7KFNUNQJISIRPO2KSULUWIOP4JT3S3KYW5UFXRQPZD34E4'
-    )
+    -- the list of non-compliant custom token contracts that carry a negative
+    -- balance now lives in seeds/public_test_exceptions.csv rather than inline here
+    {{ exclude_test_exceptions(
+        ref('public_test_exceptions')
+        , entity_columns={'contract_id': 'mints.contract_id'}
+    ) }}
 group by 1
 having sum(mints.total - burns.total) < 0

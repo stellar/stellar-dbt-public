@@ -1,5 +1,28 @@
 # CLAUDE.md
 
+## Critical rules — read these first
+
+- **NEVER run dbt with the `prod` target locally.** Local runs use the `development` target and your personal dev dataset.
+- **NEVER run any dbt command that writes to or modifies datasets in the GCP projects `crypto-stellar` or `hubble-261722`.**
+- **This repo is consumed by `stellar-dbt` as a git package pinned by tag.** Merging here does NOT ship the change internally — the internal repo needs a `packages.yml` pin bump plus `dbt deps` (see the `cross-repo-release` skill).
+- **Run `pre-commit run --all-files` before considering a task complete** and fix every reported issue.
+- For queries with int64 IDs (`op_id`, `transaction_id`, ledger sequences), use the `bq` CLI — MCP query tools silently round large integers.
+- Never commit secrets, API keys, or credentials. Prefer small focused changes; keep PRs scoped to the request.
+
+## Skills — load the matching one BEFORE starting
+
+Skills live in the data-platform monorepo checkout under `.claude/skills/` — `../.claude/skills/` when this repo sits inside that checkout. They are readable as plain files from anywhere; they load as skills when the session starts at the monorepo root.
+
+| Task | Skill |
+|---|---|
+| Fresh local setup; `dbt debug`/env-var errors | `dbt-local-setup` |
+| PR check failing (CI Linting, diff-quality, Datafold diff comment) | `dbt-ci-triage` |
+| Create/modify/repair an SCD2 snapshot model | `dbt-incremental-snapshots` |
+| Model behaves differently locally vs in Airflow; incremental runs 0 rows | `dbt-batch-window-vars` |
+| Slow or expensive model; merge vs insert_overwrite | `dbt-model-optimization` |
+| Shipping a change that the internal repo must consume (pin bump) | `cross-repo-release` |
+| Selector matches nothing; `--quiet` hides output | `dbt-learnings` |
+
 ## Project Overview
 
 This is a dbt (data build tool) project that models Stellar blockchain data on BigQuery. It transforms raw Stellar network history, state tables, and third party data tables into analytics-ready datasets.
@@ -80,7 +103,7 @@ Variables for snapshot control:
 - `execution_date` — Current execution timestamp (used by Airflow)
 - `is_recency_airflow_task` — Flag for Airflow task type
 
-See `docs/snapshot.md` for the full control flow diagram.
+See `docs/snapshot.md` for the full control flow diagram. For hands-on snapshot work (run_snapshot_test.sh, setup_db/teardown_db, missing-days holes), use the `dbt-incremental-snapshots` skill.
 
 ## Testing
 
@@ -120,11 +143,3 @@ Hooks:
    - Model tags must be from the approved allowlist (see `.pre-commit-config.yaml`)
    - All source columns/tables must have descriptions
 3. **Prettier** — formats `.json`/`.yaml`/`.yml` files
-
-## Rules
-
-- Never run any dbt commands that would write or modify datasets in the GCP projects `crypto-stellar` or `hubble-261722`
-- Run `pre-commit run --all-files` before considering a task complete
-- Prefer small and focused changes over large rewrites
-- Keep PRs scoped to only the request
-- Never commit secrets, API keys, or credentials

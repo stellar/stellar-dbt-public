@@ -18,10 +18,10 @@
 {{ config(
     severity="error"
     , tags=["singular_test"]
-    , meta={"alert_suppression_interval": 24}
+    , meta={"alert_suppression_interval": 24, "exception_scope": {"entity_columns": ['contract_id'], "allows_day_scope": true}}
     , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
     , alert_suppression_interval=24
-    )
+        )
 }}
 
 with current_metadata as (
@@ -52,3 +52,8 @@ select
     , abs(stored_total - recomputed_total) as abs_diff
 from daily_compare
 where abs(stored_total - recomputed_total) > 100
+    {{ exclude_test_exceptions(
+        ref('public_test_exceptions')
+        , entity_columns={'contract_id': 'daily_compare.contract_id'}
+        , day_column='daily_compare.day'
+    ) }}

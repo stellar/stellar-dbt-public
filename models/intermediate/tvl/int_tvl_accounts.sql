@@ -1,7 +1,7 @@
 {% set batch_size = microbatch_batch_size() %}
-{% set begin = microbatch_begin('2022-08-08') %}
+{% set begin = microbatch_begin('2015-09-30') %}
 
-{# `begin` is 2022-08-08: the earliest asset pricing data from stellar.expert. #}
+{# `begin` matches accounts_snapshot's start date (2015-09-30). #}
 {% set meta_config = {
     "materialized": "incremental",
     "incremental_strategy": "microbatch",
