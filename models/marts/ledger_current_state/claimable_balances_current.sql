@@ -19,6 +19,7 @@ with
     current_balance as (
         select
             cb.balance_id
+            , cb.balance_id_strkey
             , cb.claimants
             , cb.asset_type
             , cb.asset_code
@@ -58,6 +59,7 @@ with
 
 select
     balance_id
+    , balance_id_strkey
     , claimants
     , asset_type
     , asset_code
