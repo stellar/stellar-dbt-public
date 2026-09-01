@@ -64,10 +64,21 @@ seeds:
 
       - name: events_start_from
         description: >
-          Day this contract's SEP-41 events became trustworthy. Storage drives balances
-          before it; from this day on the event stream does, opened at the storage level
-          standing the day before. Empty means the contract is still not emitting usable
-          events and storage continues to drive.
+          First day this contract emits SEP-41 events for the *whole* day. Storage drives
+          balances before it; from this day on the event stream does, opened at the storage
+          level standing at the end of the previous day. Empty means the contract is still
+          not emitting usable events and storage continues to drive.
+
+          Set this to the day *after* the upgrade ledger closes, not the upgrade day
+          itself. The handover is day-grained, so any transfer that happens earlier on the
+          upgrade day emitted no event yet is already reflected in storage -- it would fall
+          between the opening balance (end of the previous day) and the first event the
+          contract emits, and be lost. Waiting one day costs nothing: storage keeps driving
+          and stays correct.
+
+          These contracts emit no catch-up event for supply minted before the fix, which is
+          exactly why the opening balance is needed. If a contract ever did backfill such an
+          event, this date would have to move past it to avoid double-counting.
 
       - name: balance_key_symbol
         description: >
