@@ -51,10 +51,11 @@ seeds:
         reason: string
         ticket: string
     tests:
-      # Storage has to start driving before it can hand over, or the handover would open
-      # from a level that was never published.
+      # Storage has to drive for at least one day before it can hand over: the opening
+      # balance is the level standing at the end of the day before events_start_from, so
+      # a same-day value would publish no storage days and open the event stream from zero.
       - dbt_utils.expression_is_true:
-          expression: "events_start_from is null or effective_from <= events_start_from"
+          expression: "events_start_from is null or effective_from < events_start_from"
     columns:
       - name: contract_id
         description: Contract address (C...) of the token whose balances come from storage.
@@ -66,8 +67,8 @@ seeds:
         description: >
           First day storage-derived balances are published for this contract, normally the
           day the contract was created. Also used as the asset's `created_at` in
-          `stg_assets`, since there is no first-event timestamp to fall back on. Must be
-          on or before `events_start_from`.
+          `stg_assets`, and kept as `created_at` once the contract starts emitting events.
+          Must be strictly before `events_start_from`.
         tests:
           - not_null
 
@@ -79,8 +80,8 @@ seeds:
           not emitting usable events and storage continues to drive.
 
           Set this to the day *after* the upgrade ledger closes, not the upgrade day
-          itself. The handover is day-grained, so any transfer that happens earlier on the
-          upgrade day emitted no event yet is already reflected in storage -- it would fall
+          itself. The handover is day-grained, so a transfer earlier on the upgrade day, made
+          before the contract could emit and therefore reflected only in storage, would fall
           between the opening balance (end of the previous day) and the first event the
           contract emits, and be lost. Waiting one day costs nothing: storage keeps driving
           and stays correct.
@@ -112,8 +113,10 @@ seeds:
       - name: token_symbol
         description: >
           Token symbol as recorded in this contract's own storage, read once and written
-          down rather than parsed. Not unique: 14 of the 24 Tradable deals report `PC000`,
-          so nothing may key on it or derive an asset code from it.
+          down rather than parsed. Not unique: 15 of the 24 Tradable deals report `PC000`.
+          `int_asset_metadata` surfaces it as `asset_code` for display, but nothing may
+          treat it as an identifier or join on it; the consuming project's recognized-asset
+          list owns the unique name.
 
       - name: token_name
         description: >
@@ -123,8 +126,8 @@ seeds:
       - name: decimals
         description: >
           Token decimals, read from this contract's storage. Required: it is what balances
-          are scaled by, and a missing value would silently fall back to the SEP-41 default
-          of 7 and be wrong by orders of magnitude for any token that differs.
+          are scaled by, and the storage path has no fallback, so a missing value would
+          produce null balances. The not_null test rejects the row before that can happen.
         tests:
           - not_null
 

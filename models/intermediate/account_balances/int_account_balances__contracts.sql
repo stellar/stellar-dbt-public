@@ -62,8 +62,11 @@ with
             on cd.contract_id = src.contract_id
         where
             true
-            -- An archived or removed entry closes its interval, so the holder simply stops
-            -- producing days rather than being carried forward at a stale balance.
+            -- Only an explicit LedgerEntryRemoved sets deleted. A persistent entry whose TTL
+            -- lapses is archived through the ledger's evicted-keys list instead and keeps its
+            -- last version open here, so the holder is carried at that level until the entry
+            -- is restored or removed. A removed Balance entry closes its interval and the
+            -- holder stops producing days.
             and cd.deleted = false
             and json_value(cd.key_decoded['vec'][0]['symbol']) = src.balance_key_symbol
     )
@@ -142,7 +145,12 @@ with
         union all
         select * from token_transfers_from
         union all
-        select day, account_id, contract_id, balance from storage_opening_balances
+        select
+            day
+            , account_id
+            , contract_id
+            , balance
+        from storage_opening_balances
     )
 
     -- Sum the positive and negative balances
@@ -227,9 +235,19 @@ with
     )
 
     , all_balances as (
-        select day, account_id, contract_id, balance from agg
+        select
+            day
+            , account_id
+            , contract_id
+            , balance
+        from agg
         union all
-        select day, account_id, contract_id, balance from storage_balances
+        select
+            day
+            , account_id
+            , contract_id
+            , balance
+        from storage_balances
     )
 
 select

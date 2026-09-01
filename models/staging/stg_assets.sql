@@ -26,12 +26,28 @@ with
             , timestamp(ctbs.effective_from) as created_at
         from {{ ref('contract_token_balance_sources') }} as ctbs
         where ctbs.contract_id not in (
-            select asset_contract_id
-            from base_asset_list
-            where asset_contract_id is not null
+            select bal.asset_contract_id
+            from base_asset_list as bal
+            where bal.asset_contract_id is not null
         )
     )
 
-select * from base_asset_list
+select
+    b.asset_code
+    , b.asset_issuer
+    , b.asset_type
+    , b.asset_contract_id
+    -- A seeded contract keeps its seeded date once it starts emitting events, so the asset
+    -- does not appear newly created at handover.
+    , least(b.created_at, coalesce(timestamp(ctbs.effective_from), b.created_at)) as created_at
+from base_asset_list as b
+left join {{ ref('contract_token_balance_sources') }} as ctbs
+    on b.asset_contract_id = ctbs.contract_id
 union all
-select * from eventless_contract_tokens
+select
+    asset_code
+    , asset_issuer
+    , asset_type
+    , asset_contract_id
+    , created_at
+from eventless_contract_tokens

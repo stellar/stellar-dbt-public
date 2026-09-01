@@ -15,7 +15,8 @@
 -- the contract instead, and is caught by
 -- contract_token_balance_sources_produce_balances.
 --
--- Inert until a contract actually hands over, so it costs nothing today.
+-- Only contracts whose events_start_from has passed are compared; one still driven by
+-- storage costs nothing here.
 
 with
     handed_over as (

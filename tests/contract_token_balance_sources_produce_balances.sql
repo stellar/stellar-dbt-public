@@ -6,7 +6,13 @@
 -- already suppressed, so the asset silently drops to zero supply instead of being fixed.
 -- After the handover the same mistake corrupts the opening balance instead, which is just
 -- as silent. This test is the tripwire for both -- it fails on a declared contract that
--- produced no positive balance on the most recent day of the model.
+-- has never produced a positive balance on any day.
+--
+-- Any day rather than the latest: a fully redeemed token legitimately sits at zero, and its
+-- seed row has to stay so a full rebuild can still open the event stream, whereas a mis-set
+-- parser produces nothing at all because the model rebuilds from scratch. After handover a
+-- mis-set parser leaves event-derived balances with no storage counterpart, which
+-- contract_token_handover_matches_storage reports.
 
 with
     active_sources as (
@@ -15,21 +21,14 @@ with
         where effective_from < date('{{ var("batch_end_date") }}')
     )
 
-    , last_day as (
-        select max(day) as day
+    , contracts_with_balances as (
+        select distinct contract_id
         from {{ ref('int_account_balances__contracts') }}
-    )
-
-    , balances_on_last_day as (
-        select distinct iabc.contract_id
-        from {{ ref('int_account_balances__contracts') }} as iabc
-        inner join last_day as ld
-            on iabc.day = ld.day
-        where iabc.balance > 0
+        where balance > 0
     )
 
 select src.contract_id
 from active_sources as src
-left join balances_on_last_day as b
+left join contracts_with_balances as b
     on src.contract_id = b.contract_id
 where b.contract_id is null
