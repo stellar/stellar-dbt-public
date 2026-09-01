@@ -22,9 +22,24 @@
 -- re-aggregating from the start of smart contracts (2024-02-20) to current is very quick and not compute intensive.
 -- TODO: account_ids should really be named addresses; This can be refactored in the future if needed
 with
+    -- Contract tokens whose balances live in contract storage rather than SEP-41 events.
+    -- Defaults match the soroban-token-sdk layout: a balance entry keyed
+    -- ScVec[ScSymbol("Balance"), ScAddress] with an i128 value.
+    storage_sources as (
+        select
+            contract_id
+            , effective_from
+            , effective_to
+            , coalesce(nullif(balance_key_symbol, ''), 'Balance') as balance_key_symbol
+            , coalesce(holder_key_index, 1) as holder_key_index
+            , coalesce(nullif(amount_value_type, ''), 'i128') as amount_value_type
+            , decimals_override
+        from {{ ref('contract_token_balance_sources') }}
+    )
+
     -- Amounts should be added when assets are sent to the account.
     -- `amount` arrives pre-scaled (10^-decimal applied) from int_token_transfer_enrichment.
-    token_transfers_to as (
+    , token_transfers_to as (
         select
             date(tt.closed_at) as day
             , tt.to as account_id
@@ -37,6 +52,7 @@ with
             -- Only count C addresses for SACs or custom contract tokens.
             -- Custom contract tokens won't have an asset_type and will contain both C and G addresses
             and (tt.to like 'C%' or tt.asset_type = '')
+            {{ exclude_storage_sourced_contracts('tt') }}
         group by 1, 2, 3
     )
 
@@ -54,6 +70,7 @@ with
             -- Only count C addresses for SACs or custom contract tokens.
             -- Custom contract tokens won't have an asset_type and will contain both C and G addresses
             and (tt.`from` like 'C%' or tt.asset_type = '')
+            {{ exclude_storage_sourced_contracts('tt') }}
         group by 1, 2, 3
     )
 
@@ -122,14 +139,67 @@ with
             and ds.contract_id = dc.contract_id
     )
 
+    -- Storage holds balance *levels*, not deltas, so there is nothing to accumulate:
+    -- each SCD-2 version of a Balance entry is simply held flat across the days it was
+    -- live. A version whose interval opens and closes on the same day contributes no
+    -- days, which is what resolves intra-day churn to the end-of-day state.
+    , storage_balance_versions as (
+        select
+            cd.contract_id
+            , json_value(cd.key_decoded['vec'][src.holder_key_index]['address']) as account_id
+            , cast(json_value(cd.val_decoded[src.amount_value_type]) as bignumeric) as balance_raw
+            , greatest(date(cd.valid_from), src.effective_from) as start_day
+            -- valid_to is exclusive; an open interval runs to the end of the batch window.
+            , least(
+                coalesce(date(cd.valid_to), date('{{ var("batch_end_date") }}'))
+                , coalesce(src.effective_to, date('{{ var("batch_end_date") }}'))
+            ) as end_day
+        from {{ ref('contract_data_snapshot') }} as cd
+        inner join storage_sources as src
+            on cd.contract_id = src.contract_id
+        where
+            true
+            -- An archived or removed entry closes its interval, so the holder simply stops
+            -- producing days rather than being carried forward at a stale balance.
+            and cd.deleted = false
+            and json_value(cd.key_decoded['vec'][0]['symbol']) = src.balance_key_symbol
+    )
+
+    , storage_balances as (
+        select
+            day
+            , sbv.account_id
+            , sbv.contract_id
+            -- Scale in bignumeric and cast once, so a 15+ significant-digit raw balance
+            -- does not lose precision before it reaches the float64 output column.
+            , cast(sum(
+                sbv.balance_raw
+                / cast(pow(10, coalesce(src.decimals_override, safe_cast(m.`decimal` as int64), 7)) as bignumeric)
+            ) as float64) as balance
+        from storage_balance_versions as sbv
+        inner join storage_sources as src
+            on sbv.contract_id = src.contract_id
+        left join {{ ref('int_asset_metadata') }} as m
+            on sbv.contract_id = m.contract_id
+        cross join unnest(generate_date_array(sbv.start_day, date_sub(sbv.end_day, interval 1 day))) as day
+        where sbv.account_id is not null
+        group by 1, 2, 3
+    )
+
+    , all_balances as (
+        select day, account_id, contract_id, balance from agg
+        union all
+        select day, account_id, contract_id, balance from storage_balances
+    )
+
 select
-    agg.day
-    , agg.account_id
-    , agg.contract_id
+    all_balances.day
+    , all_balances.account_id
+    , all_balances.contract_id
     , a.asset_type
     , a.asset_issuer
     , a.asset_code
-    , agg.balance
-from agg
+    , all_balances.balance
+from all_balances
 left join {{ ref('int_asset_metadata') }} as a
-    on agg.contract_id = a.contract_id
+    on all_balances.contract_id = a.contract_id

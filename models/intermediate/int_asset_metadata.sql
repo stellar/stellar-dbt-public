@@ -26,6 +26,15 @@ with
         from {{ ref('stg_token_transfers_raw') }}
         -- filter only for soroban contracts
         where closed_at >= '2024-02-01'
+
+        union distinct
+
+        -- Contract tokens that emit no SEP-41 events never appear in token_transfers_raw,
+        -- but their metadata still lives in contract instance storage. Without this they
+        -- reach the balance models with a null `decimal` and get scaled at the default
+        -- 10^-7, which is silently wrong for any token that does not use 7 decimals.
+        select contract_id
+        from {{ ref('contract_token_balance_sources') }}
     )
 
     , contract_metadata as (
@@ -59,8 +68,16 @@ with
             -- Extract Admin (from the storage level)
             , max(if(admin_key = 'Admin', admin_address, null)) as `admin`
             -- Extract Metadata (from the map level)
-            , max(if(metadata_key = 'symbol', val_string, null)) as `symbol`
-            , max(if(metadata_key = 'name', val_string, null)) as `name`
+            -- Contracts outside the SEP-41 metadata convention often keep the same
+            -- fields prefixed in a Config map. Prefer the standard key, fall back to it.
+            , coalesce(
+                max(if(metadata_key = 'symbol', val_string, null))
+                , max(if(metadata_key = 'token_symbol', val_string, null))
+            ) as `symbol`
+            , coalesce(
+                max(if(metadata_key = 'name', val_string, null))
+                , max(if(metadata_key = 'token_name', val_string, null))
+            ) as `name`
             , max(if(metadata_key in ('decimal', 'decimals'), val_u32, null)) as `decimal`
         from flattened_data
         group by contract_id
