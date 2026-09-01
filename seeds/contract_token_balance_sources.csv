@@ -1,4 +1,4 @@
-contract_id,effective_from,effective_to,balance_key_symbol,holder_key_index,amount_value_type,decimals_override,reason,ticket
+contract_id,effective_from,events_start_from,balance_key_symbol,holder_key_index,amount_value_type,decimals_override,reason,ticket
 CA3EM2NJSNY5NUQPUXGPGYYLNMGMWMYPIEEU6IGCP6U3N7A5RZTW3TLD,2026-07-13,,,,,,Tradable private-credit deal token: contract emits no SEP-41 events so balances exist only in contract storage,1119
 CAEZVGE4HOFFP6B7AA4OGTT4WJG45QAIXVXSVEI3PMWEAXWBUYBRV7DD,2026-07-13,,,,,,Tradable private-credit deal token: contract emits no SEP-41 events so balances exist only in contract storage,1119
 CAOCXWNXCG63U43DCJSS52FDAFT2ZXY2T2UZF3ZYVZ4LLLFVFRF2GM6Z,2026-07-16,,,,,,Tradable private-credit deal token: contract emits no SEP-41 events so balances exist only in contract storage,1119

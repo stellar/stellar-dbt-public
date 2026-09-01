@@ -3,8 +3,9 @@ version: 2
 seeds:
   - name: contract_token_balance_sources
     description: >
-      Custom contract tokens whose holder balances must be read from contract storage
-      (`contract_data_snapshot`) instead of SEP-41 token transfer events.
+      Custom contract tokens that were not emitting usable SEP-41 token transfer events,
+      whose balances over that period must be read from contract storage
+      (`contract_data_snapshot`) instead.
 
       The contract-token balance pipeline assumes every token emits SEP-41 events, so a
       contract that emits none is invisible end to end: it never lands in
@@ -13,16 +14,18 @@ seeds:
       A contract that emits only *some* events is worse than invisible -- the cumulative
       sum in `int_account_balances__contracts` drifts and can even go negative.
 
-      Listing a contract here switches it to storage-derived balances for its whole life.
-      Storage holds balance *levels*, not deltas, so the result is correct by construction
-      and self-healing: new mints, redemptions and transfers are picked up with no further
-      maintenance. This is deliberately not a table of correction *amounts* -- amounts go
-      stale the moment the contract mints again, and they cannot reproduce the per-holder
-      distribution that `account_balances` needs.
+      Storage holds balance *levels*, not deltas, so it is correct by construction and
+      needs no maintenance while it is driving. This is deliberately not a table of
+      correction *amounts*: amounts go stale the moment the contract mints again, and they
+      cannot reproduce the per-holder distribution that `account_balances` needs.
 
-      A contract listed here is excluded from the event-derived path entirely. There is no
-      splicing between the two sources: the cumulative event sum has no opening balance to
-      start from, so a half-and-half contract would be wrong on both sides of the boundary.
+      `events_start_from` is the handover. Before that day balances come from storage;
+      from that day on the contract's own events carry them, opened at the level storage
+      last reported. That opening balance is the whole point -- a contract fixed to emit
+      events does so going forward, not retroactively, so every token minted before the
+      fix appears in no event and a plain cumulative sum would understate each holder by
+      whatever they already held. Leave it empty while a contract is still not emitting;
+      setting it is the only change needed once the fix ships.
 
       Defaults target the standard soroban-token-sdk layout, where a balance entry is keyed
       `ScVec[ScSymbol("Balance"), ScAddress]` and valued `i128`. A contract using a different
@@ -31,13 +34,18 @@ seeds:
       column_types:
         contract_id: string
         effective_from: date
-        effective_to: date
+        events_start_from: date
         balance_key_symbol: string
         holder_key_index: int64
         amount_value_type: string
         decimals_override: int64
         reason: string
         ticket: string
+    tests:
+      # Storage has to start driving before it can hand over, or the handover would open
+      # from a level that was never published.
+      - dbt_utils.expression_is_true:
+          expression: "events_start_from is null or effective_from <= events_start_from"
     columns:
       - name: contract_id
         description: Contract address (C...) of the token whose balances come from storage.
@@ -49,15 +57,17 @@ seeds:
         description: >
           First day storage-derived balances are published for this contract, normally the
           day the contract was created. Also used as the asset's `created_at` in
-          `stg_assets`, since there is no first-event timestamp to fall back on.
+          `stg_assets`, since there is no first-event timestamp to fall back on. Must be
+          on or before `events_start_from`.
         tests:
           - not_null
 
-      - name: effective_to
+      - name: events_start_from
         description: >
-          Exclusive last day of storage-derived balances; empty means open-ended. Set this
-          instead of deleting the row when a contract should stop being tracked, so already
-          published history survives a full refresh.
+          Day this contract's SEP-41 events became trustworthy. Storage drives balances
+          before it; from this day on the event stream does, opened at the storage level
+          standing the day before. Empty means the contract is still not emitting usable
+          events and storage continues to drive.
 
       - name: balance_key_symbol
         description: >
