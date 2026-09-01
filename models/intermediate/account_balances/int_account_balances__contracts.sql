@@ -35,7 +35,7 @@ with
             , coalesce(nullif(balance_key_symbol, ''), 'Balance') as balance_key_symbol
             , coalesce(holder_key_index, 1) as holder_key_index
             , coalesce(nullif(amount_value_type, ''), 'i128') as amount_value_type
-            , decimals_override
+            , decimals
         from {{ ref('contract_token_balance_sources') }}
     )
 
@@ -79,15 +79,16 @@ with
             src.events_start_from as day
             , sbv.account_id
             , sbv.contract_id
+            -- Decimals come from the seed, where they were read off the contract once and
+            -- verified. These contracts do not follow the SEP-41 storage convention, so
+            -- int_asset_metadata cannot reliably parse them and would silently fall back
+            -- to 10^-7.
             , cast(sum(
-                sbv.balance_raw
-                / cast(pow(10, coalesce(src.decimals_override, safe_cast(m.`decimal` as int64), 7)) as bignumeric)
+                sbv.balance_raw / cast(pow(10, src.decimals) as bignumeric)
             ) as float64) as balance
         from storage_balance_versions as sbv
         inner join storage_sources as src
             on sbv.contract_id = src.contract_id
-        left join {{ ref('int_asset_metadata') }} as m
-            on sbv.contract_id = m.contract_id
         where
             src.events_start_from is not null
             -- The version live at the end of the day before the handover. end_day is
@@ -210,15 +211,16 @@ with
             , sbv.contract_id
             -- Scale in bignumeric and cast once, so a 15+ significant-digit raw balance
             -- does not lose precision before it reaches the float64 output column.
+            -- Decimals come from the seed, where they were read off the contract once and
+            -- verified. These contracts do not follow the SEP-41 storage convention, so
+            -- int_asset_metadata cannot reliably parse them and would silently fall back
+            -- to 10^-7.
             , cast(sum(
-                sbv.balance_raw
-                / cast(pow(10, coalesce(src.decimals_override, safe_cast(m.`decimal` as int64), 7)) as bignumeric)
+                sbv.balance_raw / cast(pow(10, src.decimals) as bignumeric)
             ) as float64) as balance
         from storage_balance_versions as sbv
         inner join storage_sources as src
             on sbv.contract_id = src.contract_id
-        left join {{ ref('int_asset_metadata') }} as m
-            on sbv.contract_id = m.contract_id
         cross join unnest(generate_date_array(sbv.start_day, date_sub(sbv.end_day, interval 1 day))) as day
         where sbv.account_id is not null
         group by 1, 2, 3

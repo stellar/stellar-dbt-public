@@ -26,14 +26,20 @@ with
         from {{ ref('stg_token_transfers_raw') }}
         -- filter only for soroban contracts
         where closed_at >= '2024-02-01'
+    )
 
-        union distinct
-
-        -- Contract tokens that emit no SEP-41 events never appear in token_transfers_raw,
-        -- but their metadata still lives in contract instance storage. Without this they
-        -- reach the balance models with a null `decimal` and get scaled at the default
-        -- 10^-7, which is silently wrong for any token that does not use 7 decimals.
-        select contract_id
+    -- Metadata for contracts that do not follow the SEP-41 storage convention, recorded
+    -- in the seed rather than parsed. These contracts keep their metadata under arbitrary
+    -- keys -- Tradable, for instance, uses `token_symbol`/`token_name` inside a `Config`
+    -- map -- and there is no generic filter that finds it without also matching unrelated
+    -- keys on other contracts. Reading each contract once and writing the answer down is
+    -- both safer and honest about the fact that a human verified it.
+    , seeded_metadata as (
+        select
+            contract_id
+            , nullif(token_symbol, '') as symbol
+            , nullif(token_name, '') as `name`
+            , decimals
         from {{ ref('contract_token_balance_sources') }}
     )
 
@@ -68,16 +74,8 @@ with
             -- Extract Admin (from the storage level)
             , max(if(admin_key = 'Admin', admin_address, null)) as `admin`
             -- Extract Metadata (from the map level)
-            -- Contracts outside the SEP-41 metadata convention often keep the same
-            -- fields prefixed in a Config map. Prefer the standard key, fall back to it.
-            , coalesce(
-                max(if(metadata_key = 'symbol', val_string, null))
-                , max(if(metadata_key = 'token_symbol', val_string, null))
-            ) as `symbol`
-            , coalesce(
-                max(if(metadata_key = 'name', val_string, null))
-                , max(if(metadata_key = 'token_name', val_string, null))
-            ) as `name`
+            , max(if(metadata_key = 'symbol', val_string, null)) as `symbol`
+            , max(if(metadata_key = 'name', val_string, null)) as `name`
             , max(if(metadata_key in ('decimal', 'decimals'), val_u32, null)) as `decimal`
         from flattened_data
         group by contract_id
@@ -87,6 +85,8 @@ with
         select contract_id from asset_per_contract
         union distinct
         select contract_id from metadata
+        union distinct
+        select contract_id from seeded_metadata
     )
 
     -- SAC rows carry no contract-storage metadata of their own, so `decimal` is null on
@@ -116,15 +116,18 @@ select
     -- Resolves to the SAC asset_code from token-transfer events, falling back to the SEP-41
     -- symbol read from contract storage. Returns null when neither is available — downstream
     -- consumers must handle null asset_code for contract tokens that publish no metadata.
-    , coalesce(a.asset_code, m.symbol) as asset_code
+    , coalesce(a.asset_code, sm.symbol, m.symbol) as asset_code
     , a.asset_issuer
     , a.asset_type
-    , m.symbol
-    , m.`name`
-    , coalesce(m.`decimal`, s.sibling_decimal) as `decimal`
+    , coalesce(sm.symbol, m.symbol) as symbol
+    , coalesce(sm.`name`, m.`name`) as `name`
+    -- `decimal` is a string here because the parsed values come from json_value; cast the
+    -- seeded int64 to match rather than widening the column type for every consumer.
+    , coalesce(cast(sm.decimals as string), m.`decimal`, s.sibling_decimal) as `decimal`
     , m.admin
     , case
         when a.asset_code is not null then 'sac'
+        when sm.symbol is not null then 'seed'
         when m.symbol is not null then 'metadata'
     end as asset_code_source
 from all_contracts as c
@@ -134,3 +137,5 @@ left join metadata as m
     on c.contract_id = m.contract_id
 left join sac_sibling_decimals as s
     on c.contract_id = s.sac_contract_id
+left join seeded_metadata as sm
+    on c.contract_id = sm.contract_id

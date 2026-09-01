@@ -30,6 +30,13 @@ seeds:
       Defaults target the standard soroban-token-sdk layout, where a balance entry is keyed
       `ScVec[ScSymbol("Balance"), ScAddress]` and valued `i128`. A contract using a different
       shape overrides the three parser columns rather than needing a model change.
+
+      `token_symbol`, `token_name` and `decimals` are the contract's own metadata, recorded
+      here rather than parsed out of contract storage by `int_asset_metadata`. A contract in
+      this seed is by definition one that does not follow the SEP-41 conventions, so its
+      metadata sits under arbitrary keys -- Tradable keeps it as `token_symbol`/`token_name`
+      inside a `Config` map -- and no generic filter finds it without also matching unrelated
+      keys on other contracts. Read each contract once, verify, and write the answer down.
     config:
       column_types:
         contract_id: string
@@ -38,7 +45,9 @@ seeds:
         balance_key_symbol: string
         holder_key_index: int64
         amount_value_type: string
-        decimals_override: int64
+        token_symbol: string
+        token_name: string
+        decimals: int64
         reason: string
         ticket: string
     tests:
@@ -100,10 +109,24 @@ seeds:
               config:
                 where: "amount_value_type is not null"
 
-      - name: decimals_override
+      - name: token_symbol
         description: >
-          Token decimals, when they cannot be read from contract instance storage by
-          `int_asset_metadata`. Empty means use the metadata value, falling back to 7.
+          Token symbol as recorded in this contract's own storage, read once and written
+          down rather than parsed. Not unique: 14 of the 24 Tradable deals report `PC000`,
+          so nothing may key on it or derive an asset code from it.
+
+      - name: token_name
+        description: >
+          Token display name as recorded in this contract's own storage. Also not unique --
+          the paired tranches of a deal share one name.
+
+      - name: decimals
+        description: >
+          Token decimals, read from this contract's storage. Required: it is what balances
+          are scaled by, and a missing value would silently fall back to the SEP-41 default
+          of 7 and be wrong by orders of magnitude for any token that differs.
+        tests:
+          - not_null
 
       - name: reason
         description: Why this contract needs storage-derived balances.

@@ -24,7 +24,7 @@ with
             , coalesce(nullif(balance_key_symbol, ''), 'Balance') as balance_key_symbol
             , coalesce(holder_key_index, 1) as holder_key_index
             , coalesce(nullif(amount_value_type, ''), 'i128') as amount_value_type
-            , decimals_override
+            , decimals
         from {{ ref('contract_token_balance_sources') }}
         where
             events_start_from is not null
@@ -42,13 +42,11 @@ with
             , json_value(cd.key_decoded['vec'][h.holder_key_index]['address']) as account_id
             , cast(sum(
                 cast(json_value(cd.val_decoded[h.amount_value_type]) as bignumeric)
-                / cast(pow(10, coalesce(h.decimals_override, safe_cast(m.`decimal` as int64), 7)) as bignumeric)
+                / cast(pow(10, h.decimals) as bignumeric)
             ) as float64) as balance
         from {{ ref('contract_data_snapshot') }} as cd
         inner join handed_over as h
             on cd.contract_id = h.contract_id
-        left join {{ ref('int_asset_metadata') }} as m
-            on cd.contract_id = m.contract_id
         cross join as_of
         where
             cd.deleted = false
