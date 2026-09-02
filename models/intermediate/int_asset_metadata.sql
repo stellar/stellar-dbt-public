@@ -113,8 +113,9 @@ with
 
 select
     c.contract_id
-    -- Resolves to the SAC asset_code from token-transfer events, falling back to the SEP-41
-    -- symbol read from contract storage. Returns null when neither is available — downstream
+    -- Resolves to the SAC asset_code from token-transfer events, falling back to the seeded
+    -- symbol for contracts that keep metadata under non-SEP-41 keys, then to the SEP-41
+    -- symbol read from contract storage. Returns null when none is available — downstream
     -- consumers must handle null asset_code for contract tokens that publish no metadata.
     , coalesce(a.asset_code, sm.symbol, m.symbol) as asset_code
     , a.asset_issuer
