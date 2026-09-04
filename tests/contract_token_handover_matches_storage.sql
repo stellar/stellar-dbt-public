@@ -17,6 +17,19 @@
 --
 -- Only contracts whose events_start_from has passed are compared; one still driven by
 -- storage costs nothing here.
+-- Strictly use enabled condition to restrict singular tests from running in dbt build tasks.
+-- https://github.com/stellar/stellar-dbt-public/pull/95
+--
+-- singular_test_daily rather than singular_test: both tests read
+-- int_account_balances__contracts, which the marts DAG builds once a day at 13:00, so the
+-- 17:00 daily DAG is the first run with new data. The 30-minute cadence would just rescan
+-- unchanged rows.
+{{ config(
+    severity="error"
+    , tags=["singular_test_daily"]
+    , enabled=(target.name == "prod" and var("is_singular_airflow_task") == "true")
+    )
+}}
 
 with
     handed_over as (
