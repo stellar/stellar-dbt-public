@@ -10,5 +10,44 @@ with
         group by 1, 2, 3, 4
     )
 
-select *
-from base_asset_list
+    -- A custom contract token that emits no SEP-41 events never appears in
+    -- token_transfers_raw, so it would be missing from the asset registry altogether and
+    -- every downstream join on it would drop the asset. Register those contracts from the
+    -- balance-source seed so they exist here even with no event history.
+    -- asset_code/asset_issuer stay null on purpose: the on-chain token symbol is not
+    -- reliably unique (Tradable reuses one symbol across deals), so naming is left to the
+    -- consuming project's recognized-asset list rather than guessed here.
+    , eventless_contract_tokens as (
+        select
+            cast(null as string) as asset_code
+            , cast(null as string) as asset_issuer
+            , '' as asset_type
+            , ctbs.contract_id as asset_contract_id
+            , timestamp(ctbs.effective_from) as created_at
+        from {{ ref('contract_token_balance_sources') }} as ctbs
+        where ctbs.contract_id not in (
+            select bal.asset_contract_id
+            from base_asset_list as bal
+            where bal.asset_contract_id is not null
+        )
+    )
+
+select
+    b.asset_code
+    , b.asset_issuer
+    , b.asset_type
+    , b.asset_contract_id
+    -- A seeded contract keeps its seeded date once it starts emitting events, so the asset
+    -- does not appear newly created at handover.
+    , least(b.created_at, coalesce(timestamp(ctbs.effective_from), b.created_at)) as created_at
+from base_asset_list as b
+left join {{ ref('contract_token_balance_sources') }} as ctbs
+    on b.asset_contract_id = ctbs.contract_id
+union all
+select
+    asset_code
+    , asset_issuer
+    , asset_type
+    , asset_contract_id
+    , created_at
+from eventless_contract_tokens
