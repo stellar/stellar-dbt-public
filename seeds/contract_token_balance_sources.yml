@@ -1,0 +1,140 @@
+version: 2
+
+seeds:
+  - name: contract_token_balance_sources
+    description: >
+      Custom contract tokens that were not emitting usable SEP-41 token transfer events,
+      whose balances over that period must be read from contract storage
+      (`contract_data_snapshot`) instead.
+
+      The contract-token balance pipeline assumes every token emits SEP-41 events, so a
+      contract that emits none is invisible end to end: it never lands in
+      `stg_assets`, `int_asset_metadata`, or `int_account_balances__contracts`, and its
+      supply is therefore missing from `asset_balances__daily_agg` and from market cap.
+      A contract that emits only *some* events is worse than invisible -- the cumulative
+      sum in `int_account_balances__contracts` drifts and can even go negative.
+
+      Storage holds balance *levels*, not deltas, so it is correct by construction and
+      needs no maintenance while it is driving. This is deliberately not a table of
+      correction *amounts*: amounts go stale the moment the contract mints again, and they
+      cannot reproduce the per-holder distribution that `account_balances` needs.
+
+      `events_start_from` is the handover. Before that day balances come from storage;
+      from that day on the contract's own events carry them, opened at the level storage
+      last reported. That opening balance is the whole point -- a contract fixed to emit
+      events does so going forward, not retroactively, so every token minted before the
+      fix appears in no event and a plain cumulative sum would understate each holder by
+      whatever they already held. Leave it empty while a contract is still not emitting;
+      setting it is the only change needed once the fix ships.
+
+      Defaults target the standard soroban-token-sdk layout, where a balance entry is keyed
+      `ScVec[ScSymbol("Balance"), ScAddress]` and valued `i128`. A contract using a different
+      shape overrides the three parser columns rather than needing a model change.
+
+      `token_symbol`, `token_name` and `decimals` are the contract's own metadata, recorded
+      here rather than parsed out of contract storage by `int_asset_metadata`. A contract in
+      this seed is by definition one that does not follow the SEP-41 conventions, so its
+      metadata sits under arbitrary keys -- Tradable keeps it as `token_symbol`/`token_name`
+      inside a `Config` map -- and no generic filter finds it without also matching unrelated
+      keys on other contracts. Read each contract once, verify, and write the answer down.
+    config:
+      column_types:
+        contract_id: string
+        effective_from: date
+        events_start_from: date
+        balance_key_symbol: string
+        holder_key_index: int64
+        amount_value_type: string
+        token_symbol: string
+        token_name: string
+        decimals: int64
+        reason: string
+        ticket: string
+    tests:
+      # Storage has to drive for at least one day before it can hand over: the opening
+      # balance is the level standing at the end of the day before events_start_from, so
+      # a same-day value would publish no storage days and open the event stream from zero.
+      - dbt_utils.expression_is_true:
+          expression: "events_start_from is null or effective_from < events_start_from"
+    columns:
+      - name: contract_id
+        description: Contract address (C...) of the token whose balances come from storage.
+        tests:
+          - not_null
+          - unique
+
+      - name: effective_from
+        description: >
+          First day storage-derived balances are published for this contract, normally the
+          day the contract was created. Also used as the asset's `created_at` in
+          `stg_assets`, and kept as `created_at` once the contract starts emitting events.
+          Must be strictly before `events_start_from`.
+        tests:
+          - not_null
+
+      - name: events_start_from
+        description: >
+          First day this contract emits SEP-41 events for the *whole* day. Storage drives
+          balances before it; from this day on the event stream does, opened at the storage
+          level standing at the end of the previous day. Empty means the contract is still
+          not emitting usable events and storage continues to drive.
+
+          Set this to the day *after* the upgrade ledger closes, not the upgrade day
+          itself. The handover is day-grained, so a transfer earlier on the upgrade day, made
+          before the contract could emit and therefore reflected only in storage, would fall
+          between the opening balance (end of the previous day) and the first event the
+          contract emits, and be lost. Waiting one day costs nothing: storage keeps driving
+          and stays correct.
+
+          These contracts emit no catch-up event for supply minted before the fix, which is
+          exactly why the opening balance is needed. If a contract ever did backfill such an
+          event, this date would have to move past it to avoid double-counting.
+
+      - name: balance_key_symbol
+        description: >
+          Leading `ScSymbol` of the balance ledger key. Empty means `Balance`
+          (the soroban-token-sdk default).
+
+      - name: holder_key_index
+        description: >
+          Zero-based position of the holder address inside the key vector. Empty means `1`,
+          i.e. `ScVec[ScSymbol("Balance"), ScAddress]`.
+
+      - name: amount_value_type
+        description: >
+          Name of the scalar field holding the balance in the entry value. Empty means
+          `i128`.
+        tests:
+          - accepted_values:
+              values: ["i128", "u128", "i64", "u64", ""]
+              config:
+                where: "amount_value_type is not null"
+
+      - name: token_symbol
+        description: >
+          Token symbol as recorded in this contract's own storage, read once and written
+          down rather than parsed. Not unique: 15 of the 24 Tradable deals report `PC000`.
+          `int_asset_metadata` surfaces it as `asset_code` for display, but nothing may
+          treat it as an identifier or join on it; the consuming project's recognized-asset
+          list owns the unique name.
+
+      - name: token_name
+        description: >
+          Token display name as recorded in this contract's own storage. Also not unique --
+          the paired tranches of a deal share one name.
+
+      - name: decimals
+        description: >
+          Token decimals, read from this contract's storage. Required: it is what balances
+          are scaled by, and the storage path has no fallback, so a missing value would
+          produce null balances. The not_null test rejects the row before that can happen.
+        tests:
+          - not_null
+
+      - name: reason
+        description: Why this contract needs storage-derived balances.
+        tests:
+          - not_null
+
+      - name: ticket
+        description: Issue or PR that introduced the row.

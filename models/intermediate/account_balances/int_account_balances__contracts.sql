@@ -22,9 +22,90 @@
 -- re-aggregating from the start of smart contracts (2024-02-20) to current is very quick and not compute intensive.
 -- TODO: account_ids should really be named addresses; This can be refactored in the future if needed
 with
+    -- Contract tokens that were not emitting usable SEP-41 events, so their balances over
+    -- that period have to come from contract storage. `events_start_from` is the day the
+    -- contract started emitting reliably; null means it still is not.
+    -- Defaults match the soroban-token-sdk layout: a balance entry keyed
+    -- ScVec[ScSymbol("Balance"), ScAddress] with an i128 value.
+    storage_sources as (
+        select
+            contract_id
+            , effective_from
+            , events_start_from
+            , coalesce(nullif(balance_key_symbol, ''), 'Balance') as balance_key_symbol
+            , coalesce(holder_key_index, 1) as holder_key_index
+            , coalesce(nullif(amount_value_type, ''), 'i128') as amount_value_type
+            , decimals
+        from {{ ref('contract_token_balance_sources') }}
+    )
+
+    -- Storage holds balance *levels*, not deltas. Each SCD-2 version of a Balance entry
+    -- is held flat across the days it was live; a version whose interval opens and closes
+    -- on the same day contributes no days, which is what resolves intra-day churn to the
+    -- end-of-day state. Levels drive balances up to the handover day, and the level
+    -- standing on that day is converted into the one delta the event stream is missing.
+    , storage_balance_versions as (
+        select
+            cd.contract_id
+            , json_value(cd.key_decoded['vec'][src.holder_key_index]['address']) as account_id
+            , cast(json_value(cd.val_decoded[src.amount_value_type]) as bignumeric) as balance_raw
+            , greatest(date(cd.valid_from), src.effective_from) as start_day
+            -- valid_to is exclusive; an open interval runs to the end of the batch window.
+            -- Storage stops driving balances on the handover day: from then on the event
+            -- stream carries them, opened at the level captured in storage_opening_balances.
+            , least(
+                coalesce(date(cd.valid_to), date('{{ var("batch_end_date") }}'))
+                , coalesce(src.events_start_from, date('{{ var("batch_end_date") }}'))
+            ) as end_day
+        from {{ ref('contract_data_snapshot') }} as cd
+        inner join storage_sources as src
+            on cd.contract_id = src.contract_id
+        where
+            true
+            -- Only an explicit LedgerEntryRemoved sets deleted. A persistent entry whose TTL
+            -- lapses is archived through the ledger's evicted-keys list instead and keeps its
+            -- last version open here, so the holder is carried at that level until the entry
+            -- is restored or removed. A removed Balance entry closes its interval and the
+            -- holder stops producing days.
+            and cd.deleted = false
+            and json_value(cd.key_decoded['vec'][0]['symbol']) = src.balance_key_symbol
+    )
+
+    -- The storage level still standing on the day before events take over, emitted as a
+    -- single synthetic delta on the handover day. This is the opening balance the event
+    -- stream cannot supply on its own: the contracts were fixed to emit events going
+    -- forward, not retroactively, so every token minted before the fix appears in no
+    -- event at all. Feeding it through daily_changes lets the existing cumulative sum
+    -- carry it forward with real event deltas landing on top -- no separate splice.
+    , storage_opening_balances as (
+        select
+            src.events_start_from as day
+            , sbv.account_id
+            , sbv.contract_id
+            -- Decimals come from the seed, where they were read off the contract once and
+            -- verified. These contracts do not follow the SEP-41 storage convention, so
+            -- int_asset_metadata cannot reliably parse them and would silently fall back
+            -- to 10^-7.
+            , cast(sum(
+                sbv.balance_raw / cast(pow(10, src.decimals) as bignumeric)
+            ) as float64) as balance
+        from storage_balance_versions as sbv
+        inner join storage_sources as src
+            on sbv.contract_id = src.contract_id
+        where
+            src.events_start_from is not null
+            -- The version live at the end of the day before the handover. end_day is
+            -- already clamped to events_start_from, so ">=" selects exactly the versions
+            -- that were still open when storage stopped driving.
+            and sbv.start_day < src.events_start_from
+            and sbv.end_day >= src.events_start_from
+            and sbv.account_id is not null
+        group by 1, 2, 3
+    )
+
     -- Amounts should be added when assets are sent to the account.
     -- `amount` arrives pre-scaled (10^-decimal applied) from int_token_transfer_enrichment.
-    token_transfers_to as (
+    , token_transfers_to as (
         select
             date(tt.closed_at) as day
             , tt.to as account_id
@@ -37,6 +118,7 @@ with
             -- Only count C addresses for SACs or custom contract tokens.
             -- Custom contract tokens won't have an asset_type and will contain both C and G addresses
             and (tt.to like 'C%' or tt.asset_type = '')
+            {{ exclude_pre_event_contract_transfers('tt') }}
         group by 1, 2, 3
     )
 
@@ -54,6 +136,7 @@ with
             -- Only count C addresses for SACs or custom contract tokens.
             -- Custom contract tokens won't have an asset_type and will contain both C and G addresses
             and (tt.`from` like 'C%' or tt.asset_type = '')
+            {{ exclude_pre_event_contract_transfers('tt') }}
         group by 1, 2, 3
     )
 
@@ -61,6 +144,13 @@ with
         select * from token_transfers_to
         union all
         select * from token_transfers_from
+        union all
+        select
+            day
+            , account_id
+            , contract_id
+            , balance
+        from storage_opening_balances
     )
 
     -- Sum the positive and negative balances
@@ -122,14 +212,52 @@ with
             and ds.contract_id = dc.contract_id
     )
 
+    , storage_balances as (
+        select
+            day
+            , sbv.account_id
+            , sbv.contract_id
+            -- Scale in bignumeric and cast once, so a 15+ significant-digit raw balance
+            -- does not lose precision before it reaches the float64 output column.
+            -- Decimals come from the seed, where they were read off the contract once and
+            -- verified. These contracts do not follow the SEP-41 storage convention, so
+            -- int_asset_metadata cannot reliably parse them and would silently fall back
+            -- to 10^-7.
+            , cast(sum(
+                sbv.balance_raw / cast(pow(10, src.decimals) as bignumeric)
+            ) as float64) as balance
+        from storage_balance_versions as sbv
+        inner join storage_sources as src
+            on sbv.contract_id = src.contract_id
+        cross join unnest(generate_date_array(sbv.start_day, date_sub(sbv.end_day, interval 1 day))) as day
+        where sbv.account_id is not null
+        group by 1, 2, 3
+    )
+
+    , all_balances as (
+        select
+            day
+            , account_id
+            , contract_id
+            , balance
+        from agg
+        union all
+        select
+            day
+            , account_id
+            , contract_id
+            , balance
+        from storage_balances
+    )
+
 select
-    agg.day
-    , agg.account_id
-    , agg.contract_id
+    all_balances.day
+    , all_balances.account_id
+    , all_balances.contract_id
     , a.asset_type
     , a.asset_issuer
     , a.asset_code
-    , agg.balance
-from agg
+    , all_balances.balance
+from all_balances
 left join {{ ref('int_asset_metadata') }} as a
-    on agg.contract_id = a.contract_id
+    on all_balances.contract_id = a.contract_id
