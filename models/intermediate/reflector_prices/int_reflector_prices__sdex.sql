@@ -31,16 +31,23 @@
 */
 
 with
+    -- The oracle's asset registry is the ordered `assets` vec in its instance
+    -- storage: an asset's position in the vec IS the asset_index the price
+    -- entries use. The contract also carries older per-asset address -> u32
+    -- entries, but those stopped being maintained (frozen at index 48 while
+    -- SolvBTC/PYUSD were appended to the vec as indices 49/50 on 2026-09-04),
+    -- so the vec is the only complete source.
     asset_coding as (
         select distinct
-            json_extract_scalar(storage_item, '$.key.address') as asset_contract_id
-            , cast(json_extract_scalar(storage_item, '$.val.u32') as int) as asset_index
+            json_extract_scalar(asset_entry, '$.vec[1].address') as asset_contract_id
+            , asset_index
         from {{ ref('contract_data_snapshot') }}
         , unnest(json_extract_array(val_decoded, '$.contract_instance.storage')) as storage_item
+        , unnest(json_extract_array(storage_item, '$.val.vec')) as asset_entry with offset as asset_index
         where
             contract_id = 'CALI2BYU2JE6WVRUFYTS6MSBNEHGJ35P4AVCZYF3B6QOE3QKOB2PLE6M'
             and contract_durability = 'ContractDataDurabilityPersistent'
-            and json_extract_scalar(storage_item, '$.key.address') is not null
+            and json_extract_scalar(storage_item, '$.key.string') = 'assets'
             and valid_to is null -- fetch only latest entry
     )
 
@@ -83,7 +90,7 @@ with
             , asset_index
             , cast(json_extract_scalar(prices_array[safe_offset(vec_index)], '$.i128') as float64) as price
         from new_format_raw
-            , unnest({{ find_changed_asset_indexes('mask_hex') }}) as asset_index with offset as vec_index
+        , unnest({{ find_changed_asset_indexes('mask_hex') }}) as asset_index with offset as vec_index
     )
 
     , price_data as (
@@ -92,11 +99,21 @@ with
         select * from price_data_new_format
     )
 
+    -- Contract tokens (no SAC) carry no usable code/type/issuer in stg_assets
+    -- (NULLs or empty strings); name them from int_asset_metadata and follow the
+    -- assets-mart convention for the rest: asset_type 'contract', asset_issuer ''
+    -- (empty, not null).
     , joined as (
         select distinct
-            stg_assets.asset_code
-            , stg_assets.asset_type
-            , stg_assets.asset_issuer
+            coalesce(nullif(stg_assets.asset_code, ''), iam.asset_code) as asset_code
+            , case
+                when nullif(stg_assets.asset_type, '') is not null then stg_assets.asset_type
+                when iam.contract_id is not null then 'contract'
+            end as asset_type
+            , case
+                when nullif(stg_assets.asset_type, '') is not null then stg_assets.asset_issuer
+                when iam.contract_id is not null then ''
+            end as asset_issuer
             , asset_coding.asset_contract_id
             , price_data.closed_at as updated_at
             , price_data.price * power(10, -14) as price
@@ -105,6 +122,8 @@ with
             on price_data.asset_index = asset_coding.asset_index
         left join {{ ref('stg_assets') }} as stg_assets
             on asset_coding.asset_contract_id = stg_assets.asset_contract_id
+        left join {{ ref('int_asset_metadata') }} as iam
+            on asset_coding.asset_contract_id = iam.contract_id
     )
 
     -- Calculate daily OHLC prices from the raw price data
