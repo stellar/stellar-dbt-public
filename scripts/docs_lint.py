@@ -42,6 +42,7 @@ SHARED_FAMILY_THRESHOLD = 4
 
 ALLOWLIST = os.path.join("scripts", "docs_allowlist.txt")
 REF_IGNORE = os.path.join("scripts", "docs_ref_ignore.txt")
+BLOCK_EXCEPTIONS = os.path.join("scripts", "docs_block_exceptions.txt")
 
 DOCS_BLOCK_RE = re.compile(
     r"\{%-?\s*docs\s+([A-Za-z0-9_]+)\s*-?%\}(.*?)\{%-?\s*enddocs\s*-?%\}", re.DOTALL
@@ -390,6 +391,7 @@ def cmd_check(args):
     resolved, unresolved = resolve(rows, blocks)
     allowlist = load_list(args.root, ALLOWLIST)
     ref_ignore = load_list(args.root, REF_IGNORE)
+    block_exceptions = load_list(args.root, BLOCK_EXCEPTIONS)
     usage = block_usage(rows)
     only = set(args.files or [])
     problems = []
@@ -427,19 +429,57 @@ def cmd_check(args):
         flag("R6", "%s is on the allowlist but has no inline descriptions; remove the entry"
              % rel)
 
-    # R5: a ref that looks like a wrong-block copy-paste.
+    # R3: shared definitions belong in one place, so there is one obvious answer
+    # to "where does a new shared column go".
+    for name, meta in sorted(blocks.items()):
+        count = len(usage.get(name, ((), ()))[1])
+        if count < SHARED_FAMILY_THRESHOLD or meta["file"] == UNIVERSAL:
+            continue
+        if name in block_exceptions:
+            continue
+        flag("R3", "doc block '%s' is used by %d table families but is defined in "
+                   "%s; move it to %s, or park it in %s with a reason"
+             % (name, count, meta["file"], UNIVERSAL, BLOCK_EXCEPTIONS))
+
+    # R8: a parked exception that no longer applies.
+    for name in sorted(block_exceptions):
+        if name not in blocks:
+            flag("R8", "'%s' is listed in %s but no such doc block exists"
+                 % (name, BLOCK_EXCEPTIONS))
+            continue
+        count = len(usage.get(name, ((), ()))[1])
+        if count < SHARED_FAMILY_THRESHOLD or blocks[name]["file"] == UNIVERSAL:
+            flag("R8", "'%s' no longer trips R3; remove it from %s"
+                 % (name, BLOCK_EXCEPTIONS))
+
+    # R5: a ref that looks like a wrong-block copy-paste. Close-but-unequal names
+    # are how paired columns get crossed, so this warns rather than trusting them.
     for row, ref, score in suspicious_refs(rows, blocks, args.threshold):
         if only and row["file"] not in only:
             continue
+        token = "%s:%s:%s" % (row["file"], row["column"], ref)
+        if token in ref_ignore:
+            continue
         flag("R5", "%s: %s references doc('%s') though a block named '%s' exists "
-                   "(name similarity %.2f); confirm this is intentional"
-             % (row["file"], row["column"], ref, row["column"], score))
+                   "(name similarity %.2f). If deliberate, add this line to %s:\n"
+                   "        %s"
+             % (row["file"], row["column"], ref, row["column"], score, REF_IGNORE, token))
+
+    # R7: an ignore entry that no longer matches, so the file cannot rot.
+    live = {
+        "%s:%s:%s" % (r["file"], r["column"], ref)
+        for r, ref, _s in suspicious_refs(rows, blocks, args.threshold)
+    }
+    for token in sorted(ref_ignore - live):
+        flag("R7", "%s no longer matches any suspicious ref; remove it from %s"
+             % (token, REF_IGNORE))
 
     for rule, message in problems:
         print("%s  %s" % (rule, message))
     if problems:
-        print("\n%d problem(s). Rules: R0 structural, R1 inline literal, "
-              "R2 undefined block, R5 suspicious ref, R6 stale allowlist." % len(problems))
+        print("\n%d problem(s). Rules: R0 structural, R1 inline literal, R2 undefined "
+              "block, R3 misplaced shared block, R5 suspicious ref, R6 stale allowlist, "
+              "R7 stale ref-ignore, R8 stale block exception." % len(problems))
         return 1
     print("docs_lint: clean (%d descriptions, %d blocks)" % (len(rows), len(blocks)))
     return 0

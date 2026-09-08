@@ -44,6 +44,14 @@ repos:
 
   - repo: local
     hooks:
+      - id: docs-lint
+        name: Doc blocks are defined in .md and referenced from .yml
+        entry: python scripts/docs_lint.py check
+        language: python
+        additional_dependencies: ["pyyaml"]
+        pass_filenames: false
+        files: ^(models|seeds)/.*\.(yml|yaml|md)$
+
       - id: cleanup
         name: Cleanup .env.tmp
         entry: ./pre-commit/cleanup.sh

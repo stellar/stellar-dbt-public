@@ -272,3 +272,11 @@ Unique identifier for an operation.
 
 The operation id is the transaction id + order number
 {% enddocs %}
+
+{% docs successful %}
+Indicates if this transaction was successful or not
+
+#### Notes:
+
+A transaction's success does not indicate whether it was included and written to a ledger. It only indicates whether the operations in the transaction were successfully applied to mutate the ledger state.
+{% enddocs %}

@@ -1,0 +1,27 @@
+# Files still permitted to hold inline `description:` literals.
+#
+# This is a ratchet, not a config: rule R1 fails on an inline literal in any file
+# NOT listed here, and rule R6 fails on a listed file that no longer has one. The
+# list may only shrink. Every PR that converts a file deletes its line.
+#
+# Definitions belong in a models/docs/**/*.md doc block, referenced from yml as
+# `'{{ doc("name") }}'`. Shared across >=4 table families means it belongs in
+# models/docs/universal.md; used by one table family means it belongs in that
+# model's own mirror .md file.
+
+seeds/public_test_exceptions.yml
+models/staging/stg_trust_lines.yml
+models/snapshots/trustlines_snapshot.yml
+models/sources/src_trust_lines.yml
+models/marts/tvl/tvl_agg.yml
+models/marts/tokens/transfers/token_transfers.yml
+models/marts/enriched_history/enriched_history_operations.yml
+models/marts/enriched_history/enriched_history_operations_soroban.yml
+models/intermediate/int_asset_metadata.yml
+models/intermediate/trades/int_trade_agg_day.yml
+models/intermediate/trades/int_trade_agg_month.yml
+models/intermediate/trades/int_trade_agg_week.yml
+models/intermediate/trades/int_trade_agg_year.yml
+models/intermediate/tvl/int_tvl_accounts.yml
+models/intermediate/tvl/int_tvl_trustlines.yml
+models/intermediate/tokens/transfers/int_token_transfer_enrichment.yml

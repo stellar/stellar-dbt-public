@@ -1,0 +1,17 @@
+# Confirmed-deliberate doc() references that rule R5 would otherwise flag,
+# because the referenced block name is close to the column name without
+# matching it. Format: <yml path>:<column>:<referenced block>
+#
+# Each entry needs a reason. R5 exists because paired columns (asset_a/asset_b,
+# read_bytes/write_bytes) get crossed by copy-paste, and those bugs look exactly
+# like these do. Do not add an entry without reading both block texts.
+
+# 'assets_id' is the history_assets identifier ("not a primary key on the
+# table"); the bare 'asset_id' block is the Farm Hash encoding. Different things.
+models/marts/history_assets.yml:asset_id:assets_id
+
+# 'op_transaction_id' says the transaction an operation executed in, and notes
+# the up-to-100-operations-per-transaction fan-in. More specific than the bare
+# 'transaction_id' block, and correct for operations.
+models/staging/stg_history_operations.yml:transaction_id:op_transaction_id
+models/sources/src_history_operations.yml:transaction_id:op_transaction_id

@@ -1,0 +1,15 @@
+# Doc blocks exempt from rule R3 (a block used by >=4 table families must live in
+# models/docs/universal.md). Every entry here is a KNOWN DEFECT parked with a
+# reason, not an approved pattern. R3 flags wide reuse, and wide reuse is where
+# one block gets stretched over columns that do not actually mean the same thing,
+# so most entries are waiting on a text fix rather than a move.
+#
+# Format: <block name>  # reason
+# Clearing an entry means splitting or rewriting the block, which changes
+# published docs. Do that in its own PR, never inside a relocation PR.
+
+asset_price   # Reads "Price of the asset in USD" but is used for open_usd, high_usd, low_usd and close_usd across 16 refs in reflector_prices. universal.md already defines correct per-column blocks for all four; repoint the refs instead of moving this.
+balance       # Reads "The number of units of XLM held by the account", yet 9 of 13 refs are trustline balances of arbitrary assets or Soroban contract-data balances. Needs splitting into account/trustline/contract variants.
+day_agg       # Referenced for a column named `day`, and its text cites `agg_network_stats`, a table that lives in stellar-dbt, not this repo. Needs a rename and a rewrite.
+key_hash      # Reads "Either contract_id or contract_code_hash" and is used for contract_code_hash, contract_id, key_hash and ledger_key_hash. One vague block covering four distinct columns.
+ledger_fee_airflow_start_ts  # Documents the `airflow_start_ts` column in 5 fee marts while universal.md's `airflow_start_ts` block documents the same column in 1. Same meaning, two blocks; merge into the universal one.

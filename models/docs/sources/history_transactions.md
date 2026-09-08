@@ -79,14 +79,6 @@ A transaction precondition that can be set to determine when a transaction is va
 If the transaction attempts to execute outside of the time range, the transaction will fail
 {% enddocs %}
 
-{% docs successful %}
-Indicates if this transaction was successful or not
-
-#### Notes:
-
-A transaction's success does not indicate whether it was included and written to a ledger. It only indicates whether the operations in the transaction were successfully applied to mutate the ledger state.
-{% enddocs %}
-
 {% docs fee_charged %}
 The net total fee (in stroops) actually deducted from the account after all refunds. This is what the submitter ultimately pays. For Classic transactions, fee_charged is the inclusion fee. For Soroban transactions, `fee_charged = inclusion_fee_charged + non_refundable_resource_fee_charged + refundable_resource_fee_charged -  resource_fee_refund`.
 
