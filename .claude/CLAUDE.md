@@ -120,41 +120,14 @@ See `docs/snapshot.md` for the full control flow diagram. For hands-on snapshot 
 
 ## Documentation
 
-Full process: `docs/documentation.md`. Enforced by `scripts/docs_lint.py check` (pre-commit hook `docs-lint`).
-
-- **Descriptions live in doc blocks, never inline in yml.** The `.yml` carries `description: '{{ doc("name") }}'`; the text lives in a `.md` under `models/docs/`, which mirrors `models/`. Definitions that unrelated tables share go in `models/docs/universal.md`.
-- **Name a shared block after the bare column** (`asset_code`); a model-specific one is `<model>__<column>`. Two columns share a block only when they mean the same thing at the same grain.
-- **Block names resolve by name, not by file**, so moving a block is safe but renaming one breaks the ~200 `doc()` references `stellar-dbt` resolves into this repo.
-
-**`check` only verifies a description *is* a reference, not that the reference is *correct*.** `- name: operation_id` with `doc("transaction_id")` passes and publishes the wrong text; 21 references here were wrong this way. So `grep -rn "{% docs <column> %}" models/docs/` and **read the block's text before referencing it** — never copy a neighbouring line. These cluster on paired columns (`asset_a`/`asset_b`, `read_bytes`/`write_bytes`, `batch_id`/`batch_run_date`).
-
-Prove a docs change rendered what you intended, with no warehouse connection:
-
-```bash
-git stash && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/before.json
-git stash pop && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/after.json
-./venv/bin/python scripts/docs_lint.py diff /tmp/before.json /tmp/after.json
-```
-
-A relocation must print `0 differences`; a text change must print exactly what you meant. Put that output in the PR.
+- **Model or column descriptions:** read `docs/documentation.md` before writing one.
 
 ## Pre-commit Hooks
 
-Pre-commit runs automatically on commit. Run it manually before finishing any task:
+Run before considering a task complete. See `.pre-commit-config.yaml` for the hook list.
 
 ```bash
-pre-commit run --all-files        # Run all hooks on all files
-pre-commit run --files path/to/file.sql   # Run on specific files
+pre-commit run --all-files
 ```
 
-Hooks, in the order they run (see `.pre-commit-config.yaml`):
-
-1. **pre-commit-hooks basics** — trailing whitespace, end-of-file newline, mixed line endings, byte-order marker, large files, case conflicts, merge conflicts, private keys, `requirements.txt` sorting
-2. **Prettier** — formats `.json`/`.yaml`/`.yml` files
-3. **SQLFluff** — `sqlfluff-lint` then `sqlfluff-fix`, via `pre-commit/for_pre_commit.sh`
-4. **docs-lint** — runs `scripts/docs_lint.py check`: no repeated descriptions, no `doc()` pointing at a missing or wrong block, shared definitions in `models/docs/universal.md`. See the Documentation section above
-5. **cleanup** — removes `.env.tmp`
-
-This repo has **no dbt-checkpoint hooks**; that is `stellar-dbt`'s config, not this one. `docs-lint` is what enforces description quality here, and it checks for duplication rather than mere presence.
-
-`pre_commit run --files <list>` can report "no files to check" in some environments; `--all-files` is the reliable invocation.
+`--files <list>` can report "no files to check" in some environments; `--all-files` is reliable.
