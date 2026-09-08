@@ -62,6 +62,9 @@ DOC_SEARCH_PATHS = ("models", "snapshots", "seeds", "analyses", "tests", "macros
 # excluded on purpose; see the module docstring.
 PROPERTY_PATHS = ("models", "snapshots", "seeds", "analyses")
 PACKAGES_DIR = "dbt_packages"
+# Where a definition this repo owns must live. Resolution reads more widely, so a
+# block an installed package defines elsewhere still resolves.
+DOCS_HOME = "models/docs/"
 TODO_FILE = os.path.join("scripts", "docs_lint_todo.txt")
 # Faults a not-yet-converted path is allowed to still have. Everything else in
 # `describe_fault` fails everywhere.
@@ -196,12 +199,25 @@ def load_properties(root):
         for kind, resource, node in _entries(doc):
             if "description" in node:
                 rows.append(_row(kind, resource, None, rel, node["description"]))
-            for column in node.get("columns") or []:
-                if isinstance(column, dict) and column.get("name") and "description" in column:
+            rows.extend(_column_rows(kind, resource, rel, node))
+            # A versioned model may override or add columns per version, and those
+            # descriptions are published too.
+            for version in node.get("versions") or []:
+                if not isinstance(version, dict) or version.get("v") is None:
+                    continue
+                versioned = "%s.v%s" % (resource, version["v"])
+                if "description" in version:
                     rows.append(
-                        _row(kind, resource, column["name"], rel, column["description"])
+                        _row(kind, versioned, None, rel, version["description"])
                     )
+                rows.extend(_column_rows(kind, versioned, rel, version))
     return rows, parse_errors
+
+
+def _column_rows(kind, resource, rel, node):
+    for column in node.get("columns") or []:
+        if isinstance(column, dict) and column.get("name") and "description" in column:
+            yield _row(kind, resource, column["name"], rel, column["description"])
 
 
 def _row(kind, resource, column, rel, description):
@@ -322,6 +338,14 @@ def cmd_check(args):
             "doc block '%s' is defined in %d files (%s); dbt cannot resolve a "
             "duplicate name" % (name, len(files), ", ".join(files))
         )
+    # dbt will happily resolve a block defined next to a model or a macro, which
+    # is how definitions drift out of models/docs/ and stop being findable.
+    for name, meta in sorted(local.items()):
+        if not meta["file"].startswith(DOCS_HOME):
+            problems.append(
+                "doc block '%s' is defined in %s; definitions belong under %s"
+                % (name, meta["file"], DOCS_HOME)
+            )
 
     deferred = defaultdict(int)
     for row in rows:
@@ -360,6 +384,9 @@ def cmd_check(args):
         print("\n%d problem(s)." % len(problems))
         return 1
     print("docs_lint: clean (%d descriptions, %d blocks)" % (len(rows), len(local)))
+    if not todo:
+        print("no deferrals: %s is absent, so the rule has no exceptions here"
+              % TODO_FILE)
     if deferred:
         print("\nnot yet converted (%s):" % TODO_FILE)
         for prefix in sorted(deferred, key=lambda p: -deferred[p]):

@@ -29,8 +29,14 @@ The 4 or 12 character code representation of the asset on the network.
 {% enddocs %}
 ```
 
-No allowlist, no exception file, no threshold to tune. `scripts/docs_lint.py check` enforces it
-and runs in pre-commit.
+No allowlist, no per-description exception, no threshold to tune. `scripts/docs_lint.py check`
+enforces it and runs in pre-commit.
+
+The script is shared with `stellar-dbt`, where about a thousand inline descriptions predate the
+rule and are being converted a domain at a time, so it can defer whole paths listed in
+`scripts/docs_lint_todo.txt`. **That file does not exist in this repo**, so nothing is deferred
+here and `check` prints `no deferrals` to say so on every run. Do not add it: converting one
+domain at a time is not a problem this repo has.
 
 ## Where a block lives, and what to call it
 
@@ -75,8 +81,9 @@ No warehouse connection or credentials needed; it reads the yml and md files dir
 exists, so it fails on inline text, on text wrapped around a reference
 (`see {{ doc("x") }} for detail`), on an empty description, on two references in one value, and
 on a name that is not defined anywhere. It also fails on a yml that will not parse (the rule
-cannot be applied to a file that cannot be read) and on two files defining the same block name
-(dbt cannot resolve a duplicate).
+cannot be applied to a file that cannot be read) on two files defining the same block name
+(dbt cannot resolve a duplicate), and on a definition this repo owns that sits outside
+`models/docs/`, which is how a definition drifts somewhere nobody thinks to look.
 
 **Macro and argument descriptions are out of scope.** They document one macro's signature, so
 there is nothing to factor out, and moving them into `models/docs/` would only put a macro's API
