@@ -29,14 +29,8 @@ The 4 or 12 character code representation of the asset on the network.
 {% enddocs %}
 ```
 
-No allowlist, no per-description exception, no threshold to tune. `scripts/docs_lint.py check`
-enforces it and runs in pre-commit.
-
-The script is shared with `stellar-dbt`, where about a thousand inline descriptions predate the
-rule and are being converted a domain at a time, so it can defer whole paths listed in
-`scripts/docs_lint_todo.txt`. **That file does not exist in this repo**, so nothing is deferred
-here and `check` prints `no deferrals` to say so on every run. Do not add it: converting one
-domain at a time is not a problem this repo has.
+No allowlist, no per-description exception, no way to defer a path, no threshold to tune.
+`scripts/docs_lint.py check` enforces it and runs in pre-commit.
 
 ## Where a block lives, and what to call it
 

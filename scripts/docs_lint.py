@@ -15,12 +15,7 @@ This file is identical in stellar-dbt and stellar-dbt-public and is meant to sta
 that way: the project name comes from `dbt_project.yml` rather than a constant, so
 copy it across verbatim rather than porting changes by hand.
 
-The rule applies everywhere except the paths listed in
-`scripts/docs_lint_todo.txt`, which are domains whose inline descriptions predate
-the rule and are being converted a domain at a time. That list only ever shrinks:
-a new file anywhere is enforced from the start, and an entry with no remaining
-inline descriptions is itself a failure, so a converted domain cannot be left
-listed. When the file is empty, delete it and the two lines that read it.
+The rule has no exceptions: there is no allowlist and no way to defer a path.
 
 The other commands are inspection tools rather than gates. `doc()` resolves by
 block name and not by file path, so every rendered description can be computed
@@ -65,10 +60,6 @@ PACKAGES_DIR = "dbt_packages"
 # Where a definition this repo owns must live. Resolution reads more widely, so a
 # block an installed package defines elsewhere still resolves.
 DOCS_HOME = "models/docs/"
-TODO_FILE = os.path.join("scripts", "docs_lint_todo.txt")
-# Faults a not-yet-converted path is allowed to still have. Everything else in
-# `describe_fault` fails everywhere.
-DEFERRABLE_FAULTS = frozenset(("inline", "mixed"))
 
 DOCS_BLOCK_RE = re.compile(
     r"\{%-?\s*docs\s+([A-Za-z0-9_]+)\s*-?%\}(.*?)\{%-?\s*enddocs\s*-?%\}", re.DOTALL
@@ -113,20 +104,6 @@ def project_name(root):
     path = os.path.join(root, "dbt_project.yml")
     with open(path, encoding="utf-8") as handle:
         return (yaml.safe_load(handle) or {}).get("name")
-
-
-def load_todo(root):
-    """Path prefixes exempt from the rule, from `scripts/docs_lint_todo.txt`."""
-    path = os.path.join(root, TODO_FILE)
-    if not os.path.isfile(path):
-        return []
-    prefixes = []
-    with open(path, encoding="utf-8") as handle:
-        for line in handle:
-            line = line.split("#", 1)[0].strip()
-            if line:
-                prefixes.append(line)
-    return prefixes
 
 
 def load_package_blocks(root):
@@ -318,6 +295,24 @@ def block_usage(rows):
 # --------------------------------------------------------------------------- #
 
 
+def input_faults(errors, dupes):
+    """Reasons the collected input cannot stand in for what dbt would build.
+
+    A yml that will not parse contributes none of its descriptions, and a name
+    defined twice resolves to whichever copy is read first. Either way the result
+    is a partial picture, so every command that publishes or compares one has to
+    refuse rather than quietly report on the remainder.
+    """
+    problems = ["%s: cannot parse yml: %s" % (rel, message) for rel, message in errors]
+    problems += [
+        "doc block '%s' is defined in %d files (%s); dbt cannot resolve a "
+        "duplicate name" % (name, len(files), ", ".join(files))
+        for name, files in sorted(dupes.items())
+    ]
+    return problems
+
+
+
 def cmd_check(args):
     """The gate: every description must be a doc() reference."""
     # `dupes` is local-only: a name defined in both this repo and an installed
@@ -325,19 +320,10 @@ def cmd_check(args):
     # `resolvable` is the merged set, which is what a doc() call can reach.
     local, resolvable, dupes = all_blocks(args.root)
     rows, errors = load_properties(args.root)
-    todo = load_todo(args.root)
     only = set(args.files or [])
     problems = []
 
-    # A yml that will not parse gets no rule applied at all, so treat it as a
-    # failure rather than silently skipping the file.
-    for rel, message in errors:
-        problems.append("%s: cannot parse yml: %s" % (rel, message))
-    for name, files in sorted(dupes.items()):
-        problems.append(
-            "doc block '%s' is defined in %d files (%s); dbt cannot resolve a "
-            "duplicate name" % (name, len(files), ", ".join(files))
-        )
+    problems.extend(input_faults(errors, dupes))
     # dbt will happily resolve a block defined next to a model or a macro, which
     # is how definitions drift out of models/docs/ and stop being findable.
     for name, meta in sorted(local.items()):
@@ -347,36 +333,14 @@ def cmd_check(args):
                 % (name, meta["file"], DOCS_HOME)
             )
 
-    deferred = defaultdict(int)
     for row in rows:
         fault = describe_fault(row, resolvable)
         if not fault:
-            continue
-        # Inline text is deferrable, whole or partial, because an unconverted
-        # domain is full of it. A reference that cannot resolve, or an empty
-        # description, is a defect in code that already adopted the rule, so it
-        # fails even inside a todo path.
-        exempt = next((p for p in todo if row["file"].startswith(p)), None)
-        if exempt and fault[0] in DEFERRABLE_FAULTS:
-            deferred[exempt] += 1
             continue
         if only and row["file"] not in only:
             continue
         target = row["column"] or "(%s level)" % row["kind"]
         problems.append("%s: %s %s" % (row["file"], target, fault[1]))
-
-    # An entry that no longer defers anything is a converted domain still listed,
-    # so the list cannot quietly outlive the migration.
-    for prefix in todo:
-        if not os.path.exists(os.path.join(args.root, prefix)):
-            problems.append(
-                "%s lists '%s', which does not exist" % (TODO_FILE, prefix)
-            )
-        elif not deferred.get(prefix):
-            problems.append(
-                "%s lists '%s', which has no inline descriptions left; delete the "
-                "line" % (TODO_FILE, prefix)
-            )
 
     for message in problems:
         print(message)
@@ -384,27 +348,33 @@ def cmd_check(args):
         print("\n%d problem(s)." % len(problems))
         return 1
     print("docs_lint: clean (%d descriptions, %d blocks)" % (len(rows), len(local)))
-    if not todo:
-        print("no deferrals: %s is absent, so the rule has no exceptions here"
-              % TODO_FILE)
-    if deferred:
-        print("\nnot yet converted (%s):" % TODO_FILE)
-        for prefix in sorted(deferred, key=lambda p: -deferred[p]):
-            print("   %4d inline  %s" % (deferred[prefix], prefix))
-        print("   %4d total" % sum(deferred.values()))
     return 0
 
 
 def cmd_snapshot(args):
-    _local, blocks, _dupes = all_blocks(args.root)
-    rows, _errors = load_properties(args.root)
+    # A snapshot is only worth writing if it is the whole picture: `diff` reads
+    # a missing key as a removed description, so a file that failed to parse or
+    # a reference that does not resolve would show up later as a docs change
+    # that never happened. Refuse rather than write a misleading baseline.
+    _local, blocks, dupes = all_blocks(args.root)
+    rows, errors = load_properties(args.root)
+    problems = input_faults(errors, dupes)
     resolved, unresolved = resolve(rows, blocks)
+    for row in unresolved:
+        problems.append(
+            "%s: %s references a doc block that is not defined anywhere"
+            % (row["file"], row["column"] or "(%s level)" % row["kind"])
+        )
+    if problems:
+        for message in problems:
+            print(message)
+        print("\n%d problem(s); refusing to write an incomplete snapshot to %s."
+              % (len(problems), args.out))
+        return 1
     with open(args.out, "w", encoding="utf-8") as handle:
         json.dump(resolved, handle, indent=1, sort_keys=True)
         handle.write("\n")
     print("wrote %d resolved descriptions to %s" % (len(resolved), args.out))
-    if unresolved:
-        print("WARNING: %d descriptions reference an undefined block" % len(unresolved))
     return 0
 
 
@@ -462,8 +432,18 @@ def cmd_validate_manifest(args):
             if owner != package:
                 foreign.update(keys)
 
-    _local, blocks, _dupes = all_blocks(args.root)
-    rows, _errors = load_properties(args.root)
+    # The comparison only means something if the resolver saw everything. With a
+    # file missing or a name defined twice, the entries that do line up still
+    # match and the command would report agreement it has not established.
+    _local, blocks, dupes = all_blocks(args.root)
+    rows, errors = load_properties(args.root)
+    problems = input_faults(errors, dupes)
+    if problems:
+        for message in problems:
+            print(message)
+        print("\n%d problem(s); this checkout cannot produce the manifest it "
+              "would be compared against." % len(problems))
+        return 1
     resolved, unresolved = resolve(rows, blocks)
 
     common = set(truth) & set(resolved)

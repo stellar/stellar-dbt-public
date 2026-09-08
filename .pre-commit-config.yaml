@@ -50,7 +50,10 @@ repos:
         language: python
         additional_dependencies: ["pyyaml"]
         pass_filenames: false
-        files: ^(models|seeds|snapshots|analyses)/.*\.(yml|yaml|md)$
+        # Everything the check reads, since it runs whole-repo rather than on
+        # the passed filenames: property yml, doc blocks anywhere dbt resolves
+        # them (macros/ and tests/ included), and the linter itself.
+        files: ^((models|seeds|snapshots|analyses)/.*\.(yml|yaml|md)|(macros|tests)/.*\.md|scripts/docs_lint\.py)$
 
       - id: cleanup
         name: Cleanup .env.tmp
