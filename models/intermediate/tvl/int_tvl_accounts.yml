@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: int_tvl_accounts
-    description: "This table aggregates XLM selling liabilities from accounts to calculate TVL"
+    description: '{{ doc("int_tvl_accounts") }}'
     tests:
       - stellar_dbt_public.incremental_unique_combination_of_columns:
           combination_of_columns:

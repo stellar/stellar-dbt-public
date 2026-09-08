@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: enriched_history_operations_soroban
-    description: Aggregate table for the history operations, taking only the soroban operations
+    description: '{{ doc("enriched_history_operations_soroban") }}'
     tests:
       - recency:
           tags: [recency]

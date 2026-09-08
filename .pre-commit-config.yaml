@@ -45,7 +45,7 @@ repos:
   - repo: local
     hooks:
       - id: docs-lint
-        name: No repeated descriptions, and every doc() points at the right block
+        name: Descriptions live in doc blocks, not inline in yml
         entry: python scripts/docs_lint.py check
         language: python
         additional_dependencies: ["pyyaml"]

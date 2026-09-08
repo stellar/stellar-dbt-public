@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: enriched_history_operations
-    description: Aggregate table for the history operations
+    description: '{{ doc("enriched_history_operations") }}'
     tests:
       - recency:
           tags: [recency]

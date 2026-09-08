@@ -97,7 +97,7 @@ What not to do in intermediate:
 > _*Note:*_ More information about `intermediate` layer can be found [here](https://docs.getdbt.com/best-practices/how-we-structure/3-intermediate).
 
 3. Marts
-   The marts layer is where users can access final dimensional modeling tables. Each model will be accompanied by a `.yml` file with the same name, holding the tests for the model and its columns plus each description, either written inline or as a `{{ doc(...) }}` reference to a doc block under `models/docs/`. See [Documentation](#documentation) for which of the two to use.
+   The marts layer is where users can access final dimensional modeling tables. Each model will be accompanied by a `.yml` file with the same name, holding the tests for the model and its columns plus a `{{ doc(...) }}` reference for each description. The description text itself lives in a doc block under `models/docs/`, never inline in the `.yml`. See [Documentation](#documentation).
 
 What to do in marts:
 
@@ -164,33 +164,35 @@ There are three different test types:
 
 ## Documentation
 
-Every model, source table and column carries a description, and those descriptions are published to the dbt docs site on every merge to `master`. A description is written in one of two places, and the rule for choosing is simple:
+Every model, source table and column carries a description, and those descriptions are published to the dbt docs site on every merge to `master`. There is one rule:
 
-**Never write the same description twice.**
+**Descriptions live in doc blocks, never inline in the `.yml`.**
 
-| Situation                                        | What to write                                                   |
-| ------------------------------------------------ | --------------------------------------------------------------- |
-| The text is unique to this one column            | An inline `description:` in the `.yml`                          |
-| The same text belongs on 2+ columns or models     | A doc block under `models/docs/`, referenced with `'{{ doc("name") }}'` |
-| A doc block already says it                       | Reference the block; do not paste its text                      |
-| The text is long or needs markdown                | A doc block, even if used once                                  |
+The `.yml` holds a reference; the text lives in a `.md` file under `models/docs/`:
 
-Where a doc block lives depends on how many distinct **table families** use it, where a family is one table and all its `src_` / `stg_` / `_current` / `_snapshot` variants:
+```yaml
+- name: asset_code
+  description: '{{ doc("asset_code") }}'
+```
 
-| Families using the block | Home                                                              |
-| ------------------------ | ----------------------------------------------------------------- |
-| 1 to 3                   | that table's mirror file, e.g. `models/docs/sources/trust_lines.md` |
-| 4 or more                | `models/docs/universal.md`                                        |
+```markdown
+{% docs asset_code %}
+The 4 or 12 character code representation of the asset on the network.
+{% enddocs %}
+```
 
-A column that flows from `sources/` through `staging/` to `marts/` appears in several files but is still one family, so it stays in that table's mirror file. Only definitions that unrelated tables genuinely share, like `asset_code` or `batch_run_date`, belong in `universal.md`.
+That gives each description one home, so when the same column appears in a source, a staging model and a mart, all three point at the same block and the text cannot drift between them.
 
-Check your work before pushing. This needs no warehouse connection:
+`models/docs/` mirrors `models/`, so a column on `models/marts/trade_agg.sql` is documented in `models/docs/marts/trade_agg.md`. A definition that **unrelated tables** share, like `asset_code` or `batch_run_date`, goes in `models/docs/universal.md` instead. A column that merely flows from `sources/` through `staging/` to `marts/` is still one table's column and stays in that table's mirror file.
+
+Before writing a description, check whether a block already exists, and read its text rather than trusting its name:
 
 ```bash
+grep -rn "{% docs <column_name> %}" models/docs/
 ./venv/bin/python scripts/docs_lint.py check     # also runs in pre-commit
 ```
 
-> _*Note:*_ The full process, including doc block naming, the two exception files, how to prove a docs change rendered nothing unexpected, and what to check before renaming a block that `stellar-dbt` depends on, is in [docs/documentation.md](./docs/documentation.md)
+> _*Note:*_ The full process, including doc block naming, what the linter deliberately does not check, how to prove a docs change rendered nothing unexpected, and what to check before renaming a block that `stellar-dbt` depends on, is in [docs/documentation.md](./docs/documentation.md)
 
 <br>
 

@@ -120,17 +120,23 @@ See `docs/snapshot.md` for the full control flow diagram. For hands-on snapshot 
 
 ## Documentation
 
-Full process: `docs/documentation.md`. Enforced by `scripts/docs_lint.py` (pre-commit hook `docs-lint`). The rules that matter:
+Full process: `docs/documentation.md`. Enforced by `scripts/docs_lint.py check` (pre-commit hook `docs-lint`).
 
-- **Never write the same description twice.** A unique, single-use description belongs inline in the `.yml` and is correct there — `doc()` exists for reuse, so a block for a one-off is indirection with nothing to reuse. Text that repeats, or that a block already states, must be a `'{{ doc("name") }}'` reference.
-- **Placement is by distinct table family, not by file or directory.** A family is one table plus its `src_` / `stg_` / `_current` / `_snapshot` variants. 1 to 3 families: that table's mirror file under `models/docs/`, which mirrors `models/`. 4+ families: `models/docs/universal.md`.
-- **Name a shared block after the bare column** (`asset_code`); name a column-specific one `<model>__<column>` (`higlobe_transactions__amount`). Two columns share a block only when they mean the same thing at the same grain.
-- **Block names are globally unique and resolve by name, not by file.** So moving a block between files changes no rendered output, and renaming one breaks the ~200 `doc()` references `stellar-dbt` resolves into this repo.
+- **One rule: descriptions live in doc blocks, never inline in yml.** The `.yml` carries `description: '{{ doc("name") }}'`; the text lives in a `.md` under `models/docs/`. No allowlist, no exception files, no thresholds. Currently 2,331 of 2,331 descriptions comply.
+- **`models/docs/` mirrors `models/`.** A column on `models/marts/trade_agg.sql` is documented in `models/docs/marts/trade_agg.md`. A definition that **unrelated** tables share (`asset_code`, `batch_run_date`) goes in `models/docs/universal.md`; a column that merely flows source → staging → mart is still one table's column and stays in its mirror file. Convention, not enforced.
+- **Name a shared block after the bare column** (`asset_code`); name a model-specific one `<model>__<column>` (`int_tvl_trustlines__asset_code`). Two columns share a block only when they mean the same thing at the same grain.
+- **Block names are globally unique and resolve by name, not by file.** Moving a block between files changes no rendered output. Renaming one breaks the ~200 `doc()` references `stellar-dbt` resolves into this repo.
 
-Two failure modes to avoid, both of which have already happened here:
+**The linter does not check that a `doc()` points at the *right* block, only that a description is a reference.** That is the failure mode to guard against yourself, and it has already happened 21 times here:
 
-- **Writing a fresh literal next to an existing block.** Always `grep -rn "{% docs <column> %}" models/docs/` before writing a description.
-- **Copying a neighbouring `doc()` onto a paired column.** 16 references were wrong this way (`asset_b_type` pointing at `asset_a_type`, `soroban_resources_write_bytes` at `read_bytes`), each shipping wrong text to the public docs site. Rule R5 catches these; a near-match between a column name and its block is a red flag, not a green light.
+```yaml
+- name: asset_b_type
+  description: '{{ doc("asset_a_type") }}'    # renders "the sold asset", not "the bought asset"
+- name: operation_id
+  description: '{{ doc("transaction_id") }}'  # renders "a unique identifier for this transaction"
+```
+
+So **always read the block's text before referencing it**, never trust the name, and never copy a neighbouring line. `grep -rn "{% docs <column> %}" models/docs/` first. These cluster on paired columns: `asset_a`/`asset_b`, `read_bytes`/`write_bytes`, `batch_id`/`batch_run_date`. `docs_lint.py report` lists every column name that resolves to more than one description, which is how most of them surface.
 
 Verify a docs change rendered exactly what you intended (no warehouse connection needed):
 
@@ -141,8 +147,6 @@ git stash pop && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/afte
 ```
 
 A block relocation must print `0 differences`. A text change must print exactly the descriptions you meant to change. Put that output in the PR.
-
-`scripts/docs_ref_ignore.txt` and `scripts/docs_block_exceptions.txt` hold the cases the linter cannot decide. Every entry needs a written reason. The block-exceptions entries are known defects parked for a follow-up PR, not approved patterns — do not add to either file to make a check pass.
 
 ## Pre-commit Hooks
 

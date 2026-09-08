@@ -25,3 +25,7 @@ This denotes whether the event executed out of the classic or smart contract env
 {% docs token_unique_key %}
 The sha256 of the concatenation of transaction_hash, operation_id, contract_id, to, from, and asset for token transfer events
 {% enddocs %}
+
+{% docs token_transfers %}
+Curated and enriched token transfer events across the entire Stellar network
+{% enddocs %}

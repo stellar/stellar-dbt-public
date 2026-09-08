@@ -1,17 +1,23 @@
 #!/usr/bin/env python
-"""Lint and inspect dbt doc-block usage without needing a warehouse connection.
+"""Keep every model and column description in a doc block, not inline in yml.
 
-`doc()` resolves by block name, not by file path, so the rendered description for
-every model and column can be computed statically from the yml + md files alone.
-That makes a before/after comparison cheap and credential-free: see the `snapshot`
-and `diff` commands. `validate-manifest` proves the resolver agrees with dbt.
+One rule, no exceptions, no tunable thresholds: a `description:` in a properties
+yml must be a `{{ doc("name") }}` reference. The definition itself lives in a
+`models/docs/**/*.md` doc block.
+
+The other commands are inspection tools rather than gates. `doc()` resolves by
+block name and not by file path, so every rendered description can be computed
+from the yml + md files alone, with no warehouse connection. That makes a
+before/after comparison cheap: `snapshot` twice and `diff` proves whether a
+change altered any published text. `validate-manifest` shows the resolver
+agrees with dbt itself.
 
 Commands:
+    check             enforce the rule (exit 1 on violation)
     snapshot          write the resolved description map to a JSON file
     diff A B          compare two snapshot files
     validate-manifest check the resolver against target/manifest.json
-    report            fanout, orphans, divergences, suspicious refs
-    check             enforce the lint rules (exit 1 on violation)
+    report            block fanout, orphans, and columns documented inconsistently
 """
 
 from __future__ import annotations
@@ -29,30 +35,10 @@ import yaml
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATHS = ("models", "snapshots", "seeds", "analyses", "tests", "macros")
 
-# The single home for definitions shared across unrelated tables. One obvious
-# place beats two plausible ones: before this was enforced, shared columns were
-# split between universal.md and sources/state_tables.md with no rule saying
-# which, and new columns ended up in neither.
-UNIVERSAL = os.path.join("models", "docs", "universal.md")
-
-# A block is "shared" when unrelated table families use it, not merely when
-# several files do. A column flowing src -> stg -> mart shows up in three files
-# but is one family, and belongs in that source's own mirror file.
-SHARED_FAMILY_THRESHOLD = 4
-
-REF_IGNORE = os.path.join("scripts", "docs_ref_ignore.txt")
-BLOCK_EXCEPTIONS = os.path.join("scripts", "docs_block_exceptions.txt")
-
 DOCS_BLOCK_RE = re.compile(
     r"\{%-?\s*docs\s+([A-Za-z0-9_]+)\s*-?%\}(.*?)\{%-?\s*enddocs\s*-?%\}", re.DOTALL
 )
 DOC_CALL_RE = re.compile(r"""\{\{-?\s*doc\(\s*['"]([A-Za-z0-9_]+)['"]\s*\)\s*-?\}\}""")
-
-# A description that is exactly one doc() call and nothing else. Anything more
-# (prose plus a doc call, two doc calls) is left alone: it is not a plain reference.
-PURE_DOC_RE = re.compile(
-    r"""^\s*\{\{-?\s*doc\(\s*['"]([A-Za-z0-9_]+)['"]\s*\)\s*-?\}\}\s*$"""
-)
 
 
 # --------------------------------------------------------------------------- #
@@ -88,7 +74,7 @@ def load_blocks(root):
 
 
 def _entries(doc):
-    """Yield (kind, resource_name, description, columns, ...) from one parsed yml."""
+    """Yield (kind, resource_name, node) for every documentable resource in a yml."""
     if not isinstance(doc, dict):
         return
     for key, kind in (
@@ -109,12 +95,7 @@ def _entries(doc):
 
 
 def load_properties(root):
-    """Every declared description, with enough context to lint and to resolve it.
-
-    Returns a list of dicts: kind, resource, column (None for resource level),
-    file, raw description, and the doc block name when the description is a
-    single plain doc() call.
-    """
+    """Every declared description, with enough context to lint and to resolve it."""
     rows = []
     parse_errors = []
     for path, rel in walk_files(root, (".yml", ".yaml")):
@@ -137,14 +118,12 @@ def load_properties(root):
 
 def _row(kind, resource, column, rel, description):
     raw = "" if description is None else str(description)
-    pure = PURE_DOC_RE.match(raw)
     return {
         "kind": kind,
         "resource": resource,
         "column": column,
         "file": rel,
         "raw": raw,
-        "ref": pure.group(1) if pure else None,
         "refs": DOC_CALL_RE.findall(raw),
     }
 
@@ -166,15 +145,6 @@ def key_of(row):
     return "%s:%s:%s" % (row["kind"], row["resource"], row["column"] or "")
 
 
-def norm_text(value):
-    """Compare descriptions the way a reader would: ignore case and spacing.
-
-    Two descriptions that differ only by a trailing period or a wrapped line are
-    the same duplication problem, so they must compare equal.
-    """
-    return re.sub(r"\s+", " ", value.strip().lower()).rstrip(".")
-
-
 FAMILY_SUBS = (
     (re.compile(r"^(src_|stg_|int_|enriched_)"), ""),
     (re.compile(r"_(xlm|current|snapshot|raw)$"), ""),
@@ -185,7 +155,12 @@ FAMILY_SUBS = (
 
 
 def family(rel):
-    """Collapse one table's src/stg/int/mart variants to a single family name."""
+    """Collapse one table's src/stg/int/mart variants to a single family name.
+
+    Used only by `report`. A column flowing src -> stg -> mart shows up in several
+    files but is one table's column, so counting files overstates how widely a
+    definition is really shared.
+    """
     name = os.path.basename(rel).rsplit(".", 1)[0]
     for pattern, replacement in FAMILY_SUBS:
         name = pattern.sub(replacement, name)
@@ -204,6 +179,44 @@ def block_usage(rows):
 # --------------------------------------------------------------------------- #
 # commands
 # --------------------------------------------------------------------------- #
+
+
+def cmd_check(args):
+    """The gate: every description must be a doc() reference."""
+    blocks, dupes = load_blocks(args.root)
+    rows, errors = load_properties(args.root)
+    only = set(args.files or [])
+    problems = []
+
+    # A yml that will not parse gets no rule applied at all, so treat it as a
+    # failure rather than silently skipping the file.
+    for rel, message in errors:
+        problems.append("%s: cannot parse yml: %s" % (rel, message))
+    for name, files in sorted(dupes.items()):
+        problems.append(
+            "doc block '%s' is defined in %d files (%s); dbt cannot resolve a "
+            "duplicate name" % (name, len(files), ", ".join(files))
+        )
+
+    for row in rows:
+        if row["refs"] or not row["raw"].strip():
+            continue
+        if only and row["file"] not in only:
+            continue
+        target = row["column"] or "(%s level)" % row["kind"]
+        problems.append(
+            "%s: %s has an inline description. Move the text into a doc block "
+            "under models/docs/ and reference it with '{{ doc(\"name\") }}'."
+            % (row["file"], target)
+        )
+
+    for message in problems:
+        print(message)
+    if problems:
+        print("\n%d problem(s)." % len(problems))
+        return 1
+    print("docs_lint: clean (%d descriptions, %d blocks)" % (len(rows), len(blocks)))
+    return 0
 
 
 def cmd_snapshot(args):
@@ -246,11 +259,10 @@ def cmd_diff(args):
 def cmd_validate_manifest(args):
     """Compare the static resolver against dbt's own rendered descriptions."""
     manifest = json.load(open(args.manifest, encoding="utf-8"))
-    package = args.package
     truth = {}
     for section in ("nodes", "sources"):
         for node in manifest.get(section, {}).values():
-            if node.get("package_name") != package:
+            if node.get("package_name") != args.package:
                 continue
             kind = node.get("resource_type")
             if kind == "test":
@@ -283,237 +295,84 @@ def cmd_validate_manifest(args):
         print("\n--- %s" % key)
         print("  dbt   : %r" % truth[key][:200])
         print("  static: %r" % resolved[key][:200])
-    for key in only_manifest[: args.show]:
-        print("  manifest-only: %s" % key)
     if unresolved:
         print("\nunresolved doc() refs: %d" % len(unresolved))
     return 1 if mismatched else 0
 
 
 def cmd_report(args):
+    """Read-only diagnostics. Nothing here fails a build."""
     blocks, dupes = load_blocks(args.root)
     rows, errors = load_properties(args.root)
     resolved, unresolved = resolve(rows, blocks)
-
     usage = block_usage(rows)
     users = {n: fs for n, (fs, _fam) in usage.items()}
     families = {n: fam for n, (_fs, fam) in usage.items()}
 
-    fanout = Counter(len(users.get(name, ())) for name in blocks)
     orphans = sorted(name for name in blocks if not users.get(name))
-    single = sorted(n for n in blocks if len(users.get(n, ())) == 1)
-    shared = sorted(
-        n for n in blocks if len(families.get(n, ())) >= SHARED_FAMILY_THRESHOLD
-    )
-
     print("=== blocks ===")
-    print("defined: %d   orphan: %d   single-use: %d   cross-family shared (>=%d families): %d"
-          % (len(blocks), len(orphans), len(single), SHARED_FAMILY_THRESHOLD, len(shared)))
-    print("file fanout distribution: %s"
-          % ", ".join("%d->%d" % (k, fanout[k]) for k in sorted(fanout)))
-    famdist = Counter(len(families.get(n, ())) for n in blocks)
-    print("family fanout distribution: %s"
-          % ", ".join("%d->%d" % (k, famdist[k]) for k in sorted(famdist)))
+    print("defined: %d   orphan (referenced by nothing): %d" % (len(blocks), len(orphans)))
+    print("file fanout:   %s" % _dist(len(users.get(n, ())) for n in blocks))
+    print("family fanout: %s" % _dist(len(families.get(n, ())) for n in blocks))
+    if orphans:
+        print("orphans: %s" % ", ".join(orphans))
     if dupes:
         print("DUPLICATE block names: %s" % dupes)
     if errors:
         print("yml parse errors: %s" % errors)
+    if unresolved:
+        print("descriptions referencing an undefined block: %d" % len(unresolved))
 
-    literals = [r for r in rows if not r["refs"] and r["raw"].strip()]
-    print("\n=== descriptions ===")
-    print("total: %d   pure doc() ref: %d   inline literal: %d"
-          % (len(rows), sum(1 for r in rows if r["ref"]), len(literals)))
-    by_file = Counter(r["file"] for r in literals)
-    print("files with inline literals: %d" % len(by_file))
-    for path, count in by_file.most_common(args.show):
-        print("   %4d  %s" % (count, path))
+    print("\n=== most widely shared blocks ===")
+    ranked = sorted(blocks, key=lambda n: -len(families.get(n, ())))
+    for name in ranked[: args.show]:
+        print("   %2d families / %2d files  %-34s <- %s"
+              % (len(families.get(name, ())), len(users.get(name, ())), name,
+                 blocks[name]["file"]))
 
-    print("\n=== misplaced blocks (family-fanout rule) ===")
-    wrong_shared = [n for n in shared if blocks[n]["file"] != UNIVERSAL]
-    stranded = [
-        n for n in blocks
-        if blocks[n]["file"] == UNIVERSAL and len(families.get(n, ())) < 2
-    ]
-    print("used by >=%d families but not in %s: %d"
-          % (SHARED_FAMILY_THRESHOLD, UNIVERSAL, len(wrong_shared)))
-    for name in wrong_shared:
-        print("   %2d families  %-32s <- %s"
-              % (len(families[name]), name, blocks[name]["file"]))
-    print("in %s but used by <2 families: %d" % (UNIVERSAL, len(stranded)))
-    for name in stranded:
-        print("   %2d families  %s" % (len(families.get(name, ())), name))
-
-    print("\n=== divergent column definitions ===")
-    per_column = defaultdict(set)
+    print("\n=== columns documented inconsistently ===")
+    print("Same column name, more than one description. Divergence across unrelated")
+    print("tables is often correct; divergence inside one table family rarely is.")
+    per_column = defaultdict(list)
     for row in rows:
-        if not row["column"]:
+        if row["column"]:
+            per_column[row["column"]].append(row)
+    intra, cross = [], []
+    for column, group in per_column.items():
+        texts = {resolved.get(key_of(r), "") for r in group}
+        if len(texts) < 2:
             continue
-        text = resolved.get(key_of(row))
-        if text:
-            per_column[row["column"]].add(text)
-    divergent = {c: v for c, v in per_column.items() if len(v) > 1}
-    print("column names resolving to more than one text: %d" % len(divergent))
-
-    print("\n=== suspicious refs (possible wrong-block copy-paste) ===")
-    for row, ref, score in suspicious_refs(rows, blocks, args.threshold):
-        print("   %.2f  %s -> doc('%s')   %s" % (score, row["column"], ref, row["file"]))
+        per_family = defaultdict(set)
+        for row in group:
+            per_family[family(row["file"])].add(resolved.get(key_of(row), ""))
+        hits = sorted(f for f, t in per_family.items() if len(t) > 1)
+        (intra if hits else cross).append((column, len(texts), hits, group))
+    print("within one table family: %d      across families only: %d"
+          % (len(intra), len(cross)))
+    for column, count, hits, group in sorted(intra, key=lambda x: -x[1]):
+        print("\n   %s  (%d descriptions; families: %s)"
+              % (column, count, ", ".join(hits)))
+        for row in sorted(group, key=lambda r: r["file"]):
+            if family(row["file"]) not in hits:
+                continue
+            ref = row["refs"][0] if row["refs"] else "INLINE"
+            print("      %-40s doc(%s)" % (row["file"], ref))
     return 0
 
 
-def suspicious_refs(rows, blocks, threshold):
-    """A column referencing a different block when one named after it exists.
-
-    A close-but-not-equal name is the signature of a copy-paste error between
-    paired columns (asset_a / asset_b, read_bytes / write_bytes), which is why
-    high similarity is treated as suspicious rather than safe.
-    """
-    hits = []
-    for row in rows:
-        name = row["column"]
-        ref = row["ref"]
-        if not name or not ref or ref == name or name not in blocks:
-            continue
-        score = difflib.SequenceMatcher(None, name, ref).ratio()
-        if score >= threshold:
-            hits.append((row, ref, score))
-    hits.sort(key=lambda h: -h[2])
-    return hits
-
-
-def load_list(root, relpath):
-    path = os.path.join(root, relpath)
-    if not os.path.isfile(path):
-        return set()
-    entries = set()
-    with open(path, encoding="utf-8") as handle:
-        for line in handle:
-            line = line.split("#", 1)[0].strip()
-            if line:
-                entries.add(line)
-    return entries
-
-
-def cmd_check(args):
-    blocks, dupes = load_blocks(args.root)
-    rows, errors = load_properties(args.root)
-    resolved, unresolved = resolve(rows, blocks)
-    ref_ignore = load_list(args.root, REF_IGNORE)
-    block_exceptions = load_list(args.root, BLOCK_EXCEPTIONS)
-    usage = block_usage(rows)
-    only = set(args.files or [])
-    problems = []
-
-    def flag(rule, message):
-        problems.append((rule, message))
-
-    for rel, message in errors:
-        flag("R0", "%s: cannot parse yml: %s" % (rel, message))
-    for name, files in sorted(dupes.items()):
-        flag("R0", "doc block '%s' defined in %d files: %s" % (name, len(files), files))
-
-    for row in unresolved:
-        missing = [n for n in row["refs"] if n not in blocks]
-        flag("R2", "%s: %s references undefined block(s) %s"
-             % (row["file"], row["column"] or row["resource"], missing))
-
-    # A unique, single-use inline description is correct and is left alone: dbt's
-    # doc() exists to reuse text in multiple places, so a block for a one-off
-    # description is indirection with nothing to reuse. What the next two rules
-    # catch is repetition, which is the thing doc blocks were adopted to prevent.
-    literals = [r for r in rows if not r["refs"] and r["raw"].strip()]
-
-    # R1: the same description written out more than once.
-    groups = defaultdict(list)
-    for row in literals:
-        groups[norm_text(row["raw"])].append(row)
-    for _text, group in sorted(groups.items()):
-        if len(group) < 2:
-            continue
-        if only and not any(r["file"] in only for r in group):
-            continue
-        where = "; ".join(
-            "%s::%s" % (r["file"], r["column"] or "(%s level)" % r["kind"])
-            for r in group
-        )
-        flag("R1", "the description %r is written inline %d times (%s). Define one doc "
-                   "block and reference it from each."
-             % (group[0]["raw"][:80], len(group), where))
-
-    # R4: an inline description that restates a block which already exists. This is
-    # the drift vector: the block is right there, and a fresh literal gets written
-    # beside it instead of a reference to it.
-    bodies = {norm_text(meta["text"]): name for name, meta in blocks.items()}
-    for row in literals:
-        name = bodies.get(norm_text(row["raw"]))
-        if not name:
-            continue
-        if only and row["file"] not in only:
-            continue
-        flag("R4", "%s: %s duplicates the text of doc block '%s'; reference it with "
-                   "'{{ doc(\"%s\") }}' instead"
-             % (row["file"], row["column"] or "(%s level)" % row["kind"], name, name))
-
-    # R3: shared definitions belong in one place, so there is one obvious answer
-    # to "where does a new shared column go".
-    for name, meta in sorted(blocks.items()):
-        count = len(usage.get(name, ((), ()))[1])
-        if count < SHARED_FAMILY_THRESHOLD or meta["file"] == UNIVERSAL:
-            continue
-        if name in block_exceptions:
-            continue
-        flag("R3", "doc block '%s' is used by %d table families but is defined in "
-                   "%s; move it to %s, or park it in %s with a reason"
-             % (name, count, meta["file"], UNIVERSAL, BLOCK_EXCEPTIONS))
-
-    # R8: a parked exception that no longer applies.
-    for name in sorted(block_exceptions):
-        if name not in blocks:
-            flag("R8", "'%s' is listed in %s but no such doc block exists"
-                 % (name, BLOCK_EXCEPTIONS))
-            continue
-        count = len(usage.get(name, ((), ()))[1])
-        if count < SHARED_FAMILY_THRESHOLD or blocks[name]["file"] == UNIVERSAL:
-            flag("R8", "'%s' no longer trips R3; remove it from %s"
-                 % (name, BLOCK_EXCEPTIONS))
-
-    # R5: a ref that looks like a wrong-block copy-paste. Close-but-unequal names
-    # are how paired columns get crossed, so this warns rather than trusting them.
-    for row, ref, score in suspicious_refs(rows, blocks, args.threshold):
-        if only and row["file"] not in only:
-            continue
-        token = "%s:%s:%s" % (row["file"], row["column"], ref)
-        if token in ref_ignore:
-            continue
-        flag("R5", "%s: %s references doc('%s') though a block named '%s' exists "
-                   "(name similarity %.2f). If deliberate, add this line to %s:\n"
-                   "        %s"
-             % (row["file"], row["column"], ref, row["column"], score, REF_IGNORE, token))
-
-    # R7: an ignore entry that no longer matches, so the file cannot rot.
-    live = {
-        "%s:%s:%s" % (r["file"], r["column"], ref)
-        for r, ref, _s in suspicious_refs(rows, blocks, args.threshold)
-    }
-    for token in sorted(ref_ignore - live):
-        flag("R7", "%s no longer matches any suspicious ref; remove it from %s"
-             % (token, REF_IGNORE))
-
-    for rule, message in problems:
-        print("%s  %s" % (rule, message))
-    if problems:
-        print("\n%d problem(s). Rules: R0 structural, R1 duplicated description, "
-              "R2 undefined block, R3 misplaced shared block, R4 shadowed block, "
-              "R5 suspicious ref, R7 stale ref-ignore, R8 stale block exception."
-              % len(problems))
-        return 1
-    print("docs_lint: clean (%d descriptions, %d blocks)" % (len(rows), len(blocks)))
-    return 0
+def _dist(values):
+    counter = Counter(values)
+    return ", ".join("%d->%d" % (k, counter[k]) for k in sorted(counter))
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--root", default=REPO_ROOT, help="repo root (default: this repo)")
     sub = parser.add_subparsers(dest="command", required=True)
+
+    p = sub.add_parser("check", help="enforce the rule")
+    p.add_argument("files", nargs="*", help="limit the check to these paths")
+    p.set_defaults(func=cmd_check)
 
     p = sub.add_parser("snapshot", help="write resolved descriptions to JSON")
     p.add_argument("--out", default="docs_snapshot.json")
@@ -531,15 +390,9 @@ def main(argv=None):
     p.add_argument("--show", type=int, default=10)
     p.set_defaults(func=cmd_validate_manifest)
 
-    p = sub.add_parser("report", help="fanout, orphans, divergences, suspicious refs")
-    p.add_argument("--show", type=int, default=20)
-    p.add_argument("--threshold", type=float, default=0.85)
+    p = sub.add_parser("report", help="fanout, orphans, inconsistent columns")
+    p.add_argument("--show", type=int, default=15)
     p.set_defaults(func=cmd_report)
-
-    p = sub.add_parser("check", help="enforce the lint rules")
-    p.add_argument("files", nargs="*", help="limit file-scoped rules to these paths")
-    p.add_argument("--threshold", type=float, default=0.85)
-    p.set_defaults(func=cmd_check)
 
     args = parser.parse_args(argv)
     return args.func(args)
