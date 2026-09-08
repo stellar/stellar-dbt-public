@@ -118,7 +118,7 @@ models:
       - name: memo_type
         description: '{{ doc("memo_type") }}'
 
-      - name: memo_type
+      - name: memo
         description: '{{ doc("memo") }}'
 
       - name: time_bounds

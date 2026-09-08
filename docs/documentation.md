@@ -71,12 +71,19 @@ No warehouse connection or credentials needed; it reads the yml and md files dir
 ./venv/bin/python scripts/docs_lint.py report    # diagnostics, never fails a build
 ```
 
-`check` fails on exactly three things: an inline description, a yml that will not parse (the
-rule cannot be applied to a file that cannot be read), and two files defining the same block
-name (dbt cannot resolve a duplicate).
+`check` requires that the whole value of a `description:` is one `doc()` call naming a block that
+exists, so it fails on inline text, on text wrapped around a reference
+(`see {{ doc("x") }} for detail`), on an empty description, on two references in one value, and
+on a name that is not defined anywhere. It also fails on a yml that will not parse (the rule
+cannot be applied to a file that cannot be read) and on two files defining the same block name
+(dbt cannot resolve a duplicate).
 
-`report` lists orphan blocks, how many tables use each block, and any column name that resolves
-to more than one description.
+**Macro and argument descriptions are out of scope.** They document one macro's signature, so
+there is nothing to factor out, and moving them into `models/docs/` would only put a macro's API
+docs further from the macro.
+
+`report` lists orphan blocks, how many tables use each block, columns declared twice under one
+resource, and any column name that resolves to more than one description.
 
 ## What the linter does not catch
 
@@ -98,13 +105,20 @@ This is a code review responsibility. When reviewing a description change, read 
 is referenced rather than trusting its name. The last section of `docs_lint.py report` helps: a
 column that disagrees with itself inside one table family is nearly always one of these.
 
+**The same column declared twice in one yml.** yaml keeps the last entry, so the first
+description is dropped and the column publishes the second one's text. dbt does not warn.
+`report` lists these; five remain, and `enriched_history_operations_soroban.memo_type` was one
+of them, which is why `memo` had no description at all.
+
 ## Proving a change is docs-neutral
 
 Moving blocks between files should not change a single rendered description. Prove it:
 
 ```bash
-git stash && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/before.json
-git stash pop && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/after.json
+git stash push --include-untracked   # -u matters: a new untracked .yml or .md
+./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/before.json
+git stash pop
+./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/after.json
 ./venv/bin/python scripts/docs_lint.py diff /tmp/before.json /tmp/after.json
 ```
 
@@ -113,9 +127,15 @@ to change. Paste that output into the PR: it is the cheapest way to show a revie
 diff is safe.
 
 The snapshot is trustworthy because the resolver is checked against dbt itself with
-`docs_lint.py validate-manifest` (expect `MISMATCHED: 0`), which needs a `target/manifest.json`
-from `dbt parse` or `dbt docs generate`.
+`docs_lint.py validate-manifest`, which needs a `target/manifest.json` from `dbt parse` or
+`dbt docs generate`. It exits non-zero unless `MISMATCHED` is 0, nothing is unresolved, and every
+description it could not compare is one an installed package patched in, which this repo cannot
+see by design.
 
+One thing that looks like it should work and does not: **a `doc()` call inside a doc block.** dbt
+renders block bodies without the `doc` macro in scope and fails the parse with
+`'doc' is undefined`, so a shared definition cannot be wrapped with a local qualifier. Write a
+scoped `<model>__<column>` block with the full text instead.
 ## File conventions
 
 - One `.md` per model or source table, mirroring the model's path. Where sibling models each
@@ -137,3 +157,7 @@ safe.
 
 To check before merging something risky, point `stellar-dbt`'s `packages.yml` at your branch and
 run `dbt deps && dbt parse` there. A clean parse confirms every cross-repo reference resolves.
+
+`scripts/docs_lint.py` is byte-identical in both repos and is meant to stay that way: it reads
+the project name from `dbt_project.yml` rather than hardcoding it, so a change made here is
+copied across verbatim rather than ported by hand.

@@ -50,7 +50,7 @@ repos:
         language: python
         additional_dependencies: ["pyyaml"]
         pass_filenames: false
-        files: ^(models|seeds)/.*\.(yml|yaml|md)$
+        files: ^(models|seeds|snapshots|analyses)/.*\.(yml|yaml|md)$
 
       - id: cleanup
         name: Cleanup .env.tmp
