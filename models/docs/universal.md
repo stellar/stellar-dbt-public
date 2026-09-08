@@ -184,3 +184,91 @@ The low price in USD for the day.
 {% docs close_usd %}
 The close price in USD for the day.
 {% enddocs %}
+
+{% docs deleted %}
+Indicates whether the ledger entry (account, claimable balance, trust line, offer, liquidity pool) has been deleted or not. Once an entry is deleted, it cannot be recovered.
+
+All state tables maintain history for deleted ledger entries.
+
+- Required Field
+  {% enddocs %}
+
+{% docs last_modified_ledger %}
+The ledger sequence number when the ledger entry was last modified. Deletions do not count as a modification and will report the prior modification sequence number
+
+- Natural Key
+- Cluster Field
+- Required Field
+
+#### Notes:
+
+As an example, if an account updates a signer's weight at sequence 1234 and then decides to delete the signer at 2345, the deleted record will still have a modified sequence of 1234. The `last_modified_ledger` **is not** a proxy for entry deletion time and should not be used in such a manner. Deletion times can be approximated with `batch_run_date`.
+{% enddocs %}
+
+{% docs ledger_entry_change %}
+Code that describes the ledger entry change type that was applied to the ledger entry.
+
+- Required Field
+
+#### Notes:
+
+Not every ledger entry can be updated, some are only created or deleted. Pay attention to types that are not valid for certain ledger entries.
+
+| Value | Description          | **Not** Valid For  |
+| ----- | -------------------- | ------------------ |
+| 0     | Ledger Entry Created |                    |
+| 1     | Ledger Entry Updated | claimable balances |
+| 2     | Ledger Entry Deleted |                    |
+
+{% enddocs %}
+
+{% docs sponsor %}
+The account address of the sponsor who is paying the reserves for this ledger entry.
+
+The following ledger entry types can be sponsored:
+
+- accounts
+- account signers
+- claimable balances
+- trust lines
+
+#### Notes:
+
+Sponsors of claimable balances are the accounts that created the balance.
+{% enddocs %}
+
+{% docs account_id %}
+The address of the account. The address is the account's public key encoded in base32. All account addresses start with a 'G'.
+
+- Natural Key
+- Cluster Field
+- Required Field
+  {% enddocs %}
+
+{% docs transaction_hash %}
+A hex-encoded SHA-256 hash of this transaction's XDR-encoded form.
+
+- Required Field
+  {% enddocs %}
+
+{% docs transaction_id %}
+A unique identifier for this transaction.
+
+- Primary Key
+- Natural Key
+- Cluster Field
+- Required Field
+  {% enddocs %}
+
+{% docs operation_id %}
+Unique identifier for an operation.
+
+- Primary Key
+- Natural Key
+- Cluster Field
+- Required Field
+
+#### Notes:
+
+The operation id is the transaction id + order number
+{% enddocs %}

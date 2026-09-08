@@ -5,21 +5,6 @@ Trasactions are commands that modify the ledger state and consist of one or more
 Transactions that are sent to the Stellar Network either succeed completely or fail completely. There is no partial transaction execution. The table is an event log of all transactions submitted and committed to a transaction set within a ledger.
 {% enddocs %}
 
-{% docs transaction_id %}
-A unique identifier for this transaction.
-
-- Primary Key
-- Natural Key
-- Cluster Field
-- Required Field
-  {% enddocs %}
-
-{% docs transaction_hash %}
-A hex-encoded SHA-256 hash of this transaction's XDR-encoded form.
-
-- Required Field
-  {% enddocs %}
-
 {% docs application_order %}
 Each transaction within the transaction set for a ledger is executed and applied sequentially to the network. The validator nodes randomly shuffle submitted transactions and assign them an application order number, which corresponds to the order in which they are applied.
 
