@@ -122,23 +122,13 @@ See `docs/snapshot.md` for the full control flow diagram. For hands-on snapshot 
 
 Full process: `docs/documentation.md`. Enforced by `scripts/docs_lint.py check` (pre-commit hook `docs-lint`).
 
-- **One rule: descriptions live in doc blocks, never inline in yml.** The `.yml` carries `description: '{{ doc("name") }}'`; the text lives in a `.md` under `models/docs/`. No allowlist, no exception files, no thresholds. Currently 2,331 of 2,331 descriptions comply.
-- **`models/docs/` mirrors `models/`.** A column on `models/marts/trade_agg.sql` is documented in `models/docs/marts/trade_agg.md`. A definition that **unrelated** tables share (`asset_code`, `batch_run_date`) goes in `models/docs/universal.md`; a column that merely flows source → staging → mart is still one table's column and stays in its mirror file. Convention, not enforced.
-- **Name a shared block after the bare column** (`asset_code`); name a model-specific one `<model>__<column>` (`int_tvl_trustlines__asset_code`). Two columns share a block only when they mean the same thing at the same grain.
-- **Block names are globally unique and resolve by name, not by file.** Moving a block between files changes no rendered output. Renaming one breaks the ~200 `doc()` references `stellar-dbt` resolves into this repo.
+- **Descriptions live in doc blocks, never inline in yml.** The `.yml` carries `description: '{{ doc("name") }}'`; the text lives in a `.md` under `models/docs/`, which mirrors `models/`. Definitions that unrelated tables share go in `models/docs/universal.md`.
+- **Name a shared block after the bare column** (`asset_code`); a model-specific one is `<model>__<column>`. Two columns share a block only when they mean the same thing at the same grain.
+- **Block names resolve by name, not by file**, so moving a block is safe but renaming one breaks the ~200 `doc()` references `stellar-dbt` resolves into this repo.
 
-**The linter does not check that a `doc()` points at the *right* block, only that a description is a reference.** That is the failure mode to guard against yourself, and it has already happened 21 times here:
+**`check` only verifies a description *is* a reference, not that the reference is *correct*.** `- name: operation_id` with `doc("transaction_id")` passes and publishes the wrong text; 21 references here were wrong this way. So `grep -rn "{% docs <column> %}" models/docs/` and **read the block's text before referencing it** — never copy a neighbouring line. These cluster on paired columns (`asset_a`/`asset_b`, `read_bytes`/`write_bytes`, `batch_id`/`batch_run_date`).
 
-```yaml
-- name: asset_b_type
-  description: '{{ doc("asset_a_type") }}'    # renders "the sold asset", not "the bought asset"
-- name: operation_id
-  description: '{{ doc("transaction_id") }}'  # renders "a unique identifier for this transaction"
-```
-
-So **always read the block's text before referencing it**, never trust the name, and never copy a neighbouring line. `grep -rn "{% docs <column> %}" models/docs/` first. These cluster on paired columns: `asset_a`/`asset_b`, `read_bytes`/`write_bytes`, `batch_id`/`batch_run_date`. `docs_lint.py report` lists every column name that resolves to more than one description, which is how most of them surface.
-
-Verify a docs change rendered exactly what you intended (no warehouse connection needed):
+Prove a docs change rendered what you intended, with no warehouse connection:
 
 ```bash
 git stash && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/before.json
@@ -146,7 +136,7 @@ git stash pop && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/afte
 ./venv/bin/python scripts/docs_lint.py diff /tmp/before.json /tmp/after.json
 ```
 
-A block relocation must print `0 differences`. A text change must print exactly the descriptions you meant to change. Put that output in the PR.
+A relocation must print `0 differences`; a text change must print exactly what you meant. Put that output in the PR.
 
 ## Pre-commit Hooks
 
