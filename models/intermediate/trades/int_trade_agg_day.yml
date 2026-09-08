@@ -5,7 +5,7 @@ models:
     description: Intermediate for the aggregation of daily trade data. This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying.
     columns:
       - name: day_agg
-        description: Date from which all metrics are aggregated.
+        description: '{{ doc("trade_day_agg") }}'
         tests:
           - not_null
 

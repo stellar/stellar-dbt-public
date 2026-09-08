@@ -40,7 +40,6 @@ UNIVERSAL = os.path.join("models", "docs", "universal.md")
 # but is one family, and belongs in that source's own mirror file.
 SHARED_FAMILY_THRESHOLD = 4
 
-ALLOWLIST = os.path.join("scripts", "docs_allowlist.txt")
 REF_IGNORE = os.path.join("scripts", "docs_ref_ignore.txt")
 BLOCK_EXCEPTIONS = os.path.join("scripts", "docs_block_exceptions.txt")
 
@@ -165,6 +164,15 @@ def resolve(rows, blocks):
 
 def key_of(row):
     return "%s:%s:%s" % (row["kind"], row["resource"], row["column"] or "")
+
+
+def norm_text(value):
+    """Compare descriptions the way a reader would: ignore case and spacing.
+
+    Two descriptions that differ only by a trailing period or a wrapped line are
+    the same duplication problem, so they must compare equal.
+    """
+    return re.sub(r"\s+", " ", value.strip().lower()).rstrip(".")
 
 
 FAMILY_SUBS = (
@@ -389,7 +397,6 @@ def cmd_check(args):
     blocks, dupes = load_blocks(args.root)
     rows, errors = load_properties(args.root)
     resolved, unresolved = resolve(rows, blocks)
-    allowlist = load_list(args.root, ALLOWLIST)
     ref_ignore = load_list(args.root, REF_IGNORE)
     block_exceptions = load_list(args.root, BLOCK_EXCEPTIONS)
     usage = block_usage(rows)
@@ -409,25 +416,42 @@ def cmd_check(args):
         flag("R2", "%s: %s references undefined block(s) %s"
              % (row["file"], row["column"] or row["resource"], missing))
 
-    # R1: inline literals outside the allowlist.
-    for row in rows:
-        if row["refs"] or not row["raw"].strip():
+    # A unique, single-use inline description is correct and is left alone: dbt's
+    # doc() exists to reuse text in multiple places, so a block for a one-off
+    # description is indirection with nothing to reuse. What the next two rules
+    # catch is repetition, which is the thing doc blocks were adopted to prevent.
+    literals = [r for r in rows if not r["refs"] and r["raw"].strip()]
+
+    # R1: the same description written out more than once.
+    groups = defaultdict(list)
+    for row in literals:
+        groups[norm_text(row["raw"])].append(row)
+    for _text, group in sorted(groups.items()):
+        if len(group) < 2:
             continue
-        if row["file"] in allowlist:
+        if only and not any(r["file"] in only for r in group):
+            continue
+        where = "; ".join(
+            "%s::%s" % (r["file"], r["column"] or "(%s level)" % r["kind"])
+            for r in group
+        )
+        flag("R1", "the description %r is written inline %d times (%s). Define one doc "
+                   "block and reference it from each."
+             % (group[0]["raw"][:80], len(group), where))
+
+    # R4: an inline description that restates a block which already exists. This is
+    # the drift vector: the block is right there, and a fresh literal gets written
+    # beside it instead of a reference to it.
+    bodies = {norm_text(meta["text"]): name for name, meta in blocks.items()}
+    for row in literals:
+        name = bodies.get(norm_text(row["raw"]))
+        if not name:
             continue
         if only and row["file"] not in only:
             continue
-        target = row["column"] or "(%s level)" % row["kind"]
-        flag("R1", "%s: %s has an inline description; define a doc block instead"
-             % (row["file"], target))
-
-    # R6: stale allowlist entries, so the ratchet cannot silently stall.
-    files_with_literals = {
-        r["file"] for r in rows if not r["refs"] and r["raw"].strip()
-    }
-    for rel in sorted(allowlist - files_with_literals):
-        flag("R6", "%s is on the allowlist but has no inline descriptions; remove the entry"
-             % rel)
+        flag("R4", "%s: %s duplicates the text of doc block '%s'; reference it with "
+                   "'{{ doc(\"%s\") }}' instead"
+             % (row["file"], row["column"] or "(%s level)" % row["kind"], name, name))
 
     # R3: shared definitions belong in one place, so there is one obvious answer
     # to "where does a new shared column go".
@@ -477,9 +501,10 @@ def cmd_check(args):
     for rule, message in problems:
         print("%s  %s" % (rule, message))
     if problems:
-        print("\n%d problem(s). Rules: R0 structural, R1 inline literal, R2 undefined "
-              "block, R3 misplaced shared block, R5 suspicious ref, R6 stale allowlist, "
-              "R7 stale ref-ignore, R8 stale block exception." % len(problems))
+        print("\n%d problem(s). Rules: R0 structural, R1 duplicated description, "
+              "R2 undefined block, R3 misplaced shared block, R4 shadowed block, "
+              "R5 suspicious ref, R7 stale ref-ignore, R8 stale block exception."
+              % len(problems))
         return 1
     print("docs_lint: clean (%d descriptions, %d blocks)" % (len(rows), len(blocks)))
     return 0

@@ -16,6 +16,7 @@ change is, and why it is being made, with enough context for anyone to understan
 
 - [ ] This PR adds tests for the most critical parts of the new functionality or fixes.
 - [ ] I've updated the docs and README with the added features, breaking changes, new instructions on how to use the repository.
+- [ ] If this PR touches column or model descriptions, it follows [docs/documentation.md](../docs/documentation.md): no description is written out twice, and a shared definition lives in a doc block rather than being copied.
 
 ### Release planning
 

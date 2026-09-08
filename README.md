@@ -20,6 +20,7 @@ If branch is already made, just rename it _before passing the pull request_.
   - [dbt Project Structure](#dbt-project-structure)
     - [Development Folders](#development-folders)
   - [Tests](#tests)
+  - [Documentation](#documentation)
 - [Getting Started](#getting-started)
   - [Download the Repo](#download-the-repo)
   - [Configure dbt](#configure-dbt)
@@ -96,7 +97,7 @@ What not to do in intermediate:
 > _*Note:*_ More information about `intermediate` layer can be found [here](https://docs.getdbt.com/best-practices/how-we-structure/3-intermediate).
 
 3. Marts
-   The marts layer is where users can access final dimensional modeling tables. Each model will be accompanied by a `.yml` file with the same name. The `.yml` file contains the descriptions and tests for the model and its columns.
+   The marts layer is where users can access final dimensional modeling tables. Each model will be accompanied by a `.yml` file with the same name, holding the tests for the model and its columns plus each description, either written inline or as a `{{ doc(...) }}` reference to a doc block under `models/docs/`. See [Documentation](#documentation) for which of the two to use.
 
 What to do in marts:
 
@@ -141,7 +142,7 @@ What not to do in snapshots:
 | Staging      | Stages the pre-processed or cleaned data before performing the transformations.               |
 | Intermediate | Contains the transformed and processed data.                                                  |
 | Marts        | Houses the final data models or data marts, which are the end results of the dbt project.     |
-| Docs         | Stores documentation related to your dbt project.                                             |
+| Docs         | Holds the reusable column and model descriptions (doc blocks), mirroring the `models/` layout. |
 | Macros       | Contains reusable SQL code snippets known as macros.                                          |
 | Tests        | Contains defining tests to validate the accuracy and correctness of the data transformations. |
 
@@ -158,6 +159,38 @@ There are three different test types:
 > _*Note:*_ More information about `data tests` can be found [here](https://docs.getdbt.com/docs/build/data-tests)
 
 > _*Note:*_ More information about `unit tests` can be found [here](https://docs.getdbt.com/docs/build/unit-tests)
+
+<br>
+
+## Documentation
+
+Every model, source table and column carries a description, and those descriptions are published to the dbt docs site on every merge to `master`. A description is written in one of two places, and the rule for choosing is simple:
+
+**Never write the same description twice.**
+
+| Situation                                        | What to write                                                   |
+| ------------------------------------------------ | --------------------------------------------------------------- |
+| The text is unique to this one column            | An inline `description:` in the `.yml`                          |
+| The same text belongs on 2+ columns or models     | A doc block under `models/docs/`, referenced with `'{{ doc("name") }}'` |
+| A doc block already says it                       | Reference the block; do not paste its text                      |
+| The text is long or needs markdown                | A doc block, even if used once                                  |
+
+Where a doc block lives depends on how many distinct **table families** use it, where a family is one table and all its `src_` / `stg_` / `_current` / `_snapshot` variants:
+
+| Families using the block | Home                                                              |
+| ------------------------ | ----------------------------------------------------------------- |
+| 1 to 3                   | that table's mirror file, e.g. `models/docs/sources/trust_lines.md` |
+| 4 or more                | `models/docs/universal.md`                                        |
+
+A column that flows from `sources/` through `staging/` to `marts/` appears in several files but is still one family, so it stays in that table's mirror file. Only definitions that unrelated tables genuinely share, like `asset_code` or `batch_run_date`, belong in `universal.md`.
+
+Check your work before pushing. This needs no warehouse connection:
+
+```bash
+./venv/bin/python scripts/docs_lint.py check     # also runs in pre-commit
+```
+
+> _*Note:*_ The full process, including doc block naming, the two exception files, how to prove a docs change rendered nothing unexpected, and what to check before renaming a block that `stellar-dbt` depends on, is in [docs/documentation.md](./docs/documentation.md)
 
 <br>
 

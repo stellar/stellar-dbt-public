@@ -120,11 +120,29 @@ See `docs/snapshot.md` for the full control flow diagram. For hands-on snapshot 
 
 ## Documentation
 
-- **Universal column definitions**: `models/docs/universal.md` — referenced via `{{ doc('column_name') }}` in YAML schema files
-- **Domain docs**: `models/docs/sources/`, `models/docs/snapshots/`, `models/docs/marts/`, `models/docs/intermediate/`
-- Each SQL model has a co-located `.yml` schema file with column descriptions and tests
+Full process: `docs/documentation.md`. Enforced by `scripts/docs_lint.py` (pre-commit hook `docs-lint`). The rules that matter:
 
-When adding or modifying models, update both the co-located YAML and any relevant doc blocks in `models/docs/`.
+- **Never write the same description twice.** A unique, single-use description belongs inline in the `.yml` and is correct there — `doc()` exists for reuse, so a block for a one-off is indirection with nothing to reuse. Text that repeats, or that a block already states, must be a `'{{ doc("name") }}'` reference.
+- **Placement is by distinct table family, not by file or directory.** A family is one table plus its `src_` / `stg_` / `_current` / `_snapshot` variants. 1 to 3 families: that table's mirror file under `models/docs/`, which mirrors `models/`. 4+ families: `models/docs/universal.md`.
+- **Name a shared block after the bare column** (`asset_code`); name a column-specific one `<model>__<column>` (`higlobe_transactions__amount`). Two columns share a block only when they mean the same thing at the same grain.
+- **Block names are globally unique and resolve by name, not by file.** So moving a block between files changes no rendered output, and renaming one breaks the ~200 `doc()` references `stellar-dbt` resolves into this repo.
+
+Two failure modes to avoid, both of which have already happened here:
+
+- **Writing a fresh literal next to an existing block.** Always `grep -rn "{% docs <column> %}" models/docs/` before writing a description.
+- **Copying a neighbouring `doc()` onto a paired column.** 16 references were wrong this way (`asset_b_type` pointing at `asset_a_type`, `soroban_resources_write_bytes` at `read_bytes`), each shipping wrong text to the public docs site. Rule R5 catches these; a near-match between a column name and its block is a red flag, not a green light.
+
+Verify a docs change rendered exactly what you intended (no warehouse connection needed):
+
+```bash
+git stash && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/before.json
+git stash pop && ./venv/bin/python scripts/docs_lint.py snapshot --out /tmp/after.json
+./venv/bin/python scripts/docs_lint.py diff /tmp/before.json /tmp/after.json
+```
+
+A block relocation must print `0 differences`. A text change must print exactly the descriptions you meant to change. Put that output in the PR.
+
+`scripts/docs_ref_ignore.txt` and `scripts/docs_block_exceptions.txt` hold the cases the linter cannot decide. Every entry needs a written reason. The block-exceptions entries are known defects parked for a follow-up PR, not approved patterns — do not add to either file to make a check pass.
 
 ## Pre-commit Hooks
 
@@ -135,11 +153,14 @@ pre-commit run --all-files        # Run all hooks on all files
 pre-commit run --files path/to/file.sql   # Run on specific files
 ```
 
-Hooks:
-1. **SQLFluff** — lints and auto-fixes SQL style
-2. **dbt-checkpoint** — enforces:
-   - All model columns in `marts/` must have descriptions in `.yml`
-   - All mart models must have a description
-   - Model tags must be from the approved allowlist (see `.pre-commit-config.yaml`)
-   - All source columns/tables must have descriptions
-3. **Prettier** — formats `.json`/`.yaml`/`.yml` files
+Hooks, in the order they run (see `.pre-commit-config.yaml`):
+
+1. **pre-commit-hooks basics** — trailing whitespace, end-of-file newline, mixed line endings, byte-order marker, large files, case conflicts, merge conflicts, private keys, `requirements.txt` sorting
+2. **Prettier** — formats `.json`/`.yaml`/`.yml` files
+3. **SQLFluff** — `sqlfluff-lint` then `sqlfluff-fix`, via `pre-commit/for_pre_commit.sh`
+4. **docs-lint** — runs `scripts/docs_lint.py check`: no repeated descriptions, no `doc()` pointing at a missing or wrong block, shared definitions in `models/docs/universal.md`. See the Documentation section above
+5. **cleanup** — removes `.env.tmp`
+
+This repo has **no dbt-checkpoint hooks**; that is `stellar-dbt`'s config, not this one. `docs-lint` is what enforces description quality here, and it checks for duplication rather than mere presence.
+
+`pre_commit run --files <list>` can report "no files to check" in some environments; `--all-files` is the reliable invocation.

@@ -147,7 +147,7 @@ sources:
             description: '{{ doc("sponsor") }}'
 
           - name: asset_id
-            description: asset id
+            description: '{{ doc("asset_id") }}'
             tests:
               - incremental_not_null:
                   date_column_name: "batch_run_date"
