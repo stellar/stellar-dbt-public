@@ -27,7 +27,7 @@ sources:
                   greater_than_equal_to: "2 day"
 
           - name: operation_id
-            description: '{{ doc("operation_id") }}'
+            description: '{{ doc("transaction_id") }}'
 
           - name: event_topic
             description: '{{ doc("event_topic") }}'

@@ -5,7 +5,7 @@ models:
     description: '{{ doc("int_trade_agg_week") }}'
     columns:
       - name: day_agg
-        description: '{{ doc("trade_day_agg") }}'
+        description: '{{ doc("int_trade_agg__day_agg") }}'
         tests:
           - not_null
 

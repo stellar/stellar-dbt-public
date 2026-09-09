@@ -15,3 +15,9 @@ Intermediate for the aggregation of weekly trade data. This table contains the a
 {% docs int_trade_agg_year %}
 Intermediate for the aggregation of yearly trade data. This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying.
 {% enddocs %}
+
+{% docs int_trade_agg__day_agg %}
+
+Date from which all metrics are aggregated.
+
+{% enddocs %}

@@ -17,7 +17,7 @@ models:
             description: "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: contract_id
-        description: '{{ doc("contract_id") }}'
+        description: '{{ doc("key_hash") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -116,7 +116,7 @@ models:
               greater_than_equal_to: "2 day"
 
       - name: batch_id
-        description: '{{ doc("batch_id") }}'
+        description: '{{ doc("batch_run_date") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"

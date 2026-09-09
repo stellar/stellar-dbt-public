@@ -69,7 +69,7 @@ models:
               greater_than_equal_to: "2 day"
 
       - name: asset_a_code
-        description: '{{ doc("asset_code") }}'
+        description: '{{ doc("asset_a_code") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -77,7 +77,7 @@ models:
               condition: 'asset_a_type != "native"'
 
       - name: asset_a_issuer
-        description: '{{ doc("asset_issuer") }}'
+        description: '{{ doc("asset_a_issuer") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -85,7 +85,7 @@ models:
               condition: 'asset_a_type != "native"'
 
       - name: asset_a_type
-        description: '{{ doc("asset_type") }}'
+        description: '{{ doc("asset_a_type") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -101,7 +101,7 @@ models:
               greater_than_equal_to: "2 day"
 
       - name: asset_b_code
-        description: '{{ doc("asset_code") }}'
+        description: '{{ doc("asset_b_code") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -109,7 +109,7 @@ models:
               condition: 'asset_b_type != "native"'
 
       - name: asset_b_issuer
-        description: '{{ doc("asset_issuer") }}'
+        description: '{{ doc("asset_b_issuer") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -117,7 +117,7 @@ models:
               condition: 'asset_b_type != "native"'
 
       - name: asset_b_type
-        description: '{{ doc("asset_type") }}'
+        description: '{{ doc("asset_b_type") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
