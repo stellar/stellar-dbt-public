@@ -50,10 +50,11 @@ repos:
         language: python
         additional_dependencies: ["pyyaml"]
         pass_filenames: false
-        # Everything the check reads, since it runs whole-repo rather than on
-        # the passed filenames: property yml, doc blocks anywhere dbt resolves
-        # them (macros/ and tests/ included), and the linter itself.
-        files: ^((models|seeds|snapshots|analyses)/.*\.(yml|yaml|md)|(macros|tests)/.*\.md|scripts/docs_lint\.py)$
+        # The check reads the whole repo and takes well under a second, so it runs
+        # unconditionally. A `files` filter would skip it on a commit that only
+        # deletes a referenced .md, which is exactly when a dangling doc()
+        # reference appears.
+        always_run: true
 
       - id: cleanup
         name: Cleanup .env.tmp

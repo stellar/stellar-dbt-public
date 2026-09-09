@@ -418,6 +418,10 @@ def cmd_validate_manifest(args):
             name = node["name"]
             if kind == "source":
                 name = "%s.%s" % (node.get("source_name"), name)
+            elif node.get("version") is not None:
+                # The manifest holds the base name plus a separate version, but
+                # load_properties keys a versioned model as "<model>.v<n>".
+                name = "%s.v%s" % (name, node["version"])
             # A patch_path of "<package>://path" says which project's yml supplied
             # the description. Another project's yml is not on disk here, so the
             # resolver cannot see it and its absence is not a coverage gap.

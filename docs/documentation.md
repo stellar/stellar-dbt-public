@@ -49,9 +49,12 @@ form whenever a column's meaning differs from the shared block of the same name,
 different blocks.
 
 Block names are globally unique across the project and resolve by name, not by file, so moving
-a block between files is always safe. Placement is convention, not enforced;
-`docs_lint.py report` shows how many tables use each block if you want to check whether
-something has outgrown its home.
+a block between files is always safe.
+
+`check` enforces the root: a definition this repo owns must live somewhere under `models/docs/`.
+Which file it lands in inside that root is convention, not enforced, so the mirror rule above is
+guidance rather than a gate. `docs_lint.py report` shows how many tables use each block if you
+want to check whether something has outgrown its home.
 
 ## Adding a column
 
@@ -98,9 +101,10 @@ reference, not that the reference is *correct*, so both of these pass:
   description: '{{ doc("transaction_id") }}'    # renders "a unique identifier for this transaction"
 ```
 
-Twenty-one references in this repo were wrong this way, thirteen of them publishing incorrect
-text. They come from copying a neighbouring line and cluster on paired columns: `asset_a` /
-`asset_b`, `read_bytes` / `write_bytes`, `batch_id` / `batch_run_date`.
+Both of those are live in this repo right now, along with nineteen more. They come from copying
+a neighbouring line and cluster on paired columns: `asset_a` / `asset_b`, `read_bytes` /
+`write_bytes`, `batch_id` / `batch_run_date`. Repairing them changes published text, so it is
+tracked separately in #326 and deliberately not part of the change that added this linter.
 
 This is a code review responsibility. When reviewing a description change, read the block that
 is referenced rather than trusting its name. The last section of `docs_lint.py report` helps: a
@@ -159,6 +163,6 @@ safe.
 To check before merging something risky, point `stellar-dbt`'s `packages.yml` at your branch and
 run `dbt deps && dbt parse` there. A clean parse confirms every cross-repo reference resolves.
 
-`scripts/docs_lint.py` is byte-identical in both repos and is meant to stay that way: it reads
+`scripts/docs_lint.py` is meant to be identical in both repos: it reads
 the project name from `dbt_project.yml` rather than hardcoding it, so a change made here is
 copied across verbatim rather than ported by hand.
