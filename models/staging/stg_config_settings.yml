@@ -113,11 +113,11 @@ models:
       - name: max_entry_ttl
         description: '{{ doc("max_entry_ttl") }}'
 
-      - name: min_temp_entry_ttl
-        description: '{{ doc("min_temp_entry_ttl") }}'
+      - name: min_temporary_ttl
+        description: '{{ doc("min_temporary_ttl") }}'
 
-      - name: min_persistent_entry_ttl
-        description: '{{ doc("min_persistent_entry_ttl") }}'
+      - name: min_persistent_ttl
+        description: '{{ doc("min_persistent_ttl") }}'
 
       - name: auto_bump_ledgers
         description: '{{ doc("auto_bump_ledgers") }}'
@@ -128,8 +128,8 @@ models:
       - name: temp_rent_rate_denominator
         description: '{{ doc("temp_rent_rate_denominator") }}'
 
-      - name: max_entries_to_ttl
-        description: '{{ doc("max_entries_to_ttl") }}'
+      - name: max_entries_to_archive
+        description: '{{ doc("max_entries_to_archive") }}'
 
       - name: bucket_list_size_window_sample_size
         description: '{{ doc("bucket_list_size_window_sample_size") }}'
@@ -237,3 +237,9 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

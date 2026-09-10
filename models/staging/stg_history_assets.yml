@@ -67,3 +67,15 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
+
+      - name: dedup_oldest_asset
+        description: '{{ doc("stg_history_assets__dedup_oldest_asset") }}'
+
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

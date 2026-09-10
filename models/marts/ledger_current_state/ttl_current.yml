@@ -74,3 +74,9 @@ models:
           - accepted_values:
               values: [0, 1, 2, 4]
               quote: false
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

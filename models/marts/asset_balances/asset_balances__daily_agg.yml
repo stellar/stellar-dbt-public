@@ -104,3 +104,6 @@ models:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "day"
               greater_than_equal_to: "2 day"
+
+      - name: total_accounts_with_trustline
+        description: '{{ doc("asset_balances__daily_agg__total_accounts_with_trustline") }}'

@@ -74,3 +74,15 @@ sources:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: last_modified_ledger
+            description: '{{ doc("last_modified_ledger") }}'
+
+          - name: ledger_entry_change
+            description: '{{ doc("ledger_entry_change") }}'
+
+          - name: closed_at
+            description: '{{ doc("closed_at") }}'
+
+          - name: ledger_sequence
+            description: '{{ doc("ledger_sequence") }}'

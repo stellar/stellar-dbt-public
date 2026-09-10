@@ -175,3 +175,12 @@ sources:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: liquidity_pool_id_strkey
+            description: '{{ doc("liquidity_pool_id_strkey") }}'
+
+          - name: closed_at
+            description: '{{ doc("closed_at") }}'
+
+          - name: ledger_sequence
+            description: '{{ doc("ledger_sequence") }}'

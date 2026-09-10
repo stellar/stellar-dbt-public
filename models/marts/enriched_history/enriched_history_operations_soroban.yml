@@ -118,7 +118,7 @@ models:
       - name: memo_type
         description: '{{ doc("memo_type") }}'
 
-      - name: memo_type
+      - name: memo
         description: '{{ doc("memo") }}'
 
       - name: time_bounds
@@ -145,18 +145,6 @@ models:
 
       - name: fee_account_muxed
         description: '{{ doc("fee_account_muxed") }}'
-
-      - name: tx_envelope
-        description: '{{ doc("tx_envelope") }}'
-
-      - name: tx_result
-        description: '{{ doc("tx_result") }}'
-
-      - name: tx_meta
-        description: '{{ doc("tx_meta") }}'
-
-      - name: tx_fee_meta
-        description: '{{ doc("tx_fee_meta") }}'
 
       - name: ledger_bounds
         description: '{{ doc("ledger_bounds") }}'
@@ -237,7 +225,7 @@ models:
       - name: protocol_version
         description: '{{ doc("protocol_version") }}'
 
-      - name: succesful_transaction_count
+      - name: successful_transaction_count
         description: '{{ doc("successful_transaction_count") }}'
 
       - name: failed_transaction_count
@@ -304,3 +292,15 @@ models:
 
       - name: refundable_fee
         description: '{{ doc("refundable_fee") }}'
+
+      - name: from
+        description: '{{ doc("details_from") }}'
+
+      - name: txn_account
+        description: '{{ doc("account") }}'
+
+      - name: parameters_decoded
+        description: '{{ doc("details_parameters_decoded") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

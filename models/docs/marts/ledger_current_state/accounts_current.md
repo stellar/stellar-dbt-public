@@ -9,3 +9,11 @@ The `accounts_current` table is a nightly snapshotted table that represents the 
 As a reminder, account ledger entries store detailed information for a given account, including current account status, preconditions for transaction authorization, security settings and account balance. The balance reported in the accounts table reflects the account’s XLM balance only. All other asset balances are reported in the `trust_lines` table.
 
 {% enddocs %}
+
+{% docs accounts_current__account_creation_date %}
+The earliest `batch_run_date` on which the account appears in the accounts state history, used as the account's creation date. An account older than the captured history gets the date of the first captured batch.
+{% enddocs %}
+
+{% docs accounts_current__min_sequence_number %}
+The lowest `sequence_number` observed for the account across its state history. A new account's sequence number encodes the ledger it was created in, so this approximates the creation ledger.
+{% enddocs %}
