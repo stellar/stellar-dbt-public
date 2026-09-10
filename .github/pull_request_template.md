@@ -1,36 +1,15 @@
-<!-- If you're making a doc PR or something tiny where the below is irrelevant, delete this
-template and use a short description, but in your description aim to include both what the
-change is, and why it is being made, with enough context for anyone to understand. -->
+## What & why
 
-<details>
-  <summary>PR Checklist</summary>
+## Data impact
+<!-- Models, tables, or tags affected. Full refresh or backfill needed on merge?
+     Does stellar-dbt need a `packages.yml` pin bump to pick this up?
+     "None" is a valid answer. -->
 
-### PR Structure
+## What feedback do you want
+<!-- e.g. "check the incremental logic", "sanity-check the grain", "rubber stamp" -->
 
-- [ ] This PR has reasonably narrow scope (if not, break it down into smaller PRs).
-- [ ] This PR avoids mixing refactoring changes with feature changes (split into two PRs
-      otherwise).
-- [ ] This PR's title starts with the jira ticket associated with the PR.
+---
 
-### Thoroughness
-
-- [ ] This PR adds tests for the most critical parts of the new functionality or fixes.
-- [ ] I've updated the docs and README with the added features, breaking changes, new instructions on how to use the repository.
-
-### Release planning
-
-- [ ] I've decided if this PR requires a new major/minor/patch version accordingly to
-    [semver](https://semver.org/), and I've changed the name of the BRANCH to major/* , minor/* or patch/* .
-</details>
-
-### What
-
-[TODO: Short statement about what is changing.]
-
-### Why
-
-[TODO: Why this change is being made. Include any context required to understand the why.]
-
-### Known limitations
-
-[TODO or N/A]
+- [ ] I ran this and reviewed the diff myself.
+- [ ] Descriptions live in doc blocks under `models/docs/`, and I read every block I referenced.
+- [ ] Branch is named `major/*`, `minor/*`, or `patch/*` (release-drafter reads it).
