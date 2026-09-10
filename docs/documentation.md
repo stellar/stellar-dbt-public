@@ -8,6 +8,7 @@ every merge to `master` (`.github/workflows/dbt-docs-website.yml`).
 - [Adding a column](#adding-a-column)
 - [Running the linter](#running-the-linter)
 - [Matching the built table](#matching-the-built-table)
+- [Backfilling missing columns](#backfilling-missing-columns)
 - [What the linter does not catch](#what-the-linter-does-not-catch)
 - [Proving a change is docs-neutral](#proving-a-change-is-docs-neutral)
 - [File conventions](#file-conventions)
@@ -87,7 +88,7 @@ cannot be applied to a file that cannot be read) on two files defining the same 
 
 `check` also holds the yml to three completeness rules it can decide offline: every model, seed
 and snapshot file has a yml entry; every declared column carries a description; and no column is
-declared twice under one resource (yaml keeps the last entry, so the first description is silently
+declared twice under one resource (dbt keeps the last entry, so the first description is silently
 dropped and dbt does not warn). A resource an installed package already declares counts as declared:
 the `dbt_project_evaluator_exceptions` seed overrides the package's seed of the same name, and dbt
 refuses a second yml entry for it.
@@ -165,6 +166,35 @@ Where it runs:
   uploads the prod `catalog.json` as a workflow artifact, so anyone can run `columns` against it
   without warehouse access. This repo's own docs job generates against a dataset that holds almost
   none of the built tables, so it cannot check anything yet.
+
+## Backfilling missing columns
+
+This is how the #730 backfill was done, and how to do the next one. No generator writes the text;
+the tooling only tells you which columns need it and which existing blocks might already fit.
+
+```bash
+python scripts/docs_lint.py columns --catalog target/catalog.json --suggest
+```
+
+For every missing column `--suggest` lists, in order: a block named after the column, then blocks
+other ymls already use for a column of that name, each with its text. Then, per column:
+
+1. **Rename, not new text.** If the same column appears as stale under a different name (the yml
+   still says `account_id`, the table says `op_account_id`), change the `- name:` and keep the
+   block. The two flattened staging views were entirely this.
+2. **Reuse after reading.** If a suggested block describes this column, reference it. Read the
+   text, not the name: `details_account` describes a sold amount and `account` on
+   history_transactions describes the transaction's account.
+3. **Write a block.** Otherwise read the model's SQL for the column's definition and write a block
+   in the model's mirror `.md`, named `<model>__<column>`, or a bare name in `universal.md` when
+   unrelated tables share it. Model the wording on the neighbouring blocks; for source columns the
+   stellar-etl transform is the authority.
+4. **Prove it.** `snapshot` before and after, and paste the `diff` summary into the PR. Every
+   addition should show as ADDED, every stale entry as REMOVED, and nothing as CHANGED unless you
+   meant it.
+
+Duplicate declarations found by `check` are almost always a mis-named second entry (the second
+`memo_type` was `memo`); rename the one whose block matches its name.
 
 ## Proving a change is docs-neutral
 
