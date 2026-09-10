@@ -121,6 +121,7 @@ See `docs/snapshot.md` for the full control flow diagram. For hands-on snapshot 
 ## Documentation
 
 - **Model or column descriptions:** read `docs/documentation.md` before writing one.
+- **Adding, renaming or dropping a column:** change the model's `.yml` column list in the same PR. CI compares it with the built table (`scripts/docs_lint.py columns`); `check` also fails on a model, seed or snapshot with no yml entry, a column with no description, or a column declared twice.
 
 ## Pre-commit Hooks
 

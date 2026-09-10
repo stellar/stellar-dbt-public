@@ -7,6 +7,7 @@ every merge to `master` (`.github/workflows/dbt-docs-website.yml`).
 - [Where a block lives, and what to call it](#where-a-block-lives-and-what-to-call-it)
 - [Adding a column](#adding-a-column)
 - [Running the linter](#running-the-linter)
+- [Matching the built table](#matching-the-built-table)
 - [What the linter does not catch](#what-the-linter-does-not-catch)
 - [Proving a change is docs-neutral](#proving-a-change-is-docs-neutral)
 - [File conventions](#file-conventions)
@@ -64,6 +65,8 @@ want to check whether something has outgrown its home.
    new block named `<model>__<column>`.
 4. Otherwise write a block in the model's mirror `.md`.
 5. Run `docs_lint.py check`.
+6. If the SQL changed too, run `docs_lint.py columns` against a catalog of your dev build, or let
+   CI do it. The yml column list must match the built table.
 
 ## Running the linter
 
@@ -82,12 +85,19 @@ cannot be applied to a file that cannot be read) on two files defining the same 
 (dbt cannot resolve a duplicate), and on a definition this repo owns that sits outside
 `models/docs/`, which is how a definition drifts somewhere nobody thinks to look.
 
+`check` also holds the yml to three completeness rules it can decide offline: every model, seed
+and snapshot file has a yml entry; every declared column carries a description; and no column is
+declared twice under one resource (yaml keeps the last entry, so the first description is silently
+dropped and dbt does not warn). A resource an installed package already declares counts as declared:
+the `dbt_project_evaluator_exceptions` seed overrides the package's seed of the same name, and dbt
+refuses a second yml entry for it.
+
 **Macro and argument descriptions are out of scope.** They document one macro's signature, so
 there is nothing to factor out, and moving them into `models/docs/` would only put a macro's API
 docs further from the macro.
 
-`report` lists orphan blocks, how many tables use each block, columns declared twice under one
-resource, and any column name that resolves to more than one description.
+`report` lists orphan blocks, how many tables use each block, and any column name that resolves
+to more than one description.
 
 ## What the linter does not catch
 
@@ -110,10 +120,47 @@ This is a code review responsibility. When reviewing a description change, read 
 is referenced rather than trusting its name. The last section of `docs_lint.py report` helps: a
 column that disagrees with itself inside one table family is nearly always one of these.
 
-**The same column declared twice in one yml.** yaml keeps the last entry, so the first
-description is dropped and the column publishes the second one's text. dbt does not warn.
-`report` lists these; five remain, and `enriched_history_operations_soroban.memo_type` was one
-of them, which is why `memo` had no description at all.
+## Matching the built table
+
+The rules above cannot see a column the yml never mentions, or a yml entry naming a column the
+table no longer has. Both publish silently: the docs site renders the live column with an empty
+description, or describes a column that does not exist, and `persist_docs` writes nothing onto the
+BigQuery column. dbt warns about neither.
+
+The only witness to what a table actually contains is dbt's catalog, so this check cannot run
+offline and is not in pre-commit:
+
+```bash
+dbt docs generate                                                    # writes target/catalog.json
+./venv/bin/python scripts/docs_lint.py columns                       # compare yml column lists with it
+./venv/bin/python scripts/docs_lint.py columns --strict --max-age 1  # what CI runs
+```
+
+`columns` reports, per resource, the live top-level columns with no yml entry (**missing**), the
+yml entries naming no live column (**stale**), and first-level struct fields with no entry
+(**nested**, informational). `--strict` exits 1 on missing or stale; nested never fails. A resource
+the catalog does not cover is counted and skipped, so a partial catalog from a PR build is fine.
+`--max-age` refuses a catalog older than the given hours, because a stale catalog proves nothing.
+`--package all` compares every package in the catalog, reading an installed package's yml from
+`dbt_packages/`.
+
+**Nested fields.** Document every top-level column. Document first-level struct fields where the
+table's yml already follows that pattern (the `details.*` entries on the history_operations source,
+for example). Never document recursive paths such as `claimants.predicate.and.or.abs_before`; the
+top-level column's block describes the structure.
+
+**When you add, rename or drop a column in SQL, change the yml in the same PR.** A rename is one
+missing plus one stale entry: fix both and keep the block. A dropped column is a stale entry: delete
+it. A new column is a missing entry: follow [Adding a column](#adding-a-column).
+
+Where it runs:
+
+- `stellar-dbt` builds this project's models into their prod datasets, so the blocking check lives
+  there: its `slim-ci` job runs `dbt docs generate` on the models a PR built and fails on missing or
+  stale columns, and its master docs job reports the drift for both packages on every merge and
+  uploads the prod `catalog.json` as a workflow artifact, so anyone can run `columns` against it
+  without warehouse access. This repo's own docs job generates against a dataset that holds almost
+  none of the built tables, so it cannot check anything yet.
 
 ## Proving a change is docs-neutral
 

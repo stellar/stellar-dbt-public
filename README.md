@@ -192,6 +192,8 @@ grep -rn "{% docs <column_name> %}" models/docs/
 ./venv/bin/python scripts/docs_lint.py check     # also runs in pre-commit
 ```
 
+The yml must also list every column the built table has, and nothing else. `scripts/docs_lint.py columns` compares the two against dbt's `catalog.json`; it runs in `stellar-dbt`'s CI, which is where these models are built.
+
 > _*Note:*_ The full process, including doc block naming, what the linter deliberately does not check, how to prove a docs change rendered nothing unexpected, and what to check before renaming a block that `stellar-dbt` depends on, is in [docs/documentation.md](./docs/documentation.md)
 
 <br>
