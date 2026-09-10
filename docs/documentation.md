@@ -127,6 +127,10 @@ table no longer has. Both publish silently: the docs site renders the live colum
 description, or describes a column that does not exist, and `persist_docs` writes nothing onto the
 BigQuery column. dbt warns about neither.
 
+Every model has `persist_docs` on for the prod, staging and test targets (`dbt_project.yml`), so the
+rendered description is also written into the BigQuery schema on each run. BigQuery caps a column
+description at 1024 characters and the adapter does not truncate, so a longer block fails the run.
+
 The only witness to what a table actually contains is dbt's catalog, so this check cannot run
 offline and is not in pre-commit:
 
