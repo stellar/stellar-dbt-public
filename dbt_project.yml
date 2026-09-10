@@ -43,6 +43,12 @@ vars:
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 models:
   stellar_dbt_public:
+    # Write model and column descriptions into the BigQuery schema on every run, for
+    # every model. Guarded by target so dev datasets stay quiet.
+    # BigQuery caps a column description at 1024 characters.
+    +persist_docs:
+      relation: "{{ target.name in ('prod', 'staging', 'test') }}"
+      columns: "{{ target.name in ('prod', 'staging', 'test') }}"
     staging:
       +materialized: view # how the staging models will be materialized
     intermediate:
