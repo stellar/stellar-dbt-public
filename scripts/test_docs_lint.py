@@ -167,6 +167,20 @@ class CheckColumnCoverage(Fixture):
         code, out = self.check()
         self.assertEqual(code, 0, out)
 
+    def test_version_override_of_a_base_column_is_not_a_duplicate(self):
+        # A version may re-declare a base column (to add tests, say) without
+        # repeating the description; that is an override, not a duplicate.
+        _write(self.root, "models/marts/orders.yml",
+               "version: 2\nmodels:\n  - name: orders\n    description: '{{ doc(\"orders\") }}'\n"
+               "    latest_version: 1\n    columns:\n"
+               "      - name: order_id\n        description: '{{ doc(\"order_id\") }}'\n"
+               "      - name: amount\n        description: '{{ doc(\"amount\") }}'\n"
+               "    versions:\n      - v: 1\n        columns:\n"
+               "          - name: amount\n            tests: [not_null]\n")
+        _write(self.root, "models/marts/orders_v1.sql", "select 1 as order_id, 2 as amount\n")
+        code, out = self.check()
+        self.assertEqual(code, 0, out)
+
     def test_snapshot_block_name_is_used_not_filename(self):
         # Legacy snapshot blocks name the resource inside the file.
         _write(self.root, "snapshots/legacy.sql",
@@ -305,6 +319,30 @@ class ColumnsCommand(Fixture):
                          os.path.join(self.root, "nope.json")])
         self.assertEqual(code, 2)
         self.assertIn("nope.json", out)
+
+    def test_suggest_lists_reusable_blocks_for_missing_columns(self):
+        _write(self.root, "models/marts/refunds.sql", "select 1 as refund_id, 2 as customer_id\n")
+        _write(self.root, "models/marts/refunds.yml",
+               "version: 2\nmodels:\n  - name: refunds\n    description: '{{ doc(\"orders\") }}'\n"
+               "    columns:\n      - name: refund_id\n        description: '{{ doc(\"order_id\") }}'\n"
+               "      - name: customer_id\n        description: '{{ doc(\"amount\") }}'\n")
+        # orders is missing customer_id (a block of that name does not exist, but
+        # refunds documents a column of that name) and shipped_at (nothing at all).
+        _catalog(self.root, {self.UID: ["order_id", "amount", "customer_id", "shipped_at"]})
+        _, out = self.columns("--suggest")
+        self.assertIn('customer_id', out)
+        self.assertIn('doc("amount")', out)          # used for a column of the same name elsewhere
+        self.assertIn("shipped_at", out)
+        self.assertIn("no existing block", out)
+
+    def test_suggest_prefers_a_block_named_after_the_column(self):
+        _write(self.root, "models/docs/marts/orders.md",
+               "{% docs orders %}Orders.{% enddocs %}\n{% docs order_id %}The id.{% enddocs %}\n"
+               "{% docs amount %}The amount.{% enddocs %}\n{% docs customer_id %}The customer.{% enddocs %}\n")
+        _catalog(self.root, {self.UID: ["order_id", "amount", "customer_id"]})
+        _, out = self.columns("--suggest")
+        self.assertIn('doc("customer_id")', out)
+        self.assertIn("The customer.", out)
 
     def test_summary_line_counts(self):
         _catalog(self.root, {self.UID: ["order_id", "customer_id", "meta.k"]})

@@ -226,7 +226,7 @@ def load_declared(root):
     `load_properties` only sees descriptions, which is what the doc-block rule
     needs. Completeness questions (is every column declared, is any declared
     twice, does the list match the built table) need the plain column list, so
-    this returns (kind, resource) -> {file, columns, undescribed}.
+    this returns (kind, resource) -> {file, columns, undescribed, duplicates}.
     """
     declared = {}
     for path, rel in walk_files(root, (".yml", ".yaml"), PROPERTY_PATHS):
@@ -240,10 +240,21 @@ def load_declared(root):
             for version in node.get("versions") or []:
                 if not isinstance(version, dict) or version.get("v") is None:
                     continue
-                # A version inherits the base columns and may add or override.
+                # A version inherits the base columns; a column it re-declares
+                # overrides the base entry (keeping whatever it does not restate,
+                # such as the description) rather than duplicating it.
+                base = [c for c in (node.get("columns") or []) if isinstance(c, dict) and c.get("name")]
+                own = [c for c in (version.get("columns") or []) if isinstance(c, dict) and c.get("name")]
+                base_by = {normalize_column(c["name"]): c for c in base}
+                overridden = {normalize_column(c["name"]) for c in own}
                 merged = dict(node)
-                merged["columns"] = (node.get("columns") or []) + (version.get("columns") or [])
-                declared[(kind, "%s.v%s" % (resource, version["v"]))] = _declared_entry(rel, merged)
+                merged["columns"] = [c for c in base if normalize_column(c["name"]) not in overridden] + [
+                    dict(base_by.get(normalize_column(c["name"]), {}), **c) for c in own
+                ]
+                entry = _declared_entry(rel, merged)
+                # The file dbt builds the version from, so `check` can match it.
+                entry["physical"] = version.get("defined_in") or "%s_v%s" % (resource, version["v"])
+                declared[(kind, "%s.v%s" % (resource, version["v"]))] = entry
     return declared
 
 
@@ -459,8 +470,11 @@ def cmd_check(args):
     # package seed of the same name, say) is the exception: dbt refuses a
     # second yml entry for it, so the package's entry is the only one allowed.
     from_packages = package_declared(args.root)
+    covered = set(declared) | from_packages
+    covered |= {(kind, entry["physical"]) for (kind, _res), entry in declared.items()
+                if entry.get("physical")}
     for kind, name, rel in physical_resources(args.root):
-        if (kind, name) in declared or (kind, name) in from_packages:
+        if (kind, name) in covered:
             continue
         if only and rel not in only:
             continue
@@ -505,6 +519,29 @@ def _catalog_age_hours(catalog):
     return (datetime.datetime.now(datetime.timezone.utc) - when).total_seconds() / 3600.0
 
 
+def suggestions(column, blocks, used_for, limit=3):
+    """Lines proposing existing blocks for a column that has no yml entry.
+
+    A block named after the column comes first, then blocks other ymls use for a
+    column of the same name. Each line shows the block's text so the reader can
+    judge whether it describes this column rather than trusting the name. No
+    candidate means a new block is needed.
+    """
+    candidates = []
+    if column in blocks:
+        candidates.append(column)
+    candidates += sorted(b for b in used_for.get(column, ()) if b != column and b in blocks)
+    if not candidates:
+        return ["suggest %s: no existing block; write one in the model's mirror .md" % column]
+    lines = []
+    for name in candidates[:limit]:
+        text = " ".join(blocks[name]["text"].split())
+        if len(text) > 90:
+            text = text[:87] + "..."
+        lines.append('suggest %s: doc("%s") [%s] %s' % (column, name, blocks[name]["file"], text))
+    return lines
+
+
 def cmd_columns(args):
     """Compare each resource's yml column list with the table dbt built.
 
@@ -542,6 +579,9 @@ def cmd_columns(args):
 
     totals = Counter()
     failing = False
+    # `--suggest` needs every block dbt can resolve plus, per column name, the
+    # blocks other ymls already use for it: the two places a reusable block hides.
+    blocks = all_blocks(args.root)[1] if args.suggest else {}
     for package in packages:
         # This repo's yml is at the root; an installed package's yml is under
         # dbt_packages/<name>/, exactly as dbt read it.
@@ -550,6 +590,11 @@ def cmd_columns(args):
             print("\n[%s] no yml available at %s; skipped" % (package, yml_root))
             continue
         declared = load_declared(yml_root)
+        used_for = defaultdict(set)
+        if args.suggest:
+            for row in load_properties(yml_root)[0]:
+                if row["column"] and row["refs"]:
+                    used_for[normalize_column(row["column"])].add(row["refs"][0])
         in_catalog = {(kind, res): node for (kind, pkg, res), node in entries.items()
                       if pkg == package and kind in kinds}
         print("\n[%s] %d resource(s) in catalog" % (package, len(in_catalog)))
@@ -581,6 +626,10 @@ def cmd_columns(args):
             print("%s: %s" % (entry["file"], resource))
             if missing:
                 print("   missing (in table, no yml entry): %s" % ", ".join(missing))
+                if args.suggest:
+                    for column in missing:
+                        for line in suggestions(column, blocks, used_for):
+                            print("      %s" % line)
             if stale:
                 print("   stale   (in yml, not in table):   %s" % ", ".join(stale))
             if nested:
@@ -762,25 +811,6 @@ def cmd_report(args):
               % (len(families.get(name, ())), len(users.get(name, ())), name,
                  blocks[name]["file"]))
 
-    print("\n=== columns declared twice under one resource ===")
-    print("The later entry wins, so the earlier description is dropped and one")
-    print("column ends up publishing another column's text. dbt does not warn.")
-    dup_cols = []
-    for path, rel in walk_files(args.root, (".yml", ".yaml"), PROPERTY_PATHS):
-        try:
-            doc = yaml.safe_load(open(path, encoding="utf-8"))
-        except yaml.YAMLError:
-            continue
-        for kind, resource, node in _entries(doc):
-            names = [c["name"] for c in (node.get("columns") or [])
-                     if isinstance(c, dict) and c.get("name")]
-            for name, count in sorted(Counter(names).items()):
-                if count > 1:
-                    dup_cols.append((rel, resource, name, count))
-    for rel, resource, name, count in dup_cols:
-        print("   %-62s %s.%s  x%d" % (rel, resource, name, count))
-    print("total: %d" % len(dup_cols))
-
     print("\n=== columns documented inconsistently ===")
     print("Same column name, more than one description. Divergence across unrelated")
     print("tables is often correct; divergence inside one table family rarely is.")
@@ -840,6 +870,8 @@ def main(argv=None):
                    help="exit 1 when any missing or stale column is found")
     p.add_argument("--verbose", action="store_true",
                    help="list the declared resources the catalog does not cover")
+    p.add_argument("--suggest", action="store_true",
+                   help="for each missing column, list existing blocks that may describe it")
     p.set_defaults(func=cmd_columns)
 
     p = sub.add_parser("snapshot", help="write resolved descriptions to JSON")
