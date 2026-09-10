@@ -118,11 +118,11 @@ sources:
           - name: max_entry_ttl
             description: '{{ doc("max_entry_ttl") }}'
 
-          - name: min_temp_entry_ttl
-            description: '{{ doc("min_temp_entry_ttl") }}'
+          - name: min_temporary_ttl
+            description: '{{ doc("min_temporary_ttl") }}'
 
-          - name: min_persistent_entry_ttl
-            description: '{{ doc("min_persistent_entry_ttl") }}'
+          - name: min_persistent_ttl
+            description: '{{ doc("min_persistent_ttl") }}'
 
           - name: auto_bump_ledgers
             description: '{{ doc("auto_bump_ledgers") }}'
@@ -133,8 +133,8 @@ sources:
           - name: temp_rent_rate_denominator
             description: '{{ doc("temp_rent_rate_denominator") }}'
 
-          - name: max_entries_to_ttl
-            description: '{{ doc("max_entries_to_ttl") }}'
+          - name: max_entries_to_archive
+            description: '{{ doc("max_entries_to_archive") }}'
 
           - name: bucket_list_size_window_sample_size
             description: '{{ doc("bucket_list_size_window_sample_size") }}'
@@ -241,3 +241,48 @@ sources:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: fee_disk_read_1kb
+            description: '{{ doc("fee_disk_read_1kb") }}'
+
+          - name: fee_disk_read_ledger_entry
+            description: '{{ doc("fee_disk_read_ledger_entry") }}'
+
+          - name: fee_write_1kb
+            description: '{{ doc("fee_write_1kb") }}'
+
+          - name: ledger_max_disk_read_bytes
+            description: '{{ doc("ledger_max_disk_read_bytes") }}'
+
+          - name: ledger_max_disk_read_entries
+            description: '{{ doc("ledger_max_disk_read_entries") }}'
+
+          - name: live_soroban_state_size_window
+            description: '{{ doc("live_soroban_state_size_window") }}'
+
+          - name: live_soroban_state_size_window_sample_period
+            description: '{{ doc("live_soroban_state_size_window_sample_period") }}'
+
+          - name: live_soroban_state_size_window_sample_size
+            description: '{{ doc("live_soroban_state_size_window_sample_size") }}'
+
+          - name: rent_fee_1kb_soroban_state_size_low
+            description: '{{ doc("rent_fee_1kb_soroban_state_size_low") }}'
+
+          - name: rent_fee_1kb_soroban_state_size_high
+            description: '{{ doc("rent_fee_1kb_soroban_state_size_high") }}'
+
+          - name: soroban_state_rent_fee_growth_factor
+            description: '{{ doc("soroban_state_rent_fee_growth_factor") }}'
+
+          - name: soroban_state_target_size_bytes
+            description: '{{ doc("soroban_state_target_size_bytes") }}'
+
+          - name: tx_max_disk_read_bytes
+            description: '{{ doc("tx_max_disk_read_bytes") }}'
+
+          - name: tx_max_disk_read_entries
+            description: '{{ doc("tx_max_disk_read_entries") }}'
+
+          - name: ledger_sequence
+            description: '{{ doc("ledger_sequence") }}'

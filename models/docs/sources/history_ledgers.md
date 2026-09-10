@@ -132,3 +132,7 @@ The list of type of keys which have been evicted in a given ledger entry.
 {% docs evicted_ledger_keys_hash %}
 The list of keys hash which have been evicted in a given ledger entry.
 {% enddocs %}
+
+{% docs total_byte_size_of_live_soroban_state %}
+The total size, in bytes, of the live Soroban state: the in-memory ledger state introduced in Protocol 23 that replaced the bucket list as the input to Soroban rent fees. Reported by Stellar Core at each ledger close.
+{% enddocs %}

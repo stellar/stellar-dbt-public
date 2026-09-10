@@ -96,3 +96,6 @@ models:
         tests:
           - not_null
           - unique
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

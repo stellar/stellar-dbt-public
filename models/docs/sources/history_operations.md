@@ -1470,3 +1470,33 @@ The identifier of the second reserve asset in a liquidity pool or similar constr
 {% docs details_ledgers_to_expire %}
 The number of ledgers after which the operation will expire if its not executed.
 {% enddocs %}
+
+{% docs details_parameters_decoded %}
+Soroban field - the parameters from the contract function call, in the same order as `parameters`, with each ScVal decoded to a human-readable value
+
+### Only exists for the following operations:
+
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+{% enddocs %}
+
+{% docs details_parameters_json %}
+Soroban field - the contract function call parameters as one JSON document of raw ScVal XDR values, in call order
+
+### Only exists for the following operations:
+
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+{% enddocs %}
+
+{% docs details_parameters_json_decoded %}
+Soroban field - the contract function call parameters as one JSON document with each ScVal decoded to a human-readable value
+
+### Only exists for the following operations:
+
+| Type | Operation            |
+| ---- | -------------------- |
+| 24   | Invoke Host Function |
+{% enddocs %}

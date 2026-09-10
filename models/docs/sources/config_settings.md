@@ -136,14 +136,6 @@ Max size of contract data entries
 Max ttl that can be set for an entry (sequence created at + this)
 {% enddocs %}
 
-{% docs min_temp_entry_ttl %}
-Min temporary entry ttl (sequence created at + this)
-{% enddocs %}
-
-{% docs min_persistent_entry_ttl %}
-Min persistent entry ttl (sequence created at + this)
-{% enddocs %}
-
 {% docs auto_bump_ledgers %}
 Automatic bump ledgers amount
 {% enddocs %}
@@ -154,10 +146,6 @@ Persistent entry rent rate denominator
 
 {% docs temp_rent_rate_denominator %}
 Temporary entry rent rate denominator
-{% enddocs %}
-
-{% docs max_entries_to_ttl %}
-Max entries to ttl
 {% enddocs %}
 
 {% docs bucket_list_size_window_sample_size %}
@@ -242,4 +230,60 @@ Array of hex-encoded transaction hashes to add to the freeze bypass list (P26 CA
 
 {% docs freeze_bypass_txs_to_remove %}
 Array of hex-encoded transaction hashes to remove from the freeze bypass list (P26 CAP-77)
+{% enddocs %}
+
+{% docs fee_disk_read_1kb %}
+Fee per 1kb read from disk. Protocol 23 successor of `fee_read_1kb`: reads of live in-memory Soroban state are free, only disk reads are charged.
+{% enddocs %}
+
+{% docs fee_disk_read_ledger_entry %}
+Fee per ledger entry read from disk (Protocol 23 successor of `fee_read_ledger_entry`).
+{% enddocs %}
+
+{% docs fee_write_1kb %}
+Fee per 1kb written to the ledger (Protocol 23 state-archival setting).
+{% enddocs %}
+
+{% docs ledger_max_disk_read_bytes %}
+Max bytes read from disk per ledger (Protocol 23 successor of `ledger_max_read_bytes`).
+{% enddocs %}
+
+{% docs ledger_max_disk_read_entries %}
+Max ledger entries read from disk per ledger (Protocol 23 successor of `ledger_max_read_ledger_entries`).
+{% enddocs %}
+
+{% docs live_soroban_state_size_window %}
+Sliding window of live Soroban state size samples used to compute rent fees (Protocol 23 successor of `bucket_list_size_window`).
+{% enddocs %}
+
+{% docs live_soroban_state_size_window_sample_period %}
+Number of ledgers between samples of the live Soroban state size window.
+{% enddocs %}
+
+{% docs live_soroban_state_size_window_sample_size %}
+Number of samples kept in the live Soroban state size window (Protocol 23 successor of `bucket_list_size_window_sample_size`).
+{% enddocs %}
+
+{% docs rent_fee_1kb_soroban_state_size_low %}
+Rent fee per 1kb when live Soroban state is at or below the target size (Protocol 23 successor of `write_fee_1kb_bucket_list_low`).
+{% enddocs %}
+
+{% docs rent_fee_1kb_soroban_state_size_high %}
+Rent fee per 1kb when live Soroban state is at the high size threshold (Protocol 23 successor of `write_fee_1kb_bucket_list_high`).
+{% enddocs %}
+
+{% docs soroban_state_rent_fee_growth_factor %}
+Growth factor applied to the rent fee as live Soroban state grows past the target size (Protocol 23 successor of `bucket_list_write_fee_growth_factor`).
+{% enddocs %}
+
+{% docs soroban_state_target_size_bytes %}
+Target size in bytes of live Soroban state used in rent fee computation (Protocol 23 successor of `bucket_list_target_size_bytes`).
+{% enddocs %}
+
+{% docs tx_max_disk_read_bytes %}
+Max bytes read from disk per transaction (Protocol 23 successor of `tx_max_read_bytes`).
+{% enddocs %}
+
+{% docs tx_max_disk_read_entries %}
+Max ledger entries read from disk per transaction (Protocol 23 successor of `tx_max_read_ledger_entries`).
 {% enddocs %}

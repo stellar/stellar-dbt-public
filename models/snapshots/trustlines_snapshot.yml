@@ -168,3 +168,6 @@ models:
               greater_than_equal_to: "2 day"
       - name: valid_to
         description: '{{ doc("valid_to") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

@@ -83,9 +83,6 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-      - name: ledger_key_hash
-        description: '{{ doc("ledger_key_hash") }}'
-
       - name: key
         description: '{{ doc("key") }}'
 
@@ -136,3 +133,6 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

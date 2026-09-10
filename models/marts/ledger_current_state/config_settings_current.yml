@@ -189,3 +189,12 @@ models:
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

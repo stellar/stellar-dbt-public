@@ -61,3 +61,7 @@ The count of positive trustline balance holders for a given asset.
 The count of positive contract balance holders for a given asset.
 
 {% enddocs %}
+
+{% docs asset_balances__daily_agg__total_accounts_with_trustline %}
+Number of accounts holding a trustline for the asset on the day, regardless of balance. `total_accounts_with_trustline_balance` counts only the trustlines with a positive balance.
+{% enddocs %}

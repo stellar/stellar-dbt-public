@@ -17,6 +17,7 @@ change is, and why it is being made, with enough context for anyone to understan
 - [ ] This PR adds tests for the most critical parts of the new functionality or fixes.
 - [ ] I've updated the docs and README with the added features, breaking changes, new instructions on how to use the repository.
 - [ ] If this PR touches column or model descriptions, they live in doc blocks under `models/docs/` rather than inline in the `.yml`, and I read the text of every block I referenced rather than trusting its name (see [docs/documentation.md](../docs/documentation.md)).
+- [ ] If this PR adds, renames or drops a column, the model's `.yml` column list changed with it. CI compares the yml with the built table (`scripts/docs_lint.py columns`).
 
 ### Release planning
 

@@ -157,11 +157,13 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
       - name: closed_at
+        description: '{{ doc("closed_at") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
       - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -173,3 +175,7 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
       - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'
+
+      - name: sequence_time
+        description: '{{ doc("sequence_time") }}'

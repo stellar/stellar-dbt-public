@@ -425,10 +425,10 @@ sources:
           - name: details.contract_code_hash
             description: '{{ doc("contract_code_hash") }}'
 
-          - name: details.operation_result_code
+          - name: operation_result_code
             description: '{{ doc("operation_result_code") }}'
 
-          - name: details.operation_trace_code
+          - name: operation_trace_code
             description: '{{ doc("operation_trace_code") }}'
 
           - name: closed_at
@@ -447,3 +447,21 @@ sources:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: details.balance_id_strkey
+            description: '{{ doc("balance_id_strkey") }}'
+
+          - name: details.claimable_balance_id_strkey
+            description: '{{ doc("balance_id_strkey") }}'
+
+          - name: details.liquidity_pool_id_strkey
+            description: '{{ doc("liquidity_pool_id_strkey") }}'
+
+          - name: details.parameters_decoded
+            description: '{{ doc("details_parameters_decoded") }}'
+
+          - name: details.parameters_json
+            description: '{{ doc("details_parameters_json") }}'
+
+          - name: details.parameters_json_decoded
+            description: '{{ doc("details_parameters_json_decoded") }}'

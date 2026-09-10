@@ -5,12 +5,6 @@ Trasactions are commands that modify the ledger state and consist of one or more
 Transactions that are sent to the Stellar Network either succeed completely or fail completely. There is no partial transaction execution. The table is an event log of all transactions submitted and committed to a transaction set within a ledger.
 {% enddocs %}
 
-{% docs application_order %}
-Each transaction within the transaction set for a ledger is executed and applied sequentially to the network. The validator nodes randomly shuffle submitted transactions and assign them an application order number, which corresponds to the order in which they are applied.
-
-- Required Field
-  {% enddocs %}
-
 {% docs account %}
 The account address that originates the transaction.
 
@@ -199,4 +193,12 @@ The portion of refundable_resource_fee_charged that went to ledger entry TTL ext
 
 {% docs refundable_fee %}
 The portion of the transaction fee that is refundable under certain conditions. This field indicates the amount that can be returned to the transaction initiator if the transaction does not fully execute or meets specific refund criteria.
+{% enddocs %}
+
+{% docs soroban_resources_disk_read_bytes %}
+Number of bytes the transaction read from disk. Since Protocol 23 only disk reads are metered for fees, while reads of live in-memory Soroban state are free, so this is the fee-bearing subset of `soroban_resources_read_bytes`.
+{% enddocs %}
+
+{% docs soroban_resources_archived_entries %}
+Positions in the transaction's Soroban footprint of the ledger entries that had been archived and were automatically restored by this transaction (Protocol 23 automatic restoration). Empty when nothing was restored.
 {% enddocs %}
