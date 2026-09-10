@@ -56,6 +56,16 @@ repos:
         # reference appears.
         always_run: true
 
+      - id: docs-lint-tests
+        name: docs_lint.py unit tests
+        entry: python scripts/test_docs_lint.py
+        language: python
+        additional_dependencies: ["pyyaml"]
+        pass_filenames: false
+        # Only when the linter or its tests change; the tests take well under a
+        # second but there is no reason to run them on every commit.
+        files: ^scripts/(docs_lint|test_docs_lint)\.py$
+
       - id: cleanup
         name: Cleanup .env.tmp
         entry: ./pre-commit/cleanup.sh
