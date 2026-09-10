@@ -36,9 +36,6 @@ sources:
                   date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
-          - name: application_order
-            description: '{{ doc("application_order") }}'
-
           - name: account
             description: '{{ doc("account") }}'
             tests:
@@ -229,3 +226,9 @@ sources:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: soroban_resources_disk_read_bytes
+            description: '{{ doc("soroban_resources_disk_read_bytes") }}'
+
+          - name: soroban_resources_archived_entries
+            description: '{{ doc("soroban_resources_archived_entries") }}'

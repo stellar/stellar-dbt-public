@@ -37,9 +37,6 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-      - name: application_order
-        description: '{{ doc("application_order") }}'
-
       - name: txn_account
         description: '{{ doc("account") }}'
         tests:
@@ -230,3 +227,6 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

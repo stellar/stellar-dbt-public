@@ -148,3 +148,12 @@ sources:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: ledger_key_hash
+            description: '{{ doc("ledger_key_hash") }}'
+
+          - name: ledger_key_hash_base_64
+            description: '{{ doc("ledger_key_hash_base_64") }}'
+
+          - name: ledger_sequence
+            description: '{{ doc("ledger_sequence") }}'

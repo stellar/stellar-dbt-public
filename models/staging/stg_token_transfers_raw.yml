@@ -103,3 +103,15 @@ models:
 
       - name: to_muxed_id
         description: '{{ doc("to_muxed_id") }}'
+
+      - name: batch_id
+        description: '{{ doc("batch_id") }}'
+
+      - name: batch_run_date
+        description: '{{ doc("batch_run_date") }}'
+
+      - name: batch_insert_ts
+        description: '{{ doc("batch_insert_ts") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

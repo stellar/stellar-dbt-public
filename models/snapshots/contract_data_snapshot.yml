@@ -159,3 +159,12 @@ models:
               greater_than_equal_to: "2 day"
       - name: valid_to
         description: '{{ doc("valid_to") }}'
+
+      - name: ledger_key_hash
+        description: '{{ doc("ledger_key_hash") }}'
+
+      - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

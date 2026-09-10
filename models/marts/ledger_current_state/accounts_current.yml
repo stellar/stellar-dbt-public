@@ -187,3 +187,12 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
+
+      - name: account_creation_date
+        description: '{{ doc("accounts_current__account_creation_date") }}'
+
+      - name: min_sequence_number
+        description: '{{ doc("accounts_current__min_sequence_number") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

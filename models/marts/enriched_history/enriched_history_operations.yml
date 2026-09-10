@@ -69,10 +69,10 @@ models:
       - name: op_account_muxed
         description: '{{ doc("details_account_muxed") }}'
 
-      - name: account_id
+      - name: op_account_id
         description: '{{ doc("details_account_id") }}'
 
-      - name: account_muxed_id
+      - name: op_account_muxed_id
         description: '{{ doc("details_account_muxed_id") }}'
 
       - name: amount
@@ -183,10 +183,10 @@ models:
       - name: price
         description: '{{ doc("details_price") }}'
 
-      - name: price_r.d
+      - name: d
         description: '{{ doc("details_price_r_d") }}'
 
-      - name: price_r.n
+      - name: n
         description: '{{ doc("details_price_r_n") }}'
 
       - name: selling_asset_code
@@ -213,7 +213,7 @@ models:
       - name: signer_weight
         description: '{{ doc("details_signer_weight") }}'
 
-      - name: source_ammount
+      - name: source_amount
         description: '{{ doc("details_source_amount") }}'
 
       - name: source_asset_code
@@ -294,7 +294,7 @@ models:
       - name: begin_sponsor_muxed_id
         description: '{{ doc("details_begin_sponsor_muxed_id") }}'
 
-      - name: authorize_to_maintain
+      - name: authorize_to_maintain_liabilities
         description: '{{ doc("details_authorize_to_maintain_liabilities") }}'
 
       - name: clawback_enabled
@@ -312,11 +312,8 @@ models:
       - name: reserve_a_asset_issuer
         description: '{{ doc("details_reserve_a_asset_issuer") }}'
 
-      - name: reserve_a_asset_max_amount
+      - name: reserve_a_max_amount
         description: '{{ doc("details_reserve_a_max_amount") }}'
-
-      - name: reserve_b_asset_deposit_amount
-        description: '{{ doc("details_reserve_a_deposit_amount") }}'
 
       - name: reserve_b_asset_type
         description: '{{ doc("details_reserve_b_asset_type") }}'
@@ -327,10 +324,10 @@ models:
       - name: reserve_b_asset_issuer
         description: '{{ doc("details_reserve_b_asset_issuer") }}'
 
-      - name: reserve_b_asset_max_amount
+      - name: reserve_b_max_amount
         description: '{{ doc("details_reserve_b_max_amount") }}'
 
-      - name: reserve_b_asset_deposit_amount
+      - name: reserve_b_deposit_amount
         description: '{{ doc("details_reserve_b_deposit_amount") }}'
 
       - name: min_price
@@ -443,18 +440,6 @@ models:
 
       - name: fee_account_muxed
         description: '{{ doc("fee_account_muxed") }}'
-
-      - name: tx_envelope
-        description: '{{ doc("tx_envelope") }}'
-
-      - name: tx_result
-        description: '{{ doc("tx_result") }}'
-
-      - name: tx_meta
-        description: '{{ doc("tx_meta") }}'
-
-      - name: tx_fee_meta
-        description: '{{ doc("tx_fee_meta") }}'
 
       - name: ledger_bounds
         description: '{{ doc("ledger_bounds") }}'
@@ -666,3 +651,15 @@ models:
 
       - name: refundable_fee
         description: '{{ doc("refundable_fee") }}'
+
+      - name: reserve_a_deposit_amount
+        description: '{{ doc("details_reserve_a_deposit_amount") }}'
+
+      - name: txn_account
+        description: '{{ doc("account") }}'
+
+      - name: parameters_decoded
+        description: '{{ doc("details_parameters_decoded") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

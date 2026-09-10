@@ -58,9 +58,6 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-      - name: details
-        description: '{{ doc("details_effects") }}'
-
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
@@ -75,250 +72,250 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
-      - name: details.liquidity_pool
+      - name: liquidity_pool
         description: '{{ doc("details_liquidity_pool") }}'
 
-      - name: details.liquidity_pool.fee_bp
+      - name: liquidity_pool.fee_bp
         description: '{{ doc("details_liquidity_pool_fee_bp") }}'
 
-      - name: details.liquidity_pool.id
+      - name: liquidity_pool.id
         description: '{{ doc("details_liquidity_pool_id") }}'
 
-      - name: details.liquidity_pool.total_shares
+      - name: liquidity_pool.total_shares
         description: '{{ doc("details_liquidity_pool_total_shares") }}'
 
-      - name: details.liquidity_pool.total_trustlines
+      - name: liquidity_pool.total_trustlines
         description: '{{ doc("details_liquidity_pool_total_trustlines") }}'
 
-      - name: details.liquidity_pool.type
+      - name: liquidity_pool.type
         description: '{{ doc("details_liquidity_pool_type") }}'
 
-      - name: details.liquidity_pool.reserves
+      - name: liquidity_pool.reserves
         description: '{{ doc("details_liquidity_pool_reserves") }}'
 
-      - name: details.liquidity_pool.reserves.asset
+      - name: liquidity_pool.reserves.asset
         description: '{{ doc("details_asset") }}'
 
-      - name: details.liquidity_pool.reserves.amount
+      - name: liquidity_pool.reserves.amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.reserves_received
+      - name: reserves_received
         description: '{{ doc("details_reserves_received") }}'
 
-      - name: details.reserves_received.asset
+      - name: reserves_received.asset
         description: '{{ doc("details_asset") }}'
 
-      - name: details.reserves_received.amount
+      - name: reserves_received.amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.reserves_deposited
+      - name: reserves_deposited
         description: '{{ doc("details_reserves_deposited") }}'
 
-      - name: details.reserves_deposited.asset
+      - name: reserves_deposited.asset
         description: '{{ doc("details_asset") }}'
 
-      - name: details.reserves_deposited.amount
+      - name: reserves_deposited.amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.reserves_revoked
+      - name: reserves_revoked
         description: '{{ doc("details_reserves_revoked") }}'
 
-      - name: details.reserves_revoked.asset
+      - name: reserves_revoked.asset
         description: '{{ doc("details_asset") }}'
 
-      - name: details.reserves_revoked.amount
+      - name: reserves_revoked.amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.reserves_revoked.claimable_balance_id
+      - name: reserves_revoked.claimable_balance_id
         description: '{{ doc("details_reserves_revoked_claimable_balance_id") }}'
 
-      - name: details.bought
+      - name: bought
         description: '{{ doc("details_bought") }}'
 
-      - name: details.bought.asset
+      - name: bought.asset
         description: '{{ doc("details_asset") }}'
 
-      - name: details.bought.amount
+      - name: bought.amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.sold
+      - name: sold
         description: '{{ doc("details_sold") }}'
 
-      - name: details.sold.asset
+      - name: sold.asset
         description: '{{ doc("details_asset") }}'
 
-      - name: details.sold.amount
+      - name: sold.amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.shares_revoked
+      - name: shares_revoked
         description: '{{ doc("details_shares_revoked") }}'
 
-      - name: details.shares_received
+      - name: shares_received
         description: '{{ doc("details_shares_received") }}'
 
-      - name: details.shares_redeemed
+      - name: shares_redeemed
         description: '{{ doc("details_shares_redeemed") }}'
 
-      - name: details.liquidity_pool_id
+      - name: liquidity_pool_id
         description: '{{ doc("details_liquidity_pool_id") }}'
 
-      - name: details.balance_id
+      - name: balance_id
         description: '{{ doc("details_balance_id") }}'
 
-      - name: details.new_seq
+      - name: new_seq
         description: '{{ doc("details_new_seq") }}'
 
-      - name: details.name
+      - name: name
         description: '{{ doc("details_name") }}'
 
-      - name: details.value
+      - name: value
         description: '{{ doc("details_value") }}'
 
-      - name: details.trustor
+      - name: trustor
         description: '{{ doc("details_trustor") }}'
 
-      - name: details.limit
+      - name: limit
         description: '{{ doc("details_limit") }}'
 
-      - name: details.inflation_destination
+      - name: inflation_destination
         description: '{{ doc("details_inflation_destination") }}'
 
-      - name: details.authorized_flag
+      - name: authorized_flag
         description: '{{ doc("details_authorized_flag") }}'
 
-      - name: details.auth_immutable_flag
+      - name: auth_immutable_flag
         description: '{{ doc("details_auth_immutable_flag") }}'
 
-      - name: details.authorized_to_maintain_liabilites
+      - name: authorized_to_maintain_liabilites
         description: '{{ doc("details_authorized_to_maintain_liabilites") }}'
 
-      - name: details.auth_revocable_flag
+      - name: auth_revocable_flag
         description: '{{ doc("details_auth_revocable_flag") }}'
 
-      - name: details.auth_required_flag
+      - name: auth_required_flag
         description: '{{ doc("details_auth_required_flag") }}'
 
-      - name: details.auth_clawback_enabled_flag
+      - name: auth_clawback_enabled_flag
         description: '{{ doc("details_auth_clawback_enabled_flag") }}'
 
-      - name: details.claimable_balance_clawback_enabled_flag
+      - name: claimable_balance_clawback_enabled_flag
         description: '{{ doc("details_claimable_balance_clawback_enabled_flag") }}'
 
-      - name: details.clawback_enabled_flag
+      - name: clawback_enabled_flag
         description: '{{ doc("details_clawback_enabled_flag") }}'
 
-      - name: details.high_threshold
+      - name: high_threshold
         description: '{{ doc("details_high_threshold") }}'
 
-      - name: details.med_threshold
+      - name: med_threshold
         description: '{{ doc("details_med_threshold") }}'
 
-      - name: details.low_threshold
+      - name: low_threshold
         description: '{{ doc("details_low_threshold") }}'
 
-      - name: details.home_domain
+      - name: home_domain
         description: '{{ doc("details_home_domain") }}'
 
-      - name: details.asset_issuer
+      - name: asset_issuer
         description: '{{ doc("details_asset_issuer") }}'
 
-      - name: details.asset
+      - name: asset
         description: '{{ doc("details_asset") }}'
 
-      - name: details.asset_code
+      - name: asset_code
         description: '{{ doc("details_asset_code") }}'
 
-      - name: details.asset_type
+      - name: asset_type
         description: '{{ doc("details_asset_type") }}'
 
-      - name: details.signer
+      - name: signer
         description: '{{ doc("details_signer") }}'
 
-      - name: details.sponsor
+      - name: sponsor
         description: '{{ doc("details_sponsor") }}'
 
-      - name: details.new_sponsor
+      - name: new_sponsor
         description: '{{ doc("details_new_sponsor") }}'
 
-      - name: details.former_sponsor
+      - name: former_sponsor
         description: '{{ doc("details_former_sponsor") }}'
 
-      - name: details.weight
+      - name: weight
         description: '{{ doc("details_weight") }}'
 
-      - name: details.public_key
+      - name: public_key
         description: '{{ doc("details_public_key") }}'
 
-      - name: details.amount
+      - name: amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.starting_balance
+      - name: starting_balance
         description: '{{ doc("details_starting_balance") }}'
 
-      - name: details.seller
+      - name: seller
         description: '{{ doc("details_seller") }}'
 
-      - name: details.seller_muxed
+      - name: seller_muxed
         description: '{{ doc("details_seller_muxed") }}'
 
-      - name: details.seller_muxed_id
+      - name: seller_muxed_id
         description: '{{ doc("details_seller_muxed_id") }}'
 
-      - name: details.offer_id
+      - name: offer_id
         description: '{{ doc("details_offer_id") }}'
 
-      - name: details.sold_amount
+      - name: sold_amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.sold_asset_type
+      - name: sold_asset_type
         description: '{{ doc("details_asset_type") }}'
 
-      - name: details.sold_asset_code
+      - name: sold_asset_code
         description: '{{ doc("details_asset_code") }}'
 
-      - name: details.sold_asset_issuer
+      - name: sold_asset_issuer
         description: '{{ doc("details_asset_issuer") }}'
 
-      - name: details.bought_asset_type
+      - name: bought_asset_type
         description: '{{ doc("details_asset_type") }}'
 
-      - name: details.bought_asset_code
+      - name: bought_asset_code
         description: '{{ doc("details_asset_code") }}'
 
-      - name: details.bought_asset_issuer
+      - name: bought_asset_issuer
         description: '{{ doc("details_asset_issuer") }}'
 
-      - name: details.bought_amount
+      - name: bought_amount
         description: '{{ doc("details_amount") }}'
 
-      - name: details.data_name
+      - name: data_name
         description: '{{ doc("details_data_name") }}'
 
-      - name: details.predicate
+      - name: predicate
         description: '{{ doc("claimants_predicate") }}'
 
-      - name: details.predicate.abs_before
+      - name: predicate.abs_before
         description: '{{ doc("claimants_predicate_abs_before") }}'
 
-      - name: details.predicate.rel_before
+      - name: predicate.rel_before
         description: '{{ doc("claimants_predicate_rel_before") }}'
 
-      - name: details.predicate.unconditional
+      - name: predicate.unconditional
         description: '{{ doc("claimants_predicate_unconditional") }}'
 
-      - name: details.predicate.abs_before_epoch
+      - name: predicate.abs_before_epoch
         description: '{{ doc("claimants_predicate_abs_before_epoch") }}'
 
-      - name: details.contract
+      - name: contract
         description: '{{ doc("contract_id") }}'
 
-      - name: details.contract_event_type
+      - name: contract_event_type
         description: '{{ doc("contract_event_type") }}'
 
-      - name: details.extend_to
+      - name: extend_to
         description: '{{ doc("details_extend_to") }}'
 
-      - name: details.entries
+      - name: entries
         description: '{{ doc("details_entries") }}'
 
       - name: index
@@ -341,3 +338,9 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
+
+      - name: ledgers_to_expire
+        description: '{{ doc("details_ledgers_to_expire") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'
