@@ -6,6 +6,17 @@ source table, seed, snapshot, analysis or any of their columns must be exactly o
 `{{ doc("name") }}` reference to a block that exists. The definition itself lives
 in a `models/docs/**/*.md` doc block.
 
+`check` also requires that the yml is complete on its own terms: every model,
+seed and snapshot file has a yml entry, every declared column carries a
+description, and no column is declared twice (dbt keeps the last entry and
+silently drops the other description). All of that is decidable offline.
+
+Whether the yml matches the table dbt actually built is not decidable offline,
+so `columns` takes dbt's `catalog.json` (from `dbt docs generate`) and reports
+live columns with no yml entry, yml entries naming a column the table does not
+have, and first-level struct fields with no entry. It runs in CI wherever a
+fresh catalog exists; see docs/documentation.md.
+
 Macro and argument descriptions are deliberately out of scope. They document one
 macro's signature, so there is nothing to factor out, and moving them away from
 the macro would only make them harder to keep true. Doc blocks defined under
@@ -31,6 +42,8 @@ resolve but are never linted here; they belong to the other repo. Run
 
 Commands:
     check             enforce the rule (exit 1 on violation)
+    columns           compare yml column lists with dbt's catalog.json
+                      (exit 1 under --strict when they disagree)
     snapshot          write the resolved description map to a JSON file
     diff A B          compare two snapshot files
     validate-manifest check the resolver against target/manifest.json
@@ -41,6 +54,7 @@ Commands:
 from __future__ import annotations
 
 import argparse
+import datetime
 import difflib
 import json
 import os
@@ -65,6 +79,10 @@ DOCS_BLOCK_RE = re.compile(
     r"\{%-?\s*docs\s+([A-Za-z0-9_]+)\s*-?%\}(.*?)\{%-?\s*enddocs\s*-?%\}", re.DOTALL
 )
 DOC_CALL_RE = re.compile(r"""\{\{-?\s*doc\(\s*['"]([A-Za-z0-9_]+)['"]\s*\)\s*-?\}\}""")
+# A legacy snapshot names its resource inside the file, not by filename.
+SNAPSHOT_BLOCK_RE = re.compile(r"\{%-?\s*snapshot\s+([A-Za-z0-9_]+)\s*-?%\}")
+# Resource kinds a catalog can contain that carry columns worth comparing.
+CATALOG_KINDS = ("model", "seed", "snapshot", "source")
 
 
 # --------------------------------------------------------------------------- #
@@ -195,6 +213,84 @@ def _column_rows(kind, resource, rel, node):
     for column in node.get("columns") or []:
         if isinstance(column, dict) and column.get("name") and "description" in column:
             yield _row(kind, resource, column["name"], rel, column["description"])
+
+
+def _column_names(node):
+    return [str(c["name"]) for c in (node.get("columns") or [])
+            if isinstance(c, dict) and c.get("name")]
+
+
+def load_declared(root):
+    """Every declared resource, with its column names, described or not.
+
+    `load_properties` only sees descriptions, which is what the doc-block rule
+    needs. Completeness questions (is every column declared, is any declared
+    twice, does the list match the built table) need the plain column list, so
+    this returns (kind, resource) -> {file, columns, undescribed}.
+    """
+    declared = {}
+    for path, rel in walk_files(root, (".yml", ".yaml"), PROPERTY_PATHS):
+        with open(path, encoding="utf-8") as handle:
+            try:
+                doc = yaml.safe_load(handle)
+            except yaml.YAMLError:
+                continue  # load_properties reports the parse error
+        for kind, resource, node in _entries(doc):
+            declared[(kind, resource)] = _declared_entry(rel, node)
+            for version in node.get("versions") or []:
+                if not isinstance(version, dict) or version.get("v") is None:
+                    continue
+                # A version inherits the base columns and may add or override.
+                merged = dict(node)
+                merged["columns"] = (node.get("columns") or []) + (version.get("columns") or [])
+                declared[(kind, "%s.v%s" % (resource, version["v"]))] = _declared_entry(rel, merged)
+    return declared
+
+
+def _declared_entry(rel, node):
+    columns = _column_names(node)
+    undescribed = [str(c["name"]) for c in (node.get("columns") or [])
+                   if isinstance(c, dict) and c.get("name") and "description" not in c]
+    duplicates = {name: count for name, count in Counter(columns).items() if count > 1}
+    return {"file": rel, "columns": columns, "undescribed": undescribed,
+            "duplicates": duplicates}
+
+
+def physical_resources(root):
+    """(kind, name, relpath) for every model, snapshot and seed file on disk.
+
+    These are the resources dbt will build whether or not a yml mentions them,
+    so they are what `check` compares the declared set against.
+    """
+    found = []
+    for _path, rel in walk_files(root, (".sql",), ("models",)):
+        found.append(("model", os.path.basename(rel)[:-4], rel))
+    for path, rel in walk_files(root, (".sql",), ("snapshots",)):
+        with open(path, encoding="utf-8") as handle:
+            names = SNAPSHOT_BLOCK_RE.findall(handle.read())
+        for name in names or [os.path.basename(rel)[:-4]]:
+            found.append(("snapshot", name, rel))
+    for _path, rel in walk_files(root, (".csv",), ("seeds",)):
+        found.append(("seed", os.path.basename(rel)[:-4], rel))
+    return found
+
+
+def package_declared(root):
+    """(kind, resource) pairs declared by the yml of every installed package."""
+    top = os.path.join(root, PACKAGES_DIR)
+    found = set()
+    if not os.path.isdir(top):
+        return found
+    for package in sorted(os.listdir(top)):
+        pkg_root = os.path.join(top, package)
+        if os.path.isdir(pkg_root):
+            found.update(load_declared(pkg_root))
+    return found
+
+
+def normalize_column(name):
+    """BigQuery column names are case-insensitive to a query; yml may quote them."""
+    return str(name).strip().strip("`").lower()
 
 
 def _row(kind, resource, column, rel, description):
@@ -342,12 +438,168 @@ def cmd_check(args):
         target = row["column"] or "(%s level)" % row["kind"]
         problems.append("%s: %s %s" % (row["file"], target, fault[1]))
 
+    # The yml must also be complete on its own terms. A column with no
+    # description key, or one declared twice, publishes nothing or the wrong
+    # text, and dbt warns about neither.
+    declared = load_declared(args.root)
+    for (kind, resource), entry in sorted(declared.items()):
+        if only and entry["file"] not in only:
+            continue
+        for name in entry["undescribed"]:
+            problems.append("%s: %s has no description. Add a doc block reference "
+                            "for it." % (entry["file"], name))
+        for name, count in sorted(entry["duplicates"].items()):
+            problems.append("%s: %s.%s is declared %s; dbt keeps the last entry and "
+                            "silently drops the other description(s). Remove the "
+                            "duplicate." % (entry["file"], resource, name,
+                                            "twice" if count == 2 else "%d times" % count))
+
+    # A model, seed or snapshot with no yml entry cannot be documented at all.
+    # A resource an installed package already declares (a seed overriding a
+    # package seed of the same name, say) is the exception: dbt refuses a
+    # second yml entry for it, so the package's entry is the only one allowed.
+    from_packages = package_declared(args.root)
+    for kind, name, rel in physical_resources(args.root):
+        if (kind, name) in declared or (kind, name) in from_packages:
+            continue
+        if only and rel not in only:
+            continue
+        problems.append("%s: %s '%s' has no yml entry. Declare it, with a description "
+                        "for the %s and for each column (see docs/documentation.md)."
+                        % (rel, kind, name, kind))
+
     for message in problems:
         print(message)
     if problems:
         print("\n%d problem(s)." % len(problems))
         return 1
-    print("docs_lint: clean (%d descriptions, %d blocks)" % (len(rows), len(local)))
+    print("docs_lint: clean (%d descriptions, %d blocks, %d resources)"
+          % (len(rows), len(local), len(declared)))
+    return 0
+
+
+def _catalog_key(unique_id):
+    """(kind, package, resource) for a catalog unique_id, in load_declared's terms.
+
+    `model.pkg.name` -> ("model", "pkg", "name"); a versioned model
+    `model.pkg.name.v2` -> "name.v2"; `source.pkg.src.table` -> "src.table".
+    """
+    parts = unique_id.split(".")
+    if len(parts) < 3:
+        return None
+    kind, package = parts[0], parts[1]
+    if kind == "source":
+        resource = ".".join(parts[2:4])
+    else:
+        resource = parts[2] + (".%s" % parts[3] if len(parts) > 3 else "")
+    return kind, package, resource
+
+
+def _catalog_age_hours(catalog):
+    stamp = (catalog.get("metadata") or {}).get("generated_at")
+    if not stamp:
+        return None
+    when = datetime.datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=datetime.timezone.utc)
+    return (datetime.datetime.now(datetime.timezone.utc) - when).total_seconds() / 3600.0
+
+
+def cmd_columns(args):
+    """Compare each resource's yml column list with the table dbt built.
+
+    The catalog is the only witness to what a table actually contains, so this
+    cannot run offline and is not part of `check`. It is meant for CI, right
+    after `dbt docs generate`, where the catalog is seconds old. A partial
+    catalog (a PR build of a few models) is fine: resources it does not cover
+    are counted and skipped, never failed.
+    """
+    if not os.path.isfile(args.catalog):
+        print("catalog not found: %s (run `dbt docs generate` first)" % args.catalog)
+        return 2
+    with open(args.catalog, encoding="utf-8") as handle:
+        catalog = json.load(handle)
+    age = _catalog_age_hours(catalog)
+    stamp = (catalog.get("metadata") or {}).get("generated_at", "unknown")
+    if args.max_age is not None and (age is None or age > args.max_age):
+        print("catalog generated_at %s is older than %s hour(s); regenerate it with "
+              "`dbt docs generate` before comparing." % (stamp, args.max_age))
+        return 2
+    print("catalog: %s (generated_at %s)" % (args.catalog, stamp))
+
+    own = project_name(args.root)
+    entries = {}
+    for section in ("nodes", "sources"):
+        for unique_id, node in (catalog.get(section) or {}).items():
+            key = _catalog_key(unique_id)
+            if key and key[0] in CATALOG_KINDS:
+                entries[key] = node
+    if args.package == "all":
+        packages = sorted({package for _kind, package, _res in entries})
+    else:
+        packages = [args.package or own]
+    kinds = tuple(k.strip() for k in args.resource_types.split(",") if k.strip())
+
+    totals = Counter()
+    failing = False
+    for package in packages:
+        # This repo's yml is at the root; an installed package's yml is under
+        # dbt_packages/<name>/, exactly as dbt read it.
+        yml_root = args.root if package == own else os.path.join(args.root, PACKAGES_DIR, package)
+        if not os.path.isdir(yml_root):
+            print("\n[%s] no yml available at %s; skipped" % (package, yml_root))
+            continue
+        declared = load_declared(yml_root)
+        in_catalog = {(kind, res): node for (kind, pkg, res), node in entries.items()
+                      if pkg == package and kind in kinds}
+        print("\n[%s] %d resource(s) in catalog" % (package, len(in_catalog)))
+
+        for (kind, resource), node in sorted(in_catalog.items(), key=lambda kv: kv[0]):
+            live = {normalize_column(c) for c in (node.get("columns") or {})}
+            top = sorted(c for c in live if "." not in c)
+            first_level = sorted(c for c in live if c.count(".") == 1)
+            entry = declared.get((kind, resource))
+            if entry is None:
+                totals["undeclared"] += 1
+                totals["missing"] += len(top)
+                failing = True
+                print("%s '%s' has no yml at all; %d live column(s): %s"
+                      % (kind, resource, len(top), ", ".join(top)))
+                continue
+            yml = {normalize_column(c) for c in entry["columns"]}
+            missing = [c for c in top if c not in yml]
+            stale = sorted(c for c in yml if c not in live)
+            nested = [c for c in first_level if c not in yml]
+            totals["compared"] += 1
+            totals["missing"] += len(missing)
+            totals["stale"] += len(stale)
+            totals["nested"] += len(nested)
+            if missing or stale:
+                failing = True
+            if not (missing or stale or nested):
+                continue
+            print("%s: %s" % (entry["file"], resource))
+            if missing:
+                print("   missing (in table, no yml entry): %s" % ", ".join(missing))
+            if stale:
+                print("   stale   (in yml, not in table):   %s" % ", ".join(stale))
+            if nested:
+                print("   nested  (first-level fields, informational): %s" % ", ".join(nested))
+
+        absent = sorted(res for (kind, res) in declared if kind in kinds
+                        and (kind, res) not in in_catalog)
+        totals["not_in_catalog"] += len(absent)
+        if absent:
+            print("%d declared resource(s) not in catalog (not built here; skipped)%s"
+                  % (len(absent), ": " + ", ".join(absent) if args.verbose else ""))
+
+    print("\nsummary: %d compared, %d not in catalog, %d with no yml; "
+          "missing=%d stale=%d nested=%d"
+          % (totals["compared"], totals["not_in_catalog"], totals["undeclared"],
+             totals["missing"], totals["stale"], totals["nested"]))
+    if args.strict and failing:
+        print("--strict: yml column lists disagree with the built tables.")
+        return 1
     return 0
 
 
@@ -572,6 +824,23 @@ def main(argv=None):
     p = sub.add_parser("check", help="enforce the rule")
     p.add_argument("files", nargs="*", help="limit the check to these paths")
     p.set_defaults(func=cmd_check)
+
+    p = sub.add_parser("columns", help="compare yml column lists with dbt's catalog")
+    p.add_argument("--catalog", default="target/catalog.json",
+                   help="catalog.json from `dbt docs generate` (default: target/catalog.json)")
+    p.add_argument("--package", default=None,
+                   help="package to compare (default: this project); 'all' compares every "
+                        "package in the catalog, reading installed packages' yml from "
+                        "dbt_packages/")
+    p.add_argument("--resource-types", default=",".join(CATALOG_KINDS),
+                   help="comma-separated kinds to compare (default: %s)" % ",".join(CATALOG_KINDS))
+    p.add_argument("--max-age", type=float, default=None, metavar="HOURS",
+                   help="refuse a catalog older than this many hours")
+    p.add_argument("--strict", action="store_true",
+                   help="exit 1 when any missing or stale column is found")
+    p.add_argument("--verbose", action="store_true",
+                   help="list the declared resources the catalog does not cover")
+    p.set_defaults(func=cmd_columns)
 
     p = sub.add_parser("snapshot", help="write resolved descriptions to JSON")
     p.add_argument("--out", default="docs_snapshot.json")
