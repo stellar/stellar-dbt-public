@@ -20,3 +20,7 @@ credentials.json
 ### dbt generated files
 package-lock.yml
 .user.yml
+
+# Python bytecode from scripts/
+__pycache__/
+*.py[cod]

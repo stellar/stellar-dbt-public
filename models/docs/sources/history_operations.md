@@ -4,19 +4,6 @@
 The history operations table contains the lowest granularity of data avaiable to the network. It contains all details regarding operations that were executed as part of a transaction set. Be careful - the table contains both failed and successful operations (history_transactions contains the succesful indicator). The details record will return varying information about an operation according to the operation type.
 {% enddocs %}
 
-{% docs operation_id %}
-Unique identifier for an operation.
-
-- Primary Key
-- Natural Key
-- Cluster Field
-- Required Field
-
-#### Notes:
-
-The operation id is the transaction id + order number
-{% enddocs %}
-
 {% docs source_account %}
 The account address that originates the operation
 

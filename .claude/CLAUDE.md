@@ -120,26 +120,14 @@ See `docs/snapshot.md` for the full control flow diagram. For hands-on snapshot 
 
 ## Documentation
 
-- **Universal column definitions**: `models/docs/universal.md` — referenced via `{{ doc('column_name') }}` in YAML schema files
-- **Domain docs**: `models/docs/sources/`, `models/docs/snapshots/`, `models/docs/marts/`, `models/docs/intermediate/`
-- Each SQL model has a co-located `.yml` schema file with column descriptions and tests
-
-When adding or modifying models, update both the co-located YAML and any relevant doc blocks in `models/docs/`.
+- **Model or column descriptions:** read `docs/documentation.md` before writing one.
 
 ## Pre-commit Hooks
 
-Pre-commit runs automatically on commit. Run it manually before finishing any task:
+Run before considering a task complete. See `.pre-commit-config.yaml` for the hook list.
 
 ```bash
-pre-commit run --all-files        # Run all hooks on all files
-pre-commit run --files path/to/file.sql   # Run on specific files
+pre-commit run --all-files
 ```
 
-Hooks:
-1. **SQLFluff** — lints and auto-fixes SQL style
-2. **dbt-checkpoint** — enforces:
-   - All model columns in `marts/` must have descriptions in `.yml`
-   - All mart models must have a description
-   - Model tags must be from the approved allowlist (see `.pre-commit-config.yaml`)
-   - All source columns/tables must have descriptions
-3. **Prettier** — formats `.json`/`.yaml`/`.yml` files
+`--files <list>` can report "no files to check" in some environments; `--all-files` is reliable.

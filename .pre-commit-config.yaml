@@ -44,6 +44,18 @@ repos:
 
   - repo: local
     hooks:
+      - id: docs-lint
+        name: Descriptions live in doc blocks, not inline in yml
+        entry: python scripts/docs_lint.py check
+        language: python
+        additional_dependencies: ["pyyaml"]
+        pass_filenames: false
+        # The check reads the whole repo and takes well under a second, so it runs
+        # unconditionally. A `files` filter would skip it on a commit that only
+        # deletes a referenced .md, which is exactly when a dangling doc()
+        # reference appears.
+        always_run: true
+
       - id: cleanup
         name: Cleanup .env.tmp
         entry: ./pre-commit/cleanup.sh
