@@ -44,11 +44,13 @@ models:
       - name: sponsor
         description: '{{ doc("sponsor") }}'
       - name: last_modified_ledger
+        description: '{{ doc("last_modified_ledger") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
       - name: ledger_entry_change
+        description: '{{ doc("ledger_entry_change") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -77,11 +79,13 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
       - name: closed_at
+        description: '{{ doc("closed_at") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
       - name: ledger_sequence
+        description: '{{ doc("ledger_sequence") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"
@@ -93,3 +97,4 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
       - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

@@ -89,3 +89,9 @@ models:
 
       - name: is_soroban
         description: '{{ doc("is_soroban") }}'
+
+      - name: contract_id
+        description: '{{ doc("contract_id") }}'
+
+      - name: unique_key
+        description: '{{ doc("token_unique_key") }}'

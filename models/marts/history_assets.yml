@@ -57,3 +57,6 @@ models:
         description: '{{ doc("batch_run_date") }}'
         tests:
           - not_null
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

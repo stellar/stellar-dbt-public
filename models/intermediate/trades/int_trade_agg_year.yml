@@ -98,3 +98,6 @@ models:
 
       - name: close_d_yearly
         description: '{{ doc("close_d_yearly") }}'
+
+      - name: airflow_start_ts
+        description: '{{ doc("airflow_start_ts") }}'

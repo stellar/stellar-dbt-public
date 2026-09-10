@@ -280,3 +280,15 @@ Indicates if this transaction was successful or not
 
 A transaction's success does not indicate whether it was included and written to a ledger. It only indicates whether the operations in the transaction were successfully applied to mutate the ledger state.
 {% enddocs %}
+
+{% docs balance_id_strkey %}
+The claimable balance identifier encoded as a strkey, a base32 string starting with `B`. This is the form Horizon and the SDKs use; `balance_id` holds the same identifier as hex.
+{% enddocs %}
+
+{% docs liquidity_pool_id_strkey %}
+The liquidity pool identifier encoded as a strkey, a base32 string starting with `L`. This is the form Horizon and the SDKs use; `liquidity_pool_id` holds the same identifier as hex.
+{% enddocs %}
+
+{% docs ledger_key_hash_base_64 %}
+The ledger key of the entry as base64-encoded XDR, the form Soroban RPC's `getLedgerEntries` accepts. `ledger_key_hash` is the hex hash of this same key.
+{% enddocs %}

@@ -189,3 +189,6 @@ sources:
               - incremental_not_null:
                   date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: selling_liquidity_pool_id_strkey
+            description: '{{ doc("selling_liquidity_pool_id_strkey") }}'
