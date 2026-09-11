@@ -25,7 +25,7 @@
     "valid_from_col_name": 'valid_from',
     "valid_to_col_name": 'valid_to',
     "on_schema_change": 'append_new_columns',
-    "tags": ["custom_snapshot_reflector_prices_data"]
+    "tags": ["custom_snapshot_reflector_prices_data", "snapshots"]
 } %}
 
 {{ config(
