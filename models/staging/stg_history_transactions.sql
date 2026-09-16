@@ -46,7 +46,6 @@ with
             , non_refundable_resource_fee_charged
             , refundable_resource_fee_charged
             , rent_fee_charged
-            , refundable_fee
             , batch_id
             , batch_run_date
             , batch_insert_ts
