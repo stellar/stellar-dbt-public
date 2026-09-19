@@ -7,6 +7,7 @@ with
     , liquidity_pool as (
         select
             liquidity_pool_id
+            , liquidity_pool_id_strkey
             , type
             , fee
             , trustline_count
