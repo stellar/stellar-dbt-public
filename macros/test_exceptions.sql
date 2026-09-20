@@ -60,8 +60,16 @@ and not exists (
 {% endmacro %}
 
 
-{% macro validate_test_exceptions(exceptions_relation) %}
-    {#- Flags rows in exceptions_relation that can't do what their author intended; see docs/test_exceptions.md. -#}
+{% macro validate_test_exceptions(exceptions_relation, check_registration=true) %}
+    {#- Flags rows in exceptions_relation that can't do what their author intended; see docs/test_exceptions.md.
+
+        `check_registration` controls only the registry-dependent checks (is the named test
+        wired, does it expose this entity_column, does it allow a day scope). Pass false on a
+        target where some wired tests are disabled: dbt drops disabled nodes from `graph`
+        entirely -- there is no `graph['disabled']` in the Jinja context (checked through
+        dbt 1.12) -- so a test that is `enabled=(target.name == "prod" ...)` is indistinguishable
+        from a typo'd target_key there, and its perfectly valid row would be flagged. Every
+        row-shape check (kinds, reason, owner, expires_on, day range) still runs either way. -#}
     {%- set target_structs = [] -%}
     {%- set column_structs = [] -%}
     {%- if execute -%}
@@ -153,8 +161,10 @@ with registered_targets as (
                 then 'missing_expires_on: temporary exceptions must expire'
             when nullif(trim(ewr.exception_kind), '') = 'structural' and ewr.expires_on is not null
                 then 'structural_with_expires_on: a permanent carve-out must not expire'
+            {# returning null (not an error) also short-circuits the entity_column and
+               day_scope branches below, which are meaningless without the target's scope #}
             when not ewr.is_registered
-                then 'unregistered_target_key: no test in this project declares meta.exception_scope for it'
+                then {% if check_registration %}'unregistered_target_key: no test in this project declares meta.exception_scope for it'{% else %}cast(null as string){% endif %}
             when nullif(trim(ewr.entity_key), '') is null and nullif(trim(ewr.entity_column), '') is not null
                 then 'entity_column_without_entity_key'
             when

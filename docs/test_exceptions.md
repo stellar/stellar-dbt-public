@@ -100,6 +100,25 @@ registry, so a mistyped `entity_column` fails loudly instead of quietly forgivin
 nothing. It is deliberately not itself wired to `exclude_test_exceptions` — excepting
 the validator would let a malformed row silence the check that catches it.
 
+That registry can only see *enabled* tests. dbt drops disabled nodes from `graph`
+entirely — there is no `graph['disabled']` in the Jinja context, checked through dbt
+1.12 — so on a target where a wired test is switched off (six of them are
+`enabled=(target.name == "prod" ...)`), its perfectly valid exception row is
+indistinguishable from a typo'd `target_key`. That is why the validator takes
+`check_registration`, and why the test passes `target.name == "prod"`:
+
+| | on prod | off prod |
+|---|---|---|
+| `target_kind`, `exception_kind`, `reason`, `owner`, `expires_on`, inverted day range | checked | checked |
+| `target_key` is a wired test | checked | skipped |
+| `entity_column` is one the target exposes | checked | skipped for tests disabled here |
+| `day_from`/`day_to` allowed by the target | checked | skipped for tests disabled here |
+
+So a typo'd `target_key` is still caught, on the one target where every wired test is
+enabled and the seed is authoritative. Before this, the package's own test failed on
+every non-prod target on a valid seed — staging alerted every 30 minutes from
+2026-09-04 until it was fixed.
+
 Both macros live in `macros/test_exceptions.sql` and are shared with any project
 that installs this package. That's safe because `config`/`model`/`graph` context is
 bound to whichever node is *currently compiling*, not to whichever package

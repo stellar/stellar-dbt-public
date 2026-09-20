@@ -8,4 +8,6 @@
     )
 }}
 
-{{ validate_test_exceptions(ref('public_test_exceptions')) }}
+{#- Registry checks only where every wired test is enabled: off prod the prod-only tests
+    are absent from `graph`, so their valid rows would read as unregistered. -#}
+{{ validate_test_exceptions(ref('public_test_exceptions'), check_registration=(target.name == "prod")) }}
