@@ -16,6 +16,7 @@ Stellar Development Foundation's public analytics dataset.
 | This README                                        | What the project is and how to consume its output                          |
 | [DEVELOPING.md](DEVELOPING.md)                     | Local setup, running models and tests, project layout, and CI              |
 | [CONTRIBUTING.md](CONTRIBUTING.md)                 | Branch naming, pull request etiquette, release mechanics, and SQL style    |
+| [docs/documentation.md](docs/documentation.md)     | How model and column descriptions are written, placed, and linted          |
 | [docs/snapshot.md](docs/snapshot.md)               | The custom snapshot materialization, its macros, and how to repair one     |
 | [docs/test_exceptions.md](docs/test_exceptions.md) | How accepted test failures are recorded                                    |
 | [SECURITY.md](SECURITY.md)                         | Bug bounty scope                                                           |

@@ -18,6 +18,7 @@ For what this project is and where its output lives, read the
 - [Running tests](#running-tests)
 - [Linting](#linting)
 - [Generating the docs site](#generating-the-docs-site)
+- [Documentation](#documentation)
 - [Continuous integration](#continuous-integration)
 - [Tips and notes](#tips-and-notes)
 
@@ -154,7 +155,7 @@ Individual models override them in their own `config()` block; most marts are
 Supporting directories: `macros/` (reusable SQL, including the custom snapshot
 materialization), `tests/` (singular tests, plus generic tests in
 `tests/generic/`), `seeds/` (small CSVs loaded as tables), `models/docs/` (doc
-blocks), and `analyses/`.
+blocks, mirroring the `models/` layout), and `analyses/`.
 
 ### Staging
 
@@ -183,8 +184,9 @@ Don't: ingest raw data, do dimensional modeling, or repeat the staging actions.
 ### Marts
 
 Where users access the final dimensional models. Every model is accompanied by a
-`.yml` file of the same name holding descriptions and tests for the model and
-its columns.
+`.yml` file of the same name holding the tests for the model and its columns,
+plus a `{{ doc(...) }}` reference for each description. The description text
+lives in a doc block under `models/docs/`. See [Documentation](#documentation).
 
 Do: organize data into dimension, fact, or aggregate tables; final joins on
 staging and intermediate models; mart-specific tweaks; end user documentation;
@@ -293,7 +295,8 @@ pre-commit run --all-files
 
 The hooks are [sqlfluff](https://docs.sqlfluff.com/) lint and fix, configured by
 [.sqlfluff](.sqlfluff) for the BigQuery dialect and the dbt templater, plus
-`prettier` for JSON and YAML and a handful of hygiene checks.
+`prettier` for JSON and YAML, `docs-lint` (see [Documentation](#documentation)),
+and a handful of hygiene checks.
 
 You can also run sqlfluff directly:
 
@@ -315,11 +318,50 @@ dbt docs serve
 
 Merges to `master` regenerate the published docs site and upload it to GCS.
 
-Column descriptions come from two places: the `.yml` co-located with each model,
-and shared doc blocks in `models/docs/` referenced as `{{ doc('column_name') }}`.
-Columns that mean the same thing everywhere belong in
-`models/docs/universal.md`. When you add or change a model, update both the
-co-located `.yml` and any relevant doc block.
+## Documentation
+
+Every model, source table and column carries a description, and those
+descriptions are published to the docs site on every merge to `master`. There is
+one rule:
+
+**Descriptions live in doc blocks, never inline in the `.yml`.**
+
+The `.yml` holds a reference; the text lives in a `.md` file under `models/docs/`:
+
+```yaml
+- name: asset_code
+  description: '{{ doc("asset_code") }}'
+```
+
+```markdown
+{% docs asset_code %}
+The 4 or 12 character code representation of the asset on the network.
+{% enddocs %}
+```
+
+That gives each description one home, so when the same column appears in a
+source, a staging model and a mart, all three point at the same block and the
+text cannot drift between them.
+
+`models/docs/` mirrors `models/`, so a column on `models/marts/trade_agg.sql` is
+documented in `models/docs/marts/trade_agg.md`. A definition that **unrelated
+tables** share, like `asset_code` or `batch_run_date`, goes in
+`models/docs/universal.md` instead. A column that merely flows from `sources/`
+through `staging/` to `marts/` is still one table's column and stays in that
+table's mirror file.
+
+Before writing a description, check whether a block already exists, and read its
+text rather than trusting its name:
+
+```sh
+grep -rn "{% docs <column_name> %}" models/docs/
+./venv/bin/python scripts/docs_lint.py check     # also runs in pre-commit
+```
+
+> _*Note:*_ The full process, including doc block naming, what the linter
+> deliberately does not check, how to prove a docs change rendered nothing
+> unexpected, and what to check before renaming a block that `stellar-dbt`
+> depends on, is in [docs/documentation.md](docs/documentation.md).
 
 ## Continuous integration
 

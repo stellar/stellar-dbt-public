@@ -116,7 +116,9 @@ picks it up only after bumping its pin and running `dbt deps`.
   (`int_account_balances__trustlines`). Mart models are named for the entity
   they describe, with no prefix.
 - Every model gets a co-located `.yml` of the same name, with a description for
-  the model and for each of its columns. Marts additionally require every
+  the model and for each of its columns. Each description is a
+  `{{ doc(...) }}` reference to a doc block, never inline text; the
+  `docs-lint` pre-commit hook enforces this. Marts additionally require every
   column to be described — an undescribed mart column is a review comment, and
   the project evaluator check tracks documentation coverage.
 - Reuse an existing doc block for a column that already means the same thing
@@ -132,10 +134,11 @@ picks it up only after bumping its pin and running `dbt deps`.
 
 ## Documentation
 
-- Shared column descriptions live in `models/docs/universal.md` and are
-  referenced as `{{ doc('column_name') }}`. Domain-specific blocks live in
-  `models/docs/sources/`, `models/docs/intermediate/`, `models/docs/marts/`, and
-  `models/docs/snapshots/`.
+- Descriptions live in doc blocks under `models/docs/`, never inline in the
+  `.yml`. `models/docs/` mirrors `models/`, one `.md` per table; definitions
+  shared by unrelated tables go in `models/docs/universal.md`. See
+  [Documentation](DEVELOPING.md#documentation) and
+  [docs/documentation.md](docs/documentation.md) for the full process.
 - Setup, running, testing, and layer guidance belong in
   [DEVELOPING.md](DEVELOPING.md).
 - Contribution process, style, and release mechanics belong here.
