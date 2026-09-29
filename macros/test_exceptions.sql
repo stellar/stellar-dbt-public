@@ -69,7 +69,8 @@ and not exists (
         entirely -- there is no `graph['disabled']` in the Jinja context (checked through
         dbt 1.12) -- so a test that is `enabled=(target.name == "prod" ...)` is indistinguishable
         from a typo'd target_key there, and its perfectly valid row would be flagged. Every
-        row-shape check (kinds, reason, owner, expires_on, day range) still runs either way. -#}
+        row-shape check (kinds, reason, owner, expires_on, entity_column without entity_key,
+        inverted day range) still runs either way. -#}
     {%- set target_structs = [] -%}
     {%- set column_structs = [] -%}
     {%- if execute -%}
@@ -161,20 +162,21 @@ with registered_targets as (
                 then 'missing_expires_on: temporary exceptions must expire'
             when nullif(trim(ewr.exception_kind), '') = 'structural' and ewr.expires_on is not null
                 then 'structural_with_expires_on: a permanent carve-out must not expire'
-            {# returning null (not an error) also short-circuits the entity_column and
-               day_scope branches below, which are meaningless without the target's scope #}
-            when not ewr.is_registered
-                then {% if check_registration %}'unregistered_target_key: no test in this project declares meta.exception_scope for it'{% else %}cast(null as string){% endif %}
             when nullif(trim(ewr.entity_key), '') is null and nullif(trim(ewr.entity_column), '') is not null
                 then 'entity_column_without_entity_key'
+            when ewr.day_from is not null and ewr.day_to is not null and ewr.day_from > ewr.day_to
+                then 'day_range_inverted'
+            {# everything above reads only the row itself; everything below needs the target's
+               declared scope. An unregistered row stops here: an error on prod, a pass (null)
+               where check_registration is off and the test may simply be disabled #}
+            when not ewr.is_registered
+                then {% if check_registration %}'unregistered_target_key: no test in this project declares meta.exception_scope for it'{% else %}cast(null as string){% endif %}
             when
                 nullif(trim(ewr.entity_key), '') is not null
                 and coalesce(nullif(trim(ewr.entity_column), ''), '') not in unnest(ewr.entity_columns)
                 then 'unknown_entity_column: target does not expose it'
             when (ewr.day_from is not null or ewr.day_to is not null) and not ewr.allows_day_scope
                 then 'day_scope_not_supported: target has no data day'
-            when ewr.day_from is not null and ewr.day_to is not null and ewr.day_from > ewr.day_to
-                then 'day_range_inverted'
         end as validation_error
     from exceptions_with_registry as ewr
 )
