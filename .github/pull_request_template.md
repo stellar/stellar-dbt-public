@@ -35,3 +35,17 @@ change is, and why it is being made, with enough context for anyone to understan
 ### Known limitations
 
 [TODO or N/A]
+
+### Backfill readiness
+
+<!-- Delete this section if the PR doesn't add a model or change a model's materialization,
+incremental strategy, partition_by, or batch_start_date / batch_end_date filters. -->
+
+| Model | Full-refresh time | Materialization / strategy | How measured |
+|---|---|---|---|
+| `model_name` | e.g. 42 min | e.g. microbatch (month, copy_partitions) | e.g. dev-hubble run on YYYY-MM-DD, or estimate |
+
+- [ ] The strategy matches the full-refresh time: < 5 min → `table` · 5–30 min → `incremental` + `insert_overwrite` · > 30 min → `incremental` + `microbatch`
+      (any exception is explained above, e.g. kept as `table` because the daily full rebuild is cheap)
+- [ ] No `merge` incremental strategy (allowed only for snapshots and `*_current` models)
+- [ ] If the model is partitioned and holds data from genesis (2015), it filters on `batch_end_date`, including on the full-refresh path
