@@ -149,7 +149,7 @@ Hooks:
 Write the PR body as a cover note for a reviewer, not a changelog or a file-by-file summary.
 Use the smallest shape that makes the change easier to review:
 
-- Small or obvious change: one paragraph, no headings.
+- Small or obvious change: keep every template heading and answer each in a sentence or two.
 - Model, macro, or test change: what changed and its effect. Add root cause or the non-obvious approach only when the diff does not already show it.
 - Schema, grain, tag, or source change: name the affected model and column, and the full refresh or backfill needed on merge.
 - Snapshot change: say whether a rebuild is needed and over what `snapshot_start_date` window.
@@ -158,3 +158,5 @@ Use the smallest shape that makes the change easier to review:
 IMPORTANT: do not add Summary, Changes, Test Plan, or Files Changed sections. Do not paste commands, dbt run or test output, CI logs, commit logs, or file lists. No emoji. No step-by-step narration of what you did.
 
 Fill the headings in `.github/pull_request_template.md` and no others. Treat the HTML comments in that template as instructions: follow them, then delete them from the final body. Leave the footer checkboxes unticked; they are the author's to tick.
+
+`Data impact` covers data that actually changes on merge, not a lineage list of downstream models. `Known limitations` lists what the PR deliberately leaves out and follow-ups already planned, with issue links, so reviewers do not flag them. Write "None" when there are none rather than inventing caveats.
