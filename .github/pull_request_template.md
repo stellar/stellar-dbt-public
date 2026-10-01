@@ -16,6 +16,6 @@
 ---
 
 - [ ] I ran this and reviewed the diff myself.
-- [ ] I ran a Claude review (e.g. `/code-review`) before requesting review.
+- [ ] I ran a Claude review (e.g. `/code-review`) before requesting review, or N/A for outside contributors.
 - [ ] If this PR touches descriptions, they live in doc blocks under `models/docs/`, and I read every block I referenced (see [docs/documentation.md](../docs/documentation.md)).
 - [ ] Branch is named `major/*`, `minor/*`, or `patch/*` (the release workflow reads it to pick the version bump).
