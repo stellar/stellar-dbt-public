@@ -287,16 +287,39 @@ def physical_resources(root):
 
 
 def package_declared(root):
-    """(kind, resource) pairs declared by the yml of every installed package."""
-    top = os.path.join(root, PACKAGES_DIR)
+    """(kind, resource) pairs an installed package owns, by two signals.
+
+    The package's own yml under dbt_packages/, when it is installed. And,
+    because CI lints a fresh clone with no dbt_packages/, any resource this
+    project configures under another package's key in dbt_project.yml: the
+    project cannot configure a resource it does not know belongs to a package.
+    """
     found = set()
-    if not os.path.isdir(top):
-        return found
-    for package in sorted(os.listdir(top)):
-        pkg_root = os.path.join(top, package)
-        if os.path.isdir(pkg_root):
-            found.update(load_declared(pkg_root))
+    top = os.path.join(root, PACKAGES_DIR)
+    if os.path.isdir(top):
+        for package in sorted(os.listdir(top)):
+            pkg_root = os.path.join(top, package)
+            if os.path.isdir(pkg_root):
+                found.update(load_declared(pkg_root))
+    own = project_name(root)
+    with open(os.path.join(root, "dbt_project.yml"), encoding="utf-8") as handle:
+        project = yaml.safe_load(handle) or {}
+    for section, kind in (("models", "model"), ("seeds", "seed"), ("snapshots", "snapshot")):
+        for package, config in (project.get(section) or {}).items():
+            if package == own or not isinstance(config, dict):
+                continue
+            found.update((kind, name) for name in _configured_names(config))
     return found
+
+
+def _configured_names(config):
+    """Every non-config key at any depth of a dbt_project.yml config tree."""
+    for key, value in config.items():
+        if str(key).startswith("+"):
+            continue
+        yield str(key)
+        if isinstance(value, dict):
+            yield from _configured_names(value)
 
 
 def normalize_column(name):
