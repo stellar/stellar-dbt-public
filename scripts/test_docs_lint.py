@@ -167,6 +167,16 @@ class CheckColumnCoverage(Fixture):
         code, out = self.check()
         self.assertEqual(code, 0, out)
 
+    def test_resource_configured_under_a_package_in_dbt_project_counts_as_declared(self):
+        # CI lints a fresh clone with no dbt_packages/, so the package's own yml is
+        # not there to read. The project configuring the resource under the
+        # package's key in dbt_project.yml is proof enough that the package owns it.
+        _write(self.root, "seeds/pkg_exceptions.csv", "a,b\n1,2\n")
+        _write(self.root, "dbt_project.yml",
+               "name: %s\nversion: '1.0'\nseeds:\n  some_pkg:\n    pkg_exceptions:\n      +enabled: false\n" % PROJECT)
+        code, out = self.check()
+        self.assertEqual(code, 0, out)
+
     def test_version_override_of_a_base_column_is_not_a_duplicate(self):
         # A version may re-declare a base column (to add tests, say) without
         # repeating the description; that is an override, not a duplicate.
