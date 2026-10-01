@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: tvl_agg
-    description: "This table aggregates TVL from accounts, trustlines, and liquidity pools to calculate total TVL"
+    description: '{{ doc("tvl_agg") }}'
     tests:
       - recency:
           tags: [recency]

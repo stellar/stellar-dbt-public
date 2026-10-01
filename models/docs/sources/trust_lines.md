@@ -22,3 +22,9 @@ The maximum amount of this asset that this account is willing to accept. The lim
 
 - Required Field
   {% enddocs %}
+
+{% docs trust_lines__asset_id %}
+
+asset id
+
+{% enddocs %}

@@ -141,7 +141,7 @@ models:
         description: '{{ doc("sponsor") }}'
 
       - name: asset_id
-        description: asset id
+        description: '{{ doc("trust_lines__asset_id") }}'
         tests:
           - incremental_not_null:
               date_column_name: "closed_at"

@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: token_transfers
-    description: "Curated and enriched token transfer events across the entire Stellar network"
+    description: '{{ doc("token_transfers") }}'
     tests:
       - recency:
           tags: [recency]

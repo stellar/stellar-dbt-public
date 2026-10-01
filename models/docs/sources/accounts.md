@@ -5,14 +5,6 @@ The accounts table stores detailed information for a given account, including cu
 Any changes to the account, whether it is an account settings change, balance increase/decrease or sponsorship change will result in an increase to the account sequence_number and last_modified_ledger. The sequence_number is incremented with each operation applied to an account so that order is preserved during account mutation.
 {% enddocs %}
 
-{% docs account_id %}
-The address of the account. The address is the account's public key encoded in base32. All account addresses start with a 'G'.
-
-- Natural Key
-- Cluster Field
-- Required Field
-  {% enddocs %}
-
 {% docs balance %}
 The number of units of XLM held by the account
 

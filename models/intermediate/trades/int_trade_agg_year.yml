@@ -2,10 +2,10 @@ version: 2
 
 models:
   - name: int_trade_agg_year
-    description: Intermediate for the aggregation of yearly trade data. This table contains the aggregated metrics of all trades between an asset pair, regardless of whether they are selling or buying.
+    description: '{{ doc("int_trade_agg_year") }}'
     columns:
       - name: day_agg
-        description: Date from which all metrics are aggregated.
+        description: '{{ doc("int_trade_agg__day_agg") }}'
         tests:
           - not_null
 

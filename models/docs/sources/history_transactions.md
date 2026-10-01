@@ -5,21 +5,6 @@ Trasactions are commands that modify the ledger state and consist of one or more
 Transactions that are sent to the Stellar Network either succeed completely or fail completely. There is no partial transaction execution. The table is an event log of all transactions submitted and committed to a transaction set within a ledger.
 {% enddocs %}
 
-{% docs transaction_id %}
-A unique identifier for this transaction.
-
-- Primary Key
-- Natural Key
-- Cluster Field
-- Required Field
-  {% enddocs %}
-
-{% docs transaction_hash %}
-A hex-encoded SHA-256 hash of this transaction's XDR-encoded form.
-
-- Required Field
-  {% enddocs %}
-
 {% docs application_order %}
 Each transaction within the transaction set for a ledger is executed and applied sequentially to the network. The validator nodes randomly shuffle submitted transactions and assign them an application order number, which corresponds to the order in which they are applied.
 
@@ -92,14 +77,6 @@ Memos are heavily used by centralized exchanges to help with account management.
 {% docs time_bounds %}
 A transaction precondition that can be set to determine when a transaction is valid. The user can set a lower and upper timebound, defined as a UNIX timestamp when the transaction can be executed.
 If the transaction attempts to execute outside of the time range, the transaction will fail
-{% enddocs %}
-
-{% docs successful %}
-Indicates if this transaction was successful or not
-
-#### Notes:
-
-A transaction's success does not indicate whether it was included and written to a ledger. It only indicates whether the operations in the transaction were successfully applied to mutate the ledger state.
 {% enddocs %}
 
 {% docs fee_charged %}
