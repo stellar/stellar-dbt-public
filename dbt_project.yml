@@ -22,7 +22,7 @@ clean-targets: # directories to be removed by `dbt clean`
 # Rendered as BigQuery job labels on every query dbt issues (cost attribution
 # by model / target / Airflow task). See macros/query_comment.sql.
 query-comment:
-  comment: "{{ query_comment(node) }}"
+  comment: "{{ query_comment(node, connection_name) }}"
   job-label: true
 
 flags:
