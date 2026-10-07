@@ -13,3 +13,8 @@ macros:
       - name: node
         type: object
         description: The node dbt is executing a query for; `none` for connection-level queries.
+      - name: connection_name
+        type: string
+        description: >
+          dbt's connection name, passed through from the `query-comment` wrapper macro; labelled
+          only for node-less queries (`master` for schema setup, `macro_<name>` for run-operations).
