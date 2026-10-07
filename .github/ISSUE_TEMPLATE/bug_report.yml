@@ -1,0 +1,52 @@
+name: Bug report
+description: A model, table, snapshot, or test is producing wrong or missing data
+labels: ["bug"]
+body:
+  - type: input
+    id: affected
+    attributes:
+      label: Affected model, table, or tag
+      description: The dbt model, BigQuery table, or dbt tag where the problem shows up.
+      placeholder: crypto_stellar_dbt.enriched_history_operations, or tag:current_state
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: What you expected vs. what you got
+      placeholder: |
+        Expected: one row per (account_id, closed_at day) in accounts_current
+        Actual: 2026-09-03 has ~40 duplicate account_ids
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Query or command that shows it
+      description: A query, a dbt selector, or the failing test. Leave blank if you do not have one yet.
+      render: sql
+    validations:
+      required: false
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - Blocking a stakeholder
+        - Wrong data in production
+        - Internal only
+        - Cosmetic
+    validations:
+      required: true
+
+  - type: input
+    id: started
+    attributes:
+      label: When it started
+      description: A date, a dbt run, or a release, if you know it.
+      placeholder: first seen after the v20260908 release
+    validations:
+      required: false

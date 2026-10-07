@@ -1,0 +1,40 @@
+name: Feature request
+description: A new model, a change to an existing one, a new test, or tooling work
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - New model
+        - Change to an existing model
+        - New or changed snapshot
+        - New test or data quality check
+        - Tooling or CI
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve
+      description: The question someone cannot answer today, or the failure this would have caught.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to see
+      description: The grain, the columns, or the behavior you want. A rough shape is fine.
+    validations:
+      required: true
+
+  - type: input
+    id: affected
+    attributes:
+      label: Affected models or tables
+      placeholder: int_trades_enriched, history_trades
+    validations:
+      required: false
