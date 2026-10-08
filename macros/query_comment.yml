@@ -1,0 +1,20 @@
+version: 2
+
+macros:
+  - name: query_comment
+    description: >
+      Builds the JSON query comment that dbt-bigquery turns into BigQuery job labels
+      (`query-comment.job-label` in `dbt_project.yml`): dbt version, profile, target,
+      node id / name / resource type / package / materialization, and the Airflow
+      dag, task and run ids when the `AIRFLOW_*` env vars are set. See the macro header.
+    docs:
+      show: true
+    arguments:
+      - name: node
+        type: object
+        description: The node dbt is executing a query for; `none` for connection-level queries.
+      - name: connection_name
+        type: string
+        description: >
+          dbt's connection name, passed through from the `query-comment` wrapper macro; labelled
+          only for node-less queries (`master` for schema setup, `macro_<name>` for run-operations).
