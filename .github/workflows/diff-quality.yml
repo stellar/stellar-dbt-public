@@ -19,7 +19,7 @@ env:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: >-
       github.event.pull_request.merged == false &&
       github.event.pull_request.state == 'open'
@@ -43,7 +43,7 @@ jobs:
           SKIP: sqlfluff-lint,sqlfluff-fix, cleanup
 
   diff-quality:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
