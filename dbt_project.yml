@@ -19,6 +19,12 @@ clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
 
+# Rendered as BigQuery job labels on every query dbt issues (cost attribution
+# by model / target / Airflow task). See macros/query_comment.sql.
+query-comment:
+  comment: "{{ query_comment(node, connection_name) }}"
+  job-label: true
+
 flags:
   require_explicit_package_overrides_for_builtin_materializations: false
 

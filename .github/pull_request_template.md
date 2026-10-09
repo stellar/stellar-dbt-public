@@ -1,38 +1,21 @@
-<!-- If you're making a doc PR or something tiny where the below is irrelevant, delete this
-template and use a short description, but in your description aim to include both what the
-change is, and why it is being made, with enough context for anyone to understand. -->
+## What & why
 
-<details>
-  <summary>PR Checklist</summary>
+## Data impact
+<!-- Data that actually changes on merge: which models gain, lose, or retype a column, change
+     values, or change grain, and whether a full refresh or backfill is needed. Does stellar-dbt
+     need a `packages.yml` pin bump to pick this up? Not a lineage list of every downstream
+     model. "None" is a valid answer. -->
 
-### PR Structure
+## Known limitations
+<!-- What this PR deliberately leaves out, known rough edges, and follow-ups already planned
+     (link the issue). Reviewers should not flag anything listed here. "None" is a valid answer. -->
 
-- [ ] This PR has reasonably narrow scope (if not, break it down into smaller PRs).
-- [ ] This PR avoids mixing refactoring changes with feature changes (split into two PRs
-      otherwise).
-- [ ] This PR's title starts with the jira ticket associated with the PR.
+## What feedback do you want
+<!-- e.g. "check the incremental logic", "sanity-check the grain", "rubber stamp" -->
 
-### Thoroughness
+---
 
-- [ ] This PR adds tests for the most critical parts of the new functionality or fixes.
-- [ ] I've updated the docs and README with the added features, breaking changes, new instructions on how to use the repository.
-- [ ] If this PR touches column or model descriptions, they live in doc blocks under `models/docs/` rather than inline in the `.yml`, and I read the text of every block I referenced rather than trusting its name (see [docs/documentation.md](../docs/documentation.md)).
-- [ ] If this PR adds, renames or drops a column, the model's `.yml` column list changed with it. CI compares the yml with the built table (`scripts/docs_lint.py columns`).
-
-### Release planning
-
-- [ ] I've decided if this PR requires a new major/minor/patch version accordingly to
-    [semver](https://semver.org/), and I've changed the name of the BRANCH to major/* , minor/* or patch/* .
-</details>
-
-### What
-
-[TODO: Short statement about what is changing.]
-
-### Why
-
-[TODO: Why this change is being made. Include any context required to understand the why.]
-
-### Known limitations
-
-[TODO or N/A]
+- [ ] I ran this and reviewed the diff myself.
+- [ ] I ran a Claude review (e.g. `/code-review`) before requesting review, or N/A for outside contributors.
+- [ ] If this PR touches descriptions, they live in doc blocks under `models/docs/`, and I read every block I referenced (see [docs/documentation.md](../docs/documentation.md)).
+- [ ] Branch is named `major/*`, `minor/*`, or `patch/*`, or N/A for release and hotfix branches (the release workflow reads it to pick the version bump).
