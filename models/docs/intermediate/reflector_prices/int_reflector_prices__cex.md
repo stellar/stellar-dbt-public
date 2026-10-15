@@ -11,9 +11,3 @@ The `int_reflector_prices__cex` table is a staging table that captures prices of
 Timestamp when the price is valid.
 
 {% enddocs %}
-
-{% docs asset_price %}
-
-Price of the asset in USD.
-
-{% enddocs %}
