@@ -55,21 +55,21 @@ models:
           - not_null
 
       - name: open_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("open_usd") }}'
         tests:
           - not_null
 
       - name: high_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("high_usd") }}'
         tests:
           - not_null
 
       - name: low_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("low_usd") }}'
         tests:
           - not_null
 
       - name: close_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("close_usd") }}'
         tests:
           - not_null
