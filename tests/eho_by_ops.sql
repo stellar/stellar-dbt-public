@@ -24,14 +24,14 @@ WITH find_missing AS (
   WHERE eho.op_id IS NULL
     -- Scan only the last 24 hours of data. Alert runs intraday so failures
     -- are caught and resolved quickly.
-    AND op.batch_run_date >= DATETIME(TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY ))
-    AND op.batch_run_date < DATETIME(TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_end_date") }}'), INTERVAL 1 HOUR))
+    AND op.closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY)
+    AND op.closed_at < TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_end_date") }}'), INTERVAL 1 HOUR)
 ),
 find_max_batch AS (
   SELECT MAX(batch_run_date) AS max_batch
   FROM {{ ref('stg_history_operations') }}
-  WHERE batch_run_date >= DATETIME(TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY ))
-    AND batch_run_date < DATETIME(TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_end_date") }}'), INTERVAL 1 HOUR))
+  WHERE closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY)
+    AND closed_at < TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_end_date") }}'), INTERVAL 1 HOUR)
 )
 SELECT batch_run_date,
     batch_id,

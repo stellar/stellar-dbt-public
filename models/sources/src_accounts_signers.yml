@@ -18,7 +18,6 @@ sources:
                 - signer
                 - ledger_entry_change
                 - last_modified_ledger
-              date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: account_id, signer, ledger_entry_change and last_modified_ledger."
@@ -27,21 +26,18 @@ sources:
             description: '{{ doc("account_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: signer
             description: '{{ doc("signer") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: weight
             description: '{{ doc("weight") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: sponsor
@@ -51,21 +47,18 @@ sources:
             description: '{{ doc("deleted") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
