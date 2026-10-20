@@ -64,28 +64,28 @@ models:
               greater_than_equal_to: "2 day"
 
       - name: open_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("open_usd") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "valid_from"
               greater_than_equal_to: "2 day"
 
       - name: high_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("high_usd") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "valid_from"
               greater_than_equal_to: "2 day"
 
       - name: low_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("low_usd") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "valid_from"
               greater_than_equal_to: "2 day"
 
       - name: close_usd
-        description: '{{ doc("asset_price") }}'
+        description: '{{ doc("close_usd") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
               date_column_name: "valid_from"
