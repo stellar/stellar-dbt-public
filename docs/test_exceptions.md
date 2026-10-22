@@ -28,6 +28,11 @@ could see them without opening the file. Two rows arrived this way:
 A structural row still needs a `reason`, and it is still validated — the point is
 that it is visible and reviewable in one place, not that it is unchecked.
 
+One carve-out is a rule rather than a row: `token_transfers_no_negative_circulating_supply`
+skips every contract in `seeds/contract_token_balance_sources.csv`. Their pre-handover
+supply exists only in contract storage, so a burn of it reads as negative supply;
+`contract_token_handover_matches_storage` checks those balances against storage instead.
+
 ## Adding an exception
 
 1. Add a row to `seeds/public_test_exceptions.csv`. Every column is described in

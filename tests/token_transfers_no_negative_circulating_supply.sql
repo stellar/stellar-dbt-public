@@ -40,6 +40,13 @@ from mints
 left join burns
     on mints.contract_id = burns.contract_id
 where true
+    -- Supply minted before these contracts emitted events lives only in storage, so
+    -- burning it reads as negative here. contract_token_handover_matches_storage
+    -- checks their balances against storage instead.
+    and mints.contract_id not in (
+        select contract_id
+        from {{ ref('contract_token_balance_sources') }}
+    )
     -- the list of non-compliant custom token contracts that carry a negative
     -- balance now lives in seeds/public_test_exceptions.csv rather than inline here
     {{ exclude_test_exceptions(
