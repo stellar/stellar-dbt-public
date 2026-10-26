@@ -23,9 +23,9 @@ This is part of the standard metadata required for SEP-41 compliance. Consistent
 {% enddocs %}
 
 {% docs int_asset_metadata %}
-One row per contract_id with the contract's asset_code (coalesced from stg_assets SAC asset_code, then SEP-41 symbol read from contract storage) plus the SEP-41 metadata fields (symbol, name, decimal, admin) read directly from contract instance storage. asset_code is null when neither a SAC asset_code nor a SEP-41 symbol is available — recognized assets are enriched upstream in stg_assets, so a null here means the contract publishes no metadata.
+One row per contract_id with the contract's asset_code (coalesced from stg_assets SAC asset_code, then SEP-41 symbol read from contract storage) plus the SEP-41 metadata fields (symbol, name, decimal, admin) read directly from contract instance storage. symbol, name and decimal come from the SEP-41 METADATA map; a contract without one falls back to top-level enum keys with these exact names: Symbol/Name/Decimals, TokenSymbol/TokenName/TokenDecimals, or VaultSymbol/VaultName/VaultDecimals. asset_code is null when neither a SAC asset_code nor a SEP-41 symbol is available — recognized assets are enriched upstream in stg_assets, so a null here means the contract publishes no metadata.
 {% enddocs %}
 
 {% docs int_asset_metadata__asset_code_source %}
-Indicates which source the asset_code came from: 'sac' = asset_code from a Stellar Asset Contract token transfer event, 'metadata' = SEP-41 symbol read from contract storage. Null when no asset_code could be resolved (asset_code is also null in that case).
+Indicates which source the asset_code came from: 'sac' = asset_code from a Stellar Asset Contract token transfer event, 'metadata' = symbol read from contract storage (the SEP-41 METADATA map, or a Symbol/TokenSymbol/VaultSymbol enum key). Null when no asset_code could be resolved (asset_code is also null in that case).
 {% enddocs %}

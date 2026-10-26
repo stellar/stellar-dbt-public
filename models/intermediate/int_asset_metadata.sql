@@ -58,8 +58,16 @@ with
             contract_id
             , json_value(m.key.symbol) as metadata_key
             , json_value(s.key.vec[0].symbol) as admin_key
+            -- Keys can be stored as vecs outside the expected token metadata
+            , if(
+                array_length(json_query_array(s.key.vec)) = 1
+                , json_value(s.key.vec[0].symbol)
+                , null
+            ) as storage_key
             , json_value(m.val.string) as val_string
             , json_value(m.val.u32) as val_u32
+            , json_value(s.val.string) as storage_val_string
+            , json_value(s.val.u32) as storage_val_u32
             , json_value(s.val.address) as admin_address
         from contract_metadata
         -- First unnest the storage array
@@ -73,10 +81,20 @@ with
             contract_id
             -- Extract Admin (from the storage level)
             , max(if(admin_key = 'Admin', admin_address, null)) as `admin`
-            -- Extract Metadata (from the map level)
-            , max(if(metadata_key = 'symbol', val_string, null)) as `symbol`
-            , max(if(metadata_key = 'name', val_string, null)) as `name`
-            , max(if(metadata_key in ('decimal', 'decimals'), val_u32, null)) as `decimal`
+            -- Extract metadata from SEP-41 map first. If the contract does not comply,
+            -- attempt to parse common token metadata names from fixed list.
+            , coalesce(
+                max(if(metadata_key = 'symbol', val_string, null))
+                , max(if(storage_key in ('Symbol', 'TokenSymbol', 'VaultSymbol'), storage_val_string, null))
+            ) as `symbol`
+            , coalesce(
+                max(if(metadata_key = 'name', val_string, null))
+                , max(if(storage_key in ('Name', 'TokenName', 'VaultName'), storage_val_string, null))
+            ) as `name`
+            , coalesce(
+                max(if(metadata_key in ('decimal', 'decimals'), val_u32, null))
+                , max(if(storage_key in ('Decimals', 'TokenDecimals', 'VaultDecimals'), storage_val_u32, null))
+            ) as `decimal`
         from flattened_data
         group by contract_id
     )
