@@ -129,7 +129,8 @@ with
             , details.contract_id
             , details.contract_code_hash
             , details.ledger_key_hash
-            , details.ledgers_to_expire
+            -- Always NULL; the _v2 table does not carry the column.
+            , cast(null as int64) as ledgers_to_expire
             , details_json
             , operation_result_code
             , operation_trace_code

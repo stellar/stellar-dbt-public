@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: crypto_stellar
     database: "{{ env_var('PUBLIC_SOURCE_DB', 'test-hubble-319619' if target.name in ('ci', 'test') else 'crypto-stellar') }}"
-    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') }}"
+    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') ~ '_views' }}"
     tables:
       - name: history_transactions
         description: '{{ doc("history_transactions") }}'
@@ -196,9 +196,6 @@ sources:
 
           - name: rent_fee_charged
             description: '{{ doc("rent_fee_charged") }}'
-
-          - name: refundable_fee
-            description: '{{ doc("refundable_fee") }}'
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'

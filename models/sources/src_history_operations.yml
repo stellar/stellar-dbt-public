@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: crypto_stellar
     database: "{{ env_var('PUBLIC_SOURCE_DB', 'test-hubble-319619' if target.name in ('ci', 'test') else 'crypto-stellar') }}"
-    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') }}"
+    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') ~ '_views' }}"
     tables:
       - name: history_operations
         description: '{{ doc("history_operations") }}'
@@ -94,9 +94,6 @@ sources:
 
           - name: details.ledger_key_hash
             description: '{{ doc("ledger_key_hash") }}'
-
-          - name: details.ledgers_to_expire
-            description: '{{ doc("details_ledgers_to_expire") }}'
 
           - name: details.asset_code
             description: '{{ doc("details_asset_code") }}'

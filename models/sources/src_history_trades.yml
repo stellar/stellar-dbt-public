@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: crypto_stellar
     database: "{{ env_var('PUBLIC_SOURCE_DB', 'test-hubble-319619' if target.name in ('ci', 'test') else 'crypto-stellar') }}"
-    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') }}"
+    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') ~ '_views' }}"
     tables:
       - name: history_trades
         description: '{{ doc("history_trades") }}'
@@ -16,7 +16,6 @@ sources:
               combination_of_columns:
                 - history_operation_id
                 - "`order`"
-              date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: history_operation_id and order."
@@ -25,35 +24,30 @@ sources:
             description: '{{ doc("history_operation_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: "`order`"
             description: '{{ doc("order") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: ledger_closed_at
             description: '{{ doc("ledger_closed_at") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: selling_account_address
             description: '{{ doc("selling_account_address") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: selling_asset_code
             description: '{{ doc("trade_selling_asset_code") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
                   condition: 'selling_asset_type != "native"'
 
@@ -61,7 +55,6 @@ sources:
             description: '{{ doc("trade_selling_asset_issuer") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
                   condition: 'selling_asset_type != "native"'
 
@@ -69,35 +62,30 @@ sources:
             description: '{{ doc("trade_selling_asset_type") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: selling_asset_id
             description: '{{ doc("assets_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: selling_amount
             description: '{{ doc("trade_selling_amount") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: buying_account_address
             description: '{{ doc("buying_account_address") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: buying_asset_code
             description: '{{ doc("trade_buying_asset_code") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
                   condition: 'buying_asset_type != "native"'
 
@@ -105,7 +93,6 @@ sources:
             description: '{{ doc("trade_buying_asset_issuer") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
                   condition: 'buying_asset_type != "native"'
 
@@ -113,35 +100,30 @@ sources:
             description: '{{ doc("trade_buying_asset_type") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: buying_asset_id
             description: '{{ doc("assets_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: buying_amount
             description: '{{ doc("trade_buying_amount") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: price_n
             description: '{{ doc("trade_price_n") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: price_d
             description: '{{ doc("trade_price_d") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: selling_offer_id
@@ -160,7 +142,6 @@ sources:
             description: '{{ doc("trade_type") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: rounding_slippage
@@ -173,21 +154,18 @@ sources:
             description: '{{ doc("batch_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "ledger_closed_at"
                   greater_than_equal_to: "2 day"
 
           - name: selling_liquidity_pool_id_strkey
