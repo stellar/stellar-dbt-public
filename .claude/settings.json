@@ -31,11 +31,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "for f in $CLAUDE_FILE_PATHS; do [[ \"$f\" == *.sql ]] && sqlfluff lint \"$f\" 2>&1 | tail -20; done; true"
+            "command": "[ -n \"$GITHUB_ACTIONS\" ] || { for f in $CLAUDE_FILE_PATHS; do [[ \"$f\" == *.sql ]] && sqlfluff lint \"$f\" 2>&1 | tail -20; done; true; }"
           },
           {
             "type": "command",
-            "command": "for f in $CLAUDE_FILE_PATHS; do [[ \"$f\" == */models/*.sql ]] && dbt compile --select \"$(basename \"${f%.sql}\")\" 2>&1 | tail -20; done; true"
+            "command": "[ -n \"$GITHUB_ACTIONS\" ] || { for f in $CLAUDE_FILE_PATHS; do [[ \"$f\" == */models/*.sql ]] && dbt compile --select \"$(basename \"${f%.sql}\")\" 2>&1 | tail -20; done; true; }"
           }
         ]
       }
