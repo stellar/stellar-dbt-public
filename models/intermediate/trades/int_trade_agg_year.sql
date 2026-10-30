@@ -35,8 +35,8 @@ with
         from {{ ref('stg_history_trades') }}
         where
             -- TODO: Add incremental logic here
-            ledger_closed_at < timestamp(date('{{ var("batch_end_date") }}'))
-            and ledger_closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 366 day))
+            closed_at < timestamp(date('{{ var("batch_end_date") }}'))
+            and closed_at >= timestamp(date_sub(date('{{ var("batch_start_date") }}'), interval 366 day))
     )
 
     /* duplicates trades in order to obtain all trades between an asset pair, regardless

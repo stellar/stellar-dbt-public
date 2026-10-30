@@ -70,7 +70,8 @@ with
             , details.bought_asset_issuer
             , details.contract_event_type
             , details.contract
-            , details.ledgers_to_expire
+            -- Always NULL; the _v2 table does not carry the column.
+            , cast(null as int64) as ledgers_to_expire
             , details.entries
             , details.extend_to
             , index
