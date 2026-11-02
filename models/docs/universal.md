@@ -105,7 +105,7 @@ The timestamp in UTC when the ledger with this trade was closed.
 {% enddocs %}
 
 {% docs contract_id %}
-Soroban contract id
+Soroban contract id. As of Protocol 30 (CAP-84) this can also be a W strkey, a muxed contract address: the underlying C contract id plus a uint64 multiplexing id.
 {% enddocs %}
 
 {% docs asset_contract_id %}
