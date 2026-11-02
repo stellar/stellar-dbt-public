@@ -5,38 +5,43 @@ models:
     description: '{{ doc("token_transfers") }}'
     tests:
       - recency:
-          tags: [recency]
-          datepart: day
-          field: closed_at
-          interval: 1
-          timestamp_val: '{{ var("batch_end_date") }}'
-          ignore_time_component: true
+          arguments:
+            datepart: day
+            field: closed_at
+            interval: 1
+            timestamp_val: '{{ var("batch_end_date") }}'
+            ignore_time_component: true
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
-          meta:
-            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+            tags: [recency]
+            meta:
+              description: "Monitors the freshness of your table over time, as the expected time between data updates."
       - stellar_dbt_public.incremental_unique_combination_of_columns:
-          combination_of_columns:
-            - unique_key
-          date_column_name: "closed_at"
-          greater_than_equal_to: "2 day"
-          meta:
-            description: "Tests the uniqueness combination of: unique key"
+          arguments:
+            combination_of_columns:
+              - unique_key
+            date_column_name: "closed_at"
+            greater_than_equal_to: "2 day"
+          config:
+            meta:
+              description: "Tests the uniqueness combination of: unique key"
     columns:
       - name: transaction_hash
         description: '{{ doc("transaction_hash") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: transaction_id
         description: '{{ doc("transaction_id") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: operation_id
         description: '{{ doc("operation_id") }}'
@@ -45,8 +50,9 @@ models:
         description: '{{ doc("closed_at") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'

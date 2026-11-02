@@ -40,7 +40,7 @@
 -- source_unique_key[0] carries a not_null test.
 #}
 
-{%- set keys = config.get('snapshot_keys', var('snapshot_keys', none)) -%}
+{%- set keys = config.meta_get('snapshot_keys', var('snapshot_keys', none)) -%}
 
 {%- if keys is none or keys == '' or keys == [] -%}
     {{ return('') }}

@@ -35,4 +35,5 @@ models:
         description: '{{ doc("int_asset_metadata__asset_code_source") }}'
         tests:
           - accepted_values:
-              values: ["sac", "seed", "metadata"]
+              arguments:
+                values: ["sac", "seed", "metadata"]

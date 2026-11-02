@@ -5,44 +5,49 @@ models:
     description: '{{ doc("hourly_soroban_fee_agg_contract") }}'
     tests:
       - recency:
-          tags: [recency]
-          datepart: hour
-          field: hour_agg
-          interval: 6
-          timestamp_val: '{{ var("batch_end_date") }}'
+          arguments:
+            datepart: hour
+            field: hour_agg
+            interval: 6
+            timestamp_val: '{{ var("batch_end_date") }}'
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
-          meta:
-            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+            tags: [recency]
+            meta:
+              description: "Monitors the freshness of your table over time, as the expected time between data updates."
       - incremental_unique_combination_of_columns:
-          combination_of_columns:
-            - hour_agg
-            - contract_id
-          date_column_name: "hour_agg"
-          greater_than_equal_to: "2 day"
+          arguments:
+            combination_of_columns:
+              - hour_agg
+              - contract_id
+            date_column_name: "hour_agg"
+            greater_than_equal_to: "2 day"
     columns:
       - name: hour_agg
         description: '{{ doc("hourly_soroban_fee_agg_hour_agg") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "hour_agg"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "hour_agg"
+                greater_than_equal_to: "2 day"
 
       - name: contract_id
         description: '{{ doc("hourly_soroban_fee_agg_contract_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "hour_agg"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "hour_agg"
+                greater_than_equal_to: "2 day"
 
       # Volume
       - name: txn_count
         description: '{{ doc("hourly_soroban_fee_agg_txn_count") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "hour_agg"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "hour_agg"
+                greater_than_equal_to: "2 day"
 
       - name: failed_txn_count
         description: '{{ doc("hourly_soroban_fee_agg_failed_txn_count") }}'
@@ -51,16 +56,18 @@ models:
         description: '{{ doc("hourly_soroban_fee_agg_unique_fee_source_accounts") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "hour_agg"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "hour_agg"
+                greater_than_equal_to: "2 day"
 
       # Fees (total)
       - name: total_fee_charged
         description: '{{ doc("hourly_soroban_fee_agg_total_fee_charged") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "hour_agg"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "hour_agg"
+                greater_than_equal_to: "2 day"
 
       - name: avg_fee_charged
         description: '{{ doc("hourly_soroban_fee_agg_avg_fee_charged") }}'

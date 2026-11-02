@@ -5,23 +5,25 @@ models:
     description: '{{ doc("claimable_balances_current") }}'
     tests:
       - recency:
-          tags: [recency]
-          datepart: hour
-          field: closed_at
-          interval: '{{ 12 if target.name == "prod" else 48 }}'
-          timestamp_val: '{{ var("batch_end_date") }}'
+          arguments:
+            datepart: hour
+            field: closed_at
+            interval: '{{ 12 if target.name == "prod" else 48 }}'
+            timestamp_val: '{{ var("batch_end_date") }}'
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
-          meta:
-            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+            tags: [recency]
+            meta:
+              description: "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: balance_id
         description: '{{ doc("balance_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: claimants
         description: '{{ doc("claimants") }}'
@@ -30,95 +32,109 @@ models:
         description: '{{ doc("asset_type") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
-              condition: 'asset_type != "native"'
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
+                condition: 'asset_type != "native"'
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
-              condition: 'asset_type != "native"'
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
+                condition: 'asset_type != "native"'
 
       - name: asset_amount
         description: '{{ doc("asset_amount") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: sponsor
         description: '{{ doc("sponsor") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: flags
         description: '{{ doc("flags_accounts_balances") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
           - incremental_accepted_values:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
-              values: [0, 1, 2, 4]
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
+                values: [0, 1, 2, 4]
 
       - name: deleted
         description: '{{ doc("deleted") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "batch_run_date"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "batch_run_date"
+                greater_than_equal_to: "2 day"

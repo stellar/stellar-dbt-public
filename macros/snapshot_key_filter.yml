@@ -12,7 +12,7 @@ macros:
       show: true
     arguments:
       - name: source_unique_key_cols
-        type: list
+        type: list[str]
         description: The source unique key columns, used to pick the column to filter and to reject composite keys
       - name: table_alias
         type: string

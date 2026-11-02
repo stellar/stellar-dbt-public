@@ -21,7 +21,8 @@ seeds:
       # balance is the level standing at the end of the day before events_start_from, so
       # a same-day value would publish no storage days and open the event stream from zero.
       - dbt_utils.expression_is_true:
-          expression: "events_start_from is null or effective_from < events_start_from"
+          arguments:
+            expression: "events_start_from is null or effective_from < events_start_from"
     columns:
       - name: contract_id
         description: '{{ doc("contract_token_balance_sources__contract_id") }}'
@@ -47,7 +48,8 @@ seeds:
         description: '{{ doc("contract_token_balance_sources__amount_value_type") }}'
         tests:
           - accepted_values:
-              values: ["i128", "u128", "i64", "u64", ""]
+              arguments:
+                values: ["i128", "u128", "i64", "u64", ""]
               config:
                 where: "amount_value_type is not null"
 

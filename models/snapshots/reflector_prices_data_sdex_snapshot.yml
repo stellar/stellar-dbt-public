@@ -5,29 +5,33 @@ models:
     description: '{{ doc("reflector_prices_data_sdex_snapshot") }}'
     tests:
       - recency:
-          tags: [recency]
-          datepart: day
-          field: cast(valid_from as timestamp)
-          interval: 2
-          timestamp_val: '{{ var("batch_end_date") }}'
+          arguments:
+            datepart: day
+            field: cast(valid_from as timestamp)
+            interval: 2
+            timestamp_val: '{{ var("batch_end_date") }}'
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
-          meta:
-            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+            tags: [recency]
+            meta:
+              description: "Monitors the freshness of your table over time, as the expected time between data updates."
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - asset_contract_id
-            - valid_from
-          meta:
-            description: "Tests the uniqueness combination of: asset_code, ledger_entry_change, last_modified_ledger and valid_from."
+          arguments:
+            combination_of_columns:
+              - asset_contract_id
+              - valid_from
+          config:
+            meta:
+              description: "Tests the uniqueness combination of: asset_code, ledger_entry_change, last_modified_ledger and valid_from."
     columns:
       - name: asset_code
         description: '{{ doc("asset_code") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
               config:
                 severity: '{{ "error" if target.name == "prod" else "warn" }}'
 
@@ -35,8 +39,9 @@ models:
         description: '{{ doc("asset_type") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
               config:
                 severity: '{{ "error" if target.name == "prod" else "warn" }}'
 
@@ -44,8 +49,9 @@ models:
         description: '{{ doc("asset_issuer") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
               config:
                 severity: '{{ "error" if target.name == "prod" else "warn" }}'
 
@@ -53,43 +59,49 @@ models:
         description: '{{ doc("asset_contract_id") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
 
       - name: day
         description: '{{ doc("price_as_of_day") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
 
       - name: open_usd
         description: '{{ doc("open_usd") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
 
       - name: high_usd
         description: '{{ doc("high_usd") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
 
       - name: low_usd
         description: '{{ doc("low_usd") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
 
       - name: close_usd
         description: '{{ doc("close_usd") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "valid_from"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "valid_from"
+                greater_than_equal_to: "2 day"
 
       - name: valid_from
         description: '{{ doc("valid_from") }}'

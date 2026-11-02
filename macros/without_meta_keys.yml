@@ -1,0 +1,14 @@
+version: 2
+
+macros:
+  - name: without_meta_keys
+    description: >
+      Returns a model's meta_config dict without the keys that belong only in `meta`: Datafold's
+      `datadiff` settings and the incremental_snapshot materialization settings, which it reads
+      with `config.meta_get`. Splat the result into config() alongside `meta=meta_config`.
+    docs:
+      show: true
+    arguments:
+      - name: meta_config
+        type: dict[str, any]
+        description: The model's combined config and meta settings.

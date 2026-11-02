@@ -8,15 +8,17 @@ models:
         description: '{{ doc("day_agg") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: account_id
         description: '{{ doc("account_id") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
@@ -31,17 +33,20 @@ models:
         description: '{{ doc("contract_id") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
               config:
                 severity: '{{ "error" if target.name == "prod" else "warn" }}'
           - relationships:
-              to: ref('int_asset_metadata')
-              field: contract_id
+              arguments:
+                to: ref('int_asset_metadata')
+                field: contract_id
 
       - name: balance
         description: '{{ doc("balance") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"

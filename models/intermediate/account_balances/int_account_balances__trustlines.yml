@@ -8,36 +8,41 @@ models:
         description: '{{ doc("day_agg") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: account_id
         description: '{{ doc("account_id") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: asset_type
         description: '{{ doc("asset_type") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: asset_issuer
         description: '{{ doc("asset_issuer") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: contract_id
         description: '{{ doc("contract_id") }}'
@@ -46,5 +51,6 @@ models:
         description: '{{ doc("balance") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"

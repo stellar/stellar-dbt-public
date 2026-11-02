@@ -26,7 +26,7 @@
 
 {{ config(
     meta=meta_config,
-    **meta_config,
+    **without_meta_keys(meta_config),
 ) }}
 
 with
