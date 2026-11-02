@@ -5,7 +5,7 @@ models:
     tests:
       - recency:
           datepart: hour
-          field: cast(ledger_closed_at as timestamp)
+          field: cast(closed_at as timestamp)
           interval: '{{ 1 if target.name == "prod" else 24 }}'
           timestamp_val: '{{ var("batch_end_date") }}'
           config:
