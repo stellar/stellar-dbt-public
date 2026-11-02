@@ -20,6 +20,7 @@ with
             , ledger_entry_type
             , last_modified_ledger
             , closed_at
+            , closed_at_ms
             , ledger_sequence
             , batch_id
             , batch_run_date

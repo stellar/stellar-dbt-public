@@ -41,7 +41,7 @@ The values within topics are base64 encoded XDR
 {% enddocs %}
 
 {% docs event_topics_decoded %}
-Decoded, human readable version of the event topic
+Decoded, human readable version of the event topic. An address in a topic renders as a strkey, which as of Protocol 30 (CAP-84) can be a W muxed contract address as well as G, C, M, L or B.
 {% enddocs %}
 
 {% docs event_data %}
@@ -51,7 +51,7 @@ The values within topics are base64 encoded XDR
 {% enddocs %}
 
 {% docs event_data_decoded %}
-Decoded, human readable version of the event data object
+Decoded, human readable version of the event data object. An address in the data renders as a strkey, which as of Protocol 30 (CAP-84) can be a W muxed contract address as well as G, C, M, L or B.
 {% enddocs %}
 
 {% docs contract_event_xdr %}

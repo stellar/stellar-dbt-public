@@ -42,6 +42,12 @@ models:
               date_column_name: "ledger_closed_at"
               greater_than_equal_to: "2 day"
 
+      - name: closed_at
+        description: '{{ doc("closed_at") }}'
+
+      - name: closed_at_ms
+        description: '{{ doc("closed_at_ms") }}'
+
       - name: selling_account_address
         description: '{{ doc("selling_account_address") }}'
         tests:

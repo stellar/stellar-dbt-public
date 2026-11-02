@@ -134,6 +134,7 @@ with
             , operation_result_code
             , operation_trace_code
             , closed_at
+            , closed_at_ms
             , batch_id
             , batch_run_date
             , batch_insert_ts

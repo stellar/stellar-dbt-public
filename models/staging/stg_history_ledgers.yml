@@ -58,6 +58,9 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
+      - name: closed_at_ms
+        description: '{{ doc("closed_at_ms") }}'
+
       - name: ledger_id
         description: '{{ doc("ledger_id") }}'
         tests:
@@ -151,6 +154,11 @@ models:
 
       - name: node_id
         description: '{{ doc("node_id") }}'
+        tests:
+          - incremental_not_empty:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
+              condition: "closed_at >= timestamp('{{ var('node_id_signed_from') }}')"
 
       - name: signature
         description: '{{ doc("signature") }}'

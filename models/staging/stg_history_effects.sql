@@ -75,6 +75,7 @@ with
             , details.extend_to
             , index
             , closed_at
+            , closed_at_ms
             , batch_id
             , batch_run_date
             , batch_insert_ts
