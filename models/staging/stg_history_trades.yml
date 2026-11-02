@@ -44,6 +44,10 @@ models:
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
+        tests:
+          - incremental_not_null:
+              date_column_name: "closed_at"
+              greater_than_equal_to: "2 day"
 
       - name: selling_account_address
         description: '{{ doc("selling_account_address") }}'
