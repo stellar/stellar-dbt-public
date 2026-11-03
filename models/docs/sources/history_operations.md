@@ -1368,7 +1368,7 @@ Soroban field - invoke_host_function function type
 {% enddocs %}
 
 {% docs from_address %}
-Soroban field - address used to create the Soroban contract. As of Protocol 30 (CAP-84) this can also be a W strkey, a muxed contract address: the underlying C contract id plus a uint64 multiplexing id.
+Soroban field - address used to create the Soroban contract
 
 ### Only exists for the following operations:
 
