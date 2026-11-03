@@ -41,7 +41,7 @@ macros:
         type: string
         description: A column name in source data that indicates the primary key column(s) (string or array)
       - name: partition_by_key
-        type: json
+        type: dict[str, any]
         description: BigQuery partition by clause applied to the chunk's diff table
       - name: cluster_by_key
         type: string
@@ -50,5 +50,5 @@ macros:
         type: string
         description: Predicate from snapshot_key_filter, scoping the source and boundary reads to named entities
       - name: read_boundary_from_target
-        type: boolean
+        type: bool
         description: Whether the target exists yet. False for the chunk that creates the table, true afterwards

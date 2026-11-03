@@ -11,7 +11,7 @@ macros:
       show: true
     arguments:
       - name: node
-        type: object
+        type: any
         description: The node dbt is executing a query for; `none` for connection-level queries.
       - name: connection_name
         type: string

@@ -5,11 +5,13 @@ models:
     description: '{{ doc("config_settings_snapshot") }}'
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - config_setting_name
-            - valid_from
-          meta:
-            description: "Tests the uniqueness combination of: config_setting_name and valid_from."
+          arguments:
+            combination_of_columns:
+              - config_setting_name
+              - valid_from
+          config:
+            meta:
+              description: "Tests the uniqueness combination of: config_setting_name and valid_from."
     columns:
       - name: config_setting_name
         description: '{{ doc("config_setting_name") }}'

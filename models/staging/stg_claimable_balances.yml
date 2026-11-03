@@ -4,29 +4,33 @@ models:
   - name: stg_claimable_balances
     tests:
       - recency:
-          datepart: hour
-          field: cast(closed_at as timestamp)
-          interval: '{{ 1 if target.name == "prod" else 48 }}'
-          timestamp_val: '{{ var("batch_end_date") }}'
+          arguments:
+            datepart: hour
+            field: cast(closed_at as timestamp)
+            interval: '{{ 1 if target.name == "prod" else 48 }}'
+            timestamp_val: '{{ var("batch_end_date") }}'
           config:
             enabled: '{{ target.name != "jenkins" }}'
-          meta:
-            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+            meta:
+              description: "Monitors the freshness of your table over time, as the expected time between data updates."
       - incremental_unique_combination_of_columns:
-          date_column_name: "closed_at"
-          greater_than_equal_to: "2 day"
-          combination_of_columns:
-            - balance_id
-            - ledger_entry_change
-          meta:
-            description: "Tests the uniqueness combination of: balance_id and ledger_entry_change."
+          arguments:
+            date_column_name: "closed_at"
+            greater_than_equal_to: "2 day"
+            combination_of_columns:
+              - balance_id
+              - ledger_entry_change
+          config:
+            meta:
+              description: "Tests the uniqueness combination of: balance_id and ledger_entry_change."
     columns:
       - name: balance_id
         description: '{{ doc("balance_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: claimants
         description: '{{ doc("claimants") }}'
@@ -53,13 +57,15 @@ models:
         description: '{{ doc("asset_type") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
           - incremental_accepted_values:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-              values: ["credit_alphanum4", "credit_alphanum12", "native"]
-              quote: true
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
+                values: ["credit_alphanum4", "credit_alphanum12", "native"]
+                quote: true
 
       - name: asset_code
         description: '{{ doc("asset_code") }}'
@@ -71,89 +77,102 @@ models:
         description: '{{ doc("asset_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: asset_amount
         description: '{{ doc("asset_amount") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: sponsor
         description: '{{ doc("sponsor") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: flags
         description: '{{ doc("flags_accounts_balances") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: last_modified_ledger
         description: '{{ doc("last_modified_ledger") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: ledger_entry_change
         description: '{{ doc("ledger_entry_change") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
           - incremental_accepted_values:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-              values: [0, 1, 2, 4]
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
+                values: [0, 1, 2, 4]
 
       - name: deleted
         description: '{{ doc("deleted") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: batch_id
         description: '{{ doc("batch_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: closed_at
         description: '{{ doc("closed_at") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: batch_insert_ts
         description: '{{ doc("batch_insert_ts") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: airflow_start_ts
         description: '{{ doc("airflow_start_ts") }}'

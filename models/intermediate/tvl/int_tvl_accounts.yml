@@ -5,31 +5,36 @@ models:
     description: '{{ doc("int_tvl_accounts") }}'
     tests:
       - stellar_dbt_public.incremental_unique_combination_of_columns:
-          combination_of_columns:
-            - day
-            - account_id
-          date_column_name: "day"
-          greater_than_equal_to: "2 day"
-          meta:
-            description: "Tests the uniqueness combination of: day, account_id."
+          arguments:
+            combination_of_columns:
+              - day
+              - account_id
+            date_column_name: "day"
+            greater_than_equal_to: "2 day"
+          config:
+            meta:
+              description: "Tests the uniqueness combination of: day, account_id."
     columns:
       - name: day
         description: '{{ doc("day") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: account_id
         description: '{{ doc("account_id") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"
 
       - name: accounts_tvl
         description: '{{ doc("accounts_tvl") }}'
         tests:
           - stellar_dbt_public.incremental_not_null:
-              date_column_name: "day"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "day"
+                greater_than_equal_to: "2 day"

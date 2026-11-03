@@ -19,9 +19,9 @@
 {%- set on_schema_change = incremental_validate_on_schema_change(config.get('on_schema_change'), default='ignore') -%}
 {%- set incremental_predicates = config.get('predicates', default=none) or config.get('incremental_predicates', default=none) -%}
 
-{%- set valid_from_col_name = config.get('valid_from_col_name') -%}
-{%- set valid_to_col_name = config.get('valid_to_col_name') -%}
-{%- set source_unique_key = config.get('source_unique_key') -%}
+{%- set valid_from_col_name = config.meta_get('valid_from_col_name') -%}
+{%- set valid_to_col_name = config.meta_get('valid_to_col_name') -%}
+{%- set source_unique_key = config.meta_get('source_unique_key') -%}
 
 {%- if source_unique_key is sequence and source_unique_key is not string -%}
   {%- set source_unique_key_cols = source_unique_key -%}
@@ -57,8 +57,8 @@
 -- rebuild only as far as the end date. So an end date in the past truncates the snapshot at that
 -- date rather than repairing a window -- hole repair is not supported.
 --#}
-{%- set requested_start_date = config.get('snapshot_start_date') -%}
-{%- set default_start_date = config.get('snapshot_default_start_date', none) -%}
+{%- set requested_start_date = config.meta_get('snapshot_start_date') -%}
+{%- set default_start_date = config.meta_get('snapshot_default_start_date', none) -%}
 
 {%- if full_refresh_mode -%}
   {%- set start_date = default_start_date or requested_start_date -%}
@@ -91,7 +91,7 @@
   {%- endif -%}
 {%- endif -%}
 
-{%- set end_date = config.get('snapshot_end_date') or run_started_at.strftime('%Y-%m-%d') -%}
+{%- set end_date = config.meta_get('snapshot_end_date') or run_started_at.strftime('%Y-%m-%d') -%}
 
 {#--
 -- Both dates are day-granular here: the chunk boundaries and the reset's predicates are days,
@@ -109,7 +109,7 @@
   ) -%}
 {%- endif -%}
 
-{%- set chunk_months = config.get('snapshot_chunk_months', var('snapshot_chunk_months', 3)) | int -%}
+{%- set chunk_months = config.meta_get('snapshot_chunk_months', var('snapshot_chunk_months', 3)) | int -%}
 {%- set chunk_ranges = stellar_dbt_public.snapshot_chunk_ranges(start_date, end_date, chunk_months) -%}
 
 {#--
@@ -177,13 +177,13 @@
   {%- set chunk_label = loop.index ~ "/" ~ chunk_ranges | length -%}
 
   {%- set diff_sql = stellar_dbt_public.calculate_snapshot_diff(
-      config.get('source_name'),
+      config.meta_get('source_name'),
       target_relation,
-      this.project ~ '.' ~ this.schema ~ '.' ~ config.get('temp_source_table'),
-      this.project ~ '.' ~ this.schema ~ '.' ~ config.get('temp_target_table'),
+      this.project ~ '.' ~ this.schema ~ '.' ~ config.meta_get('temp_source_table'),
+      this.project ~ '.' ~ this.schema ~ '.' ~ config.meta_get('temp_target_table'),
       chunk_start_date,
       chunk_end_date,
-      config.get('updated_at_col_name'),
+      config.meta_get('updated_at_col_name'),
       valid_from_col_name,
       valid_to_col_name,
       source_unique_key,

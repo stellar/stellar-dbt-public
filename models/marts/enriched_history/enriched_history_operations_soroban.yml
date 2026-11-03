@@ -5,33 +5,37 @@ models:
     description: '{{ doc("enriched_history_operations_soroban") }}'
     tests:
       - recency:
-          tags: [recency]
-          datepart: hour
-          field: closed_at
-          interval: 12
-          timestamp_val: '{{ var("batch_end_date") }}'
+          arguments:
+            datepart: hour
+            field: closed_at
+            interval: 12
+            timestamp_val: '{{ var("batch_end_date") }}'
           config:
             enabled: '{{ target.name == "ci" or var("is_recency_airflow_task") == "true" }}'
             severity: '{{ "error" if target.name == "prod" else "warn" }}'
-          meta:
-            description: "Monitors the freshness of your table over time, as the expected time between data updates."
+            tags: [recency]
+            meta:
+              description: "Monitors the freshness of your table over time, as the expected time between data updates."
     columns:
       - name: op_id
         description: '{{ doc("operation_id") }}'
         tests:
           - incremental_unique:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: op_source_account
         description: '{{ doc("source_account") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: op_source_account_muxed
         description: '{{ doc("source_account_muxed") }}'
@@ -40,22 +44,25 @@ models:
         description: '{{ doc("transaction_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: op_type
         description: '{{ doc("type") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: type_string
         description: '{{ doc("type_string") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: asset_balance_changes
         description: '{{ doc("details_asset_balance_changes") }}'
@@ -85,22 +92,25 @@ models:
         description: '{{ doc("transaction_hash") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: account_sequence
         description: '{{ doc("account_sequence") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: max_fee
         description: '{{ doc("max_fee") }}'
@@ -112,8 +122,9 @@ models:
         description: '{{ doc("created_at") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: memo_type
         description: '{{ doc("memo_type") }}'
@@ -128,8 +139,9 @@ models:
         description: '{{ doc("successful") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: fee_charged
         description: '{{ doc("fee_charged") }}'
@@ -177,15 +189,17 @@ models:
         description: '{{ doc("ledger_hash") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: previous_ledger_hash
         description: '{{ doc("previous_ledger_hash") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: transaction_count
         description: '{{ doc("transaction_count") }}'
@@ -197,15 +211,17 @@ models:
         description: '{{ doc("closed_at") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: ledger_id
         description: '{{ doc("ledger_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: total_coins
         description: '{{ doc("total_coins") }}'
@@ -235,15 +251,17 @@ models:
         description: '{{ doc("batch_id") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: batch_run_date
         description: '{{ doc("batch_run_date") }}'
         tests:
           - incremental_not_null:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
+              arguments:
+                date_column_name: "closed_at"
+                greater_than_equal_to: "2 day"
 
       - name: transaction_result_code
         description: '{{ doc("transaction_result_code") }}'

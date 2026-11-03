@@ -27,6 +27,12 @@ query-comment:
 
 flags:
   require_explicit_package_overrides_for_builtin_materializations: false
+  require_generic_test_arguments_property: true
+  warn_error_options:
+    # The balance and TVL microbatch models read SCD2 snapshots and filter on
+    # valid_from/valid_to themselves, so they deliberately have no event_time input.
+    silence:
+      - MicrobatchModelNoEventTimeInputs
 
 vars:
   dbt_project_evaluator:
@@ -57,6 +63,18 @@ models:
       columns: "{{ target.name in ('prod', 'staging', 'test') }}"
     staging:
       +materialized: view # how the staging models will be materialized
+      # event_time lets downstream microbatch models auto-filter these refs to the
+      # batch window. Inert for non-microbatch consumers.
+      stg_history_trades:
+        +event_time: ledger_closed_at
+      stg_history_operations:
+        +event_time: closed_at
+      stg_history_ledgers:
+        +event_time: closed_at
+      stg_history_transactions:
+        +event_time: closed_at
+      stg_token_transfers_raw:
+        +event_time: closed_at
     intermediate:
       +materialized: table # how the intermediate models will be materialized
     marts:
