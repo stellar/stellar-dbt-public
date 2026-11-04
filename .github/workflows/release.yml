@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -66,7 +66,7 @@ jobs:
           git tag "$NEXT_VERSION"
           git push origin "$NEXT_VERSION"
 
-      - uses: release-drafter/release-drafter@5de93583980a40bd78603b6dfdcda5b4df377b32 #v7.2.0
+      - uses: release-drafter/release-drafter@34d80673e067bdc0c24568d3af899c216adcfaa9 #v7.7.0
         with:
           commitish: master
           name: "stellar-dbt-public ${{ steps.nextversion.outputs.NEXT_VERSION }}"
