@@ -3,5 +3,5 @@ dbt-bigquery==1.11.1
 MarkupSafe==2.0.1
 pre-commit==3.5.0
 pytz==2025.1
-sqlfluff==3.5.0
+sqlfluff==4.2.0
 sqlfluff-templater-dbt==3.5.0
