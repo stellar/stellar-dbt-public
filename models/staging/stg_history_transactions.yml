@@ -133,9 +133,6 @@ models:
       - name: extra_signers
         description: '{{ doc("extra_signers") }}'
 
-      - name: tx_signers
-        description: '{{ doc("tx_signers") }}'
-
       - name: tx_envelope
         description: '{{ doc("tx_envelope") }}'
         tests:

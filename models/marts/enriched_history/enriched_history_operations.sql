@@ -96,7 +96,6 @@ with
             , non_refundable_resource_fee_charged
             , refundable_resource_fee_charged
             , rent_fee_charged
-            , tx_signers
             , refundable_fee
         from {{ ref('stg_history_transactions') }}
         {% if model.batch %}
@@ -423,7 +422,6 @@ with
             , hist_trans.non_refundable_resource_fee_charged
             , hist_trans.refundable_resource_fee_charged
             , hist_trans.rent_fee_charged
-            , hist_trans.tx_signers
             , hist_trans.refundable_fee
         from history_operations as hist_ops
         join history_transactions as hist_trans

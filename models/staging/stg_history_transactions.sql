@@ -29,7 +29,6 @@ with
             , min_account_sequence_age
             , min_account_sequence_ledger_gap
             , extra_signers
-            , tx_signers
             , tx_envelope
             , tx_result
             , tx_meta
