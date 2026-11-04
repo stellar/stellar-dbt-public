@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: crypto_stellar
     database: "{{ env_var('PUBLIC_SOURCE_DB', 'test-hubble-319619' if target.name in ('ci', 'test') else 'crypto-stellar') }}"
-    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') }}"
+    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') ~ '_views' }}"
     tables:
       - name: history_operations
         description: '{{ doc("history_operations") }}'
@@ -16,17 +16,14 @@ sources:
             description: '{{ doc("operation_id") }}'
             tests:
               - incremental_unique:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: source_account
             description: '{{ doc("source_account") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: source_account_muxed
@@ -36,28 +33,24 @@ sources:
             description: '{{ doc("op_transaction_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: type
             description: '{{ doc("type") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: type_string
             description: '{{ doc("type_string") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: details
@@ -101,9 +94,6 @@ sources:
 
           - name: details.ledger_key_hash
             description: '{{ doc("ledger_key_hash") }}'
-
-          - name: details.ledgers_to_expire
-            description: '{{ doc("details_ledgers_to_expire") }}'
 
           - name: details.asset_code
             description: '{{ doc("details_asset_code") }}'
@@ -391,14 +381,12 @@ sources:
             description: '{{ doc("batch_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: details.asset_balance_changes
@@ -435,7 +423,6 @@ sources:
             description: '{{ doc("closed_at") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: details_json

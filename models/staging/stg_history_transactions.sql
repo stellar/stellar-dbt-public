@@ -46,7 +46,8 @@ with
             , non_refundable_resource_fee_charged
             , refundable_resource_fee_charged
             , rent_fee_charged
-            , refundable_fee
+            -- Always NULL; the _v2 table does not carry the column.
+            , cast(null as int64) as refundable_fee
             , batch_id
             , batch_run_date
             , batch_insert_ts

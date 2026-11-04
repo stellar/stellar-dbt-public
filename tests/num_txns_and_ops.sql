@@ -19,7 +19,7 @@ WITH txn_count AS (
     FROM {{ ref('stg_history_transactions') }}
     --Take all ledgers committed in the last 36 hours to validate newly written data
     -- Alert runs at 12pm UTC in GCP which creates the 36 hour interval
-    WHERE batch_run_date >= DATETIME(TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY))
+    WHERE closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY)
     GROUP BY ledger_sequence
 ),
 -- Get the actual count of operations per ledger
@@ -28,8 +28,8 @@ WITH txn_count AS (
          FROM {{ ref('stg_history_transactions') }} A
                   JOIN {{ ref('stg_history_operations') }} B
                        ON A.transaction_id = B.transaction_id
-         WHERE A.batch_run_date >= DATETIME(TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY))
-            AND B.batch_run_date >= DATETIME(TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY))
+         WHERE A.closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY)
+            AND B.closed_at >= TIMESTAMP_SUB(TIMESTAMP('{{ var("batch_start_date") }}'), INTERVAL 1 DAY)
          GROUP BY A.ledger_sequence
      ),
 -- compare actual counts with the counts reported in the ledgers table
