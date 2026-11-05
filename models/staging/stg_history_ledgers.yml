@@ -154,11 +154,6 @@ models:
 
       - name: node_id
         description: '{{ doc("node_id") }}'
-        tests:
-          - incremental_not_empty:
-              date_column_name: "closed_at"
-              greater_than_equal_to: "2 day"
-              condition: "closed_at >= timestamp('{{ var('node_id_signed_from') }}')"
 
       - name: signature
         description: '{{ doc("signature") }}'

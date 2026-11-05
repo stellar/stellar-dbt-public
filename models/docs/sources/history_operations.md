@@ -1492,7 +1492,7 @@ Soroban field - the contract function call parameters as one JSON document of ra
 {% enddocs %}
 
 {% docs details_parameters_json_decoded %}
-Soroban field - the contract function call parameters as one JSON document with each ScVal decoded to a human-readable value. An address argument renders as a strkey, which as of Protocol 30 (CAP-84) can be a W muxed contract address. A transfer to a muxed contract carries the W here even though the event it emits reports the plain C address instead
+Soroban field - the contract function call parameters as one JSON document with each ScVal decoded to a human-readable value
 
 ### Only exists for the following operations:
 

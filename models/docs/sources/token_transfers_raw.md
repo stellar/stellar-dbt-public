@@ -37,9 +37,9 @@ The raw stroop amount of the asset
 {% enddocs %}
 
 {% docs to_muxed %}
-The multiplexed strkey representation of the `to` address. An account destination is an M strkey. A contract destination can also be multiplexed as of Protocol 30 (CAP-84), in which case the value is a W strkey: the underlying C contract address plus a uint64 multiplexing id, encoded the same way an M strkey multiplexes a G account address.
+The multiplexed strkey representation of the `to` address.
 {% enddocs %}
 
 {% docs to_muxed_id %}
-The multiplexed ID used to generate the multiplexed strkey representation of the `to` address. The Stellar Asset Contract reports a multiplexed destination as the plain underlying address plus this id, so `to_muxed` is reassembled from the two rather than read directly.
+The multiplexed ID used to generate the multiplexed strkey representation of the `to` address.
 {% enddocs %}

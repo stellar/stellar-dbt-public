@@ -140,7 +140,7 @@ Timestamp in UTC when this ledger closed and committed to the network. Ledgers a
 {% enddocs %}
 
 {% docs closed_at_ms %}
-Ledger close time in milliseconds since the Unix epoch. Protocol 30 (CAP-88) moved close times to millisecond resolution, so this orders rows within a single second where closed_at cannot. Rows from before the Protocol 30 upgrade are closed_at multiplied by 1000 and therefore always end in 000; a value that is not a multiple of 1000 comes from a Protocol 30 or later ledger
+Ledger close time in milliseconds since the Unix epoch
 {% enddocs %}
 
 {% docs ledger_sequence %}
