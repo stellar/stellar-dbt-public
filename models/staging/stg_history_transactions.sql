@@ -29,7 +29,6 @@ with
             , min_account_sequence_age
             , min_account_sequence_ledger_gap
             , extra_signers
-            , tx_signers
             , tx_envelope
             , tx_result
             , tx_meta
@@ -39,6 +38,7 @@ with
             , soroban_resources_read_bytes
             , soroban_resources_write_bytes
             , closed_at
+            , closed_at_ms
             , transaction_result_code
             , inclusion_fee_bid
             , inclusion_fee_charged
@@ -46,7 +46,8 @@ with
             , non_refundable_resource_fee_charged
             , refundable_resource_fee_charged
             , rent_fee_charged
-            , refundable_fee
+            -- Always NULL; the _v2 table does not carry the column.
+            , cast(null as int64) as refundable_fee
             , batch_id
             , batch_run_date
             , batch_insert_ts

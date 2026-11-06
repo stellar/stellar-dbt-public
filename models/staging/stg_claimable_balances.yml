@@ -141,6 +141,9 @@ models:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
 
+      - name: closed_at_ms
+        description: '{{ doc("closed_at_ms") }}'
+
       - name: ledger_sequence
         description: '{{ doc("ledger_sequence") }}'
         tests:

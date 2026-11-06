@@ -96,17 +96,14 @@ with
             , non_refundable_resource_fee_charged
             , refundable_resource_fee_charged
             , rent_fee_charged
-            , tx_signers
             , refundable_fee
         from {{ ref('stg_history_transactions') }}
         {% if model.batch %}
-            -- history_transactions is partitioned on batch_run_date, so the microbatch
-            -- closed_at filter alone cannot prune it. batch_run_date always falls within
-            -- a day of closed_at, so this buffered range restores partition pruning
-            -- without changing which rows qualify.
+            -- history_transactions is partitioned on closed_at. This range prunes it to the
+            -- microbatch window plus a day on each side.
             where
-                batch_run_date >= datetime_sub(datetime(timestamp('{{ model.batch.event_time_start }}')), interval 1 day)
-                and batch_run_date < datetime_add(datetime(timestamp('{{ model.batch.event_time_end }}')), interval 1 day)
+                closed_at >= timestamp_sub(timestamp('{{ model.batch.event_time_start }}'), interval 1 day)
+                and closed_at < timestamp_add(timestamp('{{ model.batch.event_time_end }}'), interval 1 day)
         {% endif %}
     )
 
@@ -233,13 +230,11 @@ with
             , details_json
         from {{ ref('stg_history_operations') }}
         {% if model.batch %}
-            -- history_operations is partitioned on batch_run_date, so the microbatch
-            -- closed_at filter alone cannot prune it. batch_run_date always falls within
-            -- a day of closed_at, so this buffered range restores partition pruning
-            -- without changing which rows qualify.
+            -- history_operations is partitioned on closed_at. This range prunes it to the
+            -- microbatch window plus a day on each side.
             where
-                batch_run_date >= datetime_sub(datetime(timestamp('{{ model.batch.event_time_start }}')), interval 1 day)
-                and batch_run_date < datetime_add(datetime(timestamp('{{ model.batch.event_time_end }}')), interval 1 day)
+                closed_at >= timestamp_sub(timestamp('{{ model.batch.event_time_start }}'), interval 1 day)
+                and closed_at < timestamp_add(timestamp('{{ model.batch.event_time_end }}'), interval 1 day)
         {% endif %}
     )
 
@@ -423,7 +418,6 @@ with
             , hist_trans.non_refundable_resource_fee_charged
             , hist_trans.refundable_resource_fee_charged
             , hist_trans.rent_fee_charged
-            , hist_trans.tx_signers
             , hist_trans.refundable_fee
         from history_operations as hist_ops
         join history_transactions as hist_trans

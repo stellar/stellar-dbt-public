@@ -9,6 +9,8 @@ with
             history_operation_id
             , `order`
             , ledger_closed_at
+            , closed_at
+            , closed_at_ms
             , selling_account_address
             , selling_asset_type
             , selling_asset_code

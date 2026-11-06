@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: crypto_stellar
     database: "{{ env_var('PUBLIC_SOURCE_DB', 'test-hubble-319619' if target.name in ('ci', 'test') else 'crypto-stellar') }}"
-    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') }}"
+    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') ~ '_views' }}"
     tables:
       - name: contract_data
         description: '{{ doc("contract_data") }}'
@@ -141,6 +141,9 @@ sources:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: closed_at_ms
+            description: '{{ doc("closed_at_ms") }}'
 
           - name: batch_insert_ts
             description: '{{ doc("batch_insert_ts") }}'

@@ -24,6 +24,7 @@ with
             , val_decoded
             , contract_data_xdr
             , closed_at
+            , closed_at_ms
             , deleted
             , batch_id
             , batch_run_date

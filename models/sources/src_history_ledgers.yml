@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: crypto_stellar
     database: "{{ env_var('PUBLIC_SOURCE_DB', 'test-hubble-319619' if target.name in ('ci', 'test') else 'crypto-stellar') }}"
-    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') }}"
+    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') ~ '_views' }}"
     tables:
       - name: history_ledgers
         description: '{{ doc("history_ledgers") }}'
@@ -56,6 +56,9 @@ sources:
               - incremental_not_null:
                   date_column_name: "closed_at"
                   greater_than_equal_to: "2 day"
+
+          - name: closed_at_ms
+            description: '{{ doc("closed_at_ms") }}'
 
           - name: id
             description: '{{ doc("ledger_id") }}'

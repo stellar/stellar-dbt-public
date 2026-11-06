@@ -12,6 +12,7 @@ with
             , transaction_count
             , operation_count as ledger_operation_count
             , closed_at
+            , closed_at_ms
             , id as ledger_id
             , node_id
             , total_coins

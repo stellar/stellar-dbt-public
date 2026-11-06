@@ -646,9 +646,6 @@ models:
       - name: rent_fee_charged
         description: '{{ doc("rent_fee_charged") }}'
 
-      - name: tx_signers
-        description: '{{ doc("tx_signers") }}'
-
       - name: refundable_fee
         description: '{{ doc("refundable_fee") }}'
 

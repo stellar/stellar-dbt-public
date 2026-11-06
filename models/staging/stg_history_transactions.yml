@@ -133,9 +133,6 @@ models:
       - name: extra_signers
         description: '{{ doc("extra_signers") }}'
 
-      - name: tx_signers
-        description: '{{ doc("tx_signers") }}'
-
       - name: tx_envelope
         description: '{{ doc("tx_envelope") }}'
         tests:
@@ -184,6 +181,9 @@ models:
           - incremental_not_null:
               date_column_name: "closed_at"
               greater_than_equal_to: "2 day"
+
+      - name: closed_at_ms
+        description: '{{ doc("closed_at_ms") }}'
 
       - name: resource_fee
         description: '{{ doc("resource_fee") }}'

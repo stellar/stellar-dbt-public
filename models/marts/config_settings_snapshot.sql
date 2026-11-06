@@ -21,6 +21,7 @@
     'ledger_sequence',
     'bucket_list_size_window',
     'closed_at',
+    'closed_at_ms',
     'airflow_start_ts',
     'frozen_ledger_keys',
     'frozen_ledger_keys_to_freeze',
