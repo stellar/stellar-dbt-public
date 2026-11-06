@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: crypto_stellar
     database: "{{ env_var('PUBLIC_SOURCE_DB', 'test-hubble-319619' if target.name in ('ci', 'test') else 'crypto-stellar') }}"
-    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') }}"
+    schema: "{{ env_var('PUBLIC_SOURCE_SCHEMA', 'test_crypto_stellar' if target.name in ('ci', 'test') else 'crypto_stellar') ~ '_views' }}"
     tables:
       - name: claimable_balances
         description: '{{ doc("claimable_balances") }}'
@@ -16,7 +16,6 @@ sources:
               combination_of_columns:
                 - balance_id
                 - ledger_entry_change
-              date_column_name: "batch_run_date"
               greater_than_equal_to: "2 day"
               meta:
                 description: "Tests the uniqueness combination of: balance_id and ledger_entry_change."
@@ -26,7 +25,6 @@ sources:
             description: '{{ doc("balance_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: claimants
@@ -54,14 +52,12 @@ sources:
             description: '{{ doc("asset_type") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_code
             description: '{{ doc("asset_code") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
                   condition: 'asset_type != "native"'
 
@@ -69,7 +65,6 @@ sources:
             description: '{{ doc("asset_issuer") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
                   condition: 'asset_type != "native"'
 
@@ -77,35 +72,30 @@ sources:
             description: '{{ doc("asset_amount") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: sponsor
             description: '{{ doc("sponsor") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: flags
             description: '{{ doc("flags_accounts_balances") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: last_modified_ledger
             description: '{{ doc("last_modified_ledger") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: ledger_entry_change
             description: '{{ doc("ledger_entry_change") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
               - accepted_values:
                   values: [0, 1, 2, 4]
@@ -115,28 +105,24 @@ sources:
             description: '{{ doc("deleted") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_id
             description: '{{ doc("batch_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_run_date
             description: '{{ doc("batch_run_date") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: asset_id
             description: '{{ doc("asset_id") }}'
             tests:
               - incremental_not_null:
-                  date_column_name: "batch_run_date"
                   greater_than_equal_to: "2 day"
 
           - name: batch_insert_ts

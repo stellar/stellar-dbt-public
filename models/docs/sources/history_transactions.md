@@ -175,10 +175,6 @@ The inclusion fee actually charged. During normal conditions this is 100 stroops
 Represents the unused portion of resource_fee returned to the account after execution. resource_fee is charged from the source account before the transaction is executed, and then refunded resource_fee_refund based on the actual usage.
 {% enddocs %}
 
-{% docs tx_signers %}
-The public keys of the signers who authorized the transaction. This field lists all the signatories that validated and approved the transaction, ensuring it meets the required authorization thresholds.
-{% enddocs %}
-
 {% docs non_refundable_resource_fee_charged %}
 The resource fee for non-refundable resources: CPU instructions, read bytes, write bytes, and bandwidth (tx size). Charged based on what was declared in the envelope, regardless of whether the transaction succeeds or fails. From SorobanTransactionMetaExtV1 in tx metadata.
 {% enddocs %}
