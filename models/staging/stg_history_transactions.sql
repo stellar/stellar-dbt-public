@@ -38,6 +38,7 @@ with
             , soroban_resources_read_bytes
             , soroban_resources_write_bytes
             , closed_at
+            , closed_at_ms
             , transaction_result_code
             , inclusion_fee_bid
             , inclusion_fee_charged

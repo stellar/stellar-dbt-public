@@ -170,5 +170,8 @@ sources:
           - name: closed_at
             description: '{{ doc("closed_at") }}'
 
+          - name: closed_at_ms
+            description: '{{ doc("closed_at_ms") }}'
+
           - name: ledger_sequence
             description: '{{ doc("ledger_sequence") }}'

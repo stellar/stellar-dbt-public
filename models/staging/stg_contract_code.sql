@@ -23,6 +23,7 @@ with
             , n_table_entries
             , n_types
             , closed_at
+            , closed_at_ms
             , deleted
             , batch_id
             , batch_run_date

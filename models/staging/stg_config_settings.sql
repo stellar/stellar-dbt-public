@@ -68,6 +68,7 @@ with
             , ledger_entry_change
             , ledger_sequence
             , closed_at
+            , closed_at_ms
             , deleted
             , batch_id
             , batch_run_date
