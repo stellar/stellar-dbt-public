@@ -139,6 +139,10 @@ Hash of the ledgerKey which is a subset of the ledgerEntry. The subset of ledger
 Timestamp in UTC when this ledger closed and committed to the network. Ledgers are expected to close ~every 5 seconds
 {% enddocs %}
 
+{% docs closed_at_ms %}
+Ledger close time in milliseconds since the Unix epoch
+{% enddocs %}
+
 {% docs ledger_sequence %}
 The sequence number of this ledger. It represents the order of the ledger within the Stellar blockchain. Each ledger has a unique sequence number that increments with every new ledger, ensuring that ledgers are processed in the correct order.
 
