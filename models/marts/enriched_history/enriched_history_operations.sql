@@ -123,6 +123,7 @@ with
             , asset_type
             , authorize
             , coalesce(balance_id, claimable_balance_id) as balance_id
+            , coalesce(balance_id_strkey, claimable_balance_id_strkey) as balance_id_strkey
             , claimant
             , claimant_muxed
             , claimant_muxed_id
@@ -191,6 +192,7 @@ with
             , authorize_to_maintain_liabilities
             , clawback_enabled
             , liquidity_pool_id
+            , liquidity_pool_id_strkey
             , reserve_a_asset_type
             , reserve_a_asset_code
             , reserve_a_asset_issuer
@@ -263,6 +265,7 @@ with
             , hist_ops.asset_type
             , hist_ops.authorize
             , hist_ops.balance_id
+            , hist_ops.balance_id_strkey
             , hist_ops.claimant
             , hist_ops.claimant_muxed
             , hist_ops.claimant_muxed_id
@@ -332,6 +335,7 @@ with
             , hist_ops.authorize_to_maintain_liabilities
             , hist_ops.clawback_enabled
             , hist_ops.liquidity_pool_id
+            , hist_ops.liquidity_pool_id_strkey
             , hist_ops.reserve_a_asset_type
             , hist_ops.reserve_a_asset_code
             , hist_ops.reserve_a_asset_issuer

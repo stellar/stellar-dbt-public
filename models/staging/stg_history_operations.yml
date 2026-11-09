@@ -118,6 +118,9 @@ models:
       - name: balance_id
         description: '{{ doc("details_balance_id") }}'
 
+      - name: balance_id_strkey
+        description: '{{ doc("balance_id_strkey") }}'
+
       - name: buying_asset_code
         description: '{{ doc("details_buying_asset_code") }}'
 
@@ -129,6 +132,9 @@ models:
 
       - name: claimable_balance_id
         description: '{{ doc("details_claimable_balance_id") }}'
+
+      - name: claimable_balance_id_strkey
+        description: '{{ doc("balance_id_strkey") }}'
 
       - name: claimant
         description: '{{ doc("details_claimant") }}'
@@ -325,6 +331,9 @@ models:
       - name: liquidity_pool_id
         description: '{{ doc("details_liquidity_pool_id") }}'
 
+      - name: liquidity_pool_id_strkey
+        description: '{{ doc("liquidity_pool_id_strkey") }}'
+
       - name: reserve_a_asset_type
         description: '{{ doc("details_reserve_a_asset_type") }}'
 
@@ -448,6 +457,12 @@ models:
 
       - name: parameters_decoded
         description: '{{ doc("details_parameters_decoded") }}'
+
+      - name: parameters_json
+        description: '{{ doc("details_parameters_json") }}'
+
+      - name: parameters_json_decoded
+        description: '{{ doc("details_parameters_json_decoded") }}'
 
       - name: airflow_start_ts
         description: '{{ doc("airflow_start_ts") }}'
