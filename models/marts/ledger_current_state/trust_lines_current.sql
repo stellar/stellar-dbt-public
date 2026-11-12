@@ -24,6 +24,7 @@ with
             , tl.asset_issuer
             , tl.asset_type
             , tl.liquidity_pool_id
+            , tl.liquidity_pool_id_strkey
             , tl.balance
             , tl.buying_liabilities
             , tl.selling_liabilities
@@ -67,6 +68,7 @@ select
     , asset_issuer
     , asset_type
     , liquidity_pool_id
+    , liquidity_pool_id_strkey
     , balance
     , buying_liabilities
     , selling_liabilities
