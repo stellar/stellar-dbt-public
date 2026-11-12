@@ -25,11 +25,13 @@ with
             , details.asset_type
             , details.authorize
             , details.balance_id
+            , details.balance_id_strkey
             , details.buying_asset_code
             , details.buying_asset_issuer
             , details.buying_asset_id
             , details.buying_asset_type
             , details.claimable_balance_id
+            , details.claimable_balance_id_strkey
             , details.claimant
             , details.claimant_muxed
             , details.claimant_muxed_id
@@ -97,6 +99,7 @@ with
             , details.begin_sponsor_muxed
             , details.begin_sponsor_muxed_id
             , details.liquidity_pool_id
+            , details.liquidity_pool_id_strkey
             , details.reserve_a_asset_type
             , details.reserve_a_asset_code
             , details.reserve_a_asset_issuer
@@ -122,6 +125,8 @@ with
             , details.asset_balance_changes
             , details.parameters
             , details.parameters_decoded
+            , details.parameters_json
+            , details.parameters_json_decoded
             , details.function
             , details.address
             , details.type as soroban_operation_type
