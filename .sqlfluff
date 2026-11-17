@@ -73,7 +73,8 @@ unwrap_wrapped_queries = True
 
 [sqlfluff:templater:dbt]
 # Here is the core to the dbt&sqlfluff integration. We need to setup some stuff:
-apply_dbt_builtins = True # This should be ticked as True to work well with macros.
+# This should be ticked as True to work well with macros.
+apply_dbt_builtins = True
 # Here we should define where the dbt project directory is.
 project_dir = ./
 # Here we add where the profiles.yml should be.
